@@ -1,0 +1,121 @@
+cmake_minimum_required(VERSION 3.16)
+project(URTS VERSION 0.1.0 LANGUAGES CXX)
+enable_testing()
+
+# Ensure we have necessary packages 
+include(CheckCXXCompilerFlag)
+find_package(GTest REQUIRED)
+find_package(spdlog REQUIRED)
+
+set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
+set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
+find_package(FindZeroMQ REQUIRED)
+find_package(FindTime REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
+# Versioning information
+configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
+               ${CMAKE_SOURCE_DIR}/include/urts/version.hpp)
+
+include_directories(
+   ${CMAKE_SOURCE_DIR}/include
+   ${ZeroMQ_INCLUDE_DIR}
+   ${TIME_INCLUDE_DIR}
+)
+
+set(PUBLIC_HEADER_DIRECTORIES
+    ${CMAKE_SOURCE_DIR}/include/urts)
+set(PRIVATE_HEADER_DIRECTORIES
+    ${CMAKE_SOURCE_DIR}/include/private)
+
+
+set(LOGGING_SRC
+    src/logging/spdlog.cpp)
+set(MESSAGE_FORMAT_SRC
+    src/messageFormats/earthworm/traceBuf2.cpp)
+
+set(BUILD_SHARED_LIBS YES)
+add_library(urts ${LOGGING_SRC} ${MESSAGE_FORMAT_SRC})
+set_target_properties(urts PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_link_libraries(urts
+                      PUBLIC ${TIME_LIBRARY}
+                      PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
+target_include_directories(urts
+                           PRIVATE spdlog::spdlog
+                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
+                           PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
+
+##########################################################################################
+#                                      Python Wrapping                                   #
+##########################################################################################
+if (WRAP_PYTHON)
+   find_package(pybind11 REQUIRED)
+   #add_library(pytime MODULE
+   #            python/pyurts.cpp)
+   #target_link_libraries(pytime PRIVATE pybind11::module urts)
+   #target_include_directories(pytime
+   #                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/python>
+   #                           PRIVATE $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
+   #set_target_properties(pyurts PROPERTIES
+   #                      PREFIX ""
+   #                      CXX_STANDARD 20
+   #                      CXX_STANDARD_REQUIRED YES
+   #                      CXX_EXTENSIONS NO)
+endif()
+
+##########################################################################################
+#                                         Unit Tests                                     #
+##########################################################################################
+set(TEST_SRC
+    testing/main.cpp
+    testing/messageFormats/earthworm.cpp)
+add_executable(unitTests ${TEST_SRC})
+set_target_properties(unitTests PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES 
+                      CXX_EXTENSIONS NO) 
+target_link_libraries(unitTests PRIVATE urts ${GTEST_BOTH_LIBRARIES})
+target_include_directories(unitTests
+                           PRIVATE ${GTEST_INCLUDE_DIRS}
+                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+add_test(NAME unitsTests
+         COMMAND unitTests)
+
+if (WRAP_PYTHON)
+#   file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
+#   add_test(NAME python_tests
+#            COMMAND ${PYTHON_EXECUTABLE} -m pytest)
+endif()
+
+##########################################################################################
+#                                         Installation                                   #
+##########################################################################################
+include(GNUInstallDirs)
+if (WRAP_PYTHON)
+   install(TARGETS urts #pyurts
+           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+else()
+   install(TARGETS urts
+           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endif()
+##########################################################################################
+#                                     CPACK Packaging                                    #
+##########################################################################################
+set(CPACK_PACKAGE_NAME "URTS")
+set(CPACK_PACKAGE_VENDOR "UUSS")
+set(CPACK_PACKAGE_CONTACT "bbaker@seis.utah.edu")
+set(CPACK_PACKAGE_LICENSE "MIT")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "UUSS's Real-Time Seismic System tools.")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")

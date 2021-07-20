@@ -1,0 +1,34 @@
+#ifndef URTS_VERSION_HPP
+#define URTS_VERSION_HPP
+#include <string>
+#define URTS_MAJOR @Time_VERSION_MAJOR@
+#define URTS_MINOR @Time_VERSION_MINOR@
+#define URTS_PATCH @Time_VERSION_PATCH@
+#define URTS_VERSION "@PROJECT_VERSION@"
+namespace Time
+{
+/// @class Version version.hpp "urts/version.hpp"
+/// @brief Defines URTS's version information.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+class Version
+{
+public:
+    /// @result The API's major version number.
+    [[nodiscard]] static int getMajor() noexcept;
+    /// @result The API's minor version number.
+    [[nodiscard]] static int getMinor() noexcept;
+    /// @result The API's patch version number.
+    [[nodiscard]] static int getPatch() noexcept;
+    /// @result The full version number as a string, e.g., "1.2.3".
+    [[nodiscard]] static std::string getVersion() noexcept;
+    /// @brief Determines if the version is greater than or equal to
+    ///        the current (major, minor, patch).
+    /// @param[in] major  The major version number.
+    /// @param[in] minor  The minor version number.
+    /// @param[in] patch  The patch number.
+    /// @result True indicates that the version is at least equal to the
+    ///         given major, minor, patch.
+    [[nodiscard]] static bool isAtLeast(int major, int minor, int patch) noexcept;
+};
+}
+#endif
