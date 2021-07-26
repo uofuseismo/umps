@@ -59,6 +59,7 @@ TYPED_TEST(TraceBuf2Test, TraceBuf2)
     // the original class)
     auto traceBuf2Copy = *this->traceBuf2;
     // Verify 
+    EXPECT_EQ(traceBuf2Copy.getMessageType(), "TraceBuf2");
     EXPECT_EQ(traceBuf2Copy.getMaximumNumberOfSamples(), (4096 - 64)/sizeT);
     EXPECT_EQ(traceBuf2Copy.getMaximumNetworkLength(), 8);
     EXPECT_EQ(traceBuf2Copy.getMaximumStationLength(), 6);
@@ -123,7 +124,7 @@ TEST(TraceBuf2Test, FromEarthworm)
         //int           i;
     };// TracePacket;
     memset(msg, '\0', sizeof(char)*MAX_TRACEBUF_SIZ);
-    int nSamples = 20;
+    int nSamples = 200;
     double starttime = 8;
     double samprate = 100;
     trh2.pinno = 1;
@@ -162,7 +163,13 @@ TEST(TraceBuf2Test, FromEarthworm)
     EXPECT_EQ(tb.getNumberOfSamples(), nSamples);
     for (int i = 0; i < nSamples; ++i)
     {
+        EXPECT_NEAR(data[i], static_cast<double> (i + 1), 1.e-14);
     } 
+/*
+auto cb = tb.toCBOR();
+auto js = tb.toJSON();
+std::cout << cb.size() << " " << js.size() << std::endl;
+*/
 }
 
 }

@@ -3,13 +3,14 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "urts/messageFormats/message.hpp"
 namespace URTS::MessageFormats::Earthworm
 {
 /// @name TraceBuf2 "tracebuf2.hpp" "urts/messageFormats/earthworm/tracebuf2.hpp"
 /// @brief Defines an Earthworm tracebuf2 message format.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 template<class T = double>
-class TraceBuf2
+class TraceBuf2 : public IMessage
 {
 public:
     /// @name Constructors
@@ -166,7 +167,7 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~TraceBuf2();
+    virtual ~TraceBuf2();
     /// @}
 
     /// @name (De)serialization
@@ -179,11 +180,25 @@ public:
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
-    /// @result The JSON message corresponding to this class.
-    std::string toJSON(const int nIndent = -1) const;
+    /// @result This class expressed as a JSON message.
+    [[nodiscard]] std::string toJSON(int nIndent = -1) const override;
     /// @brief Creates the class from a JSON tracebuf2 message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
+
+    /// @result The CBOR message corresponding to this class.
+    [[nodiscard]] std::vector<uint8_t> toCBOR() const override;
+    /// @brief Creates the class from a CBOR message.
+    /// @throws std::runtime_error if the message is invalid.
+    void fromCBOR(const std::vector<uint8_t> &message);
+    /// @result
+ 
+    /// @}
+
+    /// @name Message Type
+    /// @{
+    /// @result A string descriptor for this message type.
+    [[nodiscard]] std::string getMessageType() const noexcept override;
     /// @}
 
     /// @brief Swaps two tracebuf2 classes.

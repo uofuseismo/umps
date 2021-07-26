@@ -57,7 +57,7 @@ SpdLog::SpdLog(const SpdLog &spdlog)
 }
 
 /// Move c'tor
-SpdLog::SpdLog(SpdLog &&spdlog)
+SpdLog::SpdLog(SpdLog &&spdlog) noexcept
 {
     *this = std::move(spdlog);
 }

@@ -15,7 +15,7 @@ public:
     /// @brief Copy constructor.
     SpdLog(const SpdLog &spdlog);
     /// @brief Move construtor.
-    SpdLog(SpdLog &&spdlog);
+    SpdLog(SpdLog &&spdlog) noexcept;
 
     /// @brief Copy assignment operator.
     /// @param[in] spdlog   The logging class to copy to this.

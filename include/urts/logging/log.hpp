@@ -13,8 +13,8 @@ public:
     /// @result The logging level.
     [[nodiscard]] virtual Level getLevel() const noexcept = 0;
     /// @brief Writes an error message.
-    virtual void error(const std::string &error) = 0;
-    /// @brief Writes a warning message. 
+    virtual void error(const std::string &message) = 0;
+    /// @brief Writes a warning message.
     virtual void warn(const std::string &message) = 0;
     /// @brief Writes an info message.
     virtual void info(const std::string &message) = 0;

@@ -8,14 +8,22 @@
 //#include <boost/json/src.hpp>
 #include <nlohmann/json.hpp>
 #include "urts/messageFormats/earthworm/traceBuf2.hpp"
-
-// These values are from Earthworm's trace_buf.h but subtracted by 1
-// since std::string will handle the NULL termination for us.
-#define MAX_TRACE_SIZE 4032 //4096 - 64 
-#define STA_LEN 6
-#define NET_LEN 8
-#define CHA_LEN 3
-#define LOC_LEN 2
+#ifdef WITH_EARTHWORM
+   #include "trace_buf.h"
+   #define MAX_TRACE_SIZE (MAX_TRACEBUF_SIZ - 64)
+   #define STA_LEN (TRACE2_STA_LEN  - 1)
+   #define NET_LEN (TRACE2_NET_LEN  - 1)
+   #define CHA_LEN (TRACE2_CHAN_LEN - 1)
+   #define LOC_LEN (TRACE2_LOC_LEN  - 1)
+#else
+   // These values are from Earthworm's trace_buf.h but subtracted by 1
+   // since std::string will handle the NULL termination for us.
+   #define MAX_TRACE_SIZE 4032 //4096 - 64 
+   #define STA_LEN 6
+   #define NET_LEN 8
+   #define CHA_LEN 3
+   #define LOC_LEN 2
+#endif
  
 #define MESSAGE_TYPE "TraceBuf2"
 
@@ -115,8 +123,8 @@ template<typename T> T unpack(const char *cIn, const bool swap = false)
 {
     union
     {
-       char c[sizeof(T)];
-       T value;
+        char c[sizeof(T)];
+        T value;
     };
     if (!swap)
     {
@@ -135,7 +143,7 @@ unpack(const char *__restrict__ cIn, const int nSamples, const bool swap)
     std::vector<T> result(nSamples);
     if (!swap)
     {
-        auto dPtr = reinterpret_cast<const T *> (cIn);
+        auto dPtr = reinterpret_cast<const U *> (cIn);
         std::copy(dPtr, dPtr + nSamples, result.data());
     }
     else
@@ -332,6 +340,38 @@ TraceBuf2<T> unpackEarthwormMessage(const char *message)
     return result; 
 }
 
+template<class T>
+nlohmann::json toJSONObject(const TraceBuf2<T> &tb)
+{
+    nlohmann::json obj;
+    obj["MessageType"] = tb.getMessageType();
+    obj["Network"] = tb.getNetwork();
+    obj["Station"] = tb.getStation();
+    obj["Channel"] = tb.getChannel();
+    obj["LocationCode"] = tb.getLocationCode();
+    obj["StartTime"] = tb.getStartTime();
+    obj["SamplingRate"] = tb.getSamplingRate();
+    obj["PinNumber"] = tb.getPinNumber();
+    obj["Quality"] = tb.getQuality();
+    obj["Version"] = tb.getVersion();
+    if (tb.haveSamplingRate() && tb.getNumberOfSamples() > 0)
+    {   
+        obj["EndTime"] = tb.getEndTime();
+    }
+    else
+    {
+        obj["EndTime"] = nullptr;
+    }
+    if (tb.getNumberOfSamples() > 0)
+    {
+        obj["Data"] = tb.getData();
+    }
+    else
+    {
+        obj["Data"] = nullptr;
+    }
+    return obj;
+}
 
 }
 
@@ -691,9 +731,13 @@ void TraceBuf2<T>::fromEarthworm(const char *message)
 template<class T>
 std::string TraceBuf2<T>::toJSON(const int nIndent) const
 {
+    auto obj = toJSONObject(*this);
+    auto result = obj.dump(nIndent);
+    return result;
+/*
     //boost::json::object obj;
     nlohmann::json obj;
-    obj["MessageType"] = MESSAGE_TYPE;
+    obj["MessageType"] = getMessageType();
     obj["Network"] = getNetwork();
     obj["Station"] = getStation();
     obj["Channel"] = getChannel();
@@ -727,6 +771,15 @@ std::cout << result.size() << std::endl;
     auto msgPack = nlohmann::json::to_cbor(obj);
 std::cout << msgPack.size() << std::endl;
     return result;
+*/
+}
+
+template<class T>
+std::vector<uint8_t> TraceBuf2<T>::toCBOR() const
+{
+    auto obj = toJSONObject(*this);
+    auto result = nlohmann::json::to_cbor(obj);
+    return result;
 }
 
 template<class T>
@@ -735,7 +788,7 @@ void TraceBuf2<T>::fromJSON(const std::string &message)
     //boost::json::object obj;
     nlohmann::json obj = nlohmann::json::parse(message);
     auto messageType = obj["MessageType"];
-    if (messageType != MESSAGE_TYPE)
+    if (messageType != getMessageType())
     {
         std::cerr << "Invalid message type: " << messageType << std::endl;
         return;
@@ -762,6 +815,13 @@ void TraceBuf2<T>::fromJSON(const std::string &message)
     if (!data.empty()){tb.setData(std::move(data));}
     // If everything is okay so far then slam the temporary tracebuf2 into this
     *this = std::move(tb);
+}
+
+/// Message type
+template<class T>
+std::string TraceBuf2<T>::getMessageType() const noexcept
+{
+    return MESSAGE_TYPE;
 }
 
 /// Swap 

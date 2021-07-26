@@ -1,5 +1,6 @@
 #ifndef URTS_LOGGING_LEVEL_HPP
 #define URTS_LOGGING_LEVEL_HPP
+#include <cstdint>
 namespace URTS::Logging
 {
 /// @class Level "level.hpp" "urts/logging/level.hpp"
