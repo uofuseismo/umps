@@ -181,24 +181,34 @@ public:
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
     /// @result This class expressed as a JSON message.
-    [[nodiscard]] std::string toJSON(int nIndent = -1) const override;
+    [[nodiscard]] std::string toJSON(int nIndent = -1) const override final;
     /// @brief Creates the class from a JSON tracebuf2 message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
 
     /// @result The CBOR message corresponding to this class.
-    [[nodiscard]] std::vector<uint8_t> toCBOR() const override;
-    /// @brief Creates the class from a CBOR message.
+    [[nodiscard]] std::string toCBOR() const override final;
+    /// @brief Creates this class from a CBOR message.
+    void fromCBOR(const std::string &cbor);
+    /// @brief Creates this class from a CBOR message.
     /// @throws std::runtime_error if the message is invalid.
-    void fromCBOR(const std::vector<uint8_t> &message);
-    /// @result
- 
+    /// @throws std::invalid_argument if data is NULL or the length is 0.
+    void fromCBOR(const uint8_t *data, const size_t length) override final;
     /// @}
 
     /// @name Message Type
     /// @{
     /// @result A string descriptor for this message type.
-    [[nodiscard]] std::string getMessageType() const noexcept override;
+    [[nodiscard]] 
+    virtual std::string getMessageType() const noexcept override final;
+    /// @}
+
+    /// @name Clone Functions
+    /// @{
+    /// @result A copy of this class.
+    [[nodiscard]] std::unique_ptr<URTS::MessageFormats::IMessage> clone() const override final;
+    /// @result An uninitialized instance of this class. 
+    [[nodiscard]] std::unique_ptr<URTS::MessageFormats::IMessage> createInstance() const noexcept override final;
     /// @}
 
     /// @brief Swaps two tracebuf2 classes.

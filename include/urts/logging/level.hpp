@@ -6,7 +6,7 @@ namespace URTS::Logging
 /// @class Level "level.hpp" "urts/logging/level.hpp"
 /// @brief Defines the logging level.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-enum class Level : uint8_t
+enum class Level : uint32_t
 {
     NONE  = 0, /*!< This will not log anything. */
     ERROR = 1, /*!< This will log only error messages. */

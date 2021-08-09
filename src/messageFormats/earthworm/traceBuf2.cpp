@@ -373,6 +373,54 @@ nlohmann::json toJSONObject(const TraceBuf2<T> &tb)
     return obj;
 }
 
+template<typename T>
+void objectToTraceBuf2(const nlohmann::json obj,
+                       TraceBuf2<T> *tb)
+{
+    tb->clear();
+    auto messageType = obj["MessageType"];
+    if (messageType != tb->getMessageType())
+    {
+        std::cerr << "Invalid message type: " << messageType << std::endl;
+        return;
+    }
+    // Unpack the message
+    std::string network = obj["Network"];
+    std::string station = obj["Station"];
+    std::string channel = obj["Channel"];
+    std::string locationCode = obj["LocationCode"];
+    double startTime = obj["StartTime"];
+    double samplingRate = obj["SamplingRate"];
+    int pinNumber = obj["PinNumber"];
+    int quality = obj["Quality"];
+    tb->setNetwork(network);
+    tb->setStation(station);
+    tb->setChannel(channel);
+    tb->setLocationCode(locationCode);
+    tb->setStartTime(startTime);
+    tb->setSamplingRate(samplingRate);
+    tb->setPinNumber(pinNumber);
+    tb->setQuality(quality);
+    std::vector<T> data = obj["Data"]; 
+    if (!data.empty()){tb->setData(std::move(data));}
+}
+
+template<typename T>
+void fromJSONMessage(const std::string &message,
+                     TraceBuf2<T> *tb)
+{
+    auto obj = nlohmann::json::parse(message);
+    return objectToTraceBuf2(obj, tb);
+}
+
+template<typename T>
+void fromCBORMessage(const uint8_t *message, const size_t length,
+                     TraceBuf2<T> *tb)
+{
+    auto obj = nlohmann::json::from_cbor(message, message + length);
+    return objectToTraceBuf2(obj, tb);
+}
+
 }
 
 /// The implementation
@@ -775,45 +823,59 @@ std::cout << msgPack.size() << std::endl;
 }
 
 template<class T>
-std::vector<uint8_t> TraceBuf2<T>::toCBOR() const
+std::string TraceBuf2<T>::toCBOR() const
 {
     auto obj = toJSONObject(*this);
-    auto result = nlohmann::json::to_cbor(obj);
+    auto message = nlohmann::json::to_cbor(obj);
+    std::string result(message.begin(), message.end());
     return result;
 }
 
 template<class T>
 void TraceBuf2<T>::fromJSON(const std::string &message) 
 {
-    //boost::json::object obj;
-    nlohmann::json obj = nlohmann::json::parse(message);
-    auto messageType = obj["MessageType"];
-    if (messageType != getMessageType())
-    {
-        std::cerr << "Invalid message type: " << messageType << std::endl;
-        return;
-    }
     TraceBuf2<T> tb;
-    // Unpack the message
-    std::string network = obj["Network"];
-    std::string station = obj["Station"];
-    std::string channel = obj["Channel"];
-    std::string locationCode = obj["LocationCode"];
-    double startTime = obj["StartTime"];
-    double samplingRate = obj["SamplingRate"];
-    int pinNumber = obj["PinNumber"];
-    int quality = obj["Quality"];
-    tb.setNetwork(network);
-    tb.setStation(station);
-    tb.setChannel(channel);
-    tb.setLocationCode(locationCode);
-    tb.setStartTime(startTime);
-    tb.setSamplingRate(samplingRate);
-    tb.setPinNumber(pinNumber);
-    tb.setQuality(quality);
-    std::vector<T> data = obj["Data"]; 
-    if (!data.empty()){tb.setData(std::move(data));}
-    // If everything is okay so far then slam the temporary tracebuf2 into this
+    fromJSONMessage(message, &tb);
+    *this = std::move(tb);
+}
+
+/// Copy this class
+template<class T>
+std::unique_ptr<URTS::MessageFormats::IMessage>
+    TraceBuf2<T>::clone() const
+{
+    std::unique_ptr<MessageFormats::IMessage> result
+        = std::make_unique<MessageFormats::Earthworm::TraceBuf2<T>> (*this);
+    return result;
+}
+
+/// Create an instance of this class 
+template<class T>
+std::unique_ptr<URTS::MessageFormats::IMessage> 
+    TraceBuf2<T>::createInstance() const noexcept
+{
+    std::unique_ptr<MessageFormats::IMessage> result
+        = std::make_unique<MessageFormats::Earthworm::TraceBuf2<T>> ();
+    return result;
+}
+
+/// From CBOR
+template<class T>
+void TraceBuf2<T>::fromCBOR(const std::string &data)
+{
+    fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
+}
+
+template<class T>
+void TraceBuf2<T>::fromCBOR(const uint8_t *data, const size_t length)
+{
+    if (length == 0){throw std::invalid_argument("No data");}
+    if (data == nullptr)
+    {   
+        throw std::invalid_argument("data is NULL");
+    }   
+    TraceBuf2<T> tb;
+    fromCBORMessage(data, length, &tb);
     *this = std::move(tb);
 }
 

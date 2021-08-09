@@ -85,11 +85,39 @@ TYPED_TEST(TraceBuf2Test, TraceBuf2)
         auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
         EXPECT_NEAR(res, 0, 1.e-14);
     }
-    auto message = traceBuf2Copy.toJSON();
-    traceBuf2Copy.clear();
-    traceBuf2Copy.fromJSON(message);
+    //auto message = traceBuf2Copy.toJSON();
 
-std::cout << traceBuf2Copy.toJSON() << std::endl;
+    auto cbor = traceBuf2Copy.toCBOR();
+    traceBuf2Copy.clear();
+    EXPECT_EQ(traceBuf2Copy.getNumberOfSamples(), 0);
+    traceBuf2Copy.fromCBOR(cbor);
+    // Verify from CBOR
+    EXPECT_EQ(traceBuf2Copy.getMessageType(), "TraceBuf2");
+    EXPECT_EQ(traceBuf2Copy.getMaximumNumberOfSamples(), (4096 - 64)/sizeT);
+    EXPECT_EQ(traceBuf2Copy.getMaximumNetworkLength(), 8); 
+    EXPECT_EQ(traceBuf2Copy.getMaximumStationLength(), 6); 
+    EXPECT_EQ(traceBuf2Copy.getMaximumChannelLength(), 3); 
+    EXPECT_EQ(traceBuf2Copy.getMaximumLocationCodeLength(), 2); 
+    EXPECT_EQ(traceBuf2Copy.getPinNumber(), pinNumber);
+    EXPECT_NEAR(traceBuf2Copy.getStartTime(), startTime, tol);
+    EXPECT_NEAR(traceBuf2Copy.getSamplingRate(), samplingRate, tol);
+    EXPECT_EQ(traceBuf2Copy.getNetwork(), network);
+    EXPECT_EQ(traceBuf2Copy.getStation(), station);
+    EXPECT_EQ(traceBuf2Copy.getChannel(), channel);
+    EXPECT_EQ(traceBuf2Copy.getLocationCode(), locationCode);
+    EXPECT_EQ(traceBuf2Copy.getQuality(), quality);
+    EXPECT_EQ(traceBuf2Copy.getNumberOfSamples(),
+              static_cast<int> (timeSeries.size()));
+    tFinal = traceBuf2Copy.getEndTime();
+    EXPECT_NEAR(tFinal, startTime + (timeSeries.size() - 1)/samplingRate,
+                1.e-14);
+    traceBack = traceBuf2Copy.getData();
+    EXPECT_EQ(traceBack.size(), timeSeries.size());
+    for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)
+    {   
+        auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
+        EXPECT_NEAR(res, 0, 1.e-14);
+    }
 }
 
 TEST(TraceBuf2Test, FromEarthworm)

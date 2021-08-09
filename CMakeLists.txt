@@ -13,10 +13,12 @@ find_package(spdlog REQUIRED)
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
 set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindEarthworm_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
+set(FindTBB_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindZeroMQ REQUIRED)
 find_package(FindTime REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(FindEarthworm)
+find_package(FindTBB)
 
 # Versioning information
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
@@ -34,6 +36,11 @@ if (${FindEarthworm_FOUND})
    set(BUILD_EW TRUE)
    add_compile_definitions(WITH_EARTHWORM)
 endif()
+if (${FindTBB_FOUND})
+   message("Building with TBB")
+   set(BUILD_TBB TRUE)
+   add_compile_definitions(WITH_TBB)
+endif() 
 
 set(PUBLIC_HEADER_DIRECTORIES
     ${CMAKE_SOURCE_DIR}/include/urts)
@@ -45,6 +52,7 @@ set(LOGGING_SRC
     src/logging/stdout.cpp
     src/logging/spdlog.cpp)
 set(MESSAGE_FORMAT_SRC
+    src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
@@ -67,6 +75,10 @@ target_include_directories(urts
                            PRIVATE spdlog::spdlog ${ZeroMQ_INCLUDE_DIR}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
                            PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
+if (${BUILD_TBB})
+    target_include_directories(urts PRIVATE ${TBB_INCLUDE_DIR})
+    target_link_libraries(urts PRIVATE ${TBB_LIBRARY})
+endif()
 if (${BUILD_EW})
     target_include_directories(urts PRIVATE ${EARTHWORM_INCLUDE_DIR})
     target_link_libraries(urts PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
@@ -77,17 +89,18 @@ endif()
 ##########################################################################################
 if (WRAP_PYTHON)
    find_package(pybind11 REQUIRED)
-   #add_library(pytime MODULE
-   #            python/pyurts.cpp)
-   #target_link_libraries(pytime PRIVATE pybind11::module urts)
-   #target_include_directories(pytime
-   #                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/python>
-   #                           PRIVATE $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
-   #set_target_properties(pyurts PROPERTIES
-   #                      PREFIX ""
-   #                      CXX_STANDARD 20
-   #                      CXX_STANDARD_REQUIRED YES
-   #                      CXX_EXTENSIONS NO)
+   add_library(pyurts MODULE
+               python/pyurts.cpp
+               python/messageFormats/pick.cpp)
+   target_link_libraries(pyurts PRIVATE pybind11::module urts)
+   target_include_directories(pyurts
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/python>
+                              PRIVATE $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
+   set_target_properties(pyurts PROPERTIES
+                         PREFIX ""
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO)
 endif()
 
 ##########################################################################################
@@ -95,14 +108,16 @@ endif()
 ##########################################################################################
 set(TEST_SRC
     testing/main.cpp
+    testing/messageFormats/pick.cpp
     testing/messageFormats/earthworm.cpp
-    testing/messaging/pubsub.cpp)
+    testing/messaging/pubsub.cpp
+    )
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO) 
-target_link_libraries(unitTests PRIVATE urts ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(unitTests PRIVATE urts ${GTEST_BOTH_LIBRARIES} pthread)
 target_include_directories(unitTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
@@ -120,7 +135,7 @@ endif()
 ##########################################################################################
 include(GNUInstallDirs)
 if (WRAP_PYTHON)
-   install(TARGETS urts #pyurts
+   install(TARGETS urts pyurts
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
