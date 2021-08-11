@@ -31,7 +31,8 @@ class Publisher
 public:
     /// @brief Default constructor.
     Publisher();
-    /// @brief Constructor.
+    /// @brief Constructs a publisher with the given logger.
+    /// @param[in] logger  A pointer to the application's logger.
     explicit Publisher(std::shared_ptr<URTS::Logging::ILog> &logger);
     /// @brief Constructor.
     /// @param[in] context  The context from which to initialize.

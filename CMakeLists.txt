@@ -9,6 +9,7 @@ option(EARTHWORM_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" 4096)
 include(CheckCXXCompilerFlag)
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
 set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
@@ -82,6 +83,20 @@ endif()
 if (${BUILD_EW})
     target_include_directories(urts PRIVATE ${EARTHWORM_INCLUDE_DIR})
     target_link_libraries(urts PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
+endif()
+
+##########################################################################################
+#                                         Modules                                        #
+##########################################################################################
+
+if (${BUILD_EW})
+    add_executable(packetCache src/modules/packetCache.cpp)
+    set_target_properties(packetCache PROPERTIES
+                          CXX_STANDARD 20
+                          CXX_STANDARD_REQUIRED YES
+                          CXX_EXTENSIONS NO) 
+    target_link_libraries(packetCache PRIVATE urts Boost::program_options pthread)
+    #target_include_directories(packetCache PRIVATE ${Boost_INCLUDE_DIR})
 endif()
 
 ##########################################################################################

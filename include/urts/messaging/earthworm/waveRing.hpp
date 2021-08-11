@@ -18,7 +18,7 @@ public:
     /// @brief Default constructor.
     WaveRing();
     /// @brief Constructor using the given logger.
-    /// @param[in] logger   The logger for this class to use.
+    /// @param[in] logger  A pointer to the application's logger.
     explicit WaveRing(std::shared_ptr<URTS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] waveRing  Initializes the ring reader from this class.

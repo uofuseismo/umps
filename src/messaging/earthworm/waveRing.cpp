@@ -1,9 +1,13 @@
+#include <iostream>
 #include <array>
 #include <string>
 #include <cstring>
 #include <vector>
 #include <map>
-#ifdef USE_MSEED
+#ifdef WITH_TBB
+#include <tbb/parallel_for.h>
+#endif
+#ifdef WITH_MSEED
 #include <libmseed.h>
 #endif
 extern "C"
@@ -17,6 +21,7 @@ extern "C"
 #include "urts/logging/log.hpp"
 #include "urts/logging/stdout.hpp"
 
+namespace EWMessageFormat = URTS::MessageFormats::Earthworm;
 using namespace URTS::Messaging::Earthworm;
 
 namespace
@@ -24,7 +29,7 @@ namespace
 /// This is klunky but effectively earthworm doesn't use const char * which
 /// drives C++ nuts.  So we require some fixed size containers to hold 
 /// earthworm types.
-#ifdef USE_MSEED
+#ifdef WITH_MSEED
 std::array<char, 12> TYPE_MSEED{"TYPE_MSEED\0"};
 #endif
 std::array<char, 12> TYPE_ERROR{"TYPE_ERROR\0"};
@@ -32,6 +37,7 @@ std::array<char, 14> MOD_WILDCARD{"MOD_WILDCARD\0"};
 std::array<char, 15> INST_WILDCARD{"INST_WILDCARD\0"};
 std::array<char, 16> TYPE_HEARTBEAT{"TYPE_HEARTBEAT\0"};
 std::array<char, 16> TYPE_TRACEBUF2{"TYPE_TRACEBUF2\0"};
+std::array<char, 21> TYPE_TRACECOMP2{"TYPE_TRACE2_COMP_UA\0"};
 }
 
 class WaveRing::WaveRingImpl
@@ -40,10 +46,13 @@ public:
     WaveRingImpl(std::shared_ptr<URTS::Logging::ILog> logger) :
         mLogger(logger)
     {
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+        }  
     }
     /// Earthworm messages
-    std::vector<URTS::MessageFormats::Earthworm::TraceBuf2<double>>
-        mTraceBuf2Messages;
+    std::vector<EWMessageFormat::TraceBuf2<double>> mTraceBuf2Messages;
     /// Name of earthworm ring to connect to
     std::shared_ptr<URTS::Logging::ILog> mLogger;
     /// Logos to scrounge from the ring.
@@ -55,21 +64,25 @@ public:
     long mRingKey = 0;
     uint32_t mMilliSecondsWait = 0;
     /// Earthworm installation ID
-    unsigned char mInstallationIdentifier;
+    unsigned char mInstallationIdentifier = 0;
     /// Installation wildcard
-    unsigned char mInstallationWildcard;
+    unsigned char mInstallationWildCard = 0;
     /// Heartbeat type
-    unsigned char mHeartBeatType;
+    unsigned char mHeartBeatType = 0;
     /// Tracebuffer2 type
-    unsigned char mTraceBuffer2Type;
-#ifdef USE_MSEED
+    unsigned char mTraceBuffer2Type = 0;
+    /// TraeComp2
+    unsigned char mTraceComp2Type = 0;
+#ifdef WITH_MSEED
     /// MSEED type
-    unsigned char mMSEEDType;
+    unsigned char mMSEEDType = 0;
 #endif
     /// Module wildcard
-    unsigned char mModWilcard;
+    unsigned char mModWildCard = 0;
     /// Error type
-    unsigned char mErrorType;
+    unsigned char mErrorType = 0;
+    /// Most waves read off the ring
+    int mMostWavesRead = 0;
     /// Have the region?
     bool mHaveRegion = false;
     /// Connected?
@@ -82,6 +95,13 @@ WaveRing::WaveRing() :
           (std::make_shared<URTS::Logging::StdOut> ()))
 {
 }
+
+/// C'tor with logger
+WaveRing::WaveRing(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<WaveRingImpl> (logger))
+{
+}
+ 
 
 /// Move assignment
 WaveRing::WaveRing(WaveRing &&waveRing) noexcept
@@ -106,46 +126,71 @@ WaveRing::~WaveRing()
 /// Disconnects
 void WaveRing::disconnect() noexcept
 {
+    pImpl->mLogger->debug("Disconnecting...");
     if (pImpl->mHaveRegion){tport_detach(&pImpl->mRegion);}
     memset(&pImpl->mRegion, 0, sizeof(SHM_INFO));
     pImpl->mTraceBuf2Messages.clear();
     pImpl->mLogos.clear();
     pImpl->mRingName.clear();
+    pImpl->mRingKey = 0;
     pImpl->mMilliSecondsWait = 0;
-    pImpl->mConnected = false;
+    pImpl->mInstallationIdentifier = 0;
+    pImpl->mInstallationWildCard = 0;
+    pImpl->mHeartBeatType = 0;
+    pImpl->mTraceBuffer2Type = 0;
+    pImpl->mTraceComp2Type = 0;
+#ifdef WITH_MSEED
+    pImpl->mMSEEDType = 0;
+#endif
+    pImpl->mModWildCard = 0;
+    pImpl->mErrorType = 0;
+    pImpl->mMostWavesRead = 0;
     pImpl->mHaveRegion = false;
+    pImpl->mConnected = false;
 }
 
 /// Connect
 void WaveRing::connect(const std::string &ringName,
                        const uint32_t wait)
 {
+    // Checks
+    if (ringName.empty()){throw std::invalid_argument("ringName is empty");}
+    // Make sure I'm not already connected
+    disconnect();
     // Get the ring key.  Note, earthworm doesn't believe in const so
     // this is a workaround 
+    pImpl->mLogger->debug("Getting key from ring: " + ringName);
     std::vector<char> ringNameWork(ringName.size() + 1, '\0');
     std::copy(ringName.begin(), ringName.end(), ringNameWork.begin());
     pImpl->mRingKey = GetKey(ringNameWork.data());
+    // Attach to the ring
+    pImpl->mLogger->debug("Attaching to ring...");
+    tport_attach(&pImpl->mRegion, pImpl->mRingKey);
+    pImpl->mHaveRegion = true;
     if (pImpl->mRingKey ==-1)
     {
         pImpl->mLogger->error("Failed to get key for ring: " + ringName);
         return;
     }
     // Installation information
+    pImpl->mLogger->debug("Specifying logos...");
     if (GetLocalInst(&pImpl->mInstallationIdentifier) != 0)
     {
+        pImpl->mLogger->error("Failed to get installation identifier");
+        throw std::runtime_error("Failed to get installation identifier");
     }
     // Various types
-    if (GetType(INST_WILDCARD.data(),  &pImpl->mInstallationWildcard) != 0)
-    {
-        pImpl->mLogger->error("Failed to get installation wildcard");
-        throw std::runtime_error("Failed to get installation wildcard");
-    }
     if (GetType(TYPE_TRACEBUF2.data(), &pImpl->mTraceBuffer2Type) != 0)
     {
         pImpl->mLogger->error("Failed to get tracebuf2 type");
         throw std::runtime_error("Failed to get tracebuf2 type");
     }
-#ifdef USE_MSEED
+    if (GetType(TYPE_TRACECOMP2.data(), &pImpl->mTraceComp2Type) != 0)
+    {
+        pImpl->mLogger->error("Failed to get tracecomp2 type");
+        throw std::runtime_error("Failed to get tracecomp2 type");
+    }
+#ifdef WITH_MSEED
     if (GetType(TYPE_MSEED.data(), &pImpl->mMSEEDType) != 0)
     {
         pImpl->mLogger->error("Failed to get MSEED type");
@@ -162,34 +207,43 @@ void WaveRing::connect(const std::string &ringName,
         pImpl->mLogger->error("Failed to get error type");
         throw std::runtime_error("Failed to get error type");
     }
-    if (GetType(MOD_WILDCARD.data(), &pImpl->mModWilcard) != 0)
+    // Wildcard info
+    if (GetInst(INST_WILDCARD.data(), &pImpl->mInstallationWildCard) != 0)
+    {
+        pImpl->mLogger->error("Failed to get installation wildcard");
+        throw std::runtime_error("Failed to get installation wildcard");
+    }
+    if (GetModId(MOD_WILDCARD.data(), &pImpl->mModWildCard) != 0)
     {
         pImpl->mLogger->error("Failed to get module ID");
         throw std::runtime_error("Failed to get module ID");
     }
     // Create the logos we wish to read
     pImpl->mLogos.clear();
-    pImpl->mLogos.reserve(2);
     MSG_LOGO traceBuf2Logo;
     memset(&traceBuf2Logo, 0, sizeof(MSG_LOGO));
     traceBuf2Logo.type = pImpl->mTraceBuffer2Type;
     pImpl->mLogos.push_back(traceBuf2Logo);
-#ifdef USE_MSEED
+
+    MSG_LOGO traceComp2Logo;
+    memset(&traceComp2Logo, 0, sizeof(MSG_LOGO));
+    traceComp2Logo.type = pImpl->mTraceComp2Type;
+    pImpl->mLogos.push_back(traceComp2Logo);
+
+#ifdef WITH_MSEED
     MSG_LOGO mseedLogo;
     memset(&mseedLogo, 0, sizeof(MSG_LOGO));
     mseedLogo.type = pImpl->mMSEEDType;
     pImpl->mLogos.push_back(mseedLogo);
 #endif
-    // Attach to the ring
-    tport_attach(&pImpl->mRegion, pImpl->mRingKey);
-    pImpl->mHaveRegion = true;
-    // Copy some stuff
+    // Copy some stuff now that we have survived
     pImpl->mRingName = ringName;
     pImpl->mMilliSecondsWait = 0;
     if (wait > 0){pImpl->mMilliSecondsWait = wait;}
     pImpl->mConnected = true;
     // Optimization -> reserve some space
     pImpl->mTraceBuf2Messages.reserve(1024);
+    pImpl->mLogger->debug("Connected!");
 }
 
 /// Connected?
@@ -202,16 +256,26 @@ bool WaveRing::isConnected() const noexcept
 void WaveRing::read()
 {
     if (!isConnected()){throw std::runtime_error("Not to connected to a ring");}
+    pImpl->mLogger->debug("Reading from ring...");
     MSG_LOGO gotLogo;
+    // The algorithm works as follows:
+    //  (1) Take the information off the ring as fast as possible.
+    //  (2) Unpack the tracebuffers
+    // To do (1) first attempt to allocate enough space. 
+    int nWork = std::max(1024, pImpl->mMostWavesRead);
+    std::vector<std::array<char, MAX_TRACEBUF_SIZ>> traceBuf2Work;
+    traceBuf2Work.reserve(nWork);
+    pImpl->mTraceBuf2Messages.resize(0);
+    // Now copy the (unpacked) messages from the ring
     std::array<char, MAX_TRACEBUF_SIZ> msg;
     long gotSize = 0;
     int returnCode = 0;
     unsigned char sequenceNumber;
-    pImpl->mTraceBuf2Messages.resize(0);
+    int nRead = 0;
     while(true)
     {
         // Not really sure what to with a kill signal
-        auto returnCode = tport_getflag(&pImpl->mRegion);
+        returnCode = tport_getflag(&pImpl->mRegion);
         if (returnCode == TERMINATE)
         {
             auto error = "Receiving kill signal from ring: " + pImpl->mRingName
@@ -221,46 +285,154 @@ void WaveRing::read()
             throw std::runtime_error(error);
         }
         // Copy the ring message
+        std::fill(msg.begin(), msg.end(), '\0');
         returnCode = tport_copyfrom(&pImpl->mRegion,
                                     pImpl->mLogos.data(),
                                     pImpl->mLogos.size(),
                                     &gotLogo, &gotSize,
                                     msg.data(), MAX_TRACEBUF_SIZ,
                                     &sequenceNumber);
+        // Are we done?
+        if (returnCode == GET_NONE){break;}
+        // Handle earthworm errors
+        if (returnCode != GET_OK)
+        {
+            if (returnCode == GET_MISS)
+            {
+                pImpl->mLogger->error("Some messages were missed");
+            }
+            else if (returnCode == GET_NOTRACK)
+            {
+                pImpl->mLogger->error("Message exceeded NTRACK_GET");
+            }
+            else if (returnCode == GET_TOOBIG)
+            {
+                pImpl->mLogger->error("TraceBuf2 message too big");
+            }
+            else if (returnCode == GET_MISS_LAPPED)
+            {
+                pImpl->mLogger->error("Some messages were overwritten");
+            }
+            else if (returnCode == GET_MISS_SEQGAP)
+            {
+                pImpl->mLogger->error("A gap in messages was detected");
+            }
+            else
+            {
+                pImpl->mLogger->error("Unknown earthworm error: "
+                                    + std::to_string(returnCode));
+            }
+            continue;
+        }
+        // Unpack the tracebuf2 type message
         if (gotLogo.type == pImpl->mTraceBuffer2Type)
         {
-            URTS::MessageFormats::Earthworm::TraceBuf2<double> tb2; 
+            // Note, there's an optimization to be had by only copying 
+            // gotSize bytes.  But for now, this is simple in terms of
+            // memory (re)allocation.
+            traceBuf2Work.push_back(msg);
+        }
+        else if (gotLogo.type == pImpl->mTraceComp2Type)
+        {
+            pImpl->mLogger->error("TYPE_TRACE2_COMP_UA not handled");
+        }
+#ifdef WITH_MSEED
+        else if (gotLogo.type == pImpl->mMSEEDType)
+        {
+            pImpl->mLogger->error("MSEED message not handled");
+        }
+#endif
+        else
+        {
+            pImpl->mLogger->error("Unhandled message type");
+            continue;
+        }
+        nRead = nRead + 1;
+    }
+    pImpl->mLogger->debug("Read " + std::to_string(nRead)
+                        + " messages from ring.  Unpacking...");
+    if (pImpl->mMilliSecondsWait > 0){sleep_ew(pImpl->mMilliSecondsWait);}
+    // Update our typical allocation size
+    pImpl->mMostWavesRead = std::max(pImpl->mMostWavesRead, 
+                                     static_cast<int> (traceBuf2Work.size()));
+    if (static_cast<int> (traceBuf2Work.size()) > pImpl->mMostWavesRead)
+    {
+        pImpl->mLogger->debug("Extending traceBuf2 workspace to " 
+                            + std::to_string(pImpl->mMostWavesRead)
+                            + " messages");
+    }
+    // Step 2: Unpack the messages as fast as possible
+    pImpl->mTraceBuf2Messages.resize(traceBuf2Work.size());
+    pImpl->mLogger->debug("Unpacking " + std::to_string(traceBuf2Work.size())
+                        + " messages...");
+#ifdef WITH_TBB
+    tbb::parallel_for(tbb::blocked_range<int> (0, traceBuf2Work.size()),
+                      [&](tbb::blocked_range<int> r)
+    {
+        for (int it = r.begin(); it < r.end(); ++it)
+        {
+            //EWMessageFormat::TraceBuf2<double> tb2;
             try
             {
-                tb2.fromEarthworm(msg.data());
+                //tb2.fromEarthworm(traceBuf2Work[it].data());
+                //pImpl->mTraceBuf2Messages[it] = std::move(tb2);
+                pImpl->mTraceBuf2Messages[it].fromEarthworm(
+                    traceBuf2Work[it].data()); 
             }
             catch (const std::exception &e)
             {
                 pImpl->mLogger->error(e.what());
                 continue;
             }
-            pImpl->mTraceBuf2Messages.push_back(std::move(tb2));
         }
-#ifdef USE_MSEED
-        else if (gotLogo.type == pImpl->mMSEEDType)
+    });
+#else
+    for (int it = 0; it < static_cast<int> (traceBuf2Work.size()); ++it)
+    {
+        //EWMessageFormat::TraceBuf2<double> tb2;
+        try
         {
-            pImpl->mLogger->error("MSEED message not handled");
+            //tb2.fromEarthworm(traceBuf2Work[it].data());
+            //pImpl->mTraceBuf2Messages.at(it) = std::move(tb2);
+            pImpl->mTraceBuf2Messages[it].fromEarthworm(
+                traceBuf2Work[it].data());
+        }
+        catch (const std::exception &e)
+        {
+            pImpl->mLogger->error(e.what());
             continue;
         }
-#endif
     }
-    if (pImpl->mMilliSecondsWait > 0){sleep_ew(pImpl->mMilliSecondsWait);}
+#endif
+    // Evict any empty messages
+    pImpl->mTraceBuf2Messages.erase(
+        std::remove_if(pImpl->mTraceBuf2Messages.begin(),
+                       pImpl->mTraceBuf2Messages.end(),
+                       [](const EWMessageFormat::TraceBuf2<> &tb2)
+                       {
+                          return tb2.getNumberOfSamples() == 0;                         
+                       }),
+                       pImpl->mTraceBuf2Messages.end());
+    pImpl->mLogger->debug("Successfully unpacked "
+                        + std::to_string(pImpl->mTraceBuf2Messages.size())
+                        + " messages");
+
+#ifdef WITH_MSEED
+    pImpl->mLogger->error("Need loop to unpack MSEED messages with msr_unpack");
+#endif
 }
 
 /// Flushes the wave ring
 void WaveRing::flush()
 {
     if (!isConnected()){throw std::runtime_error("Not to connected to a ring");}
+    pImpl->mLogger->debug("Flushing ring...");
     MSG_LOGO gotLogo;
     std::array<char, MAX_TRACEBUF_SIZ> msg;
     long gotSize = 0;
     int returnCode = 0;
     unsigned char sequenceNumber;
+    int nMessages = 1;
     while (true)
     {
         returnCode = tport_copyfrom(&pImpl->mRegion,
@@ -270,7 +442,10 @@ void WaveRing::flush()
                                     msg.data(), MAX_TRACEBUF_SIZ,
                                     &sequenceNumber);
         if (returnCode == GET_NONE){break;}
+        nMessages = nMessages + 1;
     }
+    pImpl->mLogger->debug("Flushed " + std::to_string(nMessages)
+                         + " messages");
     if (pImpl->mMilliSecondsWait > 0){sleep_ew(pImpl->mMilliSecondsWait);}
 }
 

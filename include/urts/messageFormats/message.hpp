@@ -21,7 +21,7 @@ public:
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
     /// @result The class expressed as a JSON message.
-    [[nodiscard]] virtual std::string toJSON(int noIndent) const = 0;
+    //[[nodiscard]] virtual std::string toJSON(int noIndent) const = 0;
     /// @brief Converts this class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.

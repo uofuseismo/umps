@@ -181,7 +181,7 @@ public:
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
     /// @result This class expressed as a JSON message.
-    [[nodiscard]] std::string toJSON(int nIndent = -1) const override final;
+    [[nodiscard]] std::string toJSON(int nIndent = -1) const;
     /// @brief Creates the class from a JSON tracebuf2 message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);

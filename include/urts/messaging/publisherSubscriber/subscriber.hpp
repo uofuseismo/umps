@@ -25,7 +25,10 @@ public:
     /// @brief Default constructor.
     Subscriber();
     /// @brief Constructor with specified logger.
+    /// @param[in] logger  A pointer to the application's logger.
     explicit Subscriber(std::shared_ptr<URTS::Logging::ILog> &logger);
+    /// @brief Constructor with a specified context.
+    /// @param[i] context  The ZeroMQ context.
     explicit Subscriber(std::shared_ptr<zmq::context_t> &context);
     //explicit Subscriber(std::shared_ptr<void *> &context);
     /// @brief Move constructor.

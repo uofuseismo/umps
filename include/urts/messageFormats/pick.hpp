@@ -142,7 +142,7 @@ public:
     ///       transmission.
     /// @result The pick class expressed as a JSON message.
     /// @throws std::runtime_error if the required information is not set.
-    [[nodiscard]] virtual std::string toJSON(int noIndent =-1) const override final;
+    [[nodiscard]] std::string toJSON(int noIndent =-1) const;
     /// @brief Creates the class from a JSON pick message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
