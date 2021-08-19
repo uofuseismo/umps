@@ -55,7 +55,8 @@ public:
     [[nodiscard]] double getStartTime() const noexcept;
 
     /// @result The UTC time of the last sample in seconds from the epoch.
-    /// @throws std::runtime_error if \c haveSamplingRate() is false.
+    /// @throws std::runtime_error if \c haveSamplingRate() is false
+    ///         \c getNumberOfSamples() is zero.
     [[nodiscard]] double getEndTime() const;
 
     /// @brief Sets the sampling rate for the data in the packet.

@@ -81,7 +81,7 @@ TEST(Messaging, PubSub)
 {
     //std::shared_ptr<void *> context = std::make_shared<void *> (zmq_ctx_new()); //zmq::context_t context{1};    
     URTS::Logging::StdOut logger;
-    //logger.setLevel(URTS::Logging::Level::DEBUG);
+    logger.setLevel(URTS::Logging::Level::DEBUG);
     std::shared_ptr<URTS::Logging::ILog> loggerPtr = std::make_shared<URTS::Logging::StdOut> (logger);
 //       loggerPtr(std::make_shared<URTS::Logging::StdOut> ());
 //    loggerPtr->setLevel(URTS::Logging::Level::DEBUG);

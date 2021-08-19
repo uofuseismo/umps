@@ -15,11 +15,13 @@ set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindEarthworm_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindTBB_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
+set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindZeroMQ REQUIRED)
 find_package(FindTime REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(FindEarthworm)
 find_package(FindTBB)
+find_package(FindMiniSEED)
 
 # Versioning information
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
@@ -32,10 +34,17 @@ include_directories(
 )
 
 set(BUILD_EW FALSE)
+set(BUILD_MSEED FALSE)
 if (${FindEarthworm_FOUND})
-   message("Using TraceBuf2 message size of:" ${EARTHWORM_TRACEBUF2_SIZE})
+   message("Will compile Earthworm")
    set(BUILD_EW TRUE)
    add_compile_definitions(WITH_EARTHWORM)
+   message("Using TraceBuf2 message size of:" ${EARTHWORM_TRACEBUF2_SIZE})
+   if (${FindMiniSEED_FOUND})
+      message("Will compile earthworm modules with MiniSEED")
+      set(BUILD_MSEED TRUE)
+      add_compile_definitions(WITH_MSEED)
+   endif()
 endif()
 if (${FindTBB_FOUND})
    message("Building with TBB")
@@ -53,18 +62,22 @@ set(LOGGING_SRC
     src/logging/stdout.cpp
     src/logging/spdlog.cpp)
 set(MESSAGE_FORMAT_SRC
+    src/messageFormats/dataPacket.cpp
     src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp)
+set(APPLICATION_SRC
+    src/packetCache/circularBuffer.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
        src/messaging/earthworm/waveRing.cpp)
 endif()
 
 set(BUILD_SHARED_LIBS YES)
-add_library(urts ${LOGGING_SRC} ${MESSAGE_FORMAT_SRC} ${MESSAGING_SRC} ${EARTHWORM_SRC})
+add_library(urts ${LOGGING_SRC} ${MESSAGE_FORMAT_SRC} ${MESSAGING_SRC}
+                 ${APPLICATION_SRC} ${EARTHWORM_SRC})
 set_target_properties(urts PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
@@ -83,6 +96,10 @@ endif()
 if (${BUILD_EW})
     target_include_directories(urts PRIVATE ${EARTHWORM_INCLUDE_DIR})
     target_link_libraries(urts PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
+    if (${BUILD_MSEED})
+       target_include_directories(urts PRIVATE ${MINISEED_INCLUDE_DIR})
+       target_link_libraries(urts PRIVATE ${MINISEED_LIBRARY})
+    endif()
 endif()
 
 ##########################################################################################
@@ -125,7 +142,9 @@ set(TEST_SRC
     testing/main.cpp
     testing/messageFormats/pick.cpp
     testing/messageFormats/earthworm.cpp
-    testing/messaging/pubsub.cpp
+    testing/messageFormats/dataPacket.cpp
+    #testing/messaging/pubsub.cpp
+    testing/applications/packetCache.cpp
     )
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES

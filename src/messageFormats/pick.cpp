@@ -166,7 +166,7 @@ void Pick::clear() noexcept
 /// Network
 void Pick::setNetwork(const std::string &network)
 {
-    if (isEmpty(network)){throw std::invalid_argument("network is empty");}
+    if (isEmpty(network)){throw std::invalid_argument("Network is empty");}
     pImpl->mNetwork = network;
 }
 
@@ -184,7 +184,7 @@ bool Pick::haveNetwork() const noexcept
 /// Station
 void Pick::setStation(const std::string &station)
 {
-    if (isEmpty(station)){throw std::invalid_argument("station is empty");}
+    if (isEmpty(station)){throw std::invalid_argument("Station is empty");}
     pImpl->mStation = station;
 }
 
@@ -202,7 +202,7 @@ bool Pick::haveStation() const noexcept
 /// Channel
 void Pick::setChannel(const std::string &channel)
 {
-    if (isEmpty(channel)){throw std::invalid_argument("channel is empty");}
+    if (isEmpty(channel)){throw std::invalid_argument("Channel is empty");}
     pImpl->mChannel = channel;
 }
 

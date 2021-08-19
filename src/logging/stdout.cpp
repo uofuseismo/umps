@@ -1,4 +1,5 @@
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include "urts/logging/stdout.hpp"
 
 using namespace URTS::Logging;
@@ -13,6 +14,7 @@ public:
 StdOut::StdOut() :
     pImpl(std::make_unique<StdOutImpl> ())
 {
+    spdlog::set_level(spdlog::level::info);
 }
 
 /// Copy c'tor
@@ -50,6 +52,26 @@ StdOut::~StdOut() = default;
 void StdOut::setLevel(const Level level) noexcept
 {
     pImpl->mLevel = level;
+    if (level == Level::ERROR)
+    {
+        spdlog::set_level(spdlog::level::err);
+    }
+    else if (level == Level::DEBUG)
+    {
+        spdlog::set_level(spdlog::level::debug);
+    }
+    else if (level == Level::INFO)
+    {
+        spdlog::set_level(spdlog::level::info);
+    }
+    else if (level == Level::DEBUG)
+    {
+        spdlog::set_level(spdlog::level::debug);
+    }
+    else
+    {
+        spdlog::set_level(spdlog::level::off);
+    }
 }
 
 Level StdOut::getLevel() const noexcept
@@ -62,7 +84,8 @@ void StdOut::info(const std::string &message)
 {
     if (pImpl->mLevel >= Level::INFO)
     {
-        std::cout << message << std::endl;
+        //std::cout << message << std::endl;
+        spdlog::info(message);
     }
 }
 
@@ -71,7 +94,8 @@ void StdOut::warn(const std::string &message)
 {
     if (pImpl->mLevel >= Level::WARN)
     {
-        std::cout << message << std::endl;
+        //std::cout << message << std::endl;
+        spdlog::warn(message);
     }
 }
 
@@ -80,7 +104,8 @@ void StdOut::error(const std::string &message)
 {
     if (pImpl->mLevel >= Level::ERROR)
     {
-        std::cerr << message << std::endl;
+        //std::cerr << message << std::endl;
+        spdlog::error(message);
     }
 }
 
@@ -89,6 +114,7 @@ void StdOut::debug(const std::string &message)
 {
     if (pImpl->mLevel >= Level::DEBUG)
     {
-        std::cerr << message << std::endl;
+        //std::cerr << message << std::endl;
+        spdlog::debug(message);
     }
 }

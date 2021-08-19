@@ -119,7 +119,8 @@ int getMaxTraceLength() noexcept
 }
 
 /// Unpacks data
-template<typename T> T unpack(const char *cIn, const bool swap = false)
+template<typename T> T unpack(const char *__restrict__ cIn,
+                              const bool swap = false)
 {
     union
     {
@@ -143,7 +144,7 @@ unpack(const char *__restrict__ cIn, const int nSamples, const bool swap)
     std::vector<T> result(nSamples);
     if (!swap)
     {
-        auto dPtr = reinterpret_cast<const U *> (cIn);
+        auto dPtr = reinterpret_cast<const U *__restrict__> (cIn);
         std::copy(dPtr, dPtr + nSamples, result.data());
     }
     else
@@ -153,7 +154,7 @@ unpack(const char *__restrict__ cIn, const int nSamples, const bool swap)
         for (int i = 0; i < nSamples; ++i)
         {
             resultPtr[i] = static_cast<T> (unpack<U>(cIn + i*nBytes, swap));
-        } 
+        }
     }
     return result;
 }
@@ -252,31 +253,35 @@ TraceBuf2<T> unpackEarthwormMessage(const char *message)
         result.setSamplingRate(samplingRate);
         result.setQuality(quality);
 
-        std::vector<T> x;
         if (dtype == 'i')
         {
             if (nBytes == 2)
             {
-                x = unpack<T, int16_t>(message + 64, nsamp, swapPass); 
+                auto dPtr = reinterpret_cast<const int16_t *> (message + 64);
+                result.setData(nsamp, dPtr);
             }
             else if (nBytes == 4)
             {
-                x = unpack<T, int32_t>(message + 64, nsamp, swapPass);
-            } 
+                auto dPtr = reinterpret_cast<const int32_t *> (message + 64);
+                result.setData(nsamp, dPtr);
+            }
             else if (nBytes == 8)
             {
-                x = unpack<T, int64_t>(message + 64, nsamp, swapPass);
+                auto dPtr = reinterpret_cast<const int64_t *> (message + 64);
+                result.setData(nsamp, dPtr);
             }
         }
         else if (dtype == 'f' && nBytes == 4)
         {
             if (nBytes == 4)
             {
-                x = unpack<T, float>(message + 64, nsamp, swapPass);
+                auto dPtr = reinterpret_cast<const float *> (message + 64);
+                result.setData(nsamp, dPtr);
             }
             else if (nBytes == 8)
             {
-                x = unpack<T, double>(message + 64, nsamp, swapPass);
+                auto dPtr = reinterpret_cast<const double *> (message + 64);
+                result.setData(nsamp, dPtr);
             }
         }
         else
@@ -286,7 +291,6 @@ TraceBuf2<T> unpackEarthwormMessage(const char *message)
            assert(false);
 #endif
         }
-        result.setData(std::move(x));
     }
     else
     {

@@ -4,7 +4,11 @@
 namespace URTS::Logging
 {
 class ILog;
-};
+}
+namespace URTS::MessageFormats::Earthworm
+{
+template<typename T> class TraceBuf2;
+}
 namespace URTS::Messaging::Earthworm
 {
 /// @name WaveRing "waveRing.hpp" "urts/messaging/earthworm/waveRing.hpp"
@@ -65,6 +69,17 @@ public:
     /// @brief Reads the ring.
     /// @throws std::runtime_error if \c isConnected() is false.
     void read();
+
+    /// @result The traceBuf2 messages read from the ring.
+    [[nodiscard]] std::vector<MessageFormats::Earthworm::TraceBuf2<double>>
+        getTraceBuf2Messages() const noexcept;
+    /// @result The number of traceBuf2 messages.
+    [[nodiscard]] int getNumberOfTraceBuf2Messages() const noexcept;
+    /// @result A pointer to the array of traceBuf2 messages read from the
+    ///         ring.  This has dimension [\c getNumberOfTraceBuf2Messages()].
+    /// @note This is not recommended for general use.
+    [[nodiscard]] const MessageFormats::Earthworm::TraceBuf2<double> *
+        getTraceBuf2MessagesPointer() const noexcept;
     /// @}
 
     /// @name Destructors
