@@ -1,6 +1,7 @@
 # About 
 
-Utah Real Time Seismology is a developmental system for complementing the traditional the Earthworm/AQMS system with machine learning tools.  URTS is extremely experimental and not recommended for general use. 
+
+[Utah Real Time Seismology](https://uofuseismo.github.io/urts/) is a developmental system for complementing the traditional the Earthworm/AQMS system with machine learning tools.  URTS is extremely experimental and not recommended for general use. 
 
 # Compiling
 
