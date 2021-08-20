@@ -27,7 +27,7 @@ public:
 
     }
 */
-    void update(const UMF::DataPacket<T> &packet)
+    void update(UMF::DataPacket<T> &&packet) //const UMF::DataPacket<T> &packet)
     {
         auto t0 = packet.getStartTime(); 
         std::scoped_lock lock(mMutex);
@@ -38,14 +38,14 @@ public:
         // Empty buffer case
         if (mCircularBuffer.empty())
         {
-            mCircularBuffer.push_back(packet);
+            mCircularBuffer.push_back(std::move(packet));
             return;
         }
         // Most common thing will be a new piece of data at end
         auto t1Buffer = mCircularBuffer.back().getStartTime();
         if (t0 > t1Buffer)
         {
-            mCircularBuffer.push_back(packet);
+            mCircularBuffer.push_back(std::move(packet));
             return;
         }
         // Now the joy of backfilling data begins.  Is the data too old?
@@ -71,11 +71,11 @@ public:
             auto t0Neighbor = mCircularBuffer[index].getStartTime();
             if (t0Neighbor == t0)
             {
-                mCircularBuffer[index] = packet;
+                mCircularBuffer[index] = std::move(packet);
                 return; 
             }
             // Insert the element before its upper bounding element
-            mCircularBuffer.rinsert(it, packet);
+            mCircularBuffer.rinsert(it, std::move(packet));
             // Debug code checks this is sorted
 #ifndef NDEBUG
             assert(std::is_sorted(mCircularBuffer.begin(),
@@ -111,11 +111,12 @@ public:
         const auto &packet = mCircularBuffer.front(); 
         return packet.getStartTime();
     }
+    // Get all packets currently in buffer
     [[nodiscard]] std::vector<UMF::DataPacket<T>> getAllPackets() const
     {
+        std::vector<UMF::DataPacket<T>> result;
         std::scoped_lock lock(mMutex);
         auto nPackets = mCircularBuffer.size();
-        std::vector<UMF::DataPacket<T>> result;
         result.reserve(nPackets); 
         for (const auto &packet : mCircularBuffer)
         {
@@ -123,90 +124,87 @@ public:
         }
         return result;
     }
-    [[nodiscard]] std::vector<UMF::DataPacket<T>>
-        getPackets(const int64_t t0) const
-    {
-        std::scoped_lock lock(mMutex);
-        std::vector<UMF::DataPacket<T>> result;
-        if (mCircularBuffer.empty()){return result;}
-        auto it = std::upper_bound(mCircularBuffer.begin(),
-                                   mCircularBuffer.end(), t0,
-                                   [](const int64_t t0,
-                                      const UMF::DataPacket<T> &rhs)
-                                   {
-                                      return t0 < rhs.getStartTime();
-                                   });
-        if (it == mCircularBuffer.end()){return result;}
-        auto nPackets = mCircularBuffer.size()
-                      - std::distance(mCircularBuffer.begin(), it);
-        result.reserve(nPackets);
-        for (; it != mCircularBuffer.end(); ++it)
-        {
-            result.push_back(*it);
-        }
-        return result; 
-    }
+    // Perform query from now until whenever
     [[nodiscard]] std::vector<UMF::DataPacket<T>>
         getPackets(const int64_t t0, const int64_t t1) const
     {
-        std::scoped_lock lock(mMutex);
         std::vector<UMF::DataPacket<T>> result;
+        std::scoped_lock lock(mMutex);
         if (mCircularBuffer.empty()){return result;}
+//std::cout << t0 << " " << t1 << std::endl;
+//for (const auto &packet : mCircularBuffer)
+//{
+// std::cout << packet.getStartTime() << std::endl;;
+//}
         auto it0 = std::upper_bound(mCircularBuffer.begin(),
                                     mCircularBuffer.end(), t0,
                                     [](const int64_t t0,
                                        const UMF::DataPacket<T> &rhs)
                                     {
-                                       return t0 < rhs.getStartTime();
+                                       return t0 <= rhs.getStartTime();
                                     });
         if (it0 == mCircularBuffer.end()){return result;}
-        auto it1 = std::upper_bound(mCircularBuffer.begin(),
-                                    mCircularBuffer.end(), t1,
-                                    [](const int64_t t1,
-                                       const UMF::DataPacket<T> &rhs)
-                                    {
-                                       return t1 < rhs.getStartTime();
-                                    });
+//auto index1 = std::distance(mCircularBuffer.begin(), it0);
+//std::cout << index1 << " " << t0 << " " << mCircularBuffer[index1].getStartTime() << std::endl;
+        // For efficiency's sake when we query with
+        auto it1 = mCircularBuffer.end();
+        if (t1 < mCircularBuffer.back().getStartTime())
+        {
+            it1 = std::upper_bound(mCircularBuffer.begin(),
+                                   mCircularBuffer.end(), t1,
+                                   [](const int64_t t1,
+                                      const UMF::DataPacket<T> &rhs)
+                                   {
+                                      return t1 < rhs.getStartTime();
+                                   });
+        }
         // Just one packet
         if (it0 == it1)
         {
             result.push_back(*it0);
             return result;
         }
+//auto index2 = std::distance(mCircularBuffer.begin(), it1);
+//std::cout << index2 << " " << t1 << " " << mCircularBuffer[index2].getStartTime() << std::endl;
         // General copy
 #ifndef NDEBUG
         // Don't want an infinite copy
         assert(std::distance(mCircularBuffer.begin(), it0) <
-               std::distance(mCircularBuffer.end(),   it1));
+               std::distance(mCircularBuffer.begin(), it1));
 #endif
         auto nPackets = std::distance(it0, it1);
         if (nPackets < 1){return result;}
         result.reserve(nPackets);
-        size_t nCopy = 0;
-        for (auto &it = it0; it != it1;)
+        for (auto &it = it0; it != it1; std::advance(it, 1))
         {
             result.push_back(*it);
-            nCopy = nCopy + 1;
-            std::advance(it, 1);
         }
+#ifndef NDEBUG
+        assert(nPackets == result.size());
+#endif
+//std::cout << nCopy << " " << result.size() << " " << nPackets << std::endl;
         return result;
     }
+    /// Resets the class
     void clear() noexcept
     {
         std::scoped_lock lock(mMutex);
         mCircularBuffer.clear();
         mName.clear();
         mNetwork.clear();
+        mStation.clear();
         mChannel.clear();
         mLocationCode.clear();
         mMaxPackets = 0;
         mInitialized = false;
     }
+    /// Return the capacity (max space) in the circular buffer
     int capacity() const noexcept
     {
         std::scoped_lock lock(mMutex);
         return static_cast<int> (mCircularBuffer.capacity());
     }
+    /// Return the size of the circular buffer
     int size() const noexcept
     {
         std::scoped_lock lock(mMutex);
@@ -239,7 +237,12 @@ public:
         mLocationCode = std::move(cb.mLocationCode);
         mMaxPackets = cb.mMaxPackets;
         mInitialized = cb.mInitialized;
-    }  
+    }
+    /// Destructor
+    ~CircularBufferImpl()
+    {
+        clear(); 
+    }
 ///private:
     boost::circular_buffer<UMF::DataPacket<T>> mCircularBuffer;
     std::string mName;
@@ -380,22 +383,30 @@ void CircularBuffer<T>::clear() noexcept
 
 /// Add a packet
 template<class T>
-void CircularBuffer<T>::addPacket(const UMF::DataPacket<T> &packet)
+void CircularBuffer<T>::addPacket(UMF::DataPacket<T> &&packet)
 {
     // Is this a valid packet?
     if (!isValidPacket(packet))
-    {
+    {   
         throw std::invalid_argument("Packet is invalid");
     }
     // Make the packet name
     auto packetName = makeName(packet);
     if (packetName != pImpl->mName)
-    {
+    {   
         throw std::invalid_argument("Packet for " + packetName
                                   + " does not belong in buffer for "
                                   + pImpl->mName);
-    }
-    pImpl->update(packet);
+    }   
+    pImpl->update(std::move(packet));
+}
+
+/// Add a packet
+template<class T>
+void CircularBuffer<T>::addPacket(const UMF::DataPacket<T> &packet)
+{
+    auto packetCopy = packet;
+    addPacket(std::move(packetCopy));
 }
 
 /// Get earliest start time
@@ -438,7 +449,8 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     auto t0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
-    auto packets = pImpl->getPackets(t0MicroSeconds);
+    auto packets = pImpl->getPackets(t0MicroSeconds,
+                                     std::numeric_limits<int64_t>::max());
 #ifndef NDEBUG
     assert(std::is_sorted(packets.begin(), packets.end(),
            [](const UMF::DataPacket<T> &lhs, const UMF::DataPacket<T> &rhs)
@@ -473,6 +485,7 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
 #endif
     return packets;
 }
+
 
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///

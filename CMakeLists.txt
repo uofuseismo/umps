@@ -69,7 +69,8 @@ set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp)
 set(APPLICATION_SRC
-    src/packetCache/circularBuffer.cpp)
+    src/packetCache/circularBuffer.cpp
+    src/packetCache/cappedCollection.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
        src/messaging/earthworm/waveRing.cpp)

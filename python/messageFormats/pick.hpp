@@ -9,11 +9,22 @@ class Pick;
 
 namespace PURTS::MessageFormats
 {
+enum class Polarity : int8_t
+{
+    UNKNOWN = 0,
+    UP = 1,
+    DOWN =-1
+};
 class Pick
 {
 public:
     Pick();
     ~Pick();
+    Pick(const Pick &pick);
+    Pick(Pick &&pick) noexcept;
+    Pick& operator=(const Pick &pick);
+    Pick& operator=(Pick &&pick) noexcept;
+    void clear() noexcept;
 
     void setNetwork(const std::string &network);
     [[nodiscard]] std::string getNetwork() const;
@@ -33,7 +44,16 @@ public:
     void setIdentifier(uint64_t id) noexcept;
     [[nodiscard]] uint64_t getIdentifier() const;
 
+    void setPhaseHint(const std::string &hint) noexcept;
+    [[nodiscard]] std::string getPhaseHint() const noexcept;
 
+    void setAlgorithm(const std::string &algorithm) noexcept;
+    [[nodiscard]] std::string getAlgorithm() const noexcept;
+
+    void setPolarity(Polarity polarity) noexcept;
+    Polarity getPolarity() const noexcept;
+
+    [[nodiscard]] std::string toJSON(int nSpaces =-1) const;
 private:
     std::unique_ptr<URTS::MessageFormats::Pick> pImpl;
 };

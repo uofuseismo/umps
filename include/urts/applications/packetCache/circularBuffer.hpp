@@ -93,7 +93,7 @@ public:
     /// @brief Attempts to add the given packets to the buffer.
     /// @param[in] packets  The packets to add to this buffer.
     /// @sa \c addPacket() for rules defining a valid data packet.
-    void addPackets(const std::vector<URTS::MessageFormats::DataPacket<T>> &packets);
+    //void addPackets(const std::vector<URTS::MessageFormats::DataPacket<T>> &packets);
     /// @brief Attempts to add the given packet to the buffer.
     /// @param[in] packet   The packet to add to this buffer.
     /// @note The network, station, channel, and location code must match
@@ -102,6 +102,15 @@ public:
     ///       a positive sampling rate and data must actually exist on the
     ///       packet.
     void addPacket(const URTS::MessageFormats::DataPacket<T> &packet);
+    /// @brief Attempts to add the given packet to the buffer.
+    /// @param[in,out] packet   The packet to add to the buffer.  On exit,
+    ///                         packet's behavior is undefined.
+    /// @note The network, station, channel, and location code must match
+    ///       the network, station, channel, and location code specified 
+    ///       during initialization.  Additionally, the data packet must have
+    ///       a positive sampling rate and data must actually exist on the
+    ///       packet.
+    void addPacket(URTS::MessageFormats::DataPacket<T> &&packet);
     /// @}
 
     /// @name Getting Packets

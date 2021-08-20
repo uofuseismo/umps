@@ -143,14 +143,30 @@ DataPacket<T>::DataPacket(const DataPacket<T> &packet)
     *this = packet;
 }
 
-/*
 /// Copy c'tor
 template<class T>
-DataPacket<T>::DataPacket(const Earthworm::TraceBuf2<T> &traceBuf)
+template<typename U>
+DataPacket<T>::DataPacket(const Earthworm::TraceBuf2<U> &traceBuf2) :
+    pImpl(std::make_unique<DataPacketImpl> ())
 {
-    *this = traceBuf;
+    DataPacket<T> packet; 
+    packet.setNetwork(traceBuf2.getNetwork());
+    packet.setStation(traceBuf2.getStation());
+    packet.setChannel(traceBuf2.getChannel());
+    packet.setLocationCode(traceBuf2.getLocationCode());
+    packet.setSamplingRate(traceBuf2.getSamplingRate());
+    auto startTime = traceBuf2.getStartTime();
+    auto startTimeMuS
+        = static_cast<int64_t> (std::round(startTime*1000000));
+    packet.setStartTime(startTimeMuS);
+    auto nSamples = traceBuf2.getNumberOfSamples();
+    if (nSamples > 0)
+    {
+        const U *__restrict__ dataPtr = traceBuf2.getDataPointer();
+        packet.setData(nSamples, dataPtr);
+    }
+    *this = std::move(packet);
 }
-*/
 
 /// Move c'tor
 template<class T>
@@ -481,6 +497,16 @@ template void URTS::MessageFormats::DataPacket<float>::setData(const int nSample
 template void URTS::MessageFormats::DataPacket<float>::setData(const int nSamples, const float *data);
 template void URTS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int *data);
 template void URTS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int16_t *data);
+
+template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
+template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
+template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
+template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
+
+template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
+template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
+template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
+template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
 
 /*
 template void URTS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<double> &tb);

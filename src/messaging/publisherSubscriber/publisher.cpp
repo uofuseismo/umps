@@ -101,7 +101,11 @@ public:
         mPublisher(std::make_unique<zmq::socket_t> (*mContext,
                                                     zmq::socket_type::pub)),
         mLogger(logger)
-    {   
+    {
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+        }
     }
     /// C'tor
     PublisherImpl(std::shared_ptr<zmq::context_t> &context,

@@ -6,7 +6,8 @@
 namespace
 {
 /// @result True indicates that the string is empty or full of blanks.
-[[nodiscard]] bool isEmpty(const std::string &s)
+[[maybe_unused]] [[nodiscard]]
+bool isEmpty(const std::string &s)
 {
     if (s.empty()){return true;}
     return std::all_of(s.begin(), s.end(), [](const char c)
@@ -16,7 +17,7 @@ namespace
 }
 /// @result The name network, station, channel, and location code combined into
 ///         a single name - e.g., UU.FORK.HHZ.01.
-[[nodiscard]] 
+[[maybe_unused]] [[nodiscard]] 
 std::string makeName(const std::string &network,
                      const std::string &station,
                      const std::string &channel,
@@ -28,7 +29,7 @@ std::string makeName(const std::string &network,
 /// @result Converts the packet network, station, channel, and location code 
 ///         into a single name - e.g., UU.FORK.HHZ.01.
 template<typename T>
-[[nodiscard]]
+[[maybe_unused]] [[nodiscard]]
 std::string makeName(const URTS::MessageFormats::DataPacket<T> &packet)
 {
     return makeName(packet.getNetwork(), packet.getStation(),
@@ -38,7 +39,7 @@ std::string makeName(const URTS::MessageFormats::DataPacket<T> &packet)
 /// @result True indicates all necessary information to set a data packet
 ///         in the circular buffer is present.
 template<typename T>
-[[nodiscard]]
+[[maybe_unused]] [[nodiscard]]
 bool isValidPacket(const URTS::MessageFormats::DataPacket<T> &packet)
 {
     if (!packet.haveNetwork())

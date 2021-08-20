@@ -75,7 +75,29 @@ TYPED_TEST(DataPacketTest, DataPacket)
         EXPECT_NEAR(res, 0, tol);
     }
 
-std::cout << packetCopy.toJSON(4) << std::endl;
+    //std::cout << packetCopy.toJSON(4) << std::endl;
+    auto traceCBOR = packetCopy.toCBOR();
+    packetCopy.clear();
+    EXPECT_EQ(packetCopy.getNumberOfSamples(), 0);
+    packetCopy.fromCBOR(traceCBOR);
+    EXPECT_EQ(packetCopy.getMessageType(), "DataPacket");
+    EXPECT_EQ(packetCopy.getStartTime(), startTime);
+    EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);
+    EXPECT_EQ(packetCopy.getNetwork(), network);
+    EXPECT_EQ(packetCopy.getStation(), station);
+    EXPECT_EQ(packetCopy.getChannel(), channel);
+    EXPECT_EQ(packetCopy.getLocationCode(), locationCode);
+    EXPECT_EQ(packetCopy.getNumberOfSamples(),
+              static_cast<int> (timeSeries.size()));
+    EXPECT_EQ(packetCopy.getEndTime(), endTime);
+    traceBack = packetCopy.getData();
+    EXPECT_EQ(traceBack.size(), timeSeries.size());
+    for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)
+    {
+        auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
+        EXPECT_NEAR(res, 0, tol);
+    }
+ 
 }
 
 }

@@ -4,10 +4,13 @@
 #include "urts/messageFormats/message.hpp"
 namespace URTS::MessageFormats
 {
-namespace Earthworm
-{
-template<class T> class TraceBuf2;
+ namespace Earthworm
+ {
+ template<class T> class TraceBuf2;
+ }
 }
+namespace URTS::MessageFormats
+{
 /// @class Pick "pick.hpp" "urts/messageFormats/dataPacket.hpp"
 /// @brief Defines a packet of seismic data (a data packet).
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -22,6 +25,11 @@ public:
     /// @brief Copy constructor.
     /// @param[in] packet  The data packet from which to initialize this class.
     DataPacket(const DataPacket &packet);
+    /// @brief Copy constructor.
+    /// @param[in] tracebuf2  The traceBuf2 packet from which to initialize this
+    ///                       class.
+    template<typename U>
+    DataPacket(const Earthworm::TraceBuf2<U> &traceBuf2);
     /// @brief Move constructor.
     /// @param[in,out] packet  The data packet from which to initialize this
     ///                        class.  On exit, packet's behavior is undefined.

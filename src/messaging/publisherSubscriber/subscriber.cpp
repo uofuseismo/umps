@@ -115,6 +115,10 @@ public:
                                                      zmq::socket_type::sub)),
         mLogger(logger)
     {
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+        }
     }
  
     std::map<std::string, std::unique_ptr<URTS::MessageFormats::IMessage>> 

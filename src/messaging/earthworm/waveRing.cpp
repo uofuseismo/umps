@@ -289,7 +289,7 @@ void WaveRing::read()
     int returnCode = 0;
     unsigned char sequenceNumber;
     int nRead = 0;
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     while(true)
     {
         // Not really sure what to with a kill signal
@@ -372,7 +372,7 @@ void WaveRing::read()
         }
         nRead = nRead + 1;
     }
-    auto end = std::chrono::steady_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
     auto elapsedTime = std::chrono::duration<double> (end - start).count();
     pImpl->mLogger->debug("Read " + std::to_string(nRead)
                         + " messages from ring in "
@@ -393,7 +393,7 @@ void WaveRing::read()
                                          pImpl->mTraceBuffer2Type);
     if (nTraceBuf2Messages > 0)
     {
-        start = std::chrono::steady_clock::now();
+        start = std::chrono::high_resolution_clock::now();
         pImpl->mTraceBuf2Messages.resize(messageWork.size());
         pImpl->mLogger->debug("Unpacking " + std::to_string(nTraceBuf2Messages)
                             + " traceBuf2 messages...");
@@ -448,7 +448,7 @@ void WaveRing::read()
                               return tb2.getNumberOfSamples() == 0;
                            }),
                            pImpl->mTraceBuf2Messages.end());
-        end = std::chrono::steady_clock::now();
+        end = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration<double> (end - start).count();
         pImpl->mLogger->debug("Successfully unpacked "
                             + std::to_string(pImpl->mTraceBuf2Messages.size())
