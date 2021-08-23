@@ -69,8 +69,9 @@ set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp)
 set(APPLICATION_SRC
-    src/packetCache/circularBuffer.cpp
-    src/packetCache/cappedCollection.cpp)
+    src/modules/packetCache/circularBuffer.cpp
+    src/modules/packetCache/cappedCollection.cpp
+    src/modules/packetCache/dataRequest.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
        src/messaging/earthworm/waveRing.cpp)
@@ -145,7 +146,7 @@ set(TEST_SRC
     testing/messageFormats/earthworm.cpp
     testing/messageFormats/dataPacket.cpp
     #testing/messaging/pubsub.cpp
-    testing/applications/packetCache.cpp
+    testing/modules/packetCache.cpp
     )
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES

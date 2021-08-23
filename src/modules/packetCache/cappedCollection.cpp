@@ -3,12 +3,12 @@
 #include <map>
 #include <vector>
 #include <mutex>
-#include "urts/applications/packetCache/cappedCollection.hpp"
-#include "urts/applications/packetCache/circularBuffer.hpp"
+#include "urts/modules/packetCache/cappedCollection.hpp"
+#include "urts/modules/packetCache/circularBuffer.hpp"
 #include "urts/logging/stdout.hpp"
 #include "private/applications/packetCache.hpp"
 
-using namespace URTS::Applications::PacketCache;
+using namespace URTS::Modules::PacketCache;
 
 /*
 namespace
@@ -192,5 +192,5 @@ std::vector<std::string> CappedCollection<T>::getSensorNames() const noexcept
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
 ///--------------------------------------------------------------------------///
-template class URTS::Applications::PacketCache::CappedCollection<double>;
-template class URTS::Applications::PacketCache::CappedCollection<float>;
+template class URTS::Modules::PacketCache::CappedCollection<double>;
+template class URTS::Modules::PacketCache::CappedCollection<float>;

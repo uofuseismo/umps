@@ -1,10 +1,10 @@
-#ifndef URTS_APPLICATIONS_DATAREQUEST_HPP
-#define URTS_APPLICATIONS_DATAREQUEST_HPP
+#ifndef URTS_MODULES_PACKETCACHE_DATAREQUEST_HPP
+#define URTS_MODULES_PACKETCACHE_DATAREQUEST_HPP
 #include <memory>
 #include "urts/messageFormats/message.hpp"
-namespace URTS::Applications::PacketCache
+namespace URTS::Modules::PacketCache
 {
-/// @name DataRequst "dataRequest.hpp" "urts/applications/packetCache/dataRequest.hpp"
+/// @name DataRequst "dataRequest.hpp" "urts/modules/packetCache/dataRequest.hpp"
 /// @brief This is a request message for querying the packetCache.  A query
 ///        consists of a network, station, channel, location code, and 
 ///        optionally a start time and end time.
@@ -13,7 +13,7 @@ namespace URTS::Applications::PacketCache
 ///       not required to filled in the order that they are put on the wire.
 /// @sa DataResponse
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class DataRequest : public IMessage
+class DataRequest : public MessageFormats::IMessage
 {
 public:
     /// @name Constructors
@@ -92,7 +92,7 @@ public:
     /// @note If the data has expired in the circular buffer then the 
     ///       earliest time returned will correspond to the oldest packet
     ///       in the cache. 
-    void setQueryTime(double startTime) noexcept;
+    void setQueryTime(double startTime);
     /// @brief This will request data that begins no earlier than the
     ///        the given start time and continues up to include the latest
     ///        desired time.
@@ -105,7 +105,7 @@ public:
     ///                        start time of the packet the result may extend
     ///                        slightly beyond this time. 
     /// @throws std::invalid_argument if queryTimes.first >= queryTimes.second.
-    void setQueryTime(std::pair<double, double> &queryTimes);
+    void setQueryTimes(const std::pair<double, double> &queryTimes);
     /// @result The earliest time in the request in UTC seconds since the epoch.
     [[nodiscard]] std::pair<double, double> getQueryTimes() const noexcept;
 
@@ -160,11 +160,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~DataRequst();
+    ~DataRequest();
     /// @}
 private:
-    std::unique_ptr<DataRequestImpl> pImpl;
     class DataRequestImpl;
+    std::unique_ptr<DataRequestImpl> pImpl;
 };
 }
 #endif

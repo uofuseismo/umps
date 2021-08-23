@@ -4,13 +4,14 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "urts/applications/packetCache/circularBuffer.hpp"
-#include "urts/applications/packetCache/cappedCollection.hpp"
+#include "urts/modules/packetCache/circularBuffer.hpp"
+#include "urts/modules/packetCache/cappedCollection.hpp"
+#include "urts/modules/packetCache/dataRequest.hpp"
 #include "urts/messageFormats/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
 {
-namespace PC = URTS::Applications::PacketCache;
+namespace PC = URTS::Modules::PacketCache;
 namespace MF = URTS::MessageFormats;
 
 template<typename T>
@@ -97,9 +98,45 @@ bool operator==(const MF::DataPacket<T> &lhs, const MF::DataPacket<T> &rhs)
     return true; 
 }
 
-TEST(PacketCache, CircularBufferUpdateOnePacket)
+TEST(PacketCache, DataRequest)
 {
-std::map<std::string, PC::CircularBuffer<double>> all;
+    PC::DataRequest request;
+    const std::string network = "UU";
+    const std::string station = "ARUT";
+    const std::string channel = "EHZ";
+    const std::string locationCode = "01";
+    const uint64_t id = 400038;
+    double t0 = 1629737861;
+    double t1 = 1629737865;
+    EXPECT_EQ(request.getMessageType(),
+              "URTS::Modules::PacketCache::DataRequest");
+    EXPECT_NO_THROW(request.setNetwork(network));
+    EXPECT_NO_THROW(request.setStation(station));
+    EXPECT_NO_THROW(request.setChannel(channel));
+    EXPECT_NO_THROW(request.setLocationCode(locationCode));
+    request.setIdentifier(id);
+    request.setQueryTime(t0); 
+    auto [qTimeStart, qTimeEnd] = request.getQueryTimes();
+    EXPECT_NEAR(qTimeStart, t0, 1.e-5);
+    EXPECT_EQ(qTimeEnd, std::numeric_limits<double>::max());
+    EXPECT_NO_THROW(request.setQueryTimes(std::pair(t0, t1)));
+
+    auto cbor = request.toCBOR();
+    PC::DataRequest requestCopy;
+    requestCopy.fromCBOR(cbor);
+    EXPECT_EQ(requestCopy.getNetwork(), network);
+    EXPECT_EQ(requestCopy.getStation(), station);
+    EXPECT_EQ(requestCopy.getChannel(), channel);
+    EXPECT_EQ(requestCopy.getLocationCode(), locationCode);
+    EXPECT_EQ(requestCopy.getIdentifier(), id);
+    auto [timeStart, timeEnd] = requestCopy.getQueryTimes();
+    EXPECT_NEAR(timeStart, t0, 1.e-5);
+    EXPECT_NEAR(timeEnd,   t1, 1.e-5);
+
+}
+
+TEST(PacketCache, CircularBuffer)
+{
     PC::CircularBuffer<double> cb;
     const std::string network{"UU"};
     const std::string station{"TCU"};
@@ -195,6 +232,16 @@ std::map<std::string, PC::CircularBuffer<double>> all;
     for (int k = 0; k < static_cast<int> (queryPackets.size()); ++k)
     {
         EXPECT_TRUE(queryPackets[k] == packets[firstPacket + k]);
+    }
+    // Do a query from just after the first packet to just before the
+    // last packet 
+    t0 = packets[firstPacket].getStartTime()*1e-6 + 1.e-6;
+    t1 = packets.back().getStartTime()*1.e-6 - 1.e-6;
+    queryPackets = cb.getPackets(t0, t1);
+    EXPECT_EQ(queryPackets.size(), packets.size() - firstPacket - 2);     
+    for (int k = 0; k < static_cast<int> (queryPackets.size()); ++k)
+    {
+        EXPECT_TRUE(queryPackets[k] == packets[firstPacket + k + 1]); 
     }
 }
 

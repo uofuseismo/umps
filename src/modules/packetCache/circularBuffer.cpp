@@ -7,11 +7,11 @@
 #include <mutex>
 #include <cassert>
 #include <boost/circular_buffer.hpp>
-#include "urts/applications/packetCache/circularBuffer.hpp"
+#include "urts/modules/packetCache/circularBuffer.hpp"
 #include "urts/messageFormats/dataPacket.hpp"
 #include "private/applications/packetCache.hpp"
 
-using namespace URTS::Applications::PacketCache;
+using namespace URTS::Modules::PacketCache;
 namespace UMF = URTS::MessageFormats;
 
 
@@ -490,55 +490,5 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
 ///--------------------------------------------------------------------------///
-template class URTS::Applications::PacketCache::CircularBuffer<double>;
-template class URTS::Applications::PacketCache::CircularBuffer<float>;
-
-/*
-
-template<class T>
-TraceBuf2<T>::update(const std::vector<EW::TraceBuf2<T>> &traceBufs)
-{
-    // Create a unique list of names that we're inserting
-    std::vector<std::string> names;
-    names.reserve(traceBufs.size());
-    std::vector<bool> malformed(traceBufs.size(), true);
-    for (const auto &traceBuf : traceBufs)
-    {
-        if (traceBufs[i].haveSamplingRate() &&
-            traceBufs[i].getNumberOfSamples() > 0)
-        {
-            names.push_back = makeName(traceBufs[i]); 
-            malformed[i] = false;
-        }
-    }
-    auto uniqueNames = names;
-    auto last = std::unique(uniqueNames.begin(), uniueNames.end());
-    uniqueNames.erase(last, uniqueNames.end());
-    auto nUniqueNames = static_cast<int> (uniqueNames.size());
-    // Estimate requisite space and split the trace bufs apart
-    std::vector<std::vector<EW::TraceBuf2<T>> tempBufs;
-    for (int iName = 0; iName < nUniqueNames; ++iName)
-    {
-        // Space estimate
-        auto n = std::count(traceBufs.begin(), traceBufs.end(),
-                            uniqueNames[iName]); 
-        // And now copy the valid occurrences
-        tempBufs[iName].reserve(n); 
-        for (int i = 0; i < static_cast<int> (traceBufs.size()); ++i)
-        {
-            if (!malformed[i] && uniqueNames[iName] == names[i])
-            {
-                tempBufs[iName].push_back(tracebufs[i]);
-            }
-        }
-        // And sort into descending order.  The idea is that we get the newest
-        // packets into the circular buffer first.
-        std::sort(tempBufs[iName].begin(), tempBufs[iName].end(),
-                  [](TraceBuf2<T> &a, TraceBuf2<T> &b)
-                  {
-                      return a.getStartTime() > b.getStartTime();
-                  });
-    }
-    // Insert them
-}
-*/
+template class URTS::Modules::PacketCache::CircularBuffer<double>;
+template class URTS::Modules::PacketCache::CircularBuffer<float>;
