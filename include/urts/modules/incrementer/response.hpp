@@ -38,6 +38,8 @@ public:
     Response& operator=(Response &&response) noexcept;
     /// @}
 
+    /// @name Response Information
+    /// @{
     /// @brief Sets the increment value.
     /// @param[in] value  The increment value.
     void setValue(uint64_t value) noexcept; 
@@ -51,7 +53,42 @@ public:
     void setIdentifier(uint64_t identifier) noexcept;
     /// @result The request identifier.
     [[nodiscard]] uint64_t getIdentifier() const noexcept;
+    /// @}
 
+    /// @name Message Abstract Base Class Properties
+    /// @{
+    /// @result A copy of this class.
+    [[nodiscard]] virtual std::unique_ptr<URTS::MessageFormats::IMessage> clone() const override final;
+    /// @result An instance of an uninitialized class.
+    virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
+    /// @brief Convenience function to initialize this class from a CBOR
+    ///        message.
+    /// @param[in] cbor  The CBOR message held in a string container.
+    /// @throws std::runtime_error if the message is invalid.
+    /// @throws std::invalid_argument if the required information is not set.
+    void fromCBOR(const std::string &cbor);
+    /// @brief Creates the class from a CBOR message.
+    /// @param[in] data    The contents of the CBOR message.  This is an
+    ///                    array whose dimension is [length] 
+    /// @param[in] length  The length of data.
+    /// @throws std::runtime_error if the message is invalid.
+    /// @throws std::invalid_argument if data is NULL or length is 0. 
+    void fromCBOR(const uint8_t *data, const size_t length) override final;
+    /// @brief Converts the packet class to a CBOR message.
+    /// @result The class expressed in Compressed Binary Object Representation
+    ///         (CBOR) format.
+    /// @throws std::runtime_error if the required information is not set. 
+    [[nodiscard]] std::string toCBOR() const override final;
+    /// @brief Converts the packet class to a JSON message.  This is useful
+    ///        for debugging.
+    /// @param[in] nIndent  The number of spaces to indent.
+    /// @note -1 disables indentation which is preferred for message
+    ///       transmission.
+    /// @result A JSON representation of this class.
+    [[nodiscard]] std::string toJSON(int nIndent =-1) const;
+    /// @result The message type - e.g., "DataPacket".
+    [[nodiscard]] std::string getMessageType() const noexcept final;
+    /// @}
  
     /// @name Destructors
     /// @{

@@ -68,7 +68,7 @@ set(MESSAGE_FORMAT_SRC
 set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp)
-set(APPLICATION_SRC
+set(MODULES_LIBSRC
     src/modules/packetCache/circularBuffer.cpp
     src/modules/packetCache/cappedCollection.cpp
     src/modules/packetCache/dataRequest.cpp)
@@ -79,7 +79,7 @@ endif()
 
 set(BUILD_SHARED_LIBS YES)
 add_library(urts ${LOGGING_SRC} ${MESSAGE_FORMAT_SRC} ${MESSAGING_SRC}
-                 ${APPLICATION_SRC} ${EARTHWORM_SRC})
+                 ${MODULES_LIBSRC} ${EARTHWORM_SRC})
 set_target_properties(urts PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
@@ -109,7 +109,7 @@ endif()
 ##########################################################################################
 
 if (${BUILD_EW})
-    add_executable(packetCache src/modules/packetCache.cpp)
+    add_executable(packetCache src/modules/packetCache/packetCache.cpp)
     set_target_properties(packetCache PROPERTIES
                           CXX_STANDARD 20
                           CXX_STANDARD_REQUIRED YES
