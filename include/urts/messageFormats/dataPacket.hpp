@@ -49,7 +49,7 @@ public:
     DataPacket& operator=(DataPacket &&packet) noexcept; 
     /// @}
  
-    /// @name Site Identification
+    /// @name Required Information
     /// @{
     /// @brief Sets the network code on which the pick was made.
     /// @param[in] network  The network code.
@@ -92,8 +92,6 @@ public:
     [[nodiscard]] bool haveLocationCode() const noexcept;
     /// @}
 
-    /// @name Sampling Rate
-    /// @{
     /// @brief Sets the sampling rate for data in the packet.
     /// @param[in] samplingRate  The sampling rate in Hz.
     /// @throws std::invalid_argument if samplingRate is not positive.
@@ -105,7 +103,7 @@ public:
     [[nodiscard]] bool haveSamplingRate() const noexcept; 
     /// @}
 
-    /// @name Start Time
+    /// @name Optional Information
     /// @{
     /// @param[in] startTimeInMicroSeconds  The UTC start time in microseconds
     ///                                     from the epoch (Jan 1, 1970). 
@@ -116,7 +114,6 @@ public:
     /// @throws std::runtime_error if \c haveSamplingRate() is false or
     ///         \c getNumberOfSamples() is 0.
     [[nodiscard]] int64_t getEndTime() const;
-    /// @}
 
     /// @name Data
     /// @{
@@ -143,7 +140,8 @@ public:
     [[nodiscard]] int getNumberOfSamples() const noexcept;
     /// @}
 
-
+    /// @name Message Abstract Base Class Properties
+    /// @{
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<URTS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.
@@ -152,14 +150,14 @@ public:
     ///        message.
     /// @param[in] cbor  The CBOR message held in a string container.
     /// @throws std::runtime_error if the message is invalid.
-    /// @throws std::invalid_argument if data is NUL or length is 0. 
+    /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromCBOR(const std::string &cbor);
     /// @brief Creates the class from a CBOR message.
     /// @param[in] data    The contents of the CBOR message.  This is an
     ///                    array whose dimension is [length] 
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
-    /// @throws std::invalid_argument if data is NUL or length is 0. 
+    /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromCBOR(const uint8_t *data, const size_t length) override final;
     /// @brief Converts the packet class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
@@ -175,13 +173,14 @@ public:
     [[nodiscard]] std::string toJSON(int nIndent =-1) const;
     /// @result The message type - e.g., "DataPacket".
     [[nodiscard]] std::string getMessageType() const noexcept final;
+    /// @}
 
     /// @name Destructors
     /// @{
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~DataPacket();
+    virtual ~DataPacket();
     /// @}
 private:
     class DataPacketImpl;

@@ -62,8 +62,6 @@ public:
     [[nodiscard]] bool haveTime() const noexcept;
     /// @}
  
-    /// @name Site Identification
-    /// @{
     /// @brief Sets the network code on which the pick was made.
     /// @param[in] network  The network code.
     /// @throws std::invalid_argument if network is empty.
@@ -105,7 +103,6 @@ public:
     [[nodiscard]] bool haveLocationCode() const noexcept;
     /// @} 
 
-    /// @name Identifier
     /// @brief Sets a unique pick identification number.
     /// @param[in] id   The unique pick identification number.
     void setIdentifier(uint64_t identifier) noexcept;
@@ -136,6 +133,8 @@ public:
     [[nodiscard]] std::string getAlgorithm() const noexcept;
     /// @}
 
+    /// @name Message Abstract Base Class Properties
+    /// @{
     /// @brief Converts the pick class to a JSON message.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
@@ -159,13 +158,10 @@ public:
     ///                    array whose dimension is [length] 
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
-    /// @throws std::invalid_argument if data is NUL or length is 0.
+    /// @throws std::invalid_argument if data is NULL or length is 0.
     virtual void fromCBOR(const uint8_t *data, size_t length) override final;
     /// @result A message type indicating this is a pick message.
     [[nodiscard]] virtual std::string getMessageType() const noexcept override final;
-
-    /// @name Clone Functions
-    /// @{
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<URTS::MessageFormats::IMessage> clone() const override final;
     /// @result An uninitialized instance of this class. 

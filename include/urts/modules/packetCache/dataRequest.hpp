@@ -160,7 +160,7 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~DataRequest();
+    virtual ~DataRequest();
     /// @}
 private:
     class DataRequestImpl;
