@@ -71,6 +71,7 @@ set(MESSAGING_SRC
 set(MODULES_LIBSRC
     src/modules/incrementer/request.cpp
     src/modules/incrementer/response.cpp
+    src/modules/incrementer/counter.cpp
     src/modules/packetCache/circularBuffer.cpp
     src/modules/packetCache/cappedCollection.cpp
     src/modules/packetCache/dataRequest.cpp)
@@ -149,6 +150,7 @@ set(TEST_SRC
     testing/messageFormats/dataPacket.cpp
     #testing/messaging/pubsub.cpp
     testing/modules/packetCache.cpp
+    testing/modules/incrementer.cpp
     )
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
