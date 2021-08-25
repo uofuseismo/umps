@@ -164,15 +164,21 @@ public:
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 
     [[nodiscard]] std::string toCBOR() const override final;
-    /// @brief Converts the packet class to a JSON message.  This is useful
-    ///        for debugging.
+    /// @result The message type - e.g., "DataPacket".
+    [[nodiscard]] std::string getMessageType() const noexcept final;
+    /// @}
+
+    /// @name Debugging Utilities
+    /// @{
+    /// @brief Creates the class from a JSON data packet message.
+    /// @throws std::runtime_error if the message is invalid.
+    void fromJSON(const std::string &message);
+    /// @brief Converts the data packet class to a JSON message.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
     /// @result A JSON representation of this class.
     [[nodiscard]] std::string toJSON(int nIndent =-1) const;
-    /// @result The message type - e.g., "DataPacket".
-    [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
 
     /// @name Destructors

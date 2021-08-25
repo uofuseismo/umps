@@ -2,7 +2,7 @@
 #define URTS_MODULES_INCREMENTER_REQUEST_HPP
 #include <memory>
 #include "urts/messageFormats/message.hpp"
-#include "urts/modules/icnrementer/enums.hpp"
+#include "urts/modules/incrementer/enums.hpp"
 namespace URTS::Modules::Incrementer
 {
 /// @class Request "request.hpp" "urts/modules/incrementer/request.hpp"
@@ -66,7 +66,7 @@ public:
     /// @param[in] identifier   The request identifier.
     void setIdentifier(uint64_t identifier) noexcept;
     /// @result The request identifier.
-    [[nodiscard]] getIdentifier() const noexcept;
+    [[nodiscard]] uint64_t getIdentifier() const noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -93,15 +93,22 @@ public:
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 
     [[nodiscard]] std::string toCBOR() const override final;
-    /// @brief Converts the packet class to a JSON message.  This is useful
+    /// @result The message type - e.g., "DataPacket".
+    [[nodiscard]] std::string getMessageType() const noexcept final;
+    /// @}
+
+    /// @name Debugging Utilities
+    /// @{
+    /// @brief Creates the class from a JSON request message.
+    /// @throws std::runtime_error if the message is invalid.
+    void fromJSON(const std::string &message);
+    /// @brief Converts the request class to a JSON message.  This is useful
     ///        for debugging.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
     /// @result A JSON representation of this class.
     [[nodiscard]] std::string toJSON(int nIndent =-1) const;
-    /// @result The message type - e.g., "DataPacket".
-    [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
  
     /// @name Destructors

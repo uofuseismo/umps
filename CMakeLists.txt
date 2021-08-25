@@ -69,6 +69,8 @@ set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp)
 set(MODULES_LIBSRC
+    src/modules/incrementer/request.cpp
+    src/modules/incrementer/response.cpp
     src/modules/packetCache/circularBuffer.cpp
     src/modules/packetCache/cappedCollection.cpp
     src/modules/packetCache/dataRequest.cpp)

@@ -18,7 +18,6 @@ nlohmann::json toJSONObject(const Response &response)
 {
     nlohmann::json obj;
     // Essential stuff (this will throw): 
-    // Network/Station/Channel/Location
     obj["MessageType"] = response.getMessageType();
     if (response.haveValue())
     {
