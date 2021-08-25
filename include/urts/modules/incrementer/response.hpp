@@ -2,7 +2,7 @@
 #define URTS_MODULES_INCREMENTER_RESPONSE_HPP
 #include <memory>
 #include "urts/messageFormats/message.hpp"
-#include "urts/modules/icnrementer/enums.hpp"
+#include "urts/modules/incrementer/enums.hpp"
 namespace URTS::Modules::Incrementer
 {
 /// @class Response "response.hpp" "urts/modules/incrementer/response.hpp"
@@ -53,6 +53,13 @@ public:
     void setIdentifier(uint64_t identifier) noexcept;
     /// @result The request identifier.
     [[nodiscard]] uint64_t getIdentifier() const noexcept;
+
+    /// @brief Allows the incrementer to set its return code and signal to
+    ///        the requester whether or not the increment was successful.
+    /// @param[in] code   The return code.
+    void setReturnCode(ReturnCode code) noexcept;
+    /// @result The return code from the incrementer.
+    [[nodiscard]] ReturnCode getReturnCode() const noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -61,6 +68,9 @@ public:
     [[nodiscard]] virtual std::unique_ptr<URTS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.
     virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
+    /// @brief Creates the class from a JSON request message.
+    /// @throws std::runtime_error if the message is invalid.
+    void fromJSON(const std::string &message);
     /// @brief Convenience function to initialize this class from a CBOR
     ///        message.
     /// @param[in] cbor  The CBOR message held in a string container.

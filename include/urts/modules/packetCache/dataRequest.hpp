@@ -127,7 +127,7 @@ public:
     /// @result The pick class expressed as a JSON message.
     /// @throws std::runtime_error if the required information is not set.
     [[nodiscard]] std::string toJSON(int noIndent =-1) const;
-    /// @brief Creates the class from a JSON pick message.
+    /// @brief Creates the class from a JSON data request message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
     /// @brief Converts the pick class to a CBOR message.
