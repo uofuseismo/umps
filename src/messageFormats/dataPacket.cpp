@@ -5,20 +5,12 @@
 #include <nlohmann/json.hpp>
 #include "messageFormats/dataPacket.hpp"
 #include "messageFormats/earthworm/traceBuf2.hpp"
+#include "private/isEmpty.hpp"
 
 using namespace URTS::MessageFormats;
 
 namespace
 {
-
-bool isEmpty(const std::string &s) 
-{
-    if (s.empty()){return true;}
-    return std::all_of(s.begin(), s.end(), [](const char c)
-                       {
-                           return std::isspace(c);
-                       });
-}
 
 template<class T>
 nlohmann::json toJSONObject(const DataPacket<T> &packet)

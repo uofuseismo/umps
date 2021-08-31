@@ -6,7 +6,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include "urts/modules/incrementer/request.hpp"
-#include "private/applications/packetCache.hpp"
+#include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "URTS::Modules::Incrementer::Request"
 

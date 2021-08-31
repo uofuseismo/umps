@@ -5,7 +5,6 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include "urts/modules/incrementer/response.hpp"
-#include "private/applications/packetCache.hpp"
 
 #define MESSAGE_TYPE "URTS::Modules::Incrementer::Response"
 

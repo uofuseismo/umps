@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 #include <vector>
@@ -7,10 +8,30 @@
 #include "urts/modules/incrementer/response.hpp"
 #include "urts/modules/incrementer/request.hpp"
 #include "urts/modules/incrementer/counter.hpp"
+#include "urts/modules/incrementer/parameters.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 namespace URTSIC = URTS::Modules::Incrementer;
+
+TEST(Incrementer, Parameters)
+{
+    const char *cParms = "[Counters:Pick]\nname = Pick\ninitialValue = 2\nincrement = 3\nserverAccessAddress = tcp://localhost:5560\nclientAccessAddress = tcp://localhost:5559\n";
+    //std::cout << cParms << std::endl;
+    const std::string iniFileName = "incrementerExample.ini";
+    std::ofstream tempFile(iniFileName);
+    tempFile << cParms;
+    tempFile.close();
+    URTSIC::Parameters parameters;
+    EXPECT_NO_THROW(
+        parameters.parseInitializationFile(iniFileName, "Counters:Pick"));
+    std::remove(iniFileName.c_str());
+    EXPECT_EQ(parameters.getName(), "Pick");
+    EXPECT_EQ(parameters.getInitialValue(), 2);
+    EXPECT_EQ(parameters.getIncrement(), 3);
+    EXPECT_EQ(parameters.getServerAccessAddress(), "tcp://localhost:5560");
+    EXPECT_EQ(parameters.getClientAccessAddress(), "tcp://localhost:5559");
+}
 
 TEST(Incrementer, Request)
 {

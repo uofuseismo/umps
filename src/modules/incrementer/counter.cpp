@@ -1,20 +1,9 @@
 #include <string>
 #include <mutex>
 #include "urts/modules/incrementer/counter.hpp"
+#include "private/isEmpty.hpp"
 
 using namespace URTS::Modules::Incrementer;
-
-namespace
-{
-bool isEmpty(const std::string &s) 
-{
-    if (s.empty()){return true;}
-    return std::all_of(s.begin(), s.end(), [](const char c)
-                       {
-                           return std::isspace(c);
-                       });
-}
-}
 
 class Counter::CounterImpl
 {

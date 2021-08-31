@@ -3,6 +3,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include "urts/messageFormats/pick.hpp"
+#include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "Pick"
 
@@ -10,15 +11,6 @@ using namespace URTS::MessageFormats;
 
 namespace
 {
-
-bool isEmpty(const std::string &s)
-{
-    if (s.empty()){return true;}
-    return std::all_of(s.begin(), s.end(), [](const char c)
-                       {
-                           return std::isspace(c);
-                       });
-}
 
 nlohmann::json toJSONObject(const Pick &pick)
 {
