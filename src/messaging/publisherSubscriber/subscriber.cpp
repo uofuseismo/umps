@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <zmq.h>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include <unistd.h>

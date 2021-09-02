@@ -220,4 +220,4 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
 std::string Request::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
-} 
+}
