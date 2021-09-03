@@ -269,6 +269,26 @@ void Subscriber::connect(const std::string &endPoint)
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
 }
 
+/// Disconnect from endpoint
+void Subscriber::disconnect(const std::string &endpoint)
+{
+    auto idx = pImpl->mEndPoints.find(endpoint);
+    if (idx == pImpl->mEndPoints.end())
+    {
+        pImpl->mLogger->debug("Endpoint: " + endpoint + " does not exist");
+        return;
+    }
+    if (!idx->second)
+    {
+        pImpl->mLogger->debug("Not connected to: " + endpoint);
+    }
+    else
+    {
+        pImpl->mSubscriber->disconnect(endpoint);
+    }
+    pImpl->mEndPoints.erase(idx);
+}
+
 /// Add a subscription
 void Subscriber::addSubscription(
     std::unique_ptr<URTS::MessageFormats::IMessage> &message)

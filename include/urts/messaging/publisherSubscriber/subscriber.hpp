@@ -79,8 +79,10 @@ public:
     /// @brief Receives a message.
     /// @throws std::invalid_argument if the message cannot be serialized.
     std::unique_ptr<MessageFormats::IMessage> receive() const;
-    //void send(size_t nBytes, const char *message);
-    //void send(const std::string &message);
+
+    /// @brief Disconnects from an endpoint.
+    /// @param[in] endpoint   The endpoint from which to disconnect.
+    void disconnect(const std::string &endpoint);
 
     /// Delete some functions
     Subscriber(const Subscriber &subscriber) = delete;

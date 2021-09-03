@@ -34,7 +34,7 @@ public:
     /// @brief Constructs a publisher with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
     explicit Publisher(std::shared_ptr<URTS::Logging::ILog> &logger);
-    /// @brief Constructor.
+    /// @brief Constructs a publisher with a given ZeroMQ context.
     /// @param[in] context  The context from which to initialize.
     /// @note This can be useful for inproc communication where a separate
     ///       thread IO thread is not required.  In this case, the context
@@ -69,9 +69,13 @@ public:
     ~Publisher();
     /// @}
  
+    /// @brief Sends a message.  This will serialize the message.
+    /// @param[in] message  The message to send.
+    /// @throws std::invalid_argument if the message cannot be serialized.
     void send(const MessageFormats::IMessage &message);
-    void send(size_t nBytes, const char *message);
-    void send(const std::string &message);
+    /// @brief This is a lower level function for sending a message.
+    //void send(size_t nBytes, const char *message);
+    //void send(const std::string &message);
 
     /// Delete some functions
     Publisher(const Publisher &publisher) = delete;

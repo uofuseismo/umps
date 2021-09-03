@@ -87,7 +87,7 @@ public:
     {
     }
     /// C'tor
-    PublisherImpl(std::shared_ptr<zmq::context_t> &context) :
+    explicit PublisherImpl(std::shared_ptr<zmq::context_t> &context) :
         mContext(context),
         mPublisher(std::make_unique<zmq::socket_t> (*mContext,
                                                     zmq::socket_type::pub)),
@@ -95,7 +95,7 @@ public:
     {
     }
     /// C'tor
-    PublisherImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    explicit PublisherImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
         mContext(std::make_shared<zmq::context_t> (1)),
         mPublisher(std::make_unique<zmq::socket_t> (*mContext,
                                                     zmq::socket_type::pub)),

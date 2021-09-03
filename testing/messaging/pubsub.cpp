@@ -8,6 +8,7 @@
 #include "urts/messaging/publisherSubscriber/publisher.hpp"
 #include "urts/messaging/publisherSubscriber/subscriber.hpp"
 #include "urts/messageFormats/pick.hpp"
+#include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
 {
@@ -18,12 +19,14 @@ const std::string localHost  = "tcp://127.0.0.1:5555";
 //const std::string localHost = "ipc://*";
 using namespace URTS::Messaging::PublisherSubscriber;
 
+/*
 template<typename TO, typename FROM>
 std::unique_ptr<TO> static_unique_pointer_cast (std::unique_ptr<FROM> &&old)
 {
     return std::unique_ptr<TO>{static_cast<TO*>(old.release())};
     //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
 }
+*/
 
 /*
 void publish(std::shared_ptr<void *> *context)

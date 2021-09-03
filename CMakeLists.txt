@@ -10,6 +10,7 @@ include(CheckCXXCompilerFlag)
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
+find_package(cppzmq REQUIRED)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
 set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
@@ -67,11 +68,15 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
-    src/messaging/publisherSubscriber/subscriber.cpp)
+    src/messaging/publisherSubscriber/subscriber.cpp
+    src/messaging/requestRouter/request.cpp
+    src/messaging/requestRouter/router.cpp)
 set(MODULES_LIBSRC
     src/modules/incrementer/request.cpp
     src/modules/incrementer/response.cpp
     src/modules/incrementer/counter.cpp
+    src/modules/incrementer/parameters.cpp
+    src/modules/incrementer/service.cpp
     src/modules/packetCache/circularBuffer.cpp
     src/modules/packetCache/cappedCollection.cpp
     src/modules/packetCache/dataRequest.cpp)
@@ -88,10 +93,10 @@ set_target_properties(urts PROPERTIES
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(urts
-                      PUBLIC ${TIME_LIBRARY} ${ZeroMQ_LIBRARY}
+                      PUBLIC ${TIME_LIBRARY} cppzmq #${ZeroMQ_LIBRARY}
                       PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
 target_include_directories(urts
-                           PRIVATE spdlog::spdlog ${ZeroMQ_INCLUDE_DIR}
+                           PRIVATE spdlog::spdlog ${cppzmq_INCLUDE_DIR} #cppzmq #${ZeroMQ_INCLUDE_DIR}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
                            PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
 if (${BUILD_TBB})
@@ -111,6 +116,12 @@ endif()
 #                                         Modules                                        #
 ##########################################################################################
 
+add_executable(uOperator src/modules/operator/operator.cpp)
+set_target_properties(uOperator PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_link_libraries(uOperator PRIVATE urts Boost::program_options pthread) 
 if (${BUILD_EW})
     add_executable(packetCache src/modules/packetCache/packetCache.cpp)
     set_target_properties(packetCache PROPERTIES
@@ -148,9 +159,10 @@ set(TEST_SRC
     testing/messageFormats/pick.cpp
     testing/messageFormats/earthworm.cpp
     testing/messageFormats/dataPacket.cpp
-    #testing/messaging/pubsub.cpp
     testing/modules/packetCache.cpp
     testing/modules/incrementer.cpp
+    testing/messaging/pubsub.cpp
+    testing/messaging/requestRouter.cpp
     )
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
