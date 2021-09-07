@@ -151,9 +151,8 @@ void Router::bind(const std::string &endPoint)
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
 }
 
-/*
 /// Add a subscription
-void Router::addSubscription(
+void Router::addMessageType(
     std::unique_ptr<URTS::MessageFormats::IMessage> &message)
 {
     if (message == nullptr){throw std::invalid_argument("Message is NULL");}
@@ -192,7 +191,6 @@ void Router::addSubscription(
 //        throw std::runtime_error(errorMsg);
 //    }
 }
-*/
 
 /// Stop
 void Router::stop()
@@ -229,7 +227,6 @@ void Router::start()
                 zmq::recv_multipart(*pImpl->mServer,
                                     std::back_inserter(messagesReceived),
                                     zmq::recv_flags::none);
-            bool returnDumby = false;
             if (*receivedResult == 0){continue;}
 /*
 std::cout << *receivedResult << std::endl;
@@ -246,19 +243,19 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
             if (messagesReceived.size() != 4)
             {
                 pImpl->mLogger->error("Only 2-part messages handled");
-                returnDumby = true;
+                continue; 
+                //returnDumby = true;
             }
 #endif
             std::string messageType = messagesReceived.at(2).to_string();
-/*
             auto index = pImpl->mSubscriptions.find(messageType);
             if (index == pImpl->mSubscriptions.end())
             {
                 auto errorMsg = "Unhandled message type: " + messageType;
                 pImpl->mLogger->error(errorMsg);
-                returnDumby = true;
+                continue;
+                //returnDumby = true;
             }
-*/
             auto messageContents = reinterpret_cast<const uint8_t *>
                                    (messagesReceived.at(3).data());
             auto messageSize = messagesReceived.at(3).size();

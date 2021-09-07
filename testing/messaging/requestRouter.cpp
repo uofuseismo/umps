@@ -107,9 +107,9 @@ void server()
                                  std::placeholders::_1,
                                  std::placeholders::_2,
                                  std::placeholders::_3));
-    //std::unique_ptr<URTS::MessageFormats::IMessage> messageSubscriptionType
-    //    = std::make_unique<URTS::Modules::Incrementer::Request> ();
-    //server.addSubscription(messageSubscriptionType);
+    std::unique_ptr<URTS::MessageFormats::IMessage> messageSubscriptionType
+        = std::make_unique<URTS::Modules::Incrementer::Request> ();
+    server.addMessageType(messageSubscriptionType);
     // Launch the server
     std::thread t1(&URTS::Messaging::RequestRouter::Router::start,
                    &server);

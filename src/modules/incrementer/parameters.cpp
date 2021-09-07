@@ -12,7 +12,7 @@ class Parameters::ParametersImpl
 {
 public:
     std::string mName;
-    std::string mServerAddress;
+    //std::string mServerAddress;
     std::string mClientAddress; 
     uint64_t mInitialValue = 0;
     uint64_t mIncrement = 1;
@@ -56,7 +56,7 @@ Parameters& Parameters::operator=(Parameters &&parameters) noexcept
 void Parameters::clear() noexcept
 {
     pImpl->mName.clear();
-    pImpl->mServerAddress.clear();
+    //pImpl->mServerAddress.clear();
     pImpl->mClientAddress.clear();
     pImpl->mInitialValue = 0;
     pImpl->mIncrement = 1;
@@ -87,6 +87,7 @@ bool Parameters::haveName() const noexcept
 }
 
 /// Server address
+/*
 void Parameters::setServerAccessAddress(const std::string &address)
 {
     if (isEmpty(address))
@@ -109,6 +110,7 @@ bool Parameters::haveServerAccessAddress() const noexcept
 {
     return !pImpl->mServerAddress.empty();
 }
+*/
 
 /// Client address
 void Parameters::setClientAccessAddress(const std::string &address)
@@ -174,9 +176,9 @@ void Parameters::parseInitializationFile(const std::string &iniFile,
 
     auto name = propertyTree.get<std::string> (section + ".name");
     parameters.setName(name);
-    auto serverAddress
-        = propertyTree.get<std::string> (section + ".serverAccessAddress");
-    parameters.setServerAccessAddress(serverAddress);
+    //auto serverAddress
+    //    = propertyTree.get<std::string> (section + ".serverAccessAddress");
+    //parameters.setServerAccessAddress(serverAddress);
     auto clientAddress
         = propertyTree.get<std::string> (section + ".clientAccessAddress");
     parameters.setClientAccessAddress(clientAddress);

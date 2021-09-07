@@ -66,12 +66,12 @@ public:
     /// @param[in] address  The address from which the server connect to this
     ///                     incrementer service.
     /// @note This address does not need to be known by the clients.
-    void setServerAccessAddress(const std::string &address);
+    //void setServerAccessAddress(const std::string &address);
     /// @result The address from which the server will access the service.
     /// @throws std::runtime_error if \c haveServerAccessAddress() is false.
-    [[nodiscard]] std::string getServerAccessAddress() const;
+    //[[nodiscard]] std::string getServerAccessAddress() const;
     /// @result True indicates that the server access address was set.
-    [[nodiscard]] bool haveServerAccessAddress() const noexcept;
+    //[[nodiscard]] bool haveServerAccessAddress() const noexcept;
 
     /// @brief Sets the proxy's address to which the clients will connect.
     /// @param[in] address  The address from which clients will connect to this

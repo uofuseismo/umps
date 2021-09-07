@@ -3,8 +3,6 @@
 #include <chrono>
 #include <thread>
 #include <cassert>
-#include <zmq.hpp>
-#include <zmq_addon.hpp>
 #include "urts/modules/incrementer/service.hpp"
 #include "urts/messaging/requestRouter/router.hpp"
 #include "urts/modules/incrementer/parameters.hpp"
@@ -21,41 +19,63 @@ class Service::ServiceImpl
 public:
     /// Constructs
     ServiceImpl() :
-        mContext(std::make_shared<zmq::context_t> (1)),
-        mServer(std::make_unique<zmq::socket_t> (*mContext,
-                                                 zmq::socket_type::router)),
         mLogger(std::make_shared<URTS::Logging::StdOut> ())
     {
     }
-    /// The callback to handle requests
+    /// The callback to handle incrementer requests
     std::unique_ptr<URTS::MessageFormats::IMessage>
-        callback(const URTS::MessageFormats::IMessage *messagePtr)
+        callback(const std::string &messageType,
+                 const uint8_t *messageContents, const size_t length) noexcept
     {
-        Response response;
-        auto messageType = messagePtr->getMessageType();
-        Request request;
-        if (request.getMessageType() == messageType)
+        mLogger->debug("ServiceImpl::callback: Message of type: " + messageType 
+                     + " with length: " + std::to_string(length)
+                     + " bytes was received.  Processing...");
+        URTS::Modules::Incrementer::Request request;
+        auto response
+            = std::make_unique<URTS::Modules::Incrementer::Response> ();
+        if (messageType == request.getMessageType())
         {
-            auto requestPtr = reinterpret_cast<const Request *> (messagePtr);
-            auto item = requestPtr->getItem(); 
-            if (item == mName)
+            // Unpack the request
+            try
             {
-
+                request.fromCBOR(messageContents, length);
             }
-            else
+            catch (const std::exception &e)
             {
-                mLogger->error("Increment request for: " + item
-                             + " does not match this counter's item: " + mName);
+                mLogger->error("Request serialization failed with: "
+                             + std::string(e.what()));
+                response->setReturnCode(
+                   URTS::Modules::Incrementer::ReturnCode::INVALID_MESSAGE);
+                return response;
             }
-            //auto value = mCounter.getNextValue(); 
-            //request.setValue(value);
-        } 
+            // Set the identifier to help out the recipient
+            response->setIdentifier(request.getIdentifier());
+            // Process the request
+            try
+            {
+                auto nextValue = mCounter.getNextValue();
+                response->setValue(nextValue);
+                response->setReturnCode(
+                   URTS::Modules::Incrementer::ReturnCode::SUCCESS);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Incrementer failed with: "
+                             + std::string(e.what()));
+                response->setReturnCode(
+                   URTS::Modules::Incrementer::ReturnCode::ALGORITHM_FAILURE);
+            }
+        }
         else
         {
-            mLogger->error("Unknown message type: " + messageType);
+            mLogger->error("Expecting message type: " + messageType
+                         + " but received: " + request.getMessageType());
+            response->setReturnCode(
+                URTS::Modules::Incrementer::ReturnCode::NO_ITEM);
         }
-        return response.clone();
+        return response;
     }
+/*
     /// Determines if the service was started
     bool isRunning() const noexcept
     {
@@ -71,13 +91,12 @@ public:
         std::scoped_lock lock(mMutex);
         mRunning = status; 
     }
+*/
 ///private:
-    std::shared_ptr<zmq::context_t> mContext;
-    std::unique_ptr<zmq::socket_t> mServer;
     std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
     Counter mCounter; 
     URTS::Messaging::RequestRouter::Router mRouter;
-    mutable std::mutex mMutex;
+    //mutable std::mutex mMutex;
     std::string mName;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
@@ -99,23 +118,42 @@ Service::~Service() = default;
 /// Is the service running
 bool Service::isRunning() const noexcept
 {
-    return pImpl->isRunning();
+    return pImpl->mRouter.isRunning();
 }
 
 /// Initialize
 void Service::initialize(const Parameters &parameters)
 {
-    stop();
+    stop(); // Ensure the service is stopped
     // Create the counter
     auto name = parameters.getName();
     auto initialValue = parameters.getInitialValue();
     auto increment = parameters.getIncrement();
     Counter counter;
     counter.initialize(name, initialValue, increment);
-    // Create the sockets
-    auto serverAccessAddress = parameters.getServerAccessAddress();
+    // Initialize the socket
     auto clientAccessAddress = parameters.getClientAccessAddress();
-//    setServerAccessAddress(const std::string &address)
+    pImpl->mRouter.bind(clientAccessAddress);
+    if (!pImpl->mRouter.isBound())
+    {
+        throw std::runtime_error("Failed to bind to address: "
+                               + clientAccessAddress);
+    }
+    // This service only handles request types
+    std::unique_ptr<URTS::MessageFormats::IMessage> requestType
+        = std::make_unique<URTS::Modules::Incrementer::Request> (); 
+    pImpl->mRouter.addMessageType(requestType);
+    // Bind a callback function so that requests can be processed and this
+    // class's counter can be incremented.
+    pImpl->mRouter.setCallback(std::bind(&ServiceImpl::callback,
+                                         &*this->pImpl,
+                                         std::placeholders::_1,
+                                         std::placeholders::_2,
+                                         std::placeholders::_3));
+    // Create the sockets
+    // auto serverAccessAddress = parameters.getServerAccessAddress();
+    // auto clientAccessAddress = parameters.getClientAccessAddress();
+    // setServerAccessAddress(const std::string &address)
     // Move the counter to this and tag the class as initialized
     pImpl->mCounter = std::move(counter);
     pImpl->mName = name;
@@ -136,6 +174,9 @@ void Service::start()
         throw std::runtime_error("Service not initialized");
     }
     pImpl->mLogger->debug("Beginning service...");
+    pImpl->mRouter.start(); // This should hang until the service is stopped
+    pImpl->mLogger->debug("Thread exiting service");
+/*
     pImpl->setRunning(true);
     auto name = pImpl->mCounter.getName();
     constexpr size_t nPollItems = 1; 
@@ -216,10 +257,11 @@ void Service::start()
         }
     }
     pImpl->mLogger->debug("Thread exiting service");
+*/
 }
 
 /// Stop the service
 void Service::stop()
 {
-    pImpl->setRunning(false);  // This will release the start thread
+    pImpl->mRouter.stop();
 }
