@@ -5,14 +5,14 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "urts/modules/incrementer/response.hpp"
-#include "urts/modules/incrementer/request.hpp"
-#include "urts/modules/incrementer/counter.hpp"
-#include "urts/modules/incrementer/parameters.hpp"
+#include "urts/services/incrementer/response.hpp"
+#include "urts/services/incrementer/request.hpp"
+#include "urts/services/incrementer/counter.hpp"
+#include "urts/services/incrementer/parameters.hpp"
 #include <gtest/gtest.h>
 namespace
 {
-namespace URTSIC = URTS::Modules::Incrementer;
+namespace URTSIC = URTS::Services::Incrementer;
 
 TEST(Incrementer, Parameters)
 {
@@ -55,7 +55,7 @@ TEST(Incrementer, Request)
 
     request.clear();
     EXPECT_FALSE(request.haveItem()); 
-    EXPECT_EQ(request.getMessageType(), "URTS::Modules::Incrementer::Request");
+    EXPECT_EQ(request.getMessageType(), "URTS::Services::Incrementer::Request");
 }
 
 TEST(Incrementer, Response)
@@ -80,7 +80,7 @@ TEST(Incrementer, Response)
     EXPECT_EQ(rCopy.getReturnCode(), code);
 
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Modules::Incrementer::Response");
+              "URTS::Services::Incrementer::Response");
 }
 
 TEST(Incrementer, Counter)

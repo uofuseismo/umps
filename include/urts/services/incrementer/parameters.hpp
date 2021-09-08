@@ -1,9 +1,9 @@
-#ifndef URTS_MODULES_INCREMENTER_PARAMETERS_HPP
-#define URTS_MODULES_INCREMENTER_PARAMETERS_HPP
+#ifndef URTS_SERVICES_INCREMENTER_PARAMETERS_HPP
+#define URTS_SERVICES_INCREMENTER_PARAMETERS_HPP
 #include <memory>
-namespace URTS::Modules::Incrementer
+namespace URTS::Services::Incrementer
 {
-/// @class Parameters "parameters.hpp" "urts/modules/incrementer/parameters.hpp"
+/// @class Parameters "parameters.hpp" "urts/services/incrementer/parameters.hpp"
 /// @brief The parameters for controlling the item incrementer.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Parameters

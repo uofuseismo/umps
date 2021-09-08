@@ -4,11 +4,11 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/modules/incrementer/response.hpp"
+#include "urts/services/incrementer/response.hpp"
 
-#define MESSAGE_TYPE "URTS::Modules::Incrementer::Response"
+#define MESSAGE_TYPE "URTS::Services::Incrementer::Response"
 
-using namespace URTS::Modules::Incrementer;
+using namespace URTS::Services::Incrementer;
 
 namespace
 {

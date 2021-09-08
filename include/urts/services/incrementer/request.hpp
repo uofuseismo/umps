@@ -1,11 +1,11 @@
-#ifndef URTS_MODULES_INCREMENTER_REQUEST_HPP
-#define URTS_MODULES_INCREMENTER_REQUEST_HPP
+#ifndef URTS_SERVICES_INCREMENTER_REQUEST_HPP
+#define URTS_SERVICES_INCREMENTER_REQUEST_HPP
 #include <memory>
 #include "urts/messageFormats/message.hpp"
-#include "urts/modules/incrementer/enums.hpp"
-namespace URTS::Modules::Incrementer
+#include "urts/services/incrementer/enums.hpp"
+namespace URTS::Services::Incrementer
 {
-/// @class Request "request.hpp" "urts/modules/incrementer/request.hpp"
+/// @class Request "request.hpp" "urts/services/incrementer/request.hpp"
 /// @brief To identify items (picks, events, origins, amplitudes, etc.) in the
 ///        processing pipeline we must assign them a unique object identifier.
 ///        The challenge in a distributed setting is that we need a single

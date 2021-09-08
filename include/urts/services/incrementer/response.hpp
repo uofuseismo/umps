@@ -1,11 +1,11 @@
-#ifndef URTS_MODULES_INCREMENTER_RESPONSE_HPP
-#define URTS_MODULES_INCREMENTER_RESPONSE_HPP
+#ifndef URTS_SERVICES_INCREMENTER_RESPONSE_HPP
+#define URTS_SERVICES_INCREMENTER_RESPONSE_HPP
 #include <memory>
 #include "urts/messageFormats/message.hpp"
-#include "urts/modules/incrementer/enums.hpp"
-namespace URTS::Modules::Incrementer
+#include "urts/services/incrementer/enums.hpp"
+namespace URTS::Services::Incrementer
 {
-/// @class Response "response.hpp" "urts/modules/incrementer/response.hpp"
+/// @class Response "response.hpp" "urts/services/incrementer/response.hpp"
 /// @brief This is a response to an item increment request.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Response : public URTS::MessageFormats::IMessage

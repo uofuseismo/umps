@@ -4,8 +4,8 @@
 #include <thread>
 #include "urts/messaging/requestRouter/router.hpp"
 #include "urts/messaging/requestRouter/request.hpp"
-#include "urts/modules/incrementer/request.hpp"
-#include "urts/modules/incrementer/response.hpp"
+#include "urts/services/incrementer/request.hpp"
+#include "urts/services/incrementer/response.hpp"
 #include "urts/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
@@ -17,18 +17,6 @@ const std::string localHost  = "tcp://127.0.0.1:5555";
 int nMessages = 10;
 int nThreads = 2;
 
-/*
-std::unique_ptr<URTS::MessageFormats::IMessage> 
-    process(const URTS::MessageFormats::IMessage *requestIn)
-{
-    auto request
-        = reinterpret_cast<const URTS::Modules::Incrementer::Request *> (requestIn); 
-    auto response = std::make_unique<URTS::Modules::Incrementer::Response> ();
-    response->setIdentifier(request->getIdentifier());
-    return response;
-}
-*/
-
 class ProcessData
 {
 public:
@@ -36,9 +24,9 @@ public:
         process(const std::string &messageType,
                 const uint8_t *messageContents, const size_t length)
     {
-        URTS::Modules::Incrementer::Request request;
+        URTS::Services::Incrementer::Request request;
         auto response
-            = std::make_unique<URTS::Modules::Incrementer::Response> ();
+            = std::make_unique<URTS::Services::Incrementer::Response> ();
         //std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
         if (messageType == request.getMessageType())
         {
@@ -47,13 +35,13 @@ public:
             //std::cout << "Unpacking: " << request.getIdentifier() << std::endl;
             response->setValue(request.getIdentifier());
             response->setReturnCode(
-                URTS::Modules::Incrementer::ReturnCode::SUCCESS);
+                URTS::Services::Incrementer::ReturnCode::SUCCESS);
             nResponses = nResponses + 1;
         }
         else
         {
             response->setReturnCode(
-                URTS::Modules::Incrementer::ReturnCode::NO_ITEM);
+                URTS::Services::Incrementer::ReturnCode::NO_ITEM);
         }
         return response;
     } 
@@ -70,8 +58,8 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
     process(const std::string &messageType,
             const uint8_t *messageContents, const size_t length)
 {
-    URTS::Modules::Incrementer::Request request;
-    auto response = std::make_unique<URTS::Modules::Incrementer::Response> ();
+    URTS::Services::Incrementer::Request request;
+    auto response = std::make_unique<URTS::Services::Incrementer::Response> ();
     std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
     if (messageType == request.getMessageType())
     {
@@ -80,12 +68,12 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
         std::cout << "Unpacking: " << request.getIdentifier() << std::endl;
         response->setValue(request.getIdentifier());
         response->setReturnCode(
-            URTS::Modules::Incrementer::ReturnCode::SUCCESS);
+            URTS::Services::Incrementer::ReturnCode::SUCCESS);
     }
     else
     {
         response->setReturnCode(
-            URTS::Modules::Incrementer::ReturnCode::NO_ITEM);
+            URTS::Services::Incrementer::ReturnCode::NO_ITEM);
     }
     return response; 
 }
@@ -108,7 +96,7 @@ void server()
                                  std::placeholders::_2,
                                  std::placeholders::_3));
     std::unique_ptr<URTS::MessageFormats::IMessage> messageSubscriptionType
-        = std::make_unique<URTS::Modules::Incrementer::Request> ();
+        = std::make_unique<URTS::Services::Incrementer::Request> ();
     server.addMessageType(messageSubscriptionType);
     // Launch the server
     std::thread t1(&URTS::Messaging::RequestRouter::Router::start,
@@ -134,9 +122,9 @@ void client(int base)
         = std::make_shared<URTS::Logging::StdOut> (logger);
 
     URTS::Messaging::RequestRouter::Request client(loggerPtr);
-    URTS::Modules::Incrementer::Request request;
+    URTS::Services::Incrementer::Request request;
     std::unique_ptr<URTS::MessageFormats::IMessage> responseType
-        = std::make_unique<URTS::Modules::Incrementer::Response> (); 
+        = std::make_unique<URTS::Services::Incrementer::Response> (); 
     client.setResponse(responseType);
 
     
@@ -148,7 +136,7 @@ void client(int base)
         request.setIdentifier(base + i);
         auto message = client.request(request);
         auto response
-        = static_unique_pointer_cast<URTS::Modules::Incrementer::Response>
+        = static_unique_pointer_cast<URTS::Services::Incrementer::Response>
           (std::move(message));
         EXPECT_EQ(request.getIdentifier(), response->getIdentifier());
         //std::cout << request.getIdentifier() << " " << response->getIdentifier() << std::endl;//Identifier() << std::endl;

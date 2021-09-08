@@ -72,11 +72,11 @@ set(MESSAGING_SRC
     src/messaging/requestRouter/request.cpp
     src/messaging/requestRouter/router.cpp)
 set(MODULES_LIBSRC
-    src/modules/incrementer/request.cpp
-    src/modules/incrementer/response.cpp
-    src/modules/incrementer/counter.cpp
-    src/modules/incrementer/parameters.cpp
-    src/modules/incrementer/service.cpp
+    src/services/incrementer/request.cpp
+    src/services/incrementer/response.cpp
+    src/services/incrementer/counter.cpp
+    src/services/incrementer/parameters.cpp
+    src/services/incrementer/service.cpp
     src/modules/packetCache/circularBuffer.cpp
     src/modules/packetCache/cappedCollection.cpp
     src/modules/packetCache/dataRequest.cpp)

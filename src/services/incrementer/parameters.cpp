@@ -3,10 +3,10 @@
 #include <filesystem>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "urts/modules/incrementer/parameters.hpp"
+#include "urts/services/incrementer/parameters.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace URTS::Modules::Incrementer;
+using namespace URTS::Services::Incrementer;
 
 class Parameters::ParametersImpl
 {

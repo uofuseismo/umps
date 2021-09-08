@@ -1,8 +1,7 @@
-#ifndef URTS_MODULES_INCREMENTER_ENUMS_HPP
-#define URTS_MODULES_INCREMENTER_ENUMS_HPP
+#ifndef URTS_SERVICES_INCREMENTER_ENUMS_HPP
+#define URTS_SERVICES_INCREMENTER_ENUMS_HPP
 #include <memory>
-#include "urts/messageFormats/message.hpp"
-namespace URTS::Modules::Incrementer
+namespace URTS::Services::Incrementer
 {
 /// @brief These are predefined set of items that can be incremented by URTS.
 /// @note You can define custom items.

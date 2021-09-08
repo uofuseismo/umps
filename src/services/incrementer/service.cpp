@@ -3,16 +3,16 @@
 #include <chrono>
 #include <thread>
 #include <cassert>
-#include "urts/modules/incrementer/service.hpp"
+#include "urts/services/incrementer/service.hpp"
 #include "urts/messaging/requestRouter/router.hpp"
-#include "urts/modules/incrementer/parameters.hpp"
-#include "urts/modules/incrementer/counter.hpp"
-#include "urts/modules/incrementer/response.hpp"
-#include "urts/modules/incrementer/request.hpp"
+#include "urts/services/incrementer/parameters.hpp"
+#include "urts/services/incrementer/counter.hpp"
+#include "urts/services/incrementer/response.hpp"
+#include "urts/services/incrementer/request.hpp"
 #include "urts/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
-using namespace URTS::Modules::Incrementer;
+using namespace URTS::Services::Incrementer;
 
 class Service::ServiceImpl
 {
@@ -30,9 +30,9 @@ public:
         mLogger->debug("ServiceImpl::callback: Message of type: " + messageType 
                      + " with length: " + std::to_string(length)
                      + " bytes was received.  Processing...");
-        URTS::Modules::Incrementer::Request request;
+        Request request;
         auto response
-            = std::make_unique<URTS::Modules::Incrementer::Response> ();
+            = std::make_unique<Response> ();
         if (messageType == request.getMessageType())
         {
             // Unpack the request
@@ -44,8 +44,7 @@ public:
             {
                 mLogger->error("Request serialization failed with: "
                              + std::string(e.what()));
-                response->setReturnCode(
-                   URTS::Modules::Incrementer::ReturnCode::INVALID_MESSAGE);
+                response->setReturnCode(ReturnCode::INVALID_MESSAGE);
                 return response;
             }
             // Set the identifier to help out the recipient
@@ -55,23 +54,20 @@ public:
             {
                 auto nextValue = mCounter.getNextValue();
                 response->setValue(nextValue);
-                response->setReturnCode(
-                   URTS::Modules::Incrementer::ReturnCode::SUCCESS);
+                response->setReturnCode(ReturnCode::SUCCESS);
             }
             catch (const std::exception &e)
             {
                 mLogger->error("Incrementer failed with: "
                              + std::string(e.what()));
-                response->setReturnCode(
-                   URTS::Modules::Incrementer::ReturnCode::ALGORITHM_FAILURE);
+                response->setReturnCode(ReturnCode::ALGORITHM_FAILURE);
             }
         }
         else
         {
             mLogger->error("Expecting message type: " + messageType
                          + " but received: " + request.getMessageType());
-            response->setReturnCode(
-                URTS::Modules::Incrementer::ReturnCode::NO_ITEM);
+            response->setReturnCode(ReturnCode::NO_ITEM);
         }
         return response;
     }
@@ -95,6 +91,7 @@ public:
 ///private:
     std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
     Counter mCounter; 
+    Parameters mParameters;
     URTS::Messaging::RequestRouter::Router mRouter;
     //mutable std::mutex mMutex;
     std::string mName;
@@ -110,6 +107,20 @@ public:
 Service::Service() :
     pImpl(std::make_unique<ServiceImpl> ())
 {
+}
+
+/// Move c'tor
+Service::Service(Service &&service) noexcept
+{
+    *this = std::move(service);
+}
+
+/// Move assignment
+Service& Service::operator=(Service &&service) noexcept
+{
+    if (&service == this){return *this;}
+    pImpl = std::move(service.pImpl);
+    return *this;
 }
 
 /// Destructor
@@ -141,7 +152,7 @@ void Service::initialize(const Parameters &parameters)
     }
     // This service only handles request types
     std::unique_ptr<URTS::MessageFormats::IMessage> requestType
-        = std::make_unique<URTS::Modules::Incrementer::Request> (); 
+        = std::make_unique<Request> (); 
     pImpl->mRouter.addMessageType(requestType);
     // Bind a callback function so that requests can be processed and this
     // class's counter can be incremented.
@@ -156,6 +167,7 @@ void Service::initialize(const Parameters &parameters)
     // setServerAccessAddress(const std::string &address)
     // Move the counter to this and tag the class as initialized
     pImpl->mCounter = std::move(counter);
+    pImpl->mParameters = parameters;
     pImpl->mName = name;
     pImpl->mInitialized = true;
 }
@@ -260,8 +272,23 @@ void Service::start()
 */
 }
 
+/// Gets the service name
+std::string Service::getName() const
+{
+    if (!isInitialized()){throw std::runtime_error("Service not initialized");}
+    return pImpl->mName;
+}
+
+/// Gets the request address
+std::string Service::getRequestAddress() const
+{
+    if (!isRunning()){throw std::runtime_error("Service is not running");}
+    return pImpl->mParameters.getClientAccessAddress();
+}
+
 /// Stop the service
 void Service::stop()
 {
     pImpl->mRouter.stop();
+    //pImpl->mCounter.reset();
 }

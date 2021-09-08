@@ -1,8 +1,9 @@
-#ifndef URTS_MODULES_INCREMENTER_COUNTER_HPP
-#define URTS_MODULES_INCREMENTER_COUNTER_HPP
+#ifndef URTS_SERVICES_INCREMENTER_COUNTER_HPP
+#define URTS_SERVICES_INCREMENTER_COUNTER_HPP
 #include <memory>
-namespace URTS::Modules::Incrementer
+namespace URTS::Services::Incrementer
 {
+/// @class Counter counter.hpp "urts/services/incrementer/counter.hpp"
 /// @brief This thread-safe class is responsible for incrementing the specified
 ///        item's value.  This class is a simple way to assign unique 
 ///        identifiers to an item of interest - e.g., a pick or event identifier

@@ -5,12 +5,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/modules/incrementer/request.hpp"
+#include "urts/services/incrementer/request.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "URTS::Modules::Incrementer::Request"
+#define MESSAGE_TYPE "URTS::Services::Incrementer::Request"
 
-using namespace URTS::Modules::Incrementer;
+using namespace URTS::Services::Incrementer;
 
 namespace
 {

@@ -1,9 +1,9 @@
 #include <string>
 #include <mutex>
-#include "urts/modules/incrementer/counter.hpp"
+#include "urts/services/incrementer/counter.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace URTS::Modules::Incrementer;
+using namespace URTS::Services::Incrementer;
 
 class Counter::CounterImpl
 {
