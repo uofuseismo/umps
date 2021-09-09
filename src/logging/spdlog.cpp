@@ -155,7 +155,9 @@ void SpdLog::info(const std::string &message)
 {
     if (pImpl->mLevel >= Level::INFO && pImpl->mLogger)
     {
-        spdlog::info(message);
+        //spdlog::info(message);
+        pImpl->mLogger->info(message);
+        pImpl->mLogger->flush();
     }
 }
 
@@ -164,7 +166,9 @@ void SpdLog::warn(const std::string &message)
 {
     if (pImpl->mLevel >= Level::WARN && pImpl->mLogger)
     {
-        spdlog::warn(message);
+        //spdlog::warn(message);
+        pImpl->mLogger->warn(message);
+        pImpl->mLogger->flush();
     }
 }
 
@@ -173,7 +177,9 @@ void SpdLog::error(const std::string &message)
 {
     if (pImpl->mLevel >= Level::ERROR && pImpl->mLogger)
     {
-        spdlog::error(message);
+        //spdlog::error(message);
+        pImpl->mLogger->error(message);
+        pImpl->mLogger->flush();
     }
 }
 
@@ -182,6 +188,8 @@ void SpdLog::debug(const std::string &message)
 {
     if (pImpl->mLevel >= Level::DEBUG && pImpl->mLogger)
     {
-        spdlog::debug(message);
+        //spdlog::debug(message);
+        pImpl->mLogger->debug(message);
+        pImpl->mLogger->flush();
     }
 }  
