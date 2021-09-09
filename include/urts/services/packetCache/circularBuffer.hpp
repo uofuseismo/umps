@@ -1,21 +1,17 @@
-#ifndef URTS_MODULES_PACKETCACHE_CIRCULARBUFFER_HPP
-#define URTS_MODULES_PACKETCACHE_CIRCULARBUFFER_HPP
+#ifndef URTS_SERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
+#define URTS_SERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
 #include <memory>
 #include <vector>
 namespace URTS
 {
-// namespace Logging
-// {
-//  class ILogger;
-// }
  namespace MessageFormats
  {
   template<class T> class DataPacket;
  }
 }
-namespace URTS::Modules::PacketCache
+namespace URTS::Services::PacketCache
 {
-/// @class CircularBuffer "circularBuffer.hpp" "urts/modules/packetCache/circularBuffer.hpp"
+/// @class CircularBuffer "circularBuffer.hpp" "urts/services/packetCache/circularBuffer.hpp"
 /// @brief This is a thread-safe circular buffer for storing data packets for
 ///        a given station's channel.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

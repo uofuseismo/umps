@@ -4,12 +4,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/modules/packetCache/dataRequest.hpp"
+#include "urts/services/packetCache/dataRequest.hpp"
 #include "private/applications/packetCache.hpp"
 
-#define MESSAGE_TYPE "URTS::Modules::PacketCache::DataRequest"
+#define MESSAGE_TYPE "URTS::Services::PacketCache::DataRequest"
 
-using namespace URTS::Modules::PacketCache;
+using namespace URTS::Services::PacketCache;
 
 namespace
 {

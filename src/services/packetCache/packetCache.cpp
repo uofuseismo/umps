@@ -6,8 +6,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
-#include "urts/modules/packetCache/cappedCollection.hpp"
-#include "urts/modules/packetCache/dataRequest.hpp"
+#include "urts/services/packetCache/cappedCollection.hpp"
+#include "urts/services/packetCache/dataRequest.hpp"
 #include "urts/messaging/earthworm/waveRing.hpp"
 #include "urts/messageFormats/dataPacket.hpp"
 #include "urts/messageFormats/earthworm/traceBuf2.hpp"
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<URTS::Logging::ILog> loggerPtr
         = std::make_shared<URTS::Logging::StdOut> (logger);
     // Create a collection of circular buffers
-    URTS::Modules::PacketCache::CappedCollection<double>
+    URTS::Services::PacketCache::CappedCollection<double>
         cappedCollection(loggerPtr);
     cappedCollection.initialize(options.maxPackets);
     assert(cappedCollection.isInitialized());

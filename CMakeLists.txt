@@ -77,9 +77,9 @@ set(MODULES_LIBSRC
     src/services/incrementer/counter.cpp
     src/services/incrementer/parameters.cpp
     src/services/incrementer/service.cpp
-    src/modules/packetCache/circularBuffer.cpp
-    src/modules/packetCache/cappedCollection.cpp
-    src/modules/packetCache/dataRequest.cpp)
+    src/services/packetCache/circularBuffer.cpp
+    src/services/packetCache/cappedCollection.cpp
+    src/services/packetCache/dataRequest.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
        src/messaging/earthworm/waveRing.cpp)
@@ -123,7 +123,7 @@ set_target_properties(uOperator PROPERTIES
                       CXX_EXTENSIONS NO)
 target_link_libraries(uOperator PRIVATE urts Boost::program_options pthread) 
 if (${BUILD_EW})
-    add_executable(packetCache src/modules/packetCache/packetCache.cpp)
+    add_executable(packetCache src/services/packetCache/packetCache.cpp)
     set_target_properties(packetCache PROPERTIES
                           CXX_STANDARD 20
                           CXX_STANDARD_REQUIRED YES

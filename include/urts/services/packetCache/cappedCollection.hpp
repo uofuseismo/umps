@@ -1,5 +1,5 @@
-#ifndef URTS_MODULES_PACKETCACHE_CAPPEDCOLLECTION_HPP
-#define URTS_MODULES_PACKETCACHE_CAPPEDCOLLECTION_HPP
+#ifndef URTS_SERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
+#define URTS_SERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
 #include <memory>
 #include <vector>
 namespace URTS
@@ -13,9 +13,9 @@ namespace URTS
   template<class T> class DataPacket;
  }
 }
-namespace URTS::Modules::PacketCache
+namespace URTS::Services::PacketCache
 {
-/// @class CappedCollection "cappedCollection.hpp" "urts/modules/packetCache/cappedCollection.hpp"
+/// @class CappedCollection "cappedCollection.hpp" "urts/services/packetCache/cappedCollection.hpp"
 /// @brief This is a thread-safe fixed-size collection of trace-packets for a
 ///        unique sensor (network, station, channel, location code).
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

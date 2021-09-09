@@ -1,10 +1,10 @@
-#ifndef URTS_MODULES_PACKETCACHE_DATAREQUEST_HPP
-#define URTS_MODULES_PACKETCACHE_DATAREQUEST_HPP
+#ifndef URTS_SERVICES_PACKETCACHE_DATAREQUEST_HPP
+#define URTS_SERVICES_PACKETCACHE_DATAREQUEST_HPP
 #include <memory>
 #include "urts/messageFormats/message.hpp"
-namespace URTS::Modules::PacketCache
+namespace URTS::Services::PacketCache
 {
-/// @name DataRequst "dataRequest.hpp" "urts/modules/packetCache/dataRequest.hpp"
+/// @name DataRequst "dataRequest.hpp" "urts/services/packetCache/dataRequest.hpp"
 /// @brief This is a request message for querying the packetCache.  A query
 ///        consists of a network, station, channel, location code, and 
 ///        optionally a start time and end time.

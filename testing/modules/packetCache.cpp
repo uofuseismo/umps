@@ -4,14 +4,14 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "urts/modules/packetCache/circularBuffer.hpp"
-#include "urts/modules/packetCache/cappedCollection.hpp"
-#include "urts/modules/packetCache/dataRequest.hpp"
+#include "urts/services/packetCache/circularBuffer.hpp"
+#include "urts/services/packetCache/cappedCollection.hpp"
+#include "urts/services/packetCache/dataRequest.hpp"
 #include "urts/messageFormats/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
 {
-namespace PC = URTS::Modules::PacketCache;
+namespace PC = URTS::Services::PacketCache;
 namespace MF = URTS::MessageFormats;
 
 template<typename T>
