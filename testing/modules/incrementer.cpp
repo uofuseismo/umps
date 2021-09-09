@@ -16,7 +16,7 @@ namespace URTSIC = URTS::Services::Incrementer;
 
 TEST(Incrementer, Parameters)
 {
-    const char *cParms = "[Counters:Pick]\nname = Pick\ninitialValue = 2\nincrement = 3\nserverAccessAddress = tcp://localhost:5560\nclientAccessAddress = tcp://localhost:5559\n";
+    const char *cParms = "[Counters:Pick]\nname = Pick\ninitialValue = 2\nincrement = 3\nserverAccessAddress = tcp://localhost:5560\nclientAccessAddress = tcp://localhost:5559\nverbosity = 2\n";
     //std::cout << cParms << std::endl;
     const std::string iniFileName = "incrementerExample.ini";
     std::ofstream tempFile(iniFileName);
@@ -31,6 +31,7 @@ TEST(Incrementer, Parameters)
     EXPECT_EQ(parameters.getIncrement(), 3);
     //EXPECT_EQ(parameters.getServerAccessAddress(), "tcp://localhost:5560");
     EXPECT_EQ(parameters.getClientAccessAddress(), "tcp://localhost:5559");
+    EXPECT_EQ(parameters.getVerbosity(), static_cast<URTS::Logging::Level> (2));
 }
 
 TEST(Incrementer, Request)

@@ -16,6 +16,7 @@ public:
     std::string mClientAddress; 
     uint64_t mInitialValue = 0;
     uint64_t mIncrement = 1;
+    URTS::Logging::Level mVerbosity = URTS::Logging::Level::ERROR;
 };
 
 /// C'tor
@@ -60,6 +61,7 @@ void Parameters::clear() noexcept
     pImpl->mClientAddress.clear();
     pImpl->mInitialValue = 0;
     pImpl->mIncrement = 1;
+    pImpl->mVerbosity = URTS::Logging::Level::ERROR;
 }
 
 /// Destrutcor
@@ -162,6 +164,17 @@ uint64_t Parameters::getInitialValue() const noexcept
     return pImpl->mInitialValue;
 }
 
+/// Verbosity
+void Parameters::setVerbosity(const URTS::Logging::Level verbosity) noexcept
+{
+    pImpl->mVerbosity = verbosity;
+}
+
+URTS::Logging::Level Parameters::getVerbosity() const noexcept
+{
+    return pImpl->mVerbosity;
+}
+
 void Parameters::parseInitializationFile(const std::string &iniFile,
                                          const std::string &section)
 {
@@ -187,6 +200,11 @@ void Parameters::parseInitializationFile(const std::string &iniFile,
     parameters.setIncrement(increment);
     auto initialValue = propertyTree.get<int> (section + ".initialValue", 0);
     parameters.setInitialValue(initialValue);
+
+    auto defaultVerbosity = static_cast<int> (parameters.getVerbosity());
+    auto verbosity = propertyTree.get<int> (section + ".verbosity",
+                                            defaultVerbosity);
+    parameters.setVerbosity(static_cast<URTS::Logging::Level> (verbosity));
     // Got everything and didn't throw -> copy to this
     *this = std::move(parameters);
 }

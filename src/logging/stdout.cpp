@@ -1,5 +1,6 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
+//#include <spdlog/sinks/stdout_color_sinks.h>
 #include "urts/logging/stdout.hpp"
 
 using namespace URTS::Logging;
@@ -7,6 +8,11 @@ using namespace URTS::Logging;
 class StdOut::StdOutImpl
 {
 public:
+    //StdOutImpl() :
+    //    mSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>() )
+    //{   
+    //}
+    //std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mSink;
     Level mLevel = Level::INFO;
 };
 

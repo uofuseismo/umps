@@ -1,6 +1,7 @@
 #ifndef URTS_SERVICES_INCREMENTER_PARAMETERS_HPP
 #define URTS_SERVICES_INCREMENTER_PARAMETERS_HPP
 #include <memory>
+#include "urts/logging/level.hpp"
 namespace URTS::Services::Incrementer
 {
 /// @class Parameters "parameters.hpp" "urts/services/incrementer/parameters.hpp"
@@ -99,6 +100,11 @@ public:
     void setInitialValue(uint32_t initialValue) noexcept;
     /// @result The initial value of the incrementer.
     [[nodiscard]] uint64_t getInitialValue() const noexcept;
+
+    /// @param[in] verbosity   The verbosity.
+    void setVerbosity(URTS::Logging::Level level) noexcept;
+    /// @result The verbosity of the conter.
+    [[nodiscard]] URTS::Logging::Level getVerbosity() const noexcept;
     /// @}
 
     /// @name Destructors

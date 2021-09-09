@@ -2,6 +2,10 @@
 #define URTS_SERVICES_INCREMENTER_SERVICE_HPP
 #include <memory>
 #include "urts/services/service.hpp"
+namespace URTS::Logging
+{
+ class ILog;
+}
 namespace URTS::Services::Incrementer
 {
 class Parameters;
@@ -13,6 +17,8 @@ class Service : public URTS::Services::IService
 public:
     /// @brief Constructor.
     Service();
+    /// @brief Constructor with a given logger.
+    explicit Service(std::shared_ptr<URTS::Logging::ILog> &logger);
     /// @brief Move constructor.
     Service(Service &&service) noexcept;
     /// @brief Move assignment operator.

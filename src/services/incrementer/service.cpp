@@ -19,8 +19,18 @@ class Service::ServiceImpl
 public:
     /// Constructs
     ServiceImpl() :
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<URTS::Logging::StdOut> ()),
+        mRouter(mLogger)
     {
+    }
+    explicit ServiceImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+        mLogger(logger),
+        mRouter(logger)
+    {
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+        }
     }
     /// The callback to handle incrementer requests
     std::unique_ptr<URTS::MessageFormats::IMessage>
@@ -106,6 +116,11 @@ public:
 /// C'tor
 Service::Service() :
     pImpl(std::make_unique<ServiceImpl> ())
+{
+}
+
+Service::Service(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (logger))
 {
 }
 

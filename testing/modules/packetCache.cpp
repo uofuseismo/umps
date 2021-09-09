@@ -109,7 +109,7 @@ TEST(PacketCache, DataRequest)
     double t0 = 1629737861;
     double t1 = 1629737865;
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Modules::PacketCache::DataRequest");
+              "URTS::Services::PacketCache::DataRequest");
     EXPECT_NO_THROW(request.setNetwork(network));
     EXPECT_NO_THROW(request.setStation(station));
     EXPECT_NO_THROW(request.setChannel(channel));
