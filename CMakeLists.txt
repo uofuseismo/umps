@@ -69,6 +69,7 @@ set(MESSAGE_FORMAT_SRC
 set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
+    src/messaging/publisherSubscriber/proxy.cpp
     src/messaging/requestRouter/request.cpp
     src/messaging/requestRouter/router.cpp)
 set(MODULES_LIBSRC

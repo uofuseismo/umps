@@ -144,7 +144,7 @@ void Router::bind(const std::string &endPoint)
     catch (const std::exception &e) 
     {
         auto errorMsg = "Failed to connect to endpoint: " + endPoint
-                      + "ZeroMQ failed with:\n" + std::string(e.what());
+                      + ".  ZeroMQ failed with:\n" + std::string(e.what());
         pImpl->mLogger->error(errorMsg);
         throw std::runtime_error(errorMsg);
     }
