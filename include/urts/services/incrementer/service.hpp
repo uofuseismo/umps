@@ -1,13 +1,14 @@
 #ifndef URTS_SERVICES_INCREMENTER_SERVICE_HPP
 #define URTS_SERVICES_INCREMENTER_SERVICE_HPP
 #include <memory>
+#include "urts/services/service.hpp"
 namespace URTS::Services::Incrementer
 {
 class Parameters;
 /// @class Service service.hpp "urts/services/incrementer/service.hpp"
 /// @brief Implements the server-side incrementer service.
 /// @copyright Ben Baker (Univeristy of Utah) distributed under the MIT license.
-class Service
+class Service : public URTS::Services::IService
 {
 public:
     /// @brief Constructor.
@@ -20,13 +21,13 @@ public:
     /// @brief Initializes the service.
     void initialize(const Parameters &parameters);
     /// @result True indicates that the service is initialized.
-    [[nodiscard]] bool isInitialized() const noexcept;
+    [[nodiscard]] bool isInitialized() const noexcept override final;
     /// @brief Gets the name of the item being incremented.
     /// @throws std::runtime_error if the class is not initialized.
-    [[nodiscard]] std::string getName() const;
+    [[nodiscard]] std::string getName() const override final;
     /// @brief Gets the address to submit requests to this service.
     /// @throws std::runtime_error if the class is not running.
-    [[nodiscard]] std::string getRequestAddress() const;
+    [[nodiscard]] std::string getRequestAddress() const override final;
 
     /// @brief Starts the service.
     /// @note This would be run something like:
@@ -35,18 +36,18 @@ public:
     ///       .
     ///       .
     ///       .
-    ///       thisServiceThread.stop(); // Call by main thread
-    ///       thisServiceThread.join();
-    void start();
+    ///       thisServiceThread.stop(); // Called by main thread
+    ///       countingServiceThread.join();
+    void start() override final;
 
     /// @result True indicates that the service is running.
     [[nodiscard]] bool isRunning() const noexcept;
 
     /// @brief Stops the service.
-    void stop();
+    void stop() override final;
 
     /// @brief Destructor.
-    ~Service();
+    virtual ~Service();
  
     Service(const Service &service) = delete;
     Service& operator=(const Service &service) = delete;
