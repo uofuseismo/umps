@@ -34,6 +34,9 @@ public:
     /// @{
     /// @brief Constructor.
     Proxy();
+    /// @brief Constructs a publisher with the given logger.
+    /// @param[in] logger  A pointer to the application's logger.
+    explicit Proxy(std::shared_ptr<URTS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] proxy  The proxy from which to initialize this class.
     ///                       On exit, proxy's behavior is undefined.

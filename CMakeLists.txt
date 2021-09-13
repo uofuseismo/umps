@@ -164,6 +164,7 @@ set(TEST_SRC
     testing/modules/incrementer.cpp
     testing/messaging/pubsub.cpp
     testing/messaging/requestRouter.cpp
+    testing/messaging/xpubxsub.cpp
     )
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
