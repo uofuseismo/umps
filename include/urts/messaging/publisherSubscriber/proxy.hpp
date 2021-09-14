@@ -56,9 +56,9 @@ public:
     /// @{
     /// @brief Initializes the proxy.
     /// @param[in] frontendAddress  This is the address XSUB (consumers) will 
-    ///                             bind to.
+    ///                             bind to.  This faces the internal network.
     /// @param[in] backendAddress   This is the address XPUB (producers) will
-    ///                             bind to.
+    ///                             bind to.  This faces the external network.
     /// @param[in] topic   This is the proxy's topic.  This should be unique
     ///                    since an inter-process communication context will
     ///                    be created from this name and be used to control

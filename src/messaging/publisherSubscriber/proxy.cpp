@@ -17,26 +17,23 @@ public:
         mContext(std::make_shared<zmq::context_t> (1)),
         mControlContext(std::make_unique<zmq::context_t> (0)),
         mFrontend(std::make_unique<zmq::socket_t> (*mContext,
-                                                   zmq::socket_type::xpub)),
-        mBackend( std::make_unique<zmq::socket_t> (*mContext, 
                                                    zmq::socket_type::xsub)),
-        mCapture( std::make_unique<zmq::socket_t> ()),
+        mBackend( std::make_unique<zmq::socket_t> (*mContext, 
+                                                   zmq::socket_type::xpub)),
         mControl( std::make_unique<zmq::socket_t> (*mControlContext,
                                                    zmq::socket_type::sub)),
         mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
                                                    zmq::socket_type::pub)),
         mLogger(std::make_shared<URTS::Logging::StdOut> ())
     {
-//        mControl->set(ZMQ_SUBSCRIBE, "", 0);
     }
     explicit ProxyImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
         mContext(std::make_shared<zmq::context_t> (1)),
         mControlContext(std::make_unique<zmq::context_t> (0)),
         mFrontend(std::make_unique<zmq::socket_t> (*mContext,
-                                                   zmq::socket_type::xpub)),
-        mBackend( std::make_unique<zmq::socket_t> (*mContext, 
                                                    zmq::socket_type::xsub)),
-        mCapture( std::make_unique<zmq::socket_t> ()),
+        mBackend( std::make_unique<zmq::socket_t> (*mContext, 
+                                                   zmq::socket_type::xpub)),
         mControl( std::make_unique<zmq::socket_t> (*mControlContext,
                                                    zmq::socket_type::sub)),
         mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
@@ -60,30 +57,31 @@ public:
        return started;
     }
     mutable std::mutex mMutex;
+    // This context handles external communication with other servers
     std::shared_ptr<zmq::context_t> mContext = nullptr;
+    // This context handles terminate/pause/start messages from the API
     std::unique_ptr<zmq::context_t> mControlContext = nullptr;
+    // The front is an xsub that faces the internal servers
     std::unique_ptr<zmq::socket_t> mFrontend = nullptr;
+    // The backend is an xpub that faces the external clients
     std::unique_ptr<zmq::socket_t> mBackend = nullptr;
-    std::unique_ptr<zmq::socket_t> mCapture = nullptr;
+    // The control socket binds to the proxy and receives terminate/pause/start
+    // messages from the command.
     std::unique_ptr<zmq::socket_t> mControl = nullptr;
+    // The command socket issues terminate/pause/start messages to the control.
     std::unique_ptr<zmq::socket_t> mCommand = nullptr;
     std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mTopic;
     std::string mControlAddress;
+    int mHighWaterMark = 1000;
     bool mHaveFrontend = false;
     bool mHaveBackend = false;
     bool mHaveControl = false;
     bool mStarted = false;
     bool mPaused = false;
     bool mInitialized = false;
-/*
-proxy_steerable(socket_ref frontend,
-                            socket_ref backend,
-                            socket_ref capture,
-                            socket_ref control) 
-*/
 };
 
 /// C'tor
@@ -154,18 +152,20 @@ void Proxy::initialize(const std::string &frontendAddress,
     pImpl->mFrontendAddress = frontendAddress;
     pImpl->mBackendAddress = backendAddress;
     pImpl->mControlAddress = "inproc://" + topic + "_control";
-    // Bind the frontend
+    // Connect the frontend
     try
     {
-        pImpl->mLogger->debug("Attempting to bind to frontend: "
+        pImpl->mLogger->debug("Attempting to connect to frontend: "
                             + pImpl->mFrontendAddress);
-        pImpl->mFrontend->bind(pImpl->mFrontendAddress);
+        pImpl->mFrontend->connect(pImpl->mFrontendAddress);
+        pImpl->mFrontend->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
         pImpl->mHaveFrontend = true;
     }
     catch (const std::exception &e)
     {
-        auto errorMsg = "Proxy failed to bind to frontend: " + frontendAddress
-                      + ".  ZeroMQ failed with:\n" + std::string(e.what());
+        auto errorMsg = "Proxy failed to connect to frontend: "
+                      + frontendAddress + ".  ZeroMQ failed with:\n"
+                      + std::string(e.what());
         pImpl->mLogger->error(errorMsg);
         throw std::runtime_error(errorMsg);
     }
@@ -190,9 +190,10 @@ void Proxy::initialize(const std::string &frontendAddress,
         pImpl->mLogger->debug("Attempting to bind to control: "
                             + pImpl->mControlAddress);
         pImpl->mControl->connect(pImpl->mControlAddress);
+        // The command will issue simple commands without topics so listen
+        // to `everything.' 
         pImpl->mControl->set(zmq::sockopt::subscribe, std::string(""));
         pImpl->mCommand->bind(pImpl->mControlAddress);
-
         pImpl->mHaveControl = true;
     }
     catch (const std::exception &e)
@@ -246,10 +247,10 @@ void Proxy::start()
             {
                 pImpl->mLogger->debug("Making steerable proxy...");
                 pImpl->setStarted(true);
-                zmq::proxy_steerable(zmq::socket_ref(*pImpl->mFrontend),
-                                     zmq::socket_ref(*pImpl->mBackend),
-                                     zmq::socket_ref(*pImpl->mCapture),
-                                     zmq::socket_ref(*pImpl->mControl));
+                zmq::proxy_steerable(*pImpl->mFrontend,
+                                     *pImpl->mBackend,
+                                     zmq::socket_ref(),
+                                     *pImpl->mControl);
                 pImpl->mLogger->debug("Exiting steerable proxy");
                 pImpl->setStarted(false);
             }
@@ -271,7 +272,6 @@ void Proxy::pause()
     if (!pImpl->mPaused)
     {
         pImpl->mLogger->debug("Pausing proxy...");
-        //pImpl->mControl->send(zmq::str_buffer("PAUSE"), zmq::send_flags::none);
         pImpl->mCommand->send(zmq::str_buffer("PAUSE"), zmq::send_flags::none);
         pImpl->mPaused = true;
     }

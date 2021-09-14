@@ -183,7 +183,7 @@ void Publisher::bind(const std::string &endPoint)
     catch (const std::exception &e)
     {
         auto errorMsg = "Failed to connect to endpoint: " + endPoint
-                      + "ZeroMQ failed with:\n" + std::string(e.what());
+                      + "\nZeroMQ failed with: " + std::string(e.what());
         pImpl->mLogger->error(errorMsg);
         throw std::runtime_error(errorMsg);
     }
@@ -203,6 +203,7 @@ void Publisher::send(const MessageFormats::IMessage &message)
     {
         pImpl->mLogger->debug("CBOR message is empty");
     }
+    //pImpl->mLogger->debug("Sending message of type: " + messageType);
     zmq::const_buffer header{messageType.data(), messageType.size()};
     pImpl->mPublisher->send(header, zmq::send_flags::sndmore);
     zmq::const_buffer buffer{cborMessage.data(), cborMessage.size()};
