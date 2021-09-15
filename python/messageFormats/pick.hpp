@@ -53,6 +53,8 @@ public:
     void setPolarity(Polarity polarity) noexcept;
     Polarity getPolarity() const noexcept;
 
+    [[nodiscard]] std::string getMessageType() const noexcept;
+
     [[nodiscard]] std::string toJSON(int nSpaces =-1) const;
 private:
     std::unique_ptr<URTS::MessageFormats::Pick> pImpl;

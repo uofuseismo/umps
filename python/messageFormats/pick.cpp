@@ -200,7 +200,8 @@ void PURTS::MessageFormats::initializePick(pybind11::module &m)
 
     o.def("to_json",
           &Pick::toJSON,
-          "Serializes the class to a JSON object.  The number of spaces controls the formatting");
+          "Serializes the class to a JSON object.  The number of spaces controls the formatting",
+          pybind11::arg("nSpaces") = 4);
 
     pybind11::enum_<PURTS::MessageFormats::Polarity> (m, "Polarity")
         .value("up", PURTS::MessageFormats::Polarity::UP,
