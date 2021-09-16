@@ -1,3 +1,5 @@
+#include <string>
+#include <sstream>
 #include "dataPacket.hpp"
 #include "urts/messageFormats/dataPacket.hpp"
 
@@ -31,6 +33,12 @@ DataPacket& DataPacket::operator=(const DataPacket &packet)
     pImpl = std::make_unique<URTS::MessageFormats::DataPacket<double>>
             (*packet.pImpl);
     return *this;
+}
+
+URTS::MessageFormats::DataPacket<double>
+    DataPacket::getNativeClass() const noexcept
+{
+    return *pImpl;
 }
 
 /// Move assignment
@@ -120,6 +128,11 @@ uint64_t DataPacket::getEndTimeInMicroSeconds() const
 }
 
 /// Data
+void DataPacket::setDataFromVector(const std::vector<double> &x)
+{
+    pImpl->setData(x);
+}
+
 void DataPacket::setData(pybind11::array_t<double, pybind11::array::c_style |
                          pybind11::array::forcecast> &x)
 {
@@ -144,6 +157,11 @@ pybind11::array_t<double> DataPacket::getData() const
     return y;
 }
 
+std::vector<double> DataPacket::getDataAsVector() const
+{
+    return pImpl->getData();
+}
+
 /// JSON
 std::string DataPacket::toJSON(const int nSpaces) const
 {
@@ -154,6 +172,16 @@ std::string DataPacket::toJSON(const int nSpaces) const
 std::string DataPacket::getMessageType() const noexcept
 {
     return pImpl->getMessageType();
+}
+
+/// Base class
+std::unique_ptr<URTS::MessageFormats::IMessage>
+    DataPacket::getBaseClass() const noexcept
+{
+    std::unique_ptr<URTS::MessageFormats::IMessage> message
+        = std::make_unique<URTS::MessageFormats::DataPacket<double>>
+          (getNativeClass());
+    return message;
 }
 
 
@@ -183,7 +211,6 @@ void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
     o.def_property("data",
                    &DataPacket::getData,
                    &DataPacket::setData);
-
     o.def_property_readonly("endtime_in_microseconds",
                             &DataPacket::getEndTimeInMicroSeconds);
     o.def("clear",
@@ -195,7 +222,6 @@ void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
           "Serializes the class to a JSON object.  The number of spaces controls the formatting",
           pybind11::arg("nSpaces") = 4); 
 
-/*
     // Pickling rules (makes this class copyable)
     o.def(pybind11::pickle(
         [](const DataPacket &p) {
@@ -203,17 +229,26 @@ void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
            auto station = p.getStation();
            auto channel = p.getChannel();
            auto locationCode = p.getLocationCode();
-           auto identifier = p.getIdentifier();
-           auto time = p.getTime(); 
-           auto phaseHint = p.getPhaseHint();
-           auto algorithm = p.getAlgorithm();
-           auto polarity = p.getPolarity();
+           auto samplingRate = p.getSamplingRate();
+           auto startTimeMuS = p.getStartTimeInMicroSeconds();
+           auto data = p.getDataAsVector();
+           auto nSamples = static_cast<int> (data.size());
+           std::string x;
+           if (nSamples > 0)
+           {
+               x.reserve(16*data.size());
+               for (size_t i = 0; i < data.size(); ++i)
+               {
+                   x = x + std::to_string(data[i]);
+                   if (i < data.size() - 1){x = x + ",";}
+               }
+           }
            return pybind11::make_tuple(network, station, channel, locationCode,
-                                       identifier, time, phaseHint, algorithm,
-                                       polarity);
+                                       samplingRate, startTimeMuS, nSamples,
+                                       x);
         },
         [](pybind11::tuple t) {
-           if (t.size() != 9)
+           if (t.size() != 8)
            {
                throw std::runtime_error("Invalid state");
            }
@@ -221,23 +256,30 @@ void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
            auto station = t[1].cast<std::string> (); 
            auto channel = t[2].cast<std::string> (); 
            auto locationCode = t[3].cast<std::string> (); 
-           auto identifier = t[4].cast<uint64_t> (); 
-           auto time = t[5].cast<double> (); 
-           auto phaseHint = t[6].cast<std::string> (); 
-           auto algorithm = t[7].cast<std::string> (); 
-           auto polarity = t[8].cast<Polarity> (); 
+           auto samplingRate = t[4].cast<double> ();
+           auto startTimeMuS = t[5].cast<uint64_t> ();
+           auto nSamples = t[6].cast<int> ();
+           auto cSignal = t[7].cast<std::string> ();
            DataPacket p;
            p.setNetwork(network);
            p.setStation(station);
            p.setChannel(channel);
            p.setLocationCode(locationCode); 
-           p.setIdentifier(identifier);
-           p.setTime(time);
-           p.setPhaseHint(phaseHint);
-           p.setAlgorithm(algorithm);
-           p.setPolarity(polarity);
+           if (samplingRate > 0){p.setSamplingRate(samplingRate);}
+           p.setStartTimeInMicroSeconds(startTimeMuS);
+           if (cSignal.size() > 0 && nSamples > 0)
+           {
+               std::vector<double> signal;
+               signal.reserve(nSamples);
+               std::stringstream ss(cSignal);
+               for (double d; ss >> d;)
+               {
+                   signal.push_back(d);
+                   if (ss.peek() == ','){ss.ignore();}
+               }
+               p.setDataFromVector(signal);
+           }
            return p;
         }
     ));
-*/
 }

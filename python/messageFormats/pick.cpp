@@ -168,6 +168,16 @@ std::string Pick::toJSON(const int nSpaces) const
     return pImpl->toJSON(nSpaces);
 }
 
+/// Useful for calling messaging functions
+std::unique_ptr<URTS::MessageFormats::IMessage>
+    Pick::getBaseClass() const noexcept
+{
+    std::unique_ptr<URTS::MessageFormats::IMessage> message
+        = std::make_unique<URTS::MessageFormats::Pick> (getNativeClass()); 
+    return message;
+}
+
+
 void PURTS::MessageFormats::initializePick(pybind11::module &m)
 {
     pybind11::class_<PURTS::MessageFormats::Pick> o(m, "Pick");

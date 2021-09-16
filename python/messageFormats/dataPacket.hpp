@@ -21,6 +21,7 @@ public:
     DataPacket& operator=(DataPacket &&packet) noexcept;
     void clear() noexcept;
     URTS::MessageFormats::DataPacket<double> getNativeClass() const noexcept;
+    std::unique_ptr<URTS::MessageFormats::IMessage> getBaseClass() const noexcept override;
  
     [[nodiscard]] std::string getMessageType() const noexcept;
 
@@ -42,7 +43,9 @@ public:
     [[nodiscard]] uint64_t getEndTimeInMicroSeconds() const;
 
     void setData(pybind11::array_t<double, pybind11::array::c_style | pybind11::array::forcecast> &x);
+    void setDataFromVector(const std::vector<double> &x);
     pybind11::array_t<double> getData() const;
+    std::vector<double> getDataAsVector() const;
 
     [[nodiscard]] std::string toJSON(int nSpaces =-1) const;
 private:

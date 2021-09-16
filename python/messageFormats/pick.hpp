@@ -26,6 +26,7 @@ public:
     Pick& operator=(const Pick &pick);
     Pick& operator=(Pick &&pick) noexcept;
     URTS::MessageFormats::Pick getNativeClass() const noexcept;
+    std::unique_ptr<URTS::MessageFormats::IMessage> getBaseClass() const noexcept override;
     void clear() noexcept;
 
     [[nodiscard]] std::string getMessageType() const noexcept;

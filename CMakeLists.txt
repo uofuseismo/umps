@@ -176,7 +176,7 @@ target_link_libraries(unitTests PRIVATE urts ${GTEST_BOTH_LIBRARIES} pthread)
 target_include_directories(unitTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
-add_test(NAME unitsTests
+add_test(NAME unitTests
          COMMAND unitTests)
 
 if (WRAP_PYTHON)
