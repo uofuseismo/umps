@@ -187,7 +187,7 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
 
 void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
 {
-    pybind11::class_<PURTS::MessageFormats::DataPacket> o(m, "DataPacket");
+    pybind11::class_<DataPacket, IMessage> o(m, "DataPacket");
     o.def(pybind11::init<> ());
     o.doc() = "This defines a datapacket.\n\nThe following properties are required:\n   network : The station's network name on which the pick was made.\n    station : The name of the station on which the pick was made.\n    channel : The station's channel name on which the pick was made.\n  location_code : The location code of the station on which the pick was made.\n    time : The pick time in UTC seconds since the epoch.\n    sampling_rate : The sampling rate in Hz.\n\nThe following properties are optional:\n    start_time_in_microseconds : The UTC start time in microseconds from the epoch (Jan 1, 1970)\n   data : The time series data comprising this packet.\n";
     o.def_property("network",

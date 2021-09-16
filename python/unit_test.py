@@ -55,6 +55,16 @@ def test_messages_data_packet():
     for i in range(len(x)):
         assert abs(x_back[i] - x[i]) < 1.e-14, 'x[%d] is wrong'%i
 
+def test_messaging_pubsub_subscriber():
+    subscriber = pyurts.Messaging.PublisherSubscriber.Subscriber()
+    pick = pyurts.MessageFormats.Pick()
+    subscriber.add_subscription(pick)
+    #a = pyurts.MessageFormats.pick_base_class()
+    #print(type(pick))
+    #print(type(subscriber))
+    #print(type(pick))
+
 if __name__ == "__main__":
     test_messages_pick()
     test_messages_data_packet()
+    test_messaging_pubsub_subscriber()

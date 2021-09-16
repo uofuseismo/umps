@@ -180,7 +180,7 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
 
 void PURTS::MessageFormats::initializePick(pybind11::module &m)
 {
-    pybind11::class_<PURTS::MessageFormats::Pick> o(m, "Pick");
+    pybind11::class_<Pick, IMessage> o(m, "Pick");
     o.def(pybind11::init<> ());
     o.doc() = "This defines a pick.\n\nThe following properties are required:\n   network : The station's network name on which the pick was made.\n    station : The name of the station on which the pick was made.\n    channel : The station's channel name on which the pick was made.\n  location_code : The location code of the station on which the pick was made.\n    time : The pick time in UTC seconds since the epoch.\n    identifier : The unique pick identifier\n\nThe following properties are optional:\n    polarity : The polarity which can be -1 (down), +1 (up), or 0 (unkown).\n    phase_hint : The seismic phase arrival's hint - e.g., P or S.\n    algorithm : The algorithm that made the pick\n";
     o.def_property("network",
@@ -227,6 +227,15 @@ void PURTS::MessageFormats::initializePick(pybind11::module &m)
           &Pick::toJSON,
           "Serializes the class to a JSON object.  The number of spaces controls the formatting",
           pybind11::arg("nSpaces") = 4);
+
+/*
+    m.def("pick_base_class", []()
+    {
+        std::unique_ptr<IMessage> result = std::make_unique<Pick> ();
+        return std::unique_ptr<IMessage> (new Pick);
+    });
+*/
+
 
     pybind11::enum_<PURTS::MessageFormats::Polarity> (m, "Polarity")
         .value("up", PURTS::MessageFormats::Polarity::UP,

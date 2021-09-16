@@ -140,8 +140,11 @@ if (WRAP_PYTHON)
    find_package(pybind11 REQUIRED)
    add_library(pyurts MODULE
                python/pyurts.cpp
+               python/messageFormats/message.cpp
                python/messageFormats/dataPacket.cpp
-               python/messageFormats/pick.cpp)
+               python/messageFormats/pick.cpp
+               python/messaging/publisherSubscriber/publisher.cpp
+               python/messaging/publisherSubscriber/subscriber.cpp)
    target_link_libraries(pyurts PRIVATE pybind11::module urts)
    target_include_directories(pyurts
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/python/include>

@@ -13,5 +13,6 @@ public:
     virtual ~IMessage() = default;
     [[nodiscard]] virtual std::unique_ptr<URTS::MessageFormats::IMessage> getBaseClass() const noexcept = 0;
 };
+void initializeIMessage(pybind11::module &m);
 }
 #endif
