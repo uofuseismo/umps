@@ -2,7 +2,7 @@
 #define PYURTS_MESSAGEFORMATS_PICK_HPP
 #include <memory>
 #include <pybind11/pybind11.h>
-#include "message.hpp"
+#include "messageFormats/message.hpp"
 namespace URTS::MessageFormats
 {
 class Pick;

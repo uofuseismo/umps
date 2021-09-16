@@ -3,7 +3,7 @@
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include "message.hpp"
+#include "messageFormats/message.hpp"
 namespace URTS::MessageFormats
 {
 template<class T> class DataPacket;

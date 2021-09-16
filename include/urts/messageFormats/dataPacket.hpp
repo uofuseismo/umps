@@ -1,5 +1,6 @@
 #ifndef URTS_MESSAGEFORMATS_DATAPACKET_HPP
 #define URTS_MESSAGEFORMATS_DATAPACKET_HPP
+#include <vector>
 #include <memory>
 #include "urts/messageFormats/message.hpp"
 namespace URTS::MessageFormats

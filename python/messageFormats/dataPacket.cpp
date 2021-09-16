@@ -1,6 +1,6 @@
 #include <string>
 #include <sstream>
-#include "dataPacket.hpp"
+#include "messageFormats/dataPacket.hpp"
 #include "urts/messageFormats/dataPacket.hpp"
 
 using namespace PURTS::MessageFormats;

@@ -144,8 +144,8 @@ if (WRAP_PYTHON)
                python/messageFormats/pick.cpp)
    target_link_libraries(pyurts PRIVATE pybind11::module urts)
    target_include_directories(pyurts
-                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/python>
-                              PRIVATE $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/python/include>
+                                      $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
    set_target_properties(pyurts PROPERTIES
                          PREFIX ""
                          CXX_STANDARD 20
@@ -181,8 +181,8 @@ add_test(NAME unitTests
 
 if (WRAP_PYTHON)
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
-   #add_test(NAME python_tests
-   #         COMMAND ${PYTHON_EXECUTABLE} -m pytest)
+   add_test(NAME python_tests
+            COMMAND ${PYTHON_EXECUTABLE} -m pytest)
 endif()
 
 ##########################################################################################

@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include "pick.hpp"
+#include "messageFormats/pick.hpp"
 #include "urts/messageFormats/pick.hpp"
 
 using namespace PURTS::MessageFormats;

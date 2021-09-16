@@ -1,7 +1,10 @@
 #ifndef PYURTS_MESSAGEFORMATS_MESSAGE_HPP
 #define PYURTS_MESSAGEFORMATS_MESSAGE_HPP
 #include <memory>
-#include "urts/messageFormats/message.hpp"
+namespace URTS::MessageFormats
+{
+class IMessage;
+}
 namespace PURTS::MessageFormats
 {
 class IMessage
