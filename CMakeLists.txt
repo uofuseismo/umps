@@ -140,6 +140,7 @@ if (WRAP_PYTHON)
    find_package(pybind11 REQUIRED)
    add_library(pyurts MODULE
                python/pyurts.cpp
+               python/messageFormats/dataPacket.cpp
                python/messageFormats/pick.cpp)
    target_link_libraries(pyurts PRIVATE pybind11::module urts)
    target_include_directories(pyurts
@@ -179,9 +180,9 @@ add_test(NAME unitsTests
          COMMAND unitTests)
 
 if (WRAP_PYTHON)
-#   file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
-#   add_test(NAME python_tests
-#            COMMAND ${PYTHON_EXECUTABLE} -m pytest)
+   file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
+   #add_test(NAME python_tests
+   #         COMMAND ${PYTHON_EXECUTABLE} -m pytest)
 endif()
 
 ##########################################################################################

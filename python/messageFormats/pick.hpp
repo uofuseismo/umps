@@ -2,6 +2,7 @@
 #define PYURTS_MESSAGEFORMATS_PICK_HPP
 #include <memory>
 #include <pybind11/pybind11.h>
+#include "message.hpp"
 namespace URTS::MessageFormats
 {
 class Pick;
@@ -15,16 +16,19 @@ enum class Polarity : int8_t
     UP = 1,
     DOWN =-1
 };
-class Pick
+class Pick : public IMessage
 {
 public:
     Pick();
-    ~Pick();
+    virtual ~Pick();
     Pick(const Pick &pick);
     Pick(Pick &&pick) noexcept;
     Pick& operator=(const Pick &pick);
     Pick& operator=(Pick &&pick) noexcept;
+    URTS::MessageFormats::Pick getNativeClass() const noexcept;
     void clear() noexcept;
+
+    [[nodiscard]] std::string getMessageType() const noexcept;
 
     void setNetwork(const std::string &network);
     [[nodiscard]] std::string getNetwork() const;
@@ -52,8 +56,6 @@ public:
 
     void setPolarity(Polarity polarity) noexcept;
     Polarity getPolarity() const noexcept;
-
-    [[nodiscard]] std::string getMessageType() const noexcept;
 
     [[nodiscard]] std::string toJSON(int nSpaces =-1) const;
 private:

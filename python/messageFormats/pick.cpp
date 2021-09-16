@@ -39,6 +39,12 @@ Pick& Pick::operator=(Pick &&pick) noexcept
     return *this;
 }
 
+/// Get native class
+URTS::MessageFormats::Pick Pick::getNativeClass() const noexcept
+{
+    return *pImpl;
+}
+
 /// Destructor
 Pick::~Pick() = default;
 
@@ -150,6 +156,12 @@ Polarity Pick::getPolarity() const noexcept
     return polarity;
 }
 
+/// Message type
+std::string Pick::getMessageType() const noexcept
+{
+    return pImpl->getMessageType();
+}
+
 /// JSON
 std::string Pick::toJSON(const int nSpaces) const
 {
@@ -193,6 +205,9 @@ void PURTS::MessageFormats::initializePick(pybind11::module &m)
     o.def_property("algorithm",
                    &Pick::getAlgorithm,
                    &Pick::setAlgorithm);
+
+    o.def_property_readonly("message_type",
+                            &Pick::getMessageType);
 
     o.def("clear",
           &Pick::clear,

@@ -8,6 +8,8 @@
 namespace
 {
 
+#define MESSAGE_TYPE "URTS::MessageFormats::Pick"
+
 using namespace URTS::MessageFormats;
 
 TEST(PickTest, Pick)
@@ -29,7 +31,7 @@ TEST(PickTest, Pick)
     EXPECT_NO_THROW(pick.setStation(station));
     EXPECT_NO_THROW(pick.setChannel(channel));
     EXPECT_NO_THROW(pick.setLocationCode(locationCode));
-    EXPECT_EQ(pick.getMessageType(), "Pick");
+    EXPECT_EQ(pick.getMessageType(), MESSAGE_TYPE);
     pick.setPolarity(polarity);
     pick.setPhaseHint(phaseHint);
     pick.setAlgorithm(algorithm);

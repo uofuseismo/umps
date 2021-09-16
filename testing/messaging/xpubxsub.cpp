@@ -60,7 +60,7 @@ void publisher(int id)
     URTS::Messaging::PublisherSubscriber::Publisher publisher(loggerPtr);
     publisher.bind(frontendAddress);
     // Deal with the slow joiner problem
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
     // Define message to send
     URTS::MessageFormats::Pick pick;
     pick.setTime(time);
@@ -75,7 +75,7 @@ void publisher(int id)
     {
         pick.setIdentifier(idBase + i);
         publisher.send(pick);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
 }

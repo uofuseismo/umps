@@ -133,6 +133,29 @@ void DataPacket::setData(pybind11::array_t<double, pybind11::array::c_style |
     pImpl->setData(len, xPtr);
 }
 
+pybind11::array_t<double> DataPacket::getData() const
+{
+    auto nSamples = pImpl->getNumberOfSamples();
+    auto y = pybind11::array_t<double, pybind11::array::c_style> (nSamples);
+    pybind11::buffer_info ybuf = y.request();
+    auto yPtr = static_cast<double *> (ybuf.ptr);
+    const double *dataPtr = pImpl->getDataPointer();
+    std::copy(dataPtr, dataPtr + nSamples, yPtr);
+    return y;
+}
+
+/// JSON
+std::string DataPacket::toJSON(const int nSpaces) const
+{
+    return pImpl->toJSON(nSpaces);
+} 
+
+/// Message type
+std::string DataPacket::getMessageType() const noexcept
+{
+    return pImpl->getMessageType();
+}
+
 
 void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
 {
@@ -151,5 +174,70 @@ void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
     o.def_property("location_code",
                    &DataPacket::getLocationCode,
                    &DataPacket::setLocationCode);
+    o.def_property("starttime_in_microseconds",
+                   &DataPacket::getStartTimeInMicroSeconds,
+                   &DataPacket::setStartTimeInMicroSeconds);
+    o.def_property("sampling_rate",
+                   &DataPacket::getSamplingRate,
+                   &DataPacket::setSamplingRate);
+    o.def_property("data",
+                   &DataPacket::getData,
+                   &DataPacket::setData);
 
+    o.def_property_readonly("endtime_in_microseconds",
+                            &DataPacket::getEndTimeInMicroSeconds);
+    o.def("clear",
+          &DataPacket::clear,
+          "Resets the class.");
+
+    o.def("to_json",
+          &DataPacket::toJSON,
+          "Serializes the class to a JSON object.  The number of spaces controls the formatting",
+          pybind11::arg("nSpaces") = 4); 
+
+/*
+    // Pickling rules (makes this class copyable)
+    o.def(pybind11::pickle(
+        [](const DataPacket &p) {
+           auto network = p.getNetwork();
+           auto station = p.getStation();
+           auto channel = p.getChannel();
+           auto locationCode = p.getLocationCode();
+           auto identifier = p.getIdentifier();
+           auto time = p.getTime(); 
+           auto phaseHint = p.getPhaseHint();
+           auto algorithm = p.getAlgorithm();
+           auto polarity = p.getPolarity();
+           return pybind11::make_tuple(network, station, channel, locationCode,
+                                       identifier, time, phaseHint, algorithm,
+                                       polarity);
+        },
+        [](pybind11::tuple t) {
+           if (t.size() != 9)
+           {
+               throw std::runtime_error("Invalid state");
+           }
+           auto network = t[0].cast<std::string> (); 
+           auto station = t[1].cast<std::string> (); 
+           auto channel = t[2].cast<std::string> (); 
+           auto locationCode = t[3].cast<std::string> (); 
+           auto identifier = t[4].cast<uint64_t> (); 
+           auto time = t[5].cast<double> (); 
+           auto phaseHint = t[6].cast<std::string> (); 
+           auto algorithm = t[7].cast<std::string> (); 
+           auto polarity = t[8].cast<Polarity> (); 
+           DataPacket p;
+           p.setNetwork(network);
+           p.setStation(station);
+           p.setChannel(channel);
+           p.setLocationCode(locationCode); 
+           p.setIdentifier(identifier);
+           p.setTime(time);
+           p.setPhaseHint(phaseHint);
+           p.setAlgorithm(algorithm);
+           p.setPolarity(polarity);
+           return p;
+        }
+    ));
+*/
 }

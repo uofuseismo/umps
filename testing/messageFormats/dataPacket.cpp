@@ -9,6 +9,8 @@
 namespace
 {
 
+#define MESSAGE_TYPE "URTS::MessageFormats::DataPacket"
+
 using namespace URTS::MessageFormats;
 
 using MyTypes = ::testing::Types<double, float>;
@@ -57,7 +59,7 @@ TYPED_TEST(DataPacketTest, DataPacket)
     // the original class)
     auto packetCopy = *this->dataPacket;
     // Verify 
-    EXPECT_EQ(packetCopy.getMessageType(), "DataPacket");
+    EXPECT_EQ(packetCopy.getMessageType(), MESSAGE_TYPE);
     EXPECT_EQ(packetCopy.getStartTime(), startTime);
     EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);
     EXPECT_EQ(packetCopy.getNetwork(), network);
@@ -80,7 +82,7 @@ TYPED_TEST(DataPacketTest, DataPacket)
     packetCopy.clear();
     EXPECT_EQ(packetCopy.getNumberOfSamples(), 0);
     packetCopy.fromCBOR(traceCBOR);
-    EXPECT_EQ(packetCopy.getMessageType(), "DataPacket");
+    EXPECT_EQ(packetCopy.getMessageType(), MESSAGE_TYPE);
     EXPECT_EQ(packetCopy.getStartTime(), startTime);
     EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);
     EXPECT_EQ(packetCopy.getNetwork(), network);

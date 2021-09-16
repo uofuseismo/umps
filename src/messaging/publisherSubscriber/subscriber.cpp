@@ -126,7 +126,7 @@ public:
     std::unique_ptr<zmq::socket_t> mSubscriber;
     std::map<std::string, bool> mEndPoints;
     std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
-    int mHighWaterMark = 5000;
+    int mHighWaterMark = 4*1024;
     bool mMadeContext = true;
     bool mConnected = false;
 };

@@ -75,7 +75,7 @@ public:
     std::string mBackendAddress;
     std::string mTopic;
     std::string mControlAddress;
-    int mHighWaterMark = 1000;
+    //int mHighWaterMark = 4*1024;
     bool mHaveFrontend = false;
     bool mHaveBackend = false;
     bool mHaveControl = false;
@@ -158,7 +158,7 @@ void Proxy::initialize(const std::string &frontendAddress,
         pImpl->mLogger->debug("Attempting to connect to frontend: "
                             + pImpl->mFrontendAddress);
         pImpl->mFrontend->connect(pImpl->mFrontendAddress);
-        pImpl->mFrontend->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+        //pImpl->mFrontend->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
         pImpl->mHaveFrontend = true;
     }
     catch (const std::exception &e)

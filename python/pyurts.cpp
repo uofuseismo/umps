@@ -1,4 +1,5 @@
 #include "messageFormats/pick.hpp"
+#include "messageFormats/dataPacket.hpp"
 #include "urts/version.hpp"
 #include <pybind11/pybind11.h>
 
@@ -11,6 +12,7 @@ PYBIND11_MODULE(pyurts, m)
     pybind11::module messageFormatsModule = m.def_submodule("MessageFormats");
     messageFormatsModule.attr("__doc__") = "An assortment of message formats in URTS.";
     PURTS::MessageFormats::initializePick(messageFormatsModule);
+    PURTS::MessageFormats::initializeDataPacket(messageFormatsModule);
 
 }
 

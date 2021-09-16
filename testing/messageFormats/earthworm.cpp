@@ -7,6 +7,8 @@
 namespace
 {
 
+#define MESSAGE_TYPE "URTS::MessageFormats::Earthworm::TraceBuf2"
+
 using namespace URTS::MessageFormats::Earthworm;
 
 using MyTypes = ::testing::Types<double, float, int, int16_t>;
@@ -59,7 +61,7 @@ TYPED_TEST(TraceBuf2Test, TraceBuf2)
     // the original class)
     auto traceBuf2Copy = *this->traceBuf2;
     // Verify 
-    EXPECT_EQ(traceBuf2Copy.getMessageType(), "TraceBuf2");
+    EXPECT_EQ(traceBuf2Copy.getMessageType(), MESSAGE_TYPE);
     EXPECT_EQ(traceBuf2Copy.getMaximumNumberOfSamples(), (4096 - 64)/sizeT);
     EXPECT_EQ(traceBuf2Copy.getMaximumNetworkLength(), 8);
     EXPECT_EQ(traceBuf2Copy.getMaximumStationLength(), 6);
@@ -92,7 +94,7 @@ TYPED_TEST(TraceBuf2Test, TraceBuf2)
     EXPECT_EQ(traceBuf2Copy.getNumberOfSamples(), 0);
     traceBuf2Copy.fromCBOR(cbor);
     // Verify from CBOR
-    EXPECT_EQ(traceBuf2Copy.getMessageType(), "TraceBuf2");
+    EXPECT_EQ(traceBuf2Copy.getMessageType(), MESSAGE_TYPE);
     EXPECT_EQ(traceBuf2Copy.getMaximumNumberOfSamples(), (4096 - 64)/sizeT);
     EXPECT_EQ(traceBuf2Copy.getMaximumNetworkLength(), 8); 
     EXPECT_EQ(traceBuf2Copy.getMaximumStationLength(), 6); 

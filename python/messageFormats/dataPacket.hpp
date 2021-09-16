@@ -3,23 +3,27 @@
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include "message.hpp"
 namespace URTS::MessageFormats
 {
 template<class T> class DataPacket;
 }
 namespace PURTS::MessageFormats
 {
-class DataPacket
+class DataPacket : public IMessage
 {
 public:
     DataPacket();
-    ~DataPacket();
+    virtual ~DataPacket();
     DataPacket(const DataPacket &packet);
     DataPacket(DataPacket &&packet) noexcept;
     DataPacket& operator=(const DataPacket &packet);
     DataPacket& operator=(DataPacket &&packet) noexcept;
     void clear() noexcept;
+    URTS::MessageFormats::DataPacket<double> getNativeClass() const noexcept;
  
+    [[nodiscard]] std::string getMessageType() const noexcept;
+
     // SNCL
     void setNetwork(const std::string &network);
     [[nodiscard]] std::string getNetwork() const;
@@ -38,7 +42,9 @@ public:
     [[nodiscard]] uint64_t getEndTimeInMicroSeconds() const;
 
     void setData(pybind11::array_t<double, pybind11::array::c_style | pybind11::array::forcecast> &x);
+    pybind11::array_t<double> getData() const;
 
+    [[nodiscard]] std::string toJSON(int nSpaces =-1) const;
 private:
     std::unique_ptr<URTS::MessageFormats::DataPacket<double>> pImpl; 
 };

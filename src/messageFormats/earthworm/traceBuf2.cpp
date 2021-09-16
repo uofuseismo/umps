@@ -25,7 +25,7 @@
    #define LOC_LEN 2
 #endif
  
-#define MESSAGE_TYPE "TraceBuf2"
+#define MESSAGE_TYPE "URTS::MessageFormats::Earthworm::TraceBuf2"
 
 using namespace URTS::MessageFormats::Earthworm;
 

@@ -5,7 +5,7 @@
 #include "urts/messageFormats/pick.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "Pick"
+#define MESSAGE_TYPE "URTS::MessageFormats::Pick"
 
 using namespace URTS::MessageFormats;
 

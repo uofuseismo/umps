@@ -7,6 +7,8 @@
 #include "messageFormats/earthworm/traceBuf2.hpp"
 #include "private/isEmpty.hpp"
 
+#define MESSAGE_TYPE "URTS::MessageFormats::DataPacket"
+
 using namespace URTS::MessageFormats;
 
 namespace
@@ -400,11 +402,17 @@ std::vector<T> DataPacket<T>::getData() const noexcept
     return pImpl->mData;
 }
 
+template<class T>
+const T* DataPacket<T>::getDataPointer() const noexcept
+{
+    return pImpl->mData.data();
+}
+
 /// Message format
 template<class T>
 std::string DataPacket<T>::getMessageType() const noexcept
 {
-    return "DataPacket";
+    return MESSAGE_TYPE;
 }
 
 /// Copy this class

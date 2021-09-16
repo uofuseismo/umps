@@ -107,7 +107,7 @@ public:
     /// @{
     /// @param[in] startTimeInMicroSeconds  The UTC start time in microseconds
     ///                                     from the epoch (Jan 1, 1970). 
-    void setStartTime(const int64_t startTimeInMicroSeconds) noexcept;
+    void setStartTime(int64_t startTimeInMicroSeconds) noexcept;
     /// @result The UTC start time in microseconds from the epoch.
     [[nodiscard]] int64_t getStartTime() const noexcept;
     /// @result The UTC time in microseconds from the epoch of the last sample.
@@ -136,6 +136,9 @@ public:
         void setData(const int nSamples, const U *data);
     /// @result The time series currently set on the packet. 
     [[nodiscard]] std::vector<T> getData() const noexcept;
+    /// @result A pointer to the underlying data packet.  This is an array whose
+    ///         dimensions is [\c getNumberOfSamples()] 
+    [[nodiscard]] const T *getDataPointer() const noexcept;
     /// @result The number of data samples in the packet.
     [[nodiscard]] int getNumberOfSamples() const noexcept;
     /// @}
