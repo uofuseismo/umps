@@ -67,6 +67,7 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
+    src/messaging/authentication/generateKeyPair.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
     src/messaging/publisherSubscriber/proxy.cpp
@@ -132,6 +133,14 @@ if (${BUILD_EW})
     target_link_libraries(packetCache PRIVATE urts Boost::program_options pthread)
     #target_include_directories(packetCache PRIVATE ${Boost_INCLUDE_DIR})
 endif()
+
+add_executable(uKeyPair src/modules/keypair/keypair.cpp)
+set_target_properties(uKeyPair PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_link_libraries(uKeyPair PRIVATE Boost::program_options urts)
+
 
 ##########################################################################################
 #                                      Python Wrapping                                   #
