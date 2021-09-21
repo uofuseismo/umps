@@ -67,6 +67,7 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
+    src/messaging/authentication/certificate.cpp
     src/messaging/authentication/generateKeyPair.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
@@ -175,6 +176,7 @@ set(TEST_SRC
     testing/messageFormats/dataPacket.cpp
     testing/modules/packetCache.cpp
     testing/modules/incrementer.cpp
+    testing/messaging/authentication.cpp
     testing/messaging/pubsub.cpp
     testing/messaging/requestRouter.cpp
     testing/messaging/xpubxsub.cpp
