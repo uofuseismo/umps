@@ -7,12 +7,13 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "urts/messaging/authentication/generateKeyPair.hpp"
+#include "urts/messaging/authentication/certificate.hpp"
 
 struct ProgramOptions
 {
     std::string mPublicKeyFile = "publicKey.key";
     std::string mPrivateKeyFile = "privateKey.key";
+    std::string mMetadata = "";
     int mError = 0;
 };
 
@@ -27,21 +28,13 @@ int main(int argc, char *argv[])
         std::cerr << "Execution failed" << std::endl; 
         return EXIT_FAILURE;
     }
-    std::string publicKeyFileName = options.mPublicKeyFile;
-    std::string privateKeyFileName = options.mPrivateKeyFile;
-    // Generate the keys in a format that's useful for URTS
-    auto [publicKeyEncoded, privateKeyEncoded]
-         = URTS::Messaging::Authentication::generateKeyPair();
-    // Write the keys
-    auto publicKeyFile = std::fstream(publicKeyFileName,
-                                      std::ios::out);
-    publicKeyFile << publicKeyEncoded.data() << std::endl;
-    publicKeyFile.close();
-
-    auto privateKeyFile = std::fstream(privateKeyFileName,
-                                       std::ios::out);
-    privateKeyFile << privateKeyEncoded.data() << std::endl;
-    privateKeyFile.close();
+    auto publicKeyFileName = options.mPublicKeyFile;
+    auto privateKeyFileName = options.mPrivateKeyFile;
+    URTS::Messaging::Authentication::Certificate certificate;
+    certificate.create();
+    certificate.setMetadata(options.mMetadata);
+    certificate.writePublicKeyToTextFile(publicKeyFileName);
+    certificate.writePrivateKeyToTextFile(privateKeyFileName);
     return EXIT_SUCCESS;
 }
 
@@ -53,7 +46,7 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[])
 {
     ProgramOptions options;
     boost::program_options::options_description desc(
-        "uKeyPair is a utility for generating a public/private keypair for use in URTS.  Example usage is as follows:\n\n  uKeyPair --publickey publickey.txt --privatekey privatekey.txt\n\nAllowed options");
+        "uKeyPair is a utility for generating a public/private keypair for use in URTS.  Example usage is as follows:\n\n  uKeyPair --publickey publickey.txt --privatekey privatekey.txt --keyname test_key\n\nAllowed options");
     desc.add_options()
         ("help",       "Produces this help message")
         ("publickey",  
@@ -61,7 +54,10 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[])
          "The name of the public key file")
         ("privatekey",
          boost::program_options::value<std::string> (),
-         "The name of the private key file");
+         "The name of the private key file")
+        ("keyname",
+         boost::program_options::value<std::string> (),
+         "Text descriptor for you key");
     boost::program_options::variables_map vm; 
     boost::program_options::store(
         boost::program_options::parse_command_line(argc, argv, desc), vm);
@@ -79,6 +75,10 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[])
     if (vm.count("privatekey"))
     {
         options.mPrivateKeyFile = vm["privatekey"].as<std::string>();
+    }
+    if (vm.count("keyname"))
+    {
+        options.mMetadata = vm["keyname"].as<std::string> ();
     }
     if (options.mPublicKeyFile == options.mPrivateKeyFile)
     {

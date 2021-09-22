@@ -12,6 +12,17 @@
 #include <boost/algorithm/string/trim.hpp>
 #include "urts/messaging/authentication/certificate.hpp"
 
+/// N.B. A lot of the implementation ideas for this class are from zeromq's 
+///      python interface.  This is a port of the `high-level' C bindings.
+///      My issue with the the `high-level' C bindings was they didn't contain
+///      a custom callback for validation in the case of wanting to use a
+///      database.  The `high-level' C++ bindings have an implementation
+///      as well but are also missing the callback.  Also, it is unclear if
+///      that library is being maintained.  In the future, the cppzmq header
+///      only library may bring this functionality into their tool which would
+///      deprecate all of this - and that's fine.  For more read:
+///      https://github.com/zeromq/pyzmq/blob/main/zmq/auth/certs.py
+///      Ben Baker (September 2021)
 using namespace URTS::Messaging::Authentication;
 
 namespace
