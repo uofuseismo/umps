@@ -110,16 +110,25 @@ public:
     [[nodiscard]] std::string getMetadata() const noexcept;
     /// @}
 
-    /// @brief Loads the key(s) from a text file.
-    /// @throws std::invalid_argument if the file does not exist or a public
-    ///         key cannot be parsed.  The private key is not required to be
-    ///         specified in the file.
-    /// @throws std::invalid_argument if there is a problem setting the key(s)
-    ///         read from disk.
+    /// @name File Input/Output
+    /// @{
+    /// @brief Writes the public key to a text file.
+    /// @param[in] fileName  The public key file name.  The recommended suffix
+    ///                      is ".public_key".
+    /// @throws std::runtime_error if \c havePublicKey() is false.
+    void writePublicKeyToTextFile(const std::string &fileName) const;
+    /// @brief Writes the private key to a text file.
+    /// @param[in] fileName  The public key file name.  The recommended suffix
+    ///                      is ".private_key".
+    /// @throws std::runtime_error if \c havePrivateKey() is false.
+    void writePrivateKeyToTextFile(const std::string &fileName) const;
+    /// @brief Reads the public and/or private key from a text file.
+    /// @param[in] fileName   The name of the file with the key(s).
+    /// @throws std::invalid_argument if the file does not exist.
+    /// @throws std::runtime_error if there is a formatting error.
     void loadFromTextFile(const std::string &fileName);
-    /// @param[in] fileName
-    /// @throws std::runtime_error if there are no keys set.
-    void writeToTextFile(const std::string &fileName) const;
+    /// @}
+
 
     /// @name Destructors
     /// @{

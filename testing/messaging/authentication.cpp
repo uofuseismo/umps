@@ -31,7 +31,25 @@ TEST(Messaging, Certificate)
     EXPECT_EQ(fromBinary.getPublicTextKey(),  certificate.getPublicTextKey());
     EXPECT_EQ(fromBinary.getPrivateTextKey(), certificate.getPrivateTextKey());
 
-    certificate.writeToTextFile("temp.key");
+    // Do something funky to mess with some down-deep logic
+    certificate.setMetadata("");
+    certificate.writePublicKeyToTextFile("temp.public_key");
+    // Do something funky to mess with some down-deep logic
+    certificate.setMetadata(metadata);
+    certificate.writePrivateKeyToTextFile("temp.private_key");
+ 
+    Certificate fromFile;
+    fromFile.loadFromTextFile("temp.public_key");
+    EXPECT_EQ(fromFile.getMetadata(), "");
+    fromFile.loadFromTextFile("temp.private_key");
+    EXPECT_EQ(fromFile.getMetadata(), certificate.getMetadata());
+    EXPECT_EQ(fromFile.getPublicTextKey(), certificate.getPublicTextKey());
+    EXPECT_EQ(fromFile.getPrivateTextKey(), certificate.getPrivateTextKey());
+    EXPECT_EQ(fromFile.getPublicKey(), certificate.getPublicKey());
+    EXPECT_EQ(fromFile.getPrivateKey(), certificate.getPrivateKey());
+
+    std::remove("temp.public_key");
+    std::remove("temp.private_key");
 }
 
 }

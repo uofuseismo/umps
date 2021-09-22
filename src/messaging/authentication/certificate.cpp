@@ -8,6 +8,8 @@
 #include <ctime>
 #include <chrono>
 #include <zmq.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include "urts/messaging/authentication/certificate.hpp"
 
 using namespace URTS::Messaging::Authentication;
@@ -43,6 +45,20 @@ std::string createTimeStamp()
              utc_tm.tm_min,
              utc_tm.tm_sec);
     return std::string(cDate);
+}
+
+void createRootDirectoryFromFileName(const std::string &fileName)
+{
+    auto path = std::filesystem::path(fileName).parent_path();
+    if (!path.empty() && !std::filesystem::exists(path))
+    {
+        std::filesystem::create_directories(path);
+        if (!std::filesystem::exists(path))
+        {
+            throw std::invalid_argument("Failed to create path: "
+                                      + std::string(path));
+        }
+    }
 }
 
 }
@@ -247,20 +263,21 @@ std::string Certificate::getMetadata() const noexcept
     return pImpl->mMetadata;
 }
 
-/// Write
-void Certificate::writeToTextFile(const std::string &fileName) const
+/// Write public key
+void Certificate::writePublicKeyToTextFile(const std::string &fileName) const
 {
     if (!havePublicKey())
     {
         throw std::runtime_error("Public key not set");
     }
+    createRootDirectoryFromFileName(fileName);
     auto timeStamp = "#   **** Generated on " + createTimeStamp()
-                   + " by URMS ****";
+                   + " UTC by URMS ****";
     const std::string preamble =
 R"""(#   ZeroMQ CURVE Public Certificate
 #   Exchange securely, or use a secure mechanism to verify the contents
-#   of this file after exchange. Store public certificates in your home
-#   directory, in the .curve subdirectory.
+#   of this file after exchange.  It is recommended to store public your
+#   certificates in your ${HOME}/.curve home directory.
 )""";
     std::fstream outfl(fileName, std::ios::out); 
     outfl << timeStamp << std::endl;
@@ -274,12 +291,130 @@ R"""(#   ZeroMQ CURVE Public Certificate
     outfl << "curve" << std::endl;
     outfl << "    public-key = " << '"'
           << std::string(getPublicTextKey().data()) << '"' << std::endl;
+    outfl.close();
+}
+
+/// Write private key
+void Certificate::writePrivateKeyToTextFile(const std::string &fileName) const
+{
+    if (!havePrivateKey())
+    {
+        throw std::runtime_error("Private key not set");
+    }
+    createRootDirectoryFromFileName(fileName);
+    auto timeStamp = "#   **** Generated on " + createTimeStamp()
+                   + " UTC by URMS ****";
+    const std::string preamble =
+R"""(#   ZeroMQ CURVE **Secret** Certificate
+#   DO NOT PROVIDE THIS FILE TO OTHER USERS nor change its permissions.
+)""";
+    std::fstream outfl(fileName, std::ios::out);
+    outfl << timeStamp << std::endl;
+    outfl << preamble << std::endl;
+    auto metadata = getMetadata();
+    if (!metadata.empty())
+    {
+        outfl << "metadata" << std::endl;
+        outfl << "    name = " << '"' << getMetadata() << '"' << std::endl;
+    }
+    outfl << "curve" << std::endl;
     if (havePrivateKey())
     {
-        outfl << "    private-key = " << '"'
+        outfl << "    secret-key = " << '"'
               << std::string(getPrivateTextKey().data()) << '"' << std::endl;
     }
     outfl.close();
+}
+
+/// Read a public key
+void Certificate::loadFromTextFile(const std::string &fileName)
+{
+    if (!std::filesystem::exists(fileName))
+    {
+        throw std::invalid_argument("Public key file: " + fileName
+                                  + " does not exist");
+    }
+    // Parse the file
+    std::ifstream infl(fileName);
+    if (infl.is_open())
+    {
+        std::string line;
+        std::string publicKey;
+        std::string privateKey;
+        std::string metadata;
+        while (std::getline(infl, line))
+        {
+            // Trim blank space off beginning and end
+            boost::algorithm::trim(line); 
+            if (line.empty()){continue;} // Empty line
+            if (line[0] == '#'){continue;} // Skip comments
+            // Looking for something of the form: variable = "stuff"
+            auto foundEquals = line.find("="); // First equality
+            if (foundEquals == std::string::npos){continue;}
+            auto foundQuote = line.find('"'); // First quote
+            // First quote should come after first equality
+            if (foundQuote <= foundEquals){continue;}
+            auto foundLastQuote = line.find_last_of('"');
+            if (foundQuote >= foundLastQuote - 1){continue;} // Misformatted
+            auto length = foundLastQuote - 2 - foundQuote + 1;
+            // Data ends with a quote
+            if (line.back() != '"'){continue;}
+            // Okay - this is parsible - what is it?
+            auto foundMetadata = line.find("name");
+            if (foundMetadata == 0)
+            {
+                metadata = line.substr(foundQuote + 1, length);
+                continue;
+            }
+            auto foundPublicKey = line.find("public-key");
+            if (foundPublicKey == 0)
+            {
+                publicKey = line.substr(foundQuote + 1, length);
+                continue;
+            }
+            auto foundPrivateKey = line.find("secret-key");
+            if (foundPrivateKey == 0)
+            {
+                privateKey = line.substr(foundQuote + 1, length);
+                continue;
+            }
+            continue; 
+        }
+        infl.close();
+        if (!metadata.empty()){setMetadata(metadata);}
+        if (!publicKey.empty())
+        {
+            if (publicKey.size() == 40)
+            {
+                std::array<char, 41> key;
+                std::copy(publicKey.begin(), publicKey.end(), key.begin());
+                key.back() = '\0';
+                setPublicKey(key);
+            }
+            else
+            {
+                std::cerr << "Public key is wrong size" << std::endl;
+            }
+        }
+        if (!privateKey.empty())
+        {
+            if (privateKey.size() == 40)
+            {
+                std::array<char, 41> key;
+                std::copy(privateKey.begin(), privateKey.end(), key.begin());
+                key.back() = '\0';
+                setPrivateKey(key);
+            }
+            else
+            {
+                std::cerr << "Private key is wrong size" << std::endl;
+            }
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Failed to open file");
+    }
 }
 
 /*
