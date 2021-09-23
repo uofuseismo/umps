@@ -1,5 +1,8 @@
 #include <zmq.h>
 #include "umps/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/messaging/authentication/threadAuthenticator.hpp"
+#include "umps/logging/stdout.hpp"
 #include <gtest/gtest.h>
 namespace
 {
@@ -50,6 +53,17 @@ TEST(Messaging, Certificate)
 
     std::remove("temp.public_key");
     std::remove("temp.private_key");
+}
+
+TEST(Messaging, Authenticator)
+{
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::DEBUG);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
+    Authenticator auth(loggerPtr);
+    auth.start();
+    auth.stop();
 }
 
 }

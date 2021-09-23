@@ -69,6 +69,7 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
+    src/messaging/authentication/authenticator.cpp
     src/messaging/authentication/certificate.cpp
     #src/messaging/authentication/generateKeyPair.cpp
     src/messaging/publisherSubscriber/publisher.cpp

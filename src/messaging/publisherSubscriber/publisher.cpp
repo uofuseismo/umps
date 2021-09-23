@@ -93,6 +93,12 @@ public:
                                                     zmq::socket_type::pub)),
         mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+            mPublisher = std::make_unique<zmq::socket_t> (*mContext,
+                                                         zmq::socket_type::pub);
+        }
     }
     /// C'tor
     explicit PublisherImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -114,6 +120,16 @@ public:
                                                     zmq::socket_type::pub)),
         mLogger(logger)
     {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+            mPublisher = std::make_unique<zmq::socket_t> (*mContext,
+                                                         zmq::socket_type::pub);
+        }
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
     }
     std::shared_ptr<zmq::context_t> mContext;
     std::unique_ptr<zmq::socket_t> mPublisher;
