@@ -17,7 +17,6 @@ The following libraries are required to build the core software
     4.  [ZeroMQ](https://zeromq.org/) v3 is, loosely speaking, a networking library compiled with [libodium](https://github.com/jedisct1/libsodium).  You may be thinking - Earthworm can send messages to and from computers.  That's absolutely true and URTS can even ingest and produce some Earthworm messages.   Unfortunately, Earthworm's messaging system was never designed to be used as a library.  ZeroMQ was.  ZeroMQ is also provably scalable, actively maintained by a much broader community, has terrific documentation, a very nice API and can perform user authentication.  It's also dead easy to install or build from source.  Additionally, you'll need the header-only interface [cppzmq](https://github.com/zeromq/cppzmq).
     5.  [spdlog](https://github.com/gabime/spdlog) underlies the default logger.  Again, I know, Earthworm can log messages (logit).  But, again, spdlog was built exclusively for logging messages.  Technically, if you really want to use logit then you would simply extend the base class.
     6.  [GTest](https://github.com/google/googletest) for unit testing.
-    7.  [Time](https://github.com/uofuseismo/time) this is a small library for performing epoch to UTC time conversions.
 
 ## Optional
 

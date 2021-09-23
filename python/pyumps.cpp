@@ -2,14 +2,14 @@
 #include "messageFormats/dataPacket.hpp"
 #include "messaging/publisherSubscriber/publisher.hpp"
 #include "messaging/publisherSubscriber/subscriber.hpp"
-#include "urts/version.hpp"
+#include "umps/version.hpp"
 #include <pybind11/pybind11.h>
 
-PYBIND11_MODULE(pyurts, m)
+PYBIND11_MODULE(pyumps, m)
 {
-    m.attr("__version__") = URTS_VERSION;
-    m.attr("__name__") = "pyurts";
-    m.attr("__doc__") = "A toolkit for real-time seismic monitoring at University of Utah Seismograph Stations.";
+    m.attr("__version__") = UMPS_VERSION;
+    m.attr("__name__") = "pyumps";
+    m.attr("__doc__") = "A Python interface to the UUSS Message Passing System.";
 
     // Messaging
     pybind11::module messageFormatsModule = m.def_submodule("MessageFormats");

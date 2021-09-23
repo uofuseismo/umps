@@ -1,14 +1,14 @@
-#ifndef URTS_VERSION_HPP
-#define URTS_VERSION_HPP
+#ifndef UMPS_VERSION_HPP
+#define UMPS_VERSION_HPP
 #include <string>
-#define URTS_MAJOR @Time_VERSION_MAJOR@
-#define URTS_MINOR @Time_VERSION_MINOR@
-#define URTS_PATCH @Time_VERSION_PATCH@
-#define URTS_VERSION "@PROJECT_VERSION@"
-namespace Time
+#define UMPS_MAJOR @UMPS_VERSION_MAJOR@
+#define UMPS_MINOR @UMPS_VERSION_MINOR@
+#define UMPS_PATCH @UMPS_VERSION_PATCH@
+#define UMPS_VERSION "@PROJECT_VERSION@"
+namespace UMPS
 {
-/// @class Version version.hpp "urts/version.hpp"
-/// @brief Defines URTS's version information.
+/// @class Version version.hpp "umps/version.hpp"
+/// @brief Defines UMPS's version information.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Version
 {
