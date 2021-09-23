@@ -1,14 +1,14 @@
-#ifndef PYURTS_MESSAGEFORMATS_DATAPACKET_HPP
-#define PYURTS_MESSAGEFORMATS_DATAPACKET_HPP
+#ifndef PYUMPS_MESSAGEFORMATS_DATAPACKET_HPP
+#define PYUMPS_MESSAGEFORMATS_DATAPACKET_HPP
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include "messageFormats/message.hpp"
-namespace URTS::MessageFormats
+namespace UMPS::MessageFormats
 {
 template<class T> class DataPacket;
 }
-namespace PURTS::MessageFormats
+namespace PUMPS::MessageFormats
 {
 class DataPacket : public IMessage
 {
@@ -20,8 +20,8 @@ public:
     DataPacket& operator=(const DataPacket &packet);
     DataPacket& operator=(DataPacket &&packet) noexcept;
     void clear() noexcept;
-    URTS::MessageFormats::DataPacket<double> getNativeClass() const noexcept;
-    std::unique_ptr<URTS::MessageFormats::IMessage> getBaseClass() const noexcept override;
+    UMPS::MessageFormats::DataPacket<double> getNativeClass() const noexcept;
+    std::unique_ptr<UMPS::MessageFormats::IMessage> getBaseClass() const noexcept override;
  
     [[nodiscard]] std::string getMessageType() const noexcept;
 
@@ -49,7 +49,7 @@ public:
 
     [[nodiscard]] std::string toJSON(int nSpaces =-1) const;
 private:
-    std::unique_ptr<URTS::MessageFormats::DataPacket<double>> pImpl; 
+    std::unique_ptr<UMPS::MessageFormats::DataPacket<double>> pImpl; 
 };
 void initializeDataPacket(pybind11::module &m);
 }

@@ -4,15 +4,15 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "urts/services/packetCache/circularBuffer.hpp"
-#include "urts/services/packetCache/cappedCollection.hpp"
-#include "urts/services/packetCache/dataRequest.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "umps/services/packetCache/circularBuffer.hpp"
+#include "umps/services/packetCache/cappedCollection.hpp"
+#include "umps/services/packetCache/dataRequest.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
 {
-namespace PC = URTS::Services::PacketCache;
-namespace MF = URTS::MessageFormats;
+namespace PC = UMPS::Services::PacketCache;
+namespace MF = UMPS::MessageFormats;
 
 template<typename T>
 bool operator==(const MF::DataPacket<T> &lhs, const MF::DataPacket<T> &rhs)
@@ -109,7 +109,7 @@ TEST(PacketCache, DataRequest)
     double t0 = 1629737861;
     double t1 = 1629737865;
     EXPECT_EQ(request.getMessageType(),
-              "URTS::Services::PacketCache::DataRequest");
+              "UMPS::Services::PacketCache::DataRequest");
     EXPECT_NO_THROW(request.setNetwork(network));
     EXPECT_NO_THROW(request.setStation(station));
     EXPECT_NO_THROW(request.setChannel(channel));

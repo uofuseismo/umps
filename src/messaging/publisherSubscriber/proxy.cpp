@@ -4,11 +4,11 @@
 #include <mutex>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
-#include "urts/messaging/publisherSubscriber/proxy.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/messaging/publisherSubscriber/proxy.hpp"
+#include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace URTS::Messaging::PublisherSubscriber;
+using namespace UMPS::Messaging::PublisherSubscriber;
 
 class Proxy::ProxyImpl
 {
@@ -24,10 +24,10 @@ public:
                                                    zmq::socket_type::sub)),
         mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
                                                    zmq::socket_type::pub)),
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
     }
-    explicit ProxyImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    explicit ProxyImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mContext(std::make_shared<zmq::context_t> (1)),
         mControlContext(std::make_unique<zmq::context_t> (0)),
         mFrontend(std::make_unique<zmq::socket_t> (*mContext,
@@ -42,7 +42,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
     void setStarted(const bool status)
@@ -70,7 +70,7 @@ public:
     std::unique_ptr<zmq::socket_t> mControl = nullptr;
     // The command socket issues terminate/pause/start messages to the control.
     std::unique_ptr<zmq::socket_t> mCommand = nullptr;
-    std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mTopic;
@@ -90,7 +90,7 @@ Proxy::Proxy() :
 {
 }
 
-Proxy::Proxy(std::shared_ptr<URTS::Logging::ILog> &logger) :
+Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ProxyImpl> (logger))
 {
 }

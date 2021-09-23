@@ -10,7 +10,7 @@
 #include <zmq.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include "urts/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate.hpp"
 
 /// N.B. A lot of the implementation ideas for this class are from zeromq's 
 ///      python interface.  This is a port of the `high-level' C bindings.
@@ -23,7 +23,7 @@
 ///      deprecate all of this - and that's fine.  For more read:
 ///      https://github.com/zeromq/pyzmq/blob/main/zmq/auth/certs.py
 ///      Ben Baker (September 2021)
-using namespace URTS::Messaging::Authentication;
+using namespace UMPS::Messaging::Authentication;
 
 namespace
 {

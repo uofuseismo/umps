@@ -5,12 +5,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/incrementer/request.hpp"
+#include "umps/services/incrementer/request.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Incrementer::Request"
+#define MESSAGE_TYPE "UMPS::Services::Incrementer::Request"
 
-using namespace URTS::Services::Incrementer;
+using namespace UMPS::Services::Incrementer;
 
 namespace
 {
@@ -200,7 +200,7 @@ void Request::fromCBOR(const uint8_t *data, const size_t length)
 }
 
 /// Copy this class
-std::unique_ptr<URTS::MessageFormats::IMessage> Request::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> Request::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
         = std::make_unique<Request> (*this);
@@ -208,7 +208,7 @@ std::unique_ptr<URTS::MessageFormats::IMessage> Request::clone() const
 }
 
 /// Create an instance of this class 
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     Request::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result

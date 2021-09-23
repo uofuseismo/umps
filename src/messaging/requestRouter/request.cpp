@@ -6,11 +6,11 @@
 #include <cassert>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
-#include "urts/messaging/requestRouter/request.hpp"
-#include "urts/messageFormats/message.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/messaging/requestRouter/request.hpp"
+#include "umps/messageFormats/message.hpp"
+#include "umps/logging/stdout.hpp"
 
-using namespace URTS::Messaging::RequestRouter;
+using namespace UMPS::Messaging::RequestRouter;
 
 class Request::RequestImpl
 {
@@ -20,11 +20,11 @@ public:
         mContext(std::make_shared<zmq::context_t> (1)),
         mClient(std::make_unique<zmq::socket_t> (*mContext,
                                                  zmq::socket_type::req)),
-        mLogger(std::make_shared<URTS::Logging::StdOut> ()) 
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ()) 
     {   
     }   
     /// C'tor with specified logger
-    explicit RequestImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    explicit RequestImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mContext(std::make_shared<zmq::context_t> (1)),
         mClient(std::make_unique<zmq::socket_t> (*mContext,
                                                  zmq::socket_type::req)),
@@ -32,15 +32,15 @@ public:
     {   
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<URTS::Logging::StdOut> (); 
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
         }
     }
 //private:
-    std::map<std::string, std::unique_ptr<URTS::MessageFormats::IMessage>> 
+    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         mSubscriptions;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mClient;
-    std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::string mEndpoint;
     int mHighWaterMark = 200;
     bool mConnected = false;
@@ -53,7 +53,7 @@ Request::Request() :
 }
 
 /// C'tor
-Request::Request(std::shared_ptr<URTS::Logging::ILog> &logger) :
+Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RequestImpl> (logger))
 {
 }
@@ -86,7 +86,7 @@ bool Request::isConnected() const noexcept
 
 /// Add a subscription
 void Request::setResponse(
-    std::unique_ptr<URTS::MessageFormats::IMessage> &message)
+    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
 {
     if (message == nullptr){throw std::invalid_argument("Message is NULL");}
     auto messageType = message->getMessageType();
@@ -109,8 +109,8 @@ void Request::setResponse(
 }
 
 /// Make a request
-std::unique_ptr<URTS::MessageFormats::IMessage>
-    Request::request(const URTS::MessageFormats::IMessage &request)
+std::unique_ptr<UMPS::MessageFormats::IMessage>
+    Request::request(const UMPS::MessageFormats::IMessage &request)
 {
     if (!isConnected()){throw std::runtime_error("Not connected");}
    

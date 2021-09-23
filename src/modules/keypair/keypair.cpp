@@ -7,7 +7,7 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "urts/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate.hpp"
 
 struct ProgramOptions
 {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     }
     auto publicKeyFileName = options.mPublicKeyFile;
     auto privateKeyFileName = options.mPrivateKeyFile;
-    URTS::Messaging::Authentication::Certificate certificate;
+    UMPS::Messaging::Authentication::Certificate certificate;
     certificate.create();
     certificate.setMetadata(options.mMetadata);
     certificate.writePublicKeyToTextFile(publicKeyFileName);
@@ -46,7 +46,7 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[])
 {
     ProgramOptions options;
     boost::program_options::options_description desc(
-        "uKeyPair is a utility for generating a public/private keypair for use in URTS.  Example usage is as follows:\n\n  uKeyPair --publickey publickey.txt --privatekey privatekey.txt --keyname test_key\n\nAllowed options");
+        "uKeyPair is a utility for generating a public/private keypair for use in UMPS.  Example usage is as follows:\n\n  uKeyPair --publickey publickey.txt --privatekey privatekey.txt --keyname test_key\n\nAllowed options");
     desc.add_options()
         ("help",       "Produces this help message")
         ("publickey",  

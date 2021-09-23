@@ -1,12 +1,12 @@
-#ifndef PYURTS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHER_HPP
-#define PYURTS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHER_HPP
+#ifndef PYUMPS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHER_HPP
+#define PYUMPS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHER_HPP
 #include <memory>
 #include <pybind11/pybind11.h>
-namespace URTS::Messaging::PublisherSubscriber
+namespace UMPS::Messaging::PublisherSubscriber
 {
 class Publisher;
 }
-namespace PURTS::Messaging::PublisherSubscriber
+namespace PUMPS::Messaging::PublisherSubscriber
 {
 class Publisher
 {
@@ -17,7 +17,7 @@ public:
     Publisher(const Publisher &publisher) = delete;
     Publisher& operator=(const Publisher &publisher) = delete;
 private:
-    std::unique_ptr<URTS::Messaging::PublisherSubscriber::Publisher> pImpl; 
+    std::unique_ptr<UMPS::Messaging::PublisherSubscriber::Publisher> pImpl; 
 };
 void initializePublisher(pybind11::module &m);
 }

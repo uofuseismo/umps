@@ -3,7 +3,7 @@
 #include <string>
 #include <algorithm>
 #include "private/isEmpty.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
 namespace
 {
 /// @result The name network, station, channel, and location code combined into
@@ -21,7 +21,7 @@ std::string makeName(const std::string &network,
 ///         into a single name - e.g., UU.FORK.HHZ.01.
 template<typename T>
 [[maybe_unused]] [[nodiscard]]
-std::string makeName(const URTS::MessageFormats::DataPacket<T> &packet)
+std::string makeName(const UMPS::MessageFormats::DataPacket<T> &packet)
 {
     return makeName(packet.getNetwork(), packet.getStation(),
                     packet.getChannel(), packet.getLocationCode());
@@ -31,7 +31,7 @@ std::string makeName(const URTS::MessageFormats::DataPacket<T> &packet)
 ///         in the circular buffer is present.
 template<typename T>
 [[maybe_unused]] [[nodiscard]]
-bool isValidPacket(const URTS::MessageFormats::DataPacket<T> &packet)
+bool isValidPacket(const UMPS::MessageFormats::DataPacket<T> &packet)
 {
     if (!packet.haveNetwork())
     {

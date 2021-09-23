@@ -4,11 +4,11 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/incrementer/response.hpp"
+#include "umps/services/incrementer/response.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::Incrementer::Response"
+#define MESSAGE_TYPE "UMPS::Services::Incrementer::Response"
 
-using namespace URTS::Services::Incrementer;
+using namespace UMPS::Services::Incrementer;
 
 namespace
 {
@@ -195,7 +195,7 @@ void Response::fromCBOR(const uint8_t *data, const size_t length)
 }
 
 /// Copy this class
-std::unique_ptr<URTS::MessageFormats::IMessage> Response::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> Response::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
         = std::make_unique<Response> (*this);
@@ -203,7 +203,7 @@ std::unique_ptr<URTS::MessageFormats::IMessage> Response::clone() const
 }
 
 /// Create an instance of this class 
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     Response::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result

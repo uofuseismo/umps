@@ -6,13 +6,13 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
-#include "urts/services/packetCache/cappedCollection.hpp"
-#include "urts/services/packetCache/dataRequest.hpp"
-#include "urts/messaging/earthworm/waveRing.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
-#include "urts/messageFormats/earthworm/traceBuf2.hpp"
-#include "urts/logging/spdlog.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/services/packetCache/cappedCollection.hpp"
+#include "umps/services/packetCache/dataRequest.hpp"
+#include "umps/messaging/earthworm/waveRing.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/logging/spdlog.hpp"
+#include "umps/logging/stdout.hpp"
 
 struct ProgramOptions
 {
@@ -57,12 +57,12 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     // Create logger now that we know what is desired
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::DEBUG);
-    std::shared_ptr<URTS::Logging::ILog> loggerPtr
-        = std::make_shared<URTS::Logging::StdOut> (logger);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::DEBUG);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Create a collection of circular buffers
-    URTS::Services::PacketCache::CappedCollection<double>
+    UMPS::Services::PacketCache::CappedCollection<double>
         cappedCollection(loggerPtr);
     cappedCollection.initialize(options.maxPackets);
     assert(cappedCollection.isInitialized());
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     setenv("EW_PARAMS", options.earthwormParametersDirectory.c_str(), true);
     setenv("EW_INSTALLATION", options.earthwormInstallation.c_str(), true);
     logger.debug("Constructing wave ring connection..."); 
-    URTS::Messaging::Earthworm::WaveRing waveRing(loggerPtr);
+    UMPS::Messaging::Earthworm::WaveRing waveRing(loggerPtr);
     try
     {
         waveRing.connect(options.earthwormWaveRingName,
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         if (k == 0){logger.info("Setting first batch of messages");}
         for (const auto &traceBuf2Message : traceBuf2Messages)
         {
-            URTS::MessageFormats::DataPacket<double> packet(traceBuf2Message);
+            UMPS::MessageFormats::DataPacket<double> packet(traceBuf2Message);
             try
             {
                 cappedCollection.addPacket(std::move(packet));

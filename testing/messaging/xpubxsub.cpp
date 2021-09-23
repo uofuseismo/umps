@@ -4,11 +4,11 @@
 #include <vector>
 #include <thread>
 #include <zmq.hpp>
-#include "urts/logging/stdout.hpp"
-#include "urts/messaging/publisherSubscriber/publisher.hpp"
-#include "urts/messaging/publisherSubscriber/subscriber.hpp"
-#include "urts/messaging/publisherSubscriber/proxy.hpp"
-#include "urts/messageFormats/pick.hpp"
+#include "umps/logging/stdout.hpp"
+#include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/publisherSubscriber/proxy.hpp"
+#include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -28,21 +28,21 @@ const std::string locationCode = "01";
 const std::string phaseHint = "P";
 const double time = 5600;
 const uint64_t idBase = 100;
-const URTS::MessageFormats::Pick::Polarity polarity = URTS::MessageFormats::Pick::Polarity::UP;
-using namespace URTS::Messaging::PublisherSubscriber;
+const UMPS::MessageFormats::Pick::Polarity polarity = UMPS::MessageFormats::Pick::Polarity::UP;
+using namespace UMPS::Messaging::PublisherSubscriber;
 
 void proxy()
 {
     // Make a logger
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::INFO);
-    std::shared_ptr<URTS::Logging::ILog> loggerPtr
-        = std::make_shared<URTS::Logging::StdOut> (logger);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::INFO);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Initialize the server
-    URTS::Messaging::PublisherSubscriber::Proxy proxy(loggerPtr);
+    UMPS::Messaging::PublisherSubscriber::Proxy proxy(loggerPtr);
     proxy.initialize(frontendAddress, backendAddress, topic);
     // A thread runs the proxy
-    std::thread t1(&URTS::Messaging::PublisherSubscriber::Proxy::start,
+    std::thread t1(&UMPS::Messaging::PublisherSubscriber::Proxy::start,
                    &proxy);
     // Main thread waits...
     std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -53,16 +53,16 @@ void proxy()
 
 void publisher(int id)
 {
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::INFO);
-    std::shared_ptr<URTS::Logging::ILog> loggerPtr
-        = std::make_shared<URTS::Logging::StdOut> (logger);
-    URTS::Messaging::PublisherSubscriber::Publisher publisher(loggerPtr);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::INFO);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
+    UMPS::Messaging::PublisherSubscriber::Publisher publisher(loggerPtr);
     publisher.bind(frontendAddress);
     // Deal with the slow joiner problem
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
     // Define message to send
-    URTS::MessageFormats::Pick pick;
+    UMPS::MessageFormats::Pick pick;
     pick.setTime(time);
     pick.setNetwork(network);
     pick.setStation(station);
@@ -82,14 +82,14 @@ void publisher(int id)
 
 void subscriber()
 {
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::INFO);
-    std::shared_ptr<URTS::Logging::ILog> loggerPtr
-        = std::make_shared<URTS::Logging::StdOut> (logger);
-    URTS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::INFO);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
+    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
     subscriber.connect(backendAddress);
-    std::unique_ptr<URTS::MessageFormats::IMessage> pickMessageType
-        = std::make_unique<URTS::MessageFormats::Pick> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
+        = std::make_unique<UMPS::MessageFormats::Pick> ();
     subscriber.addSubscription(pickMessageType);
 
     for (int i = 0; i < 10; ++i)
@@ -97,7 +97,7 @@ void subscriber()
         auto message = subscriber.receive();
         //std::cout << "Got message" << std::endl;
         auto pickMessage
-            = static_unique_pointer_cast<URTS::MessageFormats::Pick>
+            = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
               (std::move(message));
         EXPECT_EQ(pickMessage->getIdentifier(),   idBase + i);
         EXPECT_EQ(pickMessage->getNetwork(),      network);

@@ -1,13 +1,13 @@
 #include <string>
 #include <vector>
 #include "messageFormats/pick.hpp"
-#include "urts/messageFormats/pick.hpp"
+#include "umps/messageFormats/pick.hpp"
 
-using namespace PURTS::MessageFormats;
+using namespace PUMPS::MessageFormats;
 
 /// C'tor
 Pick::Pick() :
-    pImpl(std::make_unique<URTS::MessageFormats::Pick> ())
+    pImpl(std::make_unique<UMPS::MessageFormats::Pick> ())
 {
 }
 
@@ -27,7 +27,7 @@ Pick::Pick(Pick &&pick) noexcept
 Pick& Pick::operator=(const Pick &pick)
 {
     if (&pick == this){return *this;}
-    pImpl = std::make_unique<URTS::MessageFormats::Pick> (*pick.pImpl);
+    pImpl = std::make_unique<UMPS::MessageFormats::Pick> (*pick.pImpl);
     return *this;
 }
 
@@ -40,7 +40,7 @@ Pick& Pick::operator=(Pick &&pick) noexcept
 }
 
 /// Get native class
-URTS::MessageFormats::Pick Pick::getNativeClass() const noexcept
+UMPS::MessageFormats::Pick Pick::getNativeClass() const noexcept
 {
     return *pImpl;
 }
@@ -146,7 +146,7 @@ void Pick::clear() noexcept
 void Pick::setPolarity(const Polarity polarity) noexcept
 {
     auto newPolarity
-        = static_cast<URTS::MessageFormats::Pick::Polarity> (polarity);
+        = static_cast<UMPS::MessageFormats::Pick::Polarity> (polarity);
      pImpl->setPolarity(newPolarity);
 }
 
@@ -169,16 +169,16 @@ std::string Pick::toJSON(const int nSpaces) const
 }
 
 /// Useful for calling messaging functions
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     Pick::getBaseClass() const noexcept
 {
-    std::unique_ptr<URTS::MessageFormats::IMessage> message
-        = std::make_unique<URTS::MessageFormats::Pick> (getNativeClass()); 
+    std::unique_ptr<UMPS::MessageFormats::IMessage> message
+        = std::make_unique<UMPS::MessageFormats::Pick> (getNativeClass()); 
     return message;
 }
 
 
-void PURTS::MessageFormats::initializePick(pybind11::module &m)
+void PUMPS::MessageFormats::initializePick(pybind11::module &m)
 {
     pybind11::class_<Pick, IMessage> o(m, "Pick");
     o.def(pybind11::init<> ());
@@ -237,12 +237,12 @@ void PURTS::MessageFormats::initializePick(pybind11::module &m)
 */
 
 
-    pybind11::enum_<PURTS::MessageFormats::Polarity> (m, "Polarity")
-        .value("up", PURTS::MessageFormats::Polarity::UP,
+    pybind11::enum_<PUMPS::MessageFormats::Polarity> (m, "Polarity")
+        .value("up", PUMPS::MessageFormats::Polarity::UP,
                "An upwards (compressional) polarity.")
-        .value("down", PURTS::MessageFormats::Polarity::DOWN,
+        .value("down", PUMPS::MessageFormats::Polarity::DOWN,
                "A downwards (dilitational) polarity.")
-        .value("unkonwn", PURTS::MessageFormats::Polarity::UNKNOWN,
+        .value("unkonwn", PUMPS::MessageFormats::Polarity::UNKNOWN,
                "An unknown polarity.");
 
 

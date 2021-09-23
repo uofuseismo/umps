@@ -5,12 +5,12 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include <unistd.h>
-#include "urts/messaging/publisherSubscriber/subscriber.hpp"
-#include "urts/messageFormats/message.hpp"
-#include "urts/logging/log.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messageFormats/message.hpp"
+#include "umps/logging/log.hpp"
+#include "umps/logging/stdout.hpp"
 
-using namespace URTS::Messaging::PublisherSubscriber;
+using namespace UMPS::Messaging::PublisherSubscriber;
 
 /*
 class Subscriber::SubscriberImpl
@@ -21,7 +21,7 @@ public:
 //        mContext(std::make_unique<zmq::context_t> (0)),
 //        mSubscriber(std::make_unique<zmq::socket_t> (&mContext,
 //                                                     zmq::socket_type::sub)),
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
         mContext = std::make_shared<void *> (zmq_ctx_new());
         mSubscriber = zmq_socket(*mContext, ZMQ_SUB);
@@ -30,7 +30,7 @@ public:
     SubscriberImpl(std::shared_ptr<void *> &context) :
         mContext(context),
         //mSubscriber(*context, zmq::socket_type::sub),
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
         mMadeContext = false;
         if (mContext == nullptr)
@@ -42,7 +42,7 @@ public:
         mSubscriber = zmq_socket(*mContext, ZMQ_SUB);
     }
     /// C'tor
-    SubscriberImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    SubscriberImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 //        mContext(std::make_unique<zmq::context_t> (0)),
 //        mSubscriber(std::make_unique<zmq::socket_t> (&mContext,
 //                                                     zmq::socket_type::sub)),
@@ -67,12 +67,12 @@ public:
 //    zmq::context_t mContext{nContexts};//;//{0};
     //zmq::socket_t mSubscriber{mContext, zmq::socket_type::sub};
 //    std::unique_ptr<zmq::socket_t> mSubscriber;//(*mContext, zmq::socket_type::pub);
-    std::map<std::string, std::unique_ptr<URTS::MessageFormats::IMessage>> 
+    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         mSubscriptions;
     std::shared_ptr<void *> mContext = nullptr;
     void *mSubscriber = nullptr;
     std::map<std::string, bool> mEndPoints;
-    std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     bool mMadeContext = true;
     bool mConnected = false;
 };
@@ -86,7 +86,7 @@ public:
         mContext(std::make_shared<zmq::context_t> (1)),
         mSubscriber(std::make_unique<zmq::socket_t> (*mContext,
                                                      zmq::socket_type::sub)),
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
     }
     /// C'tor
@@ -94,7 +94,7 @@ public:
         mContext(context),
         mSubscriber(std::make_unique<zmq::socket_t> (*mContext,
                                                      zmq::socket_type::sub)),
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
 /*
         mMadeContext = false;
@@ -108,7 +108,7 @@ public:
 */
     }
     /// C'tor
-    SubscriberImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    SubscriberImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mContext(std::make_shared<zmq::context_t> (1)),
         mSubscriber(std::make_unique<zmq::socket_t> (*mContext,
                                                      zmq::socket_type::sub)),
@@ -116,16 +116,16 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
  
-    std::map<std::string, std::unique_ptr<URTS::MessageFormats::IMessage>> 
+    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         mSubscriptions;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mSubscriber;
     std::map<std::string, bool> mEndPoints;
-    std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     int mHighWaterMark = 4*1024;
     bool mMadeContext = true;
     bool mConnected = false;
@@ -143,7 +143,7 @@ Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context) :
 }
 
 /// C'tor
-Subscriber::Subscriber(std::shared_ptr<URTS::Logging::ILog> &logger) :
+Subscriber::Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<SubscriberImpl> (logger))
 {
 }
@@ -179,7 +179,7 @@ bool Subscriber::haveSubscriptions() const noexcept
 
 /*
 void Subscriber::addSubscription(
-    std::unique_ptr<URTS::MessageFormats::IMessage> &message)
+    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
 {
     if (message == nullptr){throw std::invalid_argument("Message is NULL");}
     if (!isConnected())
@@ -291,7 +291,7 @@ void Subscriber::disconnect(const std::string &endpoint)
 
 /// Add a subscription
 void Subscriber::addSubscription(
-    std::unique_ptr<URTS::MessageFormats::IMessage> &message)
+    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
 {
     if (message == nullptr){throw std::invalid_argument("Message is NULL");}
     if (!isConnected())
@@ -331,7 +331,7 @@ void Subscriber::addSubscription(
 }
 
 /// Receive messages
-std::unique_ptr<URTS::MessageFormats::IMessage> Subscriber::receive() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
 {
     if (!isConnected()){throw std::runtime_error("Not connected");}
     if (!haveSubscriptions()){throw std::runtime_error("No subscriptions");}
@@ -436,11 +436,11 @@ void Subscriber::connect(const std::string &endPoint)
 */
 
 /*
-std::unique_ptr<URTS::MessageFormats::IMessage> Subscriber::receive() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
 {
     if (!isConnected()){throw std::runtime_error("Not connected");}
     if (!haveSubscriptions()){throw std::runtime_error("No subscriptions");}
-    std::unique_ptr<URTS::MessageFormats::IMessage> result = nullptr;
+    std::unique_ptr<UMPS::MessageFormats::IMessage> result = nullptr;
 char mwork[64];
 std::cout << "waitin" << std::endl;
 int size = zmq_recv(pImpl->mSubscriber, mwork, 64, 0);//ZMQ_NOBLOCK);
@@ -513,7 +513,7 @@ std::cout << "didit " << std::endl;
 //        zmq_msg_t message;
 //        zmq_msg_init(&message);
 //        zmq_msg_recv(&message, pImpl->mSubscriber, 0);
-//        auto pick = std::make_unique<URTS::MessageFormats::Pick> ();
+//        auto pick = std::make_unique<UMPS::MessageFormats::Pick> ();
 //        zmq_msg_close(&message);
 //        if (!zmq_msg_more(&message)){break;}
 //    }

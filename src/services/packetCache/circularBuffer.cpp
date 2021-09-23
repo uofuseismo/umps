@@ -7,12 +7,12 @@
 #include <mutex>
 #include <cassert>
 #include <boost/circular_buffer.hpp>
-#include "urts/services/packetCache/circularBuffer.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "umps/services/packetCache/circularBuffer.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
 #include "private/applications/packetCache.hpp"
 
-using namespace URTS::Services::PacketCache;
-namespace UMF = URTS::MessageFormats;
+using namespace UMPS::Services::PacketCache;
+namespace UMF = UMPS::MessageFormats;
 
 
 template<class T>
@@ -490,5 +490,5 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
 ///--------------------------------------------------------------------------///
-template class URTS::Services::PacketCache::CircularBuffer<double>;
-template class URTS::Services::PacketCache::CircularBuffer<float>;
+template class UMPS::Services::PacketCache::CircularBuffer<double>;
+template class UMPS::Services::PacketCache::CircularBuffer<float>;

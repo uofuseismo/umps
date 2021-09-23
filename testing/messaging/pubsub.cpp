@@ -4,10 +4,10 @@
 #include <vector>
 #include <thread>
 #include <zmq.hpp>
-#include "urts/logging/stdout.hpp"
-#include "urts/messaging/publisherSubscriber/publisher.hpp"
-#include "urts/messaging/publisherSubscriber/subscriber.hpp"
-#include "urts/messageFormats/pick.hpp"
+#include "umps/logging/stdout.hpp"
+#include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -17,7 +17,7 @@ const std::string serverHost = "tcp://*:5555";
 const std::string localHost  = "tcp://127.0.0.1:5555";
 //const std::string localHost = "inproc://a"; //{"inproc://#1"};
 //const std::string localHost = "ipc://*";
-using namespace URTS::Messaging::PublisherSubscriber;
+using namespace UMPS::Messaging::PublisherSubscriber;
 
 /*
 template<typename TO, typename FROM>
@@ -37,7 +37,7 @@ try
     Publisher publisher;// *context);
     publisher.bind(serverHost);
 
-    URTS::MessageFormats::Pick pick;
+    UMPS::MessageFormats::Pick pick;
     pick.setIdentifier(4043);
     pick.setTime(600);
     pick.setNetwork("UU"); 
@@ -83,11 +83,11 @@ std::cerr << e.what() << std::endl;
 TEST(Messaging, PubSub)
 {
     //std::shared_ptr<void *> context = std::make_shared<void *> (zmq_ctx_new()); //zmq::context_t context{1};    
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::DEBUG);
-    std::shared_ptr<URTS::Logging::ILog> loggerPtr = std::make_shared<URTS::Logging::StdOut> (logger);
-//       loggerPtr(std::make_shared<URTS::Logging::StdOut> ());
-//    loggerPtr->setLevel(URTS::Logging::Level::DEBUG);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::DEBUG);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr = std::make_shared<UMPS::Logging::StdOut> (logger);
+//       loggerPtr(std::make_shared<UMPS::Logging::StdOut> ());
+//    loggerPtr->setLevel(UMPS::Logging::Level::DEBUG);
 
     // Create publisher and bind
 //    Publisher publisher(loggerPtr);
@@ -96,8 +96,8 @@ TEST(Messaging, PubSub)
     // Create a subscriber and subscribe to all messages
     Subscriber subscriber(loggerPtr);
     subscriber.connect(localHost);
-    std::unique_ptr<URTS::MessageFormats::IMessage> pickMessageType
-        = std::make_unique<URTS::MessageFormats::Pick> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
+        = std::make_unique<UMPS::MessageFormats::Pick> ();
     subscriber.addSubscription(pickMessageType);
     //sleep(1);
     // Create publisher and bind
@@ -106,7 +106,7 @@ TEST(Messaging, PubSub)
     // Give the publisher a chance to bind to the port
     sleep(1);
     // Define message to send
-    URTS::MessageFormats::Pick pick;
+    UMPS::MessageFormats::Pick pick;
     pick.setIdentifier(4043);
     pick.setTime(600);
     pick.setNetwork("UU"); 
@@ -117,10 +117,10 @@ TEST(Messaging, PubSub)
     // Send it
     publisher.send(pick);
 
-//    auto pickMessage = std::make_unique<URTS::MessageFormats::Pick> ();
-    auto message = subscriber.receive(); //dynamic_cast<URTS::MessageFormats::Pick *> (subscriber.receive().get());
+//    auto pickMessage = std::make_unique<UMPS::MessageFormats::Pick> ();
+    auto message = subscriber.receive(); //dynamic_cast<UMPS::MessageFormats::Pick *> (subscriber.receive().get());
     auto pickMessage
-        = static_unique_pointer_cast<URTS::MessageFormats::Pick>
+        = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
           (std::move(message));
     //std::cout << pickMessage->toJSON() << std::endl;
     EXPECT_NEAR(pickMessage->getTime(), pick.getTime(), 1.e-10);
@@ -131,7 +131,7 @@ TEST(Messaging, PubSub)
     EXPECT_EQ(pickMessage->getLocationCode(), pick.getLocationCode());
     EXPECT_EQ(pickMessage->getPhaseHint(),    pick.getPhaseHint());
     EXPECT_EQ(pickMessage->getPolarity(),     pick.getPolarity());
-//    auto pickMessage = std::static_unique_pointer_cast<URTS::MessageFormats::Pick> (message);
+//    auto pickMessage = std::static_unique_pointer_cast<UMPS::MessageFormats::Pick> (message);
     
     //std::cout << pickMessage->toJSON() << std::endl;
     /*
@@ -160,7 +160,7 @@ TEST(Messaging, PubSub)
     EXPECT_NO_THROW(subscriber.connect(localHost));
     //sleep(1);
 
-    URTS::MessageFormats::Pick pick;
+    UMPS::MessageFormats::Pick pick;
     pick.setIdentifier(4043);
     pick.setTime(600);
     pick.setNetwork("UU"); 

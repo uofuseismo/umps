@@ -3,37 +3,37 @@
 #include <chrono>
 #include <thread>
 #include <cassert>
-#include "urts/services/incrementer/service.hpp"
-#include "urts/messaging/requestRouter/router.hpp"
-#include "urts/services/incrementer/parameters.hpp"
-#include "urts/services/incrementer/counter.hpp"
-#include "urts/services/incrementer/response.hpp"
-#include "urts/services/incrementer/request.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/services/incrementer/service.hpp"
+#include "umps/messaging/requestRouter/router.hpp"
+#include "umps/services/incrementer/parameters.hpp"
+#include "umps/services/incrementer/counter.hpp"
+#include "umps/services/incrementer/response.hpp"
+#include "umps/services/incrementer/request.hpp"
+#include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
-using namespace URTS::Services::Incrementer;
+using namespace UMPS::Services::Incrementer;
 
 class Service::ServiceImpl
 {
 public:
     /// Constructs
     ServiceImpl() :
-        mLogger(std::make_shared<URTS::Logging::StdOut> ()),
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
         mRouter(mLogger)
     {
     }
-    explicit ServiceImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    explicit ServiceImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mLogger(logger),
         mRouter(logger)
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
     /// The callback to handle incrementer requests
-    std::unique_ptr<URTS::MessageFormats::IMessage>
+    std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
                  const uint8_t *messageContents, const size_t length) noexcept
     {
@@ -99,10 +99,10 @@ public:
     }
 */
 ///private:
-    std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     Counter mCounter; 
     Parameters mParameters;
-    URTS::Messaging::RequestRouter::Router mRouter;
+    UMPS::Messaging::RequestRouter::Router mRouter;
     //mutable std::mutex mMutex;
     std::string mName;
     // Timeout in milliseconds.  0 means return immediately while -1 means
@@ -119,7 +119,7 @@ Service::Service() :
 {
 }
 
-Service::Service(std::shared_ptr<URTS::Logging::ILog> &logger) :
+Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ServiceImpl> (logger))
 {
 }
@@ -166,7 +166,7 @@ void Service::initialize(const Parameters &parameters)
                                + clientAccessAddress);
     }
     // This service only handles request types
-    std::unique_ptr<URTS::MessageFormats::IMessage> requestType
+    std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
         = std::make_unique<Request> (); 
     pImpl->mRouter.addMessageType(requestType);
     // Bind a callback function so that requests can be processed and this

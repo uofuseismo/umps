@@ -3,12 +3,12 @@
 #include <map>
 #include <vector>
 #include <mutex>
-#include "urts/services/packetCache/cappedCollection.hpp"
-#include "urts/services/packetCache/circularBuffer.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/services/packetCache/cappedCollection.hpp"
+#include "umps/services/packetCache/circularBuffer.hpp"
+#include "umps/logging/stdout.hpp"
 #include "private/applications/packetCache.hpp"
 
-using namespace URTS::Services::PacketCache;
+using namespace UMPS::Services::PacketCache;
 
 /// Implementation
 template<class T>
@@ -17,16 +17,16 @@ class CappedCollection<T>::CappedCollectionImpl
 public:
     /// C'tor
     CappedCollectionImpl() :
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
     }
     /// C'tor
-    CappedCollectionImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    CappedCollectionImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mLogger(logger)
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
     /// Destructor
@@ -63,7 +63,7 @@ public:
         return result;
     }
     /// Update (with move semantics for speed - i.e., no copies)
-    void update(URTS::MessageFormats::DataPacket<T> &&packet)
+    void update(UMPS::MessageFormats::DataPacket<T> &&packet)
     {
         auto name = makeName(packet);
         std::scoped_lock lock(mMutex);
@@ -89,7 +89,7 @@ public:
 ///private:
     mutable std::mutex mMutex;
     std::map<std::string, CircularBuffer<T>> mCircularBufferMap;
-    std::shared_ptr<URTS::Logging::ILog> mLogger;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger;
     int mMaxPackets = 0;
     bool mInitialized = false;
 };
@@ -104,7 +104,7 @@ CappedCollection<T>::CappedCollection() :
 /// C'tor
 template<class T>
 CappedCollection<T>::CappedCollection(
-    std::shared_ptr<URTS::Logging::ILog> &logger) :
+    std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<CappedCollectionImpl> (logger))
 {
 }
@@ -138,7 +138,7 @@ bool CappedCollection<T>::isInitialized() const noexcept
 /// Add a packet
 template<class T>
 void CappedCollection<T>::addPacket(
-    const URTS::MessageFormats::DataPacket<T> &packet)
+    const UMPS::MessageFormats::DataPacket<T> &packet)
 {
     auto packetCopy = packet;
     addPacket(std::move(packetCopy));
@@ -147,7 +147,7 @@ void CappedCollection<T>::addPacket(
 /// Add packet with move
 template<class T>
 void CappedCollection<T>::addPacket(
-    URTS::MessageFormats::DataPacket<T> &&packet)
+    UMPS::MessageFormats::DataPacket<T> &&packet)
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     if (!isValidPacket(packet))
@@ -185,5 +185,5 @@ std::vector<std::string> CappedCollection<T>::getSensorNames() const noexcept
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
 ///--------------------------------------------------------------------------///
-template class URTS::Services::PacketCache::CappedCollection<double>;
-template class URTS::Services::PacketCache::CappedCollection<float>;
+template class UMPS::Services::PacketCache::CappedCollection<double>;
+template class UMPS::Services::PacketCache::CappedCollection<float>;

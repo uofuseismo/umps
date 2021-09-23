@@ -5,14 +5,14 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "urts/services/incrementer/response.hpp"
-#include "urts/services/incrementer/request.hpp"
-#include "urts/services/incrementer/counter.hpp"
-#include "urts/services/incrementer/parameters.hpp"
+#include "umps/services/incrementer/response.hpp"
+#include "umps/services/incrementer/request.hpp"
+#include "umps/services/incrementer/counter.hpp"
+#include "umps/services/incrementer/parameters.hpp"
 #include <gtest/gtest.h>
 namespace
 {
-namespace URTSIC = URTS::Services::Incrementer;
+namespace UMPSIC = UMPS::Services::Incrementer;
 
 TEST(Incrementer, Parameters)
 {
@@ -22,7 +22,7 @@ TEST(Incrementer, Parameters)
     std::ofstream tempFile(iniFileName);
     tempFile << cParms;
     tempFile.close();
-    URTSIC::Parameters parameters;
+    UMPSIC::Parameters parameters;
     EXPECT_NO_THROW(
         parameters.parseInitializationFile(iniFileName, "Counters:Pick"));
     std::remove(iniFileName.c_str());
@@ -31,62 +31,62 @@ TEST(Incrementer, Parameters)
     EXPECT_EQ(parameters.getIncrement(), 3);
     //EXPECT_EQ(parameters.getServerAccessAddress(), "tcp://localhost:5560");
     EXPECT_EQ(parameters.getClientAccessAddress(), "tcp://localhost:5559");
-    EXPECT_EQ(parameters.getVerbosity(), static_cast<URTS::Logging::Level> (2));
+    EXPECT_EQ(parameters.getVerbosity(), static_cast<UMPS::Logging::Level> (2));
 }
 
 TEST(Incrementer, Request)
 {
-    URTSIC::Request request;
+    UMPSIC::Request request;
     uint64_t id = 553;
     const std::string item = "abc";
 
-    EXPECT_NO_THROW(request.setItem(URTSIC::Item::PHASE_PICK));
-    EXPECT_NO_THROW(request.setItem(URTSIC::Item::PHASE_ARRIVAL));
-    EXPECT_NO_THROW(request.setItem(URTSIC::Item::EVENT));
-    EXPECT_NO_THROW(request.setItem(URTSIC::Item::ORIGIN));
+    EXPECT_NO_THROW(request.setItem(UMPSIC::Item::PHASE_PICK));
+    EXPECT_NO_THROW(request.setItem(UMPSIC::Item::PHASE_ARRIVAL));
+    EXPECT_NO_THROW(request.setItem(UMPSIC::Item::EVENT));
+    EXPECT_NO_THROW(request.setItem(UMPSIC::Item::ORIGIN));
     EXPECT_NO_THROW(request.setItem(item));
     request.setIdentifier(id);
     EXPECT_EQ(request.getIdentifier(), id);
 
     auto msg = request.toCBOR();
-    URTSIC::Request rCopy;
+    UMPSIC::Request rCopy;
     rCopy.fromCBOR(msg);
     EXPECT_EQ(rCopy.getItem(), item);
     EXPECT_EQ(rCopy.getIdentifier(), id);
 
     request.clear();
     EXPECT_FALSE(request.haveItem()); 
-    EXPECT_EQ(request.getMessageType(), "URTS::Services::Incrementer::Request");
+    EXPECT_EQ(request.getMessageType(), "UMPS::Services::Incrementer::Request");
 }
 
 TEST(Incrementer, Response)
 {
-    URTSIC::Response response;
+    UMPSIC::Response response;
     uint64_t id = 553;
     uint64_t value = 3938;
-    auto code = URTSIC::ReturnCode::NO_ITEM;
+    auto code = UMPSIC::ReturnCode::NO_ITEM;
     EXPECT_FALSE(response.haveValue());
     response.setValue(value);
     response.setIdentifier(id);
     EXPECT_TRUE(response.haveValue());
-    EXPECT_EQ(response.getReturnCode(), URTSIC::ReturnCode::SUCCESS);
+    EXPECT_EQ(response.getReturnCode(), UMPSIC::ReturnCode::SUCCESS);
     response.setReturnCode(code);     
  
     auto msg = response.toCBOR();
 
-    URTSIC::Response rCopy;
+    UMPSIC::Response rCopy;
     rCopy.fromCBOR(msg);
     EXPECT_EQ(rCopy.getValue(), value);
     EXPECT_EQ(rCopy.getIdentifier(), id);
     EXPECT_EQ(rCopy.getReturnCode(), code);
 
     EXPECT_EQ(response.getMessageType(),
-              "URTS::Services::Incrementer::Response");
+              "UMPS::Services::Incrementer::Response");
 }
 
 TEST(Incrementer, Counter)
 {
-    URTSIC::Counter counter;
+    UMPSIC::Counter counter;
     const std::string item = "test";
     const uint64_t initialCount = 5;
     const uint64_t interval = 10;

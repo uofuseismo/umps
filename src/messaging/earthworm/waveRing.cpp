@@ -20,13 +20,13 @@ extern "C"
 #include <trace_buf.h>
 }
 #endif
-#include "urts/messaging/earthworm/waveRing.hpp"
-#include "urts/messageFormats/earthworm/traceBuf2.hpp"
-#include "urts/logging/log.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/messaging/earthworm/waveRing.hpp"
+#include "umps/messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/logging/log.hpp"
+#include "umps/logging/stdout.hpp"
 
-namespace EWMessageFormat = URTS::MessageFormats::Earthworm;
-using namespace URTS::Messaging::Earthworm;
+namespace EWMessageFormat = UMPS::MessageFormats::Earthworm;
+using namespace UMPS::Messaging::Earthworm;
 
 namespace
 {
@@ -47,18 +47,18 @@ std::array<char, 16> TYPE_TRACEBUF2{"TYPE_TRACEBUF2\0"};
 class WaveRing::WaveRingImpl
 {
 public:
-    WaveRingImpl(std::shared_ptr<URTS::Logging::ILog> logger) :
+    WaveRingImpl(std::shared_ptr<UMPS::Logging::ILog> logger) :
         mLogger(logger)
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }  
     }
     /// Earthworm messages
     std::vector<EWMessageFormat::TraceBuf2<double>> mTraceBuf2Messages;
     /// Name of earthworm ring to connect to
-    std::shared_ptr<URTS::Logging::ILog> mLogger;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger;
     /// Logos to scrounge from the ring.
     std::vector<MSG_LOGO> mLogos;
     std::string mRingName;
@@ -96,12 +96,12 @@ public:
 /// C'tor
 WaveRing::WaveRing() :
     pImpl(std::make_unique<WaveRingImpl>
-          (std::make_shared<URTS::Logging::StdOut> ()))
+          (std::make_shared<UMPS::Logging::StdOut> ()))
 {
 }
 
 /// C'tor with logger
-WaveRing::WaveRing(std::shared_ptr<URTS::Logging::ILog> &logger) :
+WaveRing::WaveRing(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<WaveRingImpl> (logger))
 {
 }
@@ -519,13 +519,13 @@ bool WaveRing::haveEarthworm() const noexcept
 }
 
 /// Get tracebuf2 messages
-std::vector<URTS::MessageFormats::Earthworm::TraceBuf2<double>> 
+std::vector<UMPS::MessageFormats::Earthworm::TraceBuf2<double>> 
     WaveRing::getTraceBuf2Messages() const noexcept
 {
     return pImpl->mTraceBuf2Messages;
 }
 
-const URTS::MessageFormats::Earthworm::TraceBuf2<double> *
+const UMPS::MessageFormats::Earthworm::TraceBuf2<double> *
     WaveRing::getTraceBuf2MessagesPointer() const noexcept
 {
     return pImpl->mTraceBuf2Messages.data();

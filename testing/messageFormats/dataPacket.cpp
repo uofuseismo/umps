@@ -3,15 +3,15 @@
 #include <cstring>
 #include <vector>
 #include <limits>
-#include "urts/messageFormats/dataPacket.hpp"
-#include "urts/messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/earthworm/traceBuf2.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
-#define MESSAGE_TYPE "URTS::MessageFormats::DataPacket"
+#define MESSAGE_TYPE "UMPS::MessageFormats::DataPacket"
 
-using namespace URTS::MessageFormats;
+using namespace UMPS::MessageFormats;
 
 using MyTypes = ::testing::Types<double, float>;
 

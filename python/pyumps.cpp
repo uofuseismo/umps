@@ -9,20 +9,20 @@ PYBIND11_MODULE(pyumps, m)
 {
     m.attr("__version__") = UMPS_VERSION;
     m.attr("__name__") = "pyumps";
-    m.attr("__doc__") = "A Python interface to the UUSS Message Passing System.";
+    m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismgoraph Stations Message Passing System (UMPS).";
 
     // Messaging
     pybind11::module messageFormatsModule = m.def_submodule("MessageFormats");
-    messageFormatsModule.attr("__doc__") = "An assortment of message formats in URTS.";
-    PURTS::MessageFormats::initializeIMessage(messageFormatsModule);
-    PURTS::MessageFormats::initializePick(messageFormatsModule);
-    PURTS::MessageFormats::initializeDataPacket(messageFormatsModule);
+    messageFormatsModule.attr("__doc__") = "An assortment of message formats in UMPS.";
+    PUMPS::MessageFormats::initializeIMessage(messageFormatsModule);
+    PUMPS::MessageFormats::initializePick(messageFormatsModule);
+    PUMPS::MessageFormats::initializeDataPacket(messageFormatsModule);
 
     pybind11::module messagingModule = m.def_submodule("Messaging");
-    messagingModule.attr("__doc__") = "Message passing patterns used in URTS.";
+    messagingModule.attr("__doc__") = "Message passing patterns used in UMPS.";
     
     pybind11::module pubsubModule = messagingModule.def_submodule("PublisherSubscriber");
-    PURTS::Messaging::PublisherSubscriber::initializeSubscriber(pubsubModule);
+    PUMPS::Messaging::PublisherSubscriber::initializeSubscriber(pubsubModule);
 
  
 }

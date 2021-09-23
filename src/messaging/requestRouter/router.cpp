@@ -6,11 +6,11 @@
 #include <cassert>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
-#include "urts/messaging/requestRouter/router.hpp"
-#include "urts/messageFormats/message.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/messaging/requestRouter/router.hpp"
+#include "umps/messageFormats/message.hpp"
+#include "umps/logging/stdout.hpp"
 
-using namespace URTS::Messaging::RequestRouter;
+using namespace UMPS::Messaging::RequestRouter;
 
 class Router::RouterImpl
 {
@@ -20,11 +20,11 @@ public:
         mContext(std::make_shared<zmq::context_t> (1)),
         mServer(std::make_unique<zmq::socket_t> (*mContext,
                                                  zmq::socket_type::router)),
-        mLogger(std::make_shared<URTS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
     }
     /// C'tor with specified logger
-    explicit RouterImpl(std::shared_ptr<URTS::Logging::ILog> &logger) :
+    explicit RouterImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mContext(std::make_shared<zmq::context_t> (1)),
         mServer(std::make_unique<zmq::socket_t> (*mContext,
                                                  zmq::socket_type::router)),
@@ -32,7 +32,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<URTS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
     /// Start the service
@@ -55,14 +55,14 @@ public:
         return running;
     }
 
-    std::map<std::string, std::unique_ptr<URTS::MessageFormats::IMessage>> 
+    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         mSubscriptions;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mServer;
-    std::shared_ptr<URTS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::function<
-          std::unique_ptr<URTS::MessageFormats::IMessage>
-          (const std::string &messageType, const uint8_t *contents, const size_t length) //(const URTS::MessageFormats::IMessage *)
+          std::unique_ptr<UMPS::MessageFormats::IMessage>
+          (const std::string &messageType, const uint8_t *contents, const size_t length) //(const UMPS::MessageFormats::IMessage *)
     > mCallback;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
@@ -81,7 +81,7 @@ Router::Router() :
 {
 }
 
-Router::Router(std::shared_ptr<URTS::Logging::ILog> &logger) :
+Router::Router(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RouterImpl> (logger))
 {
 }
@@ -91,8 +91,8 @@ Router::~Router() = default;
 
 //void Router::initialize(const std::string &endPoint,
 void Router::setCallback(
-    //const std::function<std::unique_ptr<URTS::MessageFormats::IMessage> (const URTS::MessageFormats::IMessage *)> &callback)
-    const std::function<std::unique_ptr<URTS::MessageFormats::IMessage>
+    //const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage> (const UMPS::MessageFormats::IMessage *)> &callback)
+    const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
                         (const std::string &, const uint8_t *, size_t)> &callback)
 {
  //   pImpl->mServer->bind(endPoint);
@@ -153,7 +153,7 @@ void Router::bind(const std::string &endPoint)
 
 /// Add a subscription
 void Router::addMessageType(
-    std::unique_ptr<URTS::MessageFormats::IMessage> &message)
+    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
 {
     if (message == nullptr){throw std::invalid_argument("Message is NULL");}
     if (!isBound())

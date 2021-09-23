@@ -3,10 +3,10 @@
 #include <filesystem>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "urts/services/incrementer/parameters.hpp"
+#include "umps/services/incrementer/parameters.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace URTS::Services::Incrementer;
+using namespace UMPS::Services::Incrementer;
 
 class Parameters::ParametersImpl
 {
@@ -16,7 +16,7 @@ public:
     std::string mClientAddress; 
     uint64_t mInitialValue = 0;
     uint64_t mIncrement = 1;
-    URTS::Logging::Level mVerbosity = URTS::Logging::Level::ERROR;
+    UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::ERROR;
 };
 
 /// C'tor
@@ -61,7 +61,7 @@ void Parameters::clear() noexcept
     pImpl->mClientAddress.clear();
     pImpl->mInitialValue = 0;
     pImpl->mIncrement = 1;
-    pImpl->mVerbosity = URTS::Logging::Level::ERROR;
+    pImpl->mVerbosity = UMPS::Logging::Level::ERROR;
 }
 
 /// Destrutcor
@@ -165,12 +165,12 @@ uint64_t Parameters::getInitialValue() const noexcept
 }
 
 /// Verbosity
-void Parameters::setVerbosity(const URTS::Logging::Level verbosity) noexcept
+void Parameters::setVerbosity(const UMPS::Logging::Level verbosity) noexcept
 {
     pImpl->mVerbosity = verbosity;
 }
 
-URTS::Logging::Level Parameters::getVerbosity() const noexcept
+UMPS::Logging::Level Parameters::getVerbosity() const noexcept
 {
     return pImpl->mVerbosity;
 }
@@ -204,7 +204,7 @@ void Parameters::parseInitializationFile(const std::string &iniFile,
     auto defaultVerbosity = static_cast<int> (parameters.getVerbosity());
     auto verbosity = propertyTree.get<int> (section + ".verbosity",
                                             defaultVerbosity);
-    parameters.setVerbosity(static_cast<URTS::Logging::Level> (verbosity));
+    parameters.setVerbosity(static_cast<UMPS::Logging::Level> (verbosity));
     // Got everything and didn't throw -> copy to this
     *this = std::move(parameters);
 }

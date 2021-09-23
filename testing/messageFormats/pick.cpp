@@ -3,14 +3,14 @@
 #include <cstring>
 #include <vector>
 #include <limits>
-#include "urts/messageFormats/pick.hpp"
+#include "umps/messageFormats/pick.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
-#define MESSAGE_TYPE "URTS::MessageFormats::Pick"
+#define MESSAGE_TYPE "UMPS::MessageFormats::Pick"
 
-using namespace URTS::MessageFormats;
+using namespace UMPS::MessageFormats;
 
 TEST(PickTest, Pick)
 {

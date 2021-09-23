@@ -2,12 +2,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/messageFormats/pick.hpp"
+#include "umps/messageFormats/pick.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "URTS::MessageFormats::Pick"
+#define MESSAGE_TYPE "UMPS::MessageFormats::Pick"
 
-using namespace URTS::MessageFormats;
+using namespace UMPS::MessageFormats;
 
 namespace
 {
@@ -338,7 +338,7 @@ void Pick::fromCBOR(const uint8_t *data, const size_t length)
 }
 
 /// Copy this class
-std::unique_ptr<URTS::MessageFormats::IMessage> Pick::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> Pick::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
         = std::make_unique<MessageFormats::Pick> (*this);
@@ -346,7 +346,7 @@ std::unique_ptr<URTS::MessageFormats::IMessage> Pick::clone() const
 }
 
 /// Create an instance of this class 
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     Pick::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result

@@ -3,16 +3,16 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/daily_file_sink.h>
-#include "urts/logging/spdlog.hpp"
+#include "umps/logging/spdlog.hpp"
 
 namespace fs = std::filesystem;
 
-using namespace URTS::Logging;
+using namespace UMPS::Logging;
 
 namespace
 {
 
-/// Converts the URTS logging level to something spdlog understands.
+/// Converts the UMPS logging level to something spdlog understands.
 spdlog::level::level_enum levelToLevel(const Level level)
 {
     if (level == Level::ERROR)

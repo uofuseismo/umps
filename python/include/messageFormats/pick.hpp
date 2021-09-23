@@ -1,14 +1,14 @@
-#ifndef PYURTS_MESSAGEFORMATS_PICK_HPP
-#define PYURTS_MESSAGEFORMATS_PICK_HPP
+#ifndef PYUMPS_MESSAGEFORMATS_PICK_HPP
+#define PYUMPS_MESSAGEFORMATS_PICK_HPP
 #include <memory>
 #include <pybind11/pybind11.h>
 #include "messageFormats/message.hpp"
-namespace URTS::MessageFormats
+namespace UMPS::MessageFormats
 {
 class Pick;
 }
 
-namespace PURTS::MessageFormats
+namespace PUMPS::MessageFormats
 {
 enum class Polarity : int8_t
 {
@@ -25,8 +25,8 @@ public:
     Pick(Pick &&pick) noexcept;
     Pick& operator=(const Pick &pick);
     Pick& operator=(Pick &&pick) noexcept;
-    URTS::MessageFormats::Pick getNativeClass() const noexcept;
-    std::unique_ptr<URTS::MessageFormats::IMessage> getBaseClass() const noexcept override;
+    UMPS::MessageFormats::Pick getNativeClass() const noexcept;
+    std::unique_ptr<UMPS::MessageFormats::IMessage> getBaseClass() const noexcept override;
     void clear() noexcept;
 
     [[nodiscard]] std::string getMessageType() const noexcept;
@@ -60,7 +60,7 @@ public:
 
     [[nodiscard]] std::string toJSON(int nSpaces =-1) const;
 private:
-    std::unique_ptr<URTS::MessageFormats::Pick> pImpl;
+    std::unique_ptr<UMPS::MessageFormats::Pick> pImpl;
 };
 void initializePick(pybind11::module &m);
 }

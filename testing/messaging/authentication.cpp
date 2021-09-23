@@ -1,10 +1,10 @@
 #include <zmq.h>
-#include "urts/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
-using namespace URTS::Messaging::Authentication;
+using namespace UMPS::Messaging::Authentication;
 
 TEST(Messaging, Certificate)
 {

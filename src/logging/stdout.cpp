@@ -1,9 +1,9 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 //#include <spdlog/sinks/stdout_color_sinks.h>
-#include "urts/logging/stdout.hpp"
+#include "umps/logging/stdout.hpp"
 
-using namespace URTS::Logging;
+using namespace UMPS::Logging;
 
 class StdOut::StdOutImpl
 {

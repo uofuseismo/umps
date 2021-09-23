@@ -4,12 +4,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "urts/services/packetCache/dataRequest.hpp"
+#include "umps/services/packetCache/dataRequest.hpp"
 #include "private/applications/packetCache.hpp"
 
-#define MESSAGE_TYPE "URTS::Services::PacketCache::DataRequest"
+#define MESSAGE_TYPE "UMPS::Services::PacketCache::DataRequest"
 
-using namespace URTS::Services::PacketCache;
+using namespace UMPS::Services::PacketCache;
 
 namespace
 {
@@ -282,7 +282,7 @@ void DataRequest::fromCBOR(const uint8_t *data, const size_t length)
 }
 
 /// Copy this class
-std::unique_ptr<URTS::MessageFormats::IMessage> DataRequest::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> DataRequest::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
         = std::make_unique<DataRequest> (*this);
@@ -290,7 +290,7 @@ std::unique_ptr<URTS::MessageFormats::IMessage> DataRequest::clone() const
 }
 
 /// Create an instance of this class 
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     DataRequest::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result

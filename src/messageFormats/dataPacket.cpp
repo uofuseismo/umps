@@ -3,13 +3,13 @@
 #include <vector>
 #include <cmath>
 #include <nlohmann/json.hpp>
-#include "messageFormats/dataPacket.hpp"
-#include "messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/earthworm/traceBuf2.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "URTS::MessageFormats::DataPacket"
+#define MESSAGE_TYPE "UMPS::MessageFormats::DataPacket"
 
-using namespace URTS::MessageFormats;
+using namespace UMPS::MessageFormats;
 
 namespace
 {
@@ -417,7 +417,7 @@ std::string DataPacket<T>::getMessageType() const noexcept
 
 /// Copy this class
 template<class T>
-std::unique_ptr<URTS::MessageFormats::IMessage> 
+std::unique_ptr<UMPS::MessageFormats::IMessage> 
     DataPacket<T>::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
@@ -427,7 +427,7 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
 
 /// Create an instance of this class 
 template<class T>
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     DataPacket<T>::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
@@ -477,44 +477,44 @@ std::string DataPacket<T>::toJSON(const int nIndent) const
 ///--------------------------------------------------------------------------///
 ///                            Template Instantiation                        ///
 ///--------------------------------------------------------------------------///
-template class URTS::MessageFormats::DataPacket<double>;
-template class URTS::MessageFormats::DataPacket<float>;
+template class UMPS::MessageFormats::DataPacket<double>;
+template class UMPS::MessageFormats::DataPacket<float>;
 
-template void URTS::MessageFormats::DataPacket<double>::setData(const std::vector<double> &x);
-template void URTS::MessageFormats::DataPacket<double>::setData(const std::vector<float> &x);
-template void URTS::MessageFormats::DataPacket<double>::setData(const std::vector<int> &x);
-template void URTS::MessageFormats::DataPacket<double>::setData(const std::vector<int16_t> &data);
-template void URTS::MessageFormats::DataPacket<double>::setData(const int nSamples, const double *data);
-template void URTS::MessageFormats::DataPacket<double>::setData(const int nSamples, const float *data);
-template void URTS::MessageFormats::DataPacket<double>::setData(const int nSamples, const int *data);
-template void URTS::MessageFormats::DataPacket<double>::setData(const int nSamples, const int16_t *data);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const std::vector<double> &x);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const std::vector<float> &x);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const std::vector<int> &x);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const std::vector<int16_t> &data);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const int nSamples, const double *data);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const int nSamples, const float *data);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const int nSamples, const int *data);
+template void UMPS::MessageFormats::DataPacket<double>::setData(const int nSamples, const int16_t *data);
 
-template void URTS::MessageFormats::DataPacket<float>::setData(const std::vector<double> &x);
-template void URTS::MessageFormats::DataPacket<float>::setData(const std::vector<float> &x);
-template void URTS::MessageFormats::DataPacket<float>::setData(const std::vector<int> &x); 
-template void URTS::MessageFormats::DataPacket<float>::setData(const std::vector<int16_t> &data);
-template void URTS::MessageFormats::DataPacket<float>::setData(const int nSamples, const double *data);
-template void URTS::MessageFormats::DataPacket<float>::setData(const int nSamples, const float *data);
-template void URTS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int *data);
-template void URTS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int16_t *data);
+template void UMPS::MessageFormats::DataPacket<float>::setData(const std::vector<double> &x);
+template void UMPS::MessageFormats::DataPacket<float>::setData(const std::vector<float> &x);
+template void UMPS::MessageFormats::DataPacket<float>::setData(const std::vector<int> &x); 
+template void UMPS::MessageFormats::DataPacket<float>::setData(const std::vector<int16_t> &data);
+template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const double *data);
+template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const float *data);
+template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int *data);
+template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int16_t *data);
 
-template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
-template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
-template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
-template URTS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
 
-template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
-template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
-template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
-template URTS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
 
 /*
-template void URTS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<double> &tb);
-template void URTS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<float> &tb);
-template void URTS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<int> &tb);
-template void URTS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<int16_t> &tb);
-template void URTS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<double> &tb);
-template void URTS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<float> &tb);
-template void URTS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<int> &tb);
-template void URTS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<int16_t> &tb);
+template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<double> &tb);
+template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<float> &tb);
+template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<int> &tb);
+template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<int16_t> &tb);
+template void UMPS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<double> &tb);
+template void UMPS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<float> &tb);
+template void UMPS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<int> &tb);
+template void UMPS::MessageFormats::DataPacket<float>::fromTraceBuf2(const Earthworm::TraceBuf2<int16_t> &tb);
 */

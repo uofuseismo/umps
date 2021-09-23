@@ -1,13 +1,13 @@
 #include <string>
 #include <sstream>
 #include "messageFormats/dataPacket.hpp"
-#include "urts/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
 
-using namespace PURTS::MessageFormats;
+using namespace PUMPS::MessageFormats;
 
 /// C'tor
 DataPacket::DataPacket() :
-    pImpl(std::make_unique<URTS::MessageFormats::DataPacket<double>> ())
+    pImpl(std::make_unique<UMPS::MessageFormats::DataPacket<double>> ())
 {
 }
 
@@ -30,12 +30,12 @@ DataPacket::~DataPacket() = default;
 DataPacket& DataPacket::operator=(const DataPacket &packet)
 {
     if (&packet == this){return *this;}
-    pImpl = std::make_unique<URTS::MessageFormats::DataPacket<double>>
+    pImpl = std::make_unique<UMPS::MessageFormats::DataPacket<double>>
             (*packet.pImpl);
     return *this;
 }
 
-URTS::MessageFormats::DataPacket<double>
+UMPS::MessageFormats::DataPacket<double>
     DataPacket::getNativeClass() const noexcept
 {
     return *pImpl;
@@ -175,17 +175,17 @@ std::string DataPacket::getMessageType() const noexcept
 }
 
 /// Base class
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     DataPacket::getBaseClass() const noexcept
 {
-    std::unique_ptr<URTS::MessageFormats::IMessage> message
-        = std::make_unique<URTS::MessageFormats::DataPacket<double>>
+    std::unique_ptr<UMPS::MessageFormats::IMessage> message
+        = std::make_unique<UMPS::MessageFormats::DataPacket<double>>
           (getNativeClass());
     return message;
 }
 
 
-void PURTS::MessageFormats::initializeDataPacket(pybind11::module &m)
+void PUMPS::MessageFormats::initializeDataPacket(pybind11::module &m)
 {
     pybind11::class_<DataPacket, IMessage> o(m, "DataPacket");
     o.def(pybind11::init<> ());

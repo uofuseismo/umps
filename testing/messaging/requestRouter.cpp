@@ -2,11 +2,11 @@
 #include <functional>
 #include <string>
 #include <thread>
-#include "urts/messaging/requestRouter/router.hpp"
-#include "urts/messaging/requestRouter/request.hpp"
-#include "urts/services/incrementer/request.hpp"
-#include "urts/services/incrementer/response.hpp"
-#include "urts/logging/stdout.hpp"
+#include "umps/messaging/requestRouter/router.hpp"
+#include "umps/messaging/requestRouter/request.hpp"
+#include "umps/services/incrementer/request.hpp"
+#include "umps/services/incrementer/response.hpp"
+#include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -20,13 +20,13 @@ int nThreads = 2;
 class ProcessData
 {
 public:
-    std::unique_ptr<URTS::MessageFormats::IMessage>
+    std::unique_ptr<UMPS::MessageFormats::IMessage>
         process(const std::string &messageType,
                 const uint8_t *messageContents, const size_t length)
     {
-        URTS::Services::Incrementer::Request request;
+        UMPS::Services::Incrementer::Request request;
         auto response
-            = std::make_unique<URTS::Services::Incrementer::Response> ();
+            = std::make_unique<UMPS::Services::Incrementer::Response> ();
         //std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
         if (messageType == request.getMessageType())
         {
@@ -35,13 +35,13 @@ public:
             //std::cout << "Unpacking: " << request.getIdentifier() << std::endl;
             response->setValue(request.getIdentifier());
             response->setReturnCode(
-                URTS::Services::Incrementer::ReturnCode::SUCCESS);
+                UMPS::Services::Incrementer::ReturnCode::SUCCESS);
             nResponses = nResponses + 1;
         }
         else
         {
             response->setReturnCode(
-                URTS::Services::Incrementer::ReturnCode::NO_ITEM);
+                UMPS::Services::Incrementer::ReturnCode::NO_ITEM);
         }
         return response;
     } 
@@ -54,12 +54,12 @@ private:
 };
 
 /*
-std::unique_ptr<URTS::MessageFormats::IMessage>
+std::unique_ptr<UMPS::MessageFormats::IMessage>
     process(const std::string &messageType,
             const uint8_t *messageContents, const size_t length)
 {
-    URTS::Services::Incrementer::Request request;
-    auto response = std::make_unique<URTS::Services::Incrementer::Response> ();
+    UMPS::Services::Incrementer::Request request;
+    auto response = std::make_unique<UMPS::Services::Incrementer::Response> ();
     std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
     if (messageType == request.getMessageType())
     {
@@ -68,12 +68,12 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
         std::cout << "Unpacking: " << request.getIdentifier() << std::endl;
         response->setValue(request.getIdentifier());
         response->setReturnCode(
-            URTS::Services::Incrementer::ReturnCode::SUCCESS);
+            UMPS::Services::Incrementer::ReturnCode::SUCCESS);
     }
     else
     {
         response->setReturnCode(
-            URTS::Services::Incrementer::ReturnCode::NO_ITEM);
+            UMPS::Services::Incrementer::ReturnCode::NO_ITEM);
     }
     return response; 
 }
@@ -82,24 +82,24 @@ std::unique_ptr<URTS::MessageFormats::IMessage>
 void server()
 {
     // Make a logger
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::INFO); 
-    std::shared_ptr<URTS::Logging::ILog> loggerPtr
-        = std::make_shared<URTS::Logging::StdOut> (logger);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::INFO); 
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
     ProcessData pStruct;
     // Initialize the server
-    URTS::Messaging::RequestRouter::Router server(loggerPtr);
+    UMPS::Messaging::RequestRouter::Router server(loggerPtr);
     server.bind(serverHost);
     server.setCallback(std::bind(&ProcessData::process,
                                  &pStruct, //process,
                                  std::placeholders::_1,
                                  std::placeholders::_2,
                                  std::placeholders::_3));
-    std::unique_ptr<URTS::MessageFormats::IMessage> messageSubscriptionType
-        = std::make_unique<URTS::Services::Incrementer::Request> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> messageSubscriptionType
+        = std::make_unique<UMPS::Services::Incrementer::Request> ();
     server.addMessageType(messageSubscriptionType);
     // Launch the server
-    std::thread t1(&URTS::Messaging::RequestRouter::Router::start,
+    std::thread t1(&UMPS::Messaging::RequestRouter::Router::start,
                    &server);
     // Have the main thread kill the server
     while (pStruct.getNumberOfResponses() < nMessages*nThreads)
@@ -116,15 +116,15 @@ void server()
 void client(int base)
 {
     // Make a logger
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::INFO);
-    std::shared_ptr<URTS::Logging::ILog> loggerPtr
-        = std::make_shared<URTS::Logging::StdOut> (logger);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::INFO);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
 
-    URTS::Messaging::RequestRouter::Request client(loggerPtr);
-    URTS::Services::Incrementer::Request request;
-    std::unique_ptr<URTS::MessageFormats::IMessage> responseType
-        = std::make_unique<URTS::Services::Incrementer::Response> (); 
+    UMPS::Messaging::RequestRouter::Request client(loggerPtr);
+    UMPS::Services::Incrementer::Request request;
+    std::unique_ptr<UMPS::MessageFormats::IMessage> responseType
+        = std::make_unique<UMPS::Services::Incrementer::Response> (); 
     client.setResponse(responseType);
 
     
@@ -136,7 +136,7 @@ void client(int base)
         request.setIdentifier(base + i);
         auto message = client.request(request);
         auto response
-        = static_unique_pointer_cast<URTS::Services::Incrementer::Response>
+        = static_unique_pointer_cast<UMPS::Services::Incrementer::Response>
           (std::move(message));
         EXPECT_EQ(request.getIdentifier(), response->getIdentifier());
         //std::cout << request.getIdentifier() << " " << response->getIdentifier() << std::endl;//Identifier() << std::endl;
@@ -146,8 +146,8 @@ void client(int base)
 TEST(Messaging, RequestRouter)
 {
     //std::shared_ptr<void *> context = std::make_shared<void *> (zmq_ctx_new()); //zmq::context_t context{1};    
-    URTS::Logging::StdOut logger;
-    logger.setLevel(URTS::Logging::Level::DEBUG);
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::DEBUG);
     auto serverThread  = std::thread(server);
     auto clientThread1 = std::thread(client, 100);
     auto clientThread2 = std::thread(client, 200);

@@ -91,8 +91,8 @@ if (${BUILD_EW})
 endif()
 
 set(BUILD_SHARED_LIBS YES)
-add_library(umps ${VERSION_SRC} ${LOGGING_SRC}
-                 ${MESSAGE_FORMAT_SRC} ${MESSAGING_SRC}
+add_library(umps ${VERSION_SRC} ${LOGGING_SRC} ${MESSAGING_SRC}
+                 ${MESSAGE_FORMAT_SRC}
                  ${MODULES_LIBSRC} ${EARTHWORM_SRC})
 set_target_properties(umps PROPERTIES
                       CXX_STANDARD 20

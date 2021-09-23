@@ -1,11 +1,11 @@
 #include <mutex>
 #include <string>
 #include <set>
-#include "urts/messaging/authentication/authenticator.hpp"
-#include "urts/logging/stdout.hpp"
-#include "urts/logging/log.hpp"
+#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/logging/stdout.hpp"
+#include "umps/logging/log.hpp"
 
-using namespace URTS::Messaging::Authentication;
+using namespace UMPS::Messaging::Authentication;
 
 class AuthenticationImpl
 {

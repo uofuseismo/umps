@@ -1,17 +1,17 @@
-#ifndef PYURTS_MESSAGEFORMATS_MESSAGE_HPP
-#define PYURTS_MESSAGEFORMATS_MESSAGE_HPP
+#ifndef PYUMPS_MESSAGEFORMATS_MESSAGE_HPP
+#define PYUMPS_MESSAGEFORMATS_MESSAGE_HPP
 #include <memory>
-namespace URTS::MessageFormats
+namespace UMPS::MessageFormats
 {
 class IMessage;
 }
-namespace PURTS::MessageFormats
+namespace PUMPS::MessageFormats
 {
 class IMessage
 {
 public:
     virtual ~IMessage() = default;
-    [[nodiscard]] virtual std::unique_ptr<URTS::MessageFormats::IMessage> getBaseClass() const noexcept = 0;
+    [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> getBaseClass() const noexcept = 0;
 };
 void initializeIMessage(pybind11::module &m);
 }
