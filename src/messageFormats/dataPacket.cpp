@@ -435,6 +435,20 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     return result;
 }
 
+///  Convert message
+template<class T>
+std::string DataPacket<T>::toMessage() const
+{
+    return toCBOR();
+}
+
+template<class T>
+void DataPacket<T>::fromMessage(const char *messageIn, const size_t length)
+{
+    auto message = reinterpret_cast<const uint8_t *> (messageIn);
+    fromCBOR(message, length);
+}
+
 /// From CBOR
 template<class T>
 void DataPacket<T>::fromCBOR(const std::string &data)

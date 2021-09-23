@@ -188,28 +188,37 @@ public:
     void fromJSON(const std::string &message);
 
     /// @result The CBOR message corresponding to this class.
-    [[nodiscard]] std::string toCBOR() const override final;
+    [[nodiscard]] std::string toCBOR() const;
     /// @brief Creates this class from a CBOR message.
     void fromCBOR(const std::string &cbor);
     /// @brief Creates this class from a CBOR message.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or the length is 0.
-    void fromCBOR(const uint8_t *data, const size_t length) override final;
+    void fromCBOR(const uint8_t *data, const size_t length);
     /// @}
 
-    /// @name Message Type
+    /// @name Message Abstract Base Class Properties
     /// @{
+    /// @result A copy of this class.
+    [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
+    /// @result An instance of an uninitialized class.
+    virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
+    /// @brief Converts the packet class to a string message.
+    /// @result The class expressed as a string message.
+    /// @throws std::runtime_error if the required information is not set. 
+    /// @note Though the container is a string the message need not be
+    ///       human readable.
+    [[nodiscard]] virtual std::string toMessage() const override final;
+    /// @brief Creates the class from a message.
+    /// @param[in] data    The contents of the message.  This is an
+    ///                    array whose dimension is [length] 
+    /// @param[in] length  The length of data.
+    /// @throws std::runtime_error if the message is invalid.
+    /// @throws std::invalid_argument if data is NULL or length is 0. 
+    void fromMessage(const char *data, const size_t length) override final;
     /// @result A string descriptor for this message type.
     [[nodiscard]] 
     virtual std::string getMessageType() const noexcept override final;
-    /// @}
-
-    /// @name Clone Functions
-    /// @{
-    /// @result A copy of this class.
-    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
-    /// @result An uninitialized instance of this class. 
-    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept override final;
     /// @}
 
     /// @brief Swaps two tracebuf2 classes.

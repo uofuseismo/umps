@@ -119,7 +119,8 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     {
         pImpl->mLogger->error("Message type is empty");
     }
-    auto requestMessage = request.toCBOR();
+    //auto requestMessage = request.toCBOR();
+    auto requestMessage = request.toMessage();
     if (requestMessage.empty())
     {
         pImpl->mLogger->error("Message contents is empty");
@@ -159,12 +160,14 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     {
         throw std::runtime_error("Unhandled response type");
     } 
-    const auto payload = static_cast<uint8_t *> (responseReceived.at(1).data());
+    //const auto payload = static_cast<uint8_t *> (responseReceived.at(1).data());
+    const auto payload = static_cast<char *> (responseReceived.at(1).data());
     auto responseLength = responseReceived.at(1).size();
     auto response = index->second->createInstance();
     try
     {
-        response->fromCBOR(payload, responseLength);
+        //response->fromCBOR(payload, responseLength);
+        response->fromMessage(payload, responseLength);
     }
     catch (const std::exception &e) 
     {

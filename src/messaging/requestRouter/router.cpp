@@ -280,9 +280,10 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
             auto response = pImpl->mCallback(&*message);
 */
             // Send the response back
-            auto cborResponseMessageType = response->getMessageType();
-            auto cborResponseMessage = std::string(response->toCBOR());
-            if (cborResponseMessage.empty())
+            auto responseMessageType = response->getMessageType();
+            //auto responseMessage = std::string(response->toCBOR());
+            auto responseMessage = response->toMessage(); 
+            if (responseMessage.empty())
             {
                 pImpl->mLogger->debug("CBOR message is empty");
             }
@@ -293,11 +294,11 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
             zmq::const_buffer zmqHdr2{messagesReceived.at(1).data(),
                                       messagesReceived.at(1).size()};
             pImpl->mServer->send(zmqHdr2, zmq::send_flags::sndmore);
-            zmq::const_buffer header{cborResponseMessageType.data(),
-                                     cborResponseMessageType.size()};
+            zmq::const_buffer header{responseMessageType.data(),
+                                     responseMessageType.size()};
             pImpl->mServer->send(header, zmq::send_flags::sndmore);
-            zmq::const_buffer responseBuffer{cborResponseMessage.data(),
-                                             cborResponseMessage.size()};
+            zmq::const_buffer responseBuffer{responseMessage.data(),
+                                             responseMessage.size()};
             pImpl->mServer->send(responseBuffer);
         }
     }

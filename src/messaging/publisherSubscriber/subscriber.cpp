@@ -358,12 +358,14 @@ std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
         pImpl->mLogger->error(errorMsg); 
         throw std::runtime_error(errorMsg);
     }
-    const auto payload = static_cast<uint8_t *> (messagesReceived.at(1).data());
+    //const auto payload = static_cast<uint8_t *> (messagesReceived.at(1).data());
+    const auto payload = static_cast<char *> (messagesReceived.at(1).data());
     auto messageLength = messagesReceived.at(1).size();
     auto result = index->second->createInstance();
     try
     {
-        result->fromCBOR(payload, messageLength);
+        //result->fromCBOR(payload, messageLength);
+        result->fromMessage(payload, messageLength);
     }
     catch (const std::exception &e)
     {

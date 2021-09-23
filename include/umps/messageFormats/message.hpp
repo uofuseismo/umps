@@ -16,12 +16,15 @@ public:
     [[nodiscard]] virtual std::unique_ptr<IMessage> clone() const = 0;
     /// @brief Create a clone of this class.
     [[nodiscard]] virtual std::unique_ptr<IMessage> createInstance() const noexcept = 0;
-    /// @brief Converts this class to a JSON message.
-    /// @param[in] nIndent  The number of spaces to indent.
-    /// @note -1 disables indentation which is preferred for message
-    ///       transmission.
-    /// @result The class expressed as a JSON message.
-    //[[nodiscard]] virtual std::string toJSON(int noIndent) const = 0;
+    /// @brief Converts this class to a string representation.
+    /// @result The class expressed in string format.
+    /// @note Though the container is a string the message need not be
+    ///       human readable.
+    [[nodiscard]] virtual std::string toMessage() const = 0;
+    /// @brief Converts this message from a string representation to data.
+    virtual void fromMessage(const char *data, const size_t length) = 0;
+/*
+
     /// @brief Converts this class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.
@@ -34,6 +37,7 @@ public:
     ///         (CBOR) format.  For more see: http://cbor.io/.
     //[[nodiscard]] virtual std::string toCBOR() const = 0; 
     /// @result The message type.
+*/
     [[nodiscard]] virtual std::string getMessageType() const noexcept = 0;
 };
 }

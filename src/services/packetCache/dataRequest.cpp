@@ -281,6 +281,19 @@ void DataRequest::fromCBOR(const uint8_t *data, const size_t length)
     *this = fromCBORMessage(data, length);
 }
 
+///  Convert message
+std::string DataRequest::toMessage() const
+{
+    return toCBOR();
+}
+
+void DataRequest::fromMessage(const char *messageIn, const size_t length)
+{
+    auto message = reinterpret_cast<const uint8_t *> (messageIn);
+    fromCBOR(message, length);
+}
+
+
 /// Copy this class
 std::unique_ptr<UMPS::MessageFormats::IMessage> DataRequest::clone() const
 {

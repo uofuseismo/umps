@@ -883,6 +883,20 @@ void TraceBuf2<T>::fromCBOR(const uint8_t *data, const size_t length)
     *this = std::move(tb);
 }
 
+///  Convert message
+template<class T>
+std::string TraceBuf2<T>::toMessage() const
+{
+    return toCBOR();
+}
+
+template<class T>
+void TraceBuf2<T>::fromMessage(const char *messageIn, const size_t length)
+{
+    auto message = reinterpret_cast<const uint8_t *> (messageIn);
+    fromCBOR(message, length);
+}
+
 /// Message type
 template<class T>
 std::string TraceBuf2<T>::getMessageType() const noexcept
