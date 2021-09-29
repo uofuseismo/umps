@@ -1,6 +1,7 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
-//#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Logging;
@@ -8,12 +9,20 @@ using namespace UMPS::Logging;
 class StdOut::StdOutImpl
 {
 public:
+    StdOutImpl() :
+        mStdOutSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt> ()),
+        mLogger(std::make_shared<spdlog::logger> ("stdout", mStdOutSink))
+    {
+//        mLogger = spdlog::create("stdout", mStdOutSink);
+    }
     //StdOutImpl() :
     //    mSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>() )
     //{   
     //}
     //std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mSink;
     Level mLevel = Level::INFO;
+    std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mStdOutSink;// = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+    std::shared_ptr<spdlog::logger> mLogger = nullptr;
 };
 
 /// C'tor
@@ -60,23 +69,28 @@ void StdOut::setLevel(const Level level) noexcept
     pImpl->mLevel = level;
     if (level == Level::ERROR)
     {
-        spdlog::set_level(spdlog::level::err);
+        //spdlog::set_level(spdlog::level::err);
+        pImpl->mLogger->set_level(spdlog::level::err);
     }
-    else if (level == Level::DEBUG)
+    else if (level == Level::WARN)
     {
-        spdlog::set_level(spdlog::level::debug);
+        //spdlog::set_level(spdlog::level::debug);
+        pImpl->mLogger->set_level(spdlog::level::warn);
     }
     else if (level == Level::INFO)
     {
-        spdlog::set_level(spdlog::level::info);
+        //spdlog::set_level(spdlog::level::info);
+        pImpl->mLogger->set_level(spdlog::level::info);
     }
     else if (level == Level::DEBUG)
     {
-        spdlog::set_level(spdlog::level::debug);
+        //spdlog::set_level(spdlog::level::debug);
+        pImpl->mLogger->set_level(spdlog::level::debug);
     }
     else
     {
-        spdlog::set_level(spdlog::level::off);
+        //spdlog::set_level(spdlog::level::off);
+        pImpl->mLogger->set_level(spdlog::level::off);
     }
 }
 
@@ -91,7 +105,8 @@ void StdOut::info(const std::string &message)
     if (pImpl->mLevel >= Level::INFO)
     {
         //std::cout << message << std::endl;
-        spdlog::info(message);
+        //spdlog::info(message);
+        pImpl->mLogger->info(message);
     }
 }
 
@@ -101,7 +116,8 @@ void StdOut::warn(const std::string &message)
     if (pImpl->mLevel >= Level::WARN)
     {
         //std::cout << message << std::endl;
-        spdlog::warn(message);
+        //spdlog::warn(message);
+        pImpl->mLogger->warn(message);
     }
 }
 
@@ -111,7 +127,8 @@ void StdOut::error(const std::string &message)
     if (pImpl->mLevel >= Level::ERROR)
     {
         //std::cerr << message << std::endl;
-        spdlog::error(message);
+        //spdlog::error(message);
+        pImpl->mLogger->error(message);
     }
 }
 
@@ -121,6 +138,7 @@ void StdOut::debug(const std::string &message)
     if (pImpl->mLevel >= Level::DEBUG)
     {
         //std::cerr << message << std::endl;
-        spdlog::debug(message);
+        //spdlog::debug(message);
+        pImpl->mLogger->debug(message);
     }
 }

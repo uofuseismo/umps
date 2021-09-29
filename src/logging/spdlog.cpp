@@ -34,7 +34,7 @@ spdlog::level::level_enum levelToLevel(const Level level)
     return spdlog::level::off;
 }
 
-};
+}
 
 /// Implementation
 class SpdLog::SpdLogImpl
