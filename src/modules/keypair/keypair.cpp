@@ -7,7 +7,7 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "umps/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
 
 struct ProgramOptions
 {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     }
     auto publicKeyFileName = options.mPublicKeyFile;
     auto privateKeyFileName = options.mPrivateKeyFile;
-    UMPS::Messaging::Authentication::Certificate certificate;
+    UMPS::Messaging::Authentication::Certificate::Keys certificate;
     certificate.create();
     certificate.setMetadata(options.mMetadata);
     certificate.writePublicKeyToTextFile(publicKeyFileName);

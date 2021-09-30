@@ -1,7 +1,7 @@
 #include <zmq.hpp>
 #include <thread>
-#include "umps/messaging/authentication/certificate.hpp"
-//#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
@@ -13,9 +13,33 @@ namespace
 
 using namespace UMPS::Messaging::Authentication;
 
-TEST(Messaging, Certificate)
+TEST(Messaging, CertificateUserNameAndPassword)
 {
-    Certificate certificate;
+    const std::string userName = "user";
+    const std::string password = "password";
+    Certificate::UserNameAndPassword plainText;
+    EXPECT_FALSE(plainText.haveUserName());
+    EXPECT_FALSE(plainText.havePassword());
+ 
+    plainText.setUserName(userName);
+    EXPECT_FALSE(plainText.havePassword());
+    EXPECT_EQ(plainText.getUserName(), userName);
+     
+    plainText.clear();
+    plainText.setPassword(password);
+    EXPECT_FALSE(plainText.haveUserName());
+    EXPECT_EQ(plainText.getPassword(), password);
+
+    plainText.setUserName(userName);
+ 
+    Certificate::UserNameAndPassword plainTextCopy(plainText);
+    EXPECT_EQ(plainTextCopy.getUserName(), userName);
+    EXPECT_EQ(plainTextCopy.getPassword(), password);
+}
+
+TEST(Messaging, CertificateKeys)
+{
+    Certificate::Keys certificate;
     const std::string metadata = "Test metadata";
     EXPECT_NO_THROW(certificate.create());
     EXPECT_TRUE(certificate.haveKeyPair());
@@ -26,13 +50,13 @@ TEST(Messaging, Certificate)
     auto publicKey  = certificate.getPublicKey();
     auto privateKey = certificate.getPrivateKey();
 
-    Certificate fromText;
+    Certificate::Keys fromText;
     fromText.setPublicKey(publicTextKey);
     fromText.setPrivateKey(privateTextKey);
     EXPECT_EQ(fromText.getPublicKey(),  certificate.getPublicKey());
     EXPECT_EQ(fromText.getPrivateKey(), certificate.getPrivateKey());
   
-    Certificate fromBinary;
+    Certificate::Keys fromBinary;
     fromBinary.setPublicKey(publicKey); 
     fromBinary.setPrivateKey(privateKey);
     EXPECT_EQ(fromBinary.getPublicTextKey(),  certificate.getPublicTextKey());
@@ -45,7 +69,7 @@ TEST(Messaging, Certificate)
     certificate.setMetadata(metadata);
     certificate.writePrivateKeyToTextFile("temp.private_key");
  
-    Certificate fromFile;
+    Certificate::Keys fromFile;
     fromFile.loadFromTextFile("temp.public_key");
     EXPECT_EQ(fromFile.getMetadata(), "");
     fromFile.loadFromTextFile("temp.private_key");
@@ -61,7 +85,7 @@ TEST(Messaging, Certificate)
 
 void pub(std::shared_ptr<zmq::context_t> context)
 {
-    Certificate certificate;
+    Certificate::Keys certificate;
     certificate.create();
 
     UMPS::Messaging::PublisherSubscriber::Publisher publisher(context);
@@ -85,7 +109,7 @@ std::cout << "sending..." << std::endl;
 
 void sub()
 {
-    Certificate certificate;
+    Certificate::Keys certificate;
     certificate.create();
 
     UMPS::Messaging::PublisherSubscriber::Subscriber subscriber;

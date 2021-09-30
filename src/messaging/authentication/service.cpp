@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <array>
 #include <set>
 #include <thread>
 #include <mutex>
@@ -7,7 +8,8 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/authentication/authenticator.hpp"
-#include "umps/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 
@@ -312,8 +314,20 @@ void Service::start()
                 {
                     //pImpl->mAuthenticator.verifyPlain( );
                     auto user = messageReceived[5].to_string();
-                    auto pwd = messageReceived[6].to_string();
-                    bool verified = true;
+                    auto password = messageReceived[6].to_string();
+                    Certificate::UserNameAndPassword plainText;
+                    bool verified = false;
+                    try
+                    {
+                        plainText.setUserName(user);
+                        plainText.setPassword(password);
+                    }
+                    catch (const std::exception &e)
+                    {
+                        pImpl->mLogger->error("Failed to set username/pwd");
+                    }
+
+verified = true;
                     if (verified)
                     {
                         statusCode = ZAP_SUCCESS;
@@ -335,8 +349,25 @@ void Service::start()
                     }
                     else
                     {
-                        auto key = reinterpret_cast<uint8_t *>
-                                   (messageReceived.at(6).data());
+                        auto keyPtr = reinterpret_cast<const uint8_t *>
+                                      (messageReceived.at(6).data());
+                        std::array<uint8_t, 32> publicKey;
+                        std::copy(keyPtr, keyPtr + 32, publicKey.data());
+                        Certificate::Keys key;
+                        try
+                        {
+                            key.setPublicKey(publicKey);
+                        }
+                        catch (const std::exception &e)
+                        {
+                            pImpl->mLogger->error("Failed to set public key");
+                            statusCode = ZAP_SERVER_ERROR;
+                            statusText = "Failed to set public key";
+                        }
+                        verified = false;
+                        if (key.havePublicKey())
+                        {
+                        }                        
                         if (verified)
                         {
                             statusCode = ZAP_SUCCESS;

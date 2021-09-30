@@ -10,20 +10,9 @@
 #include <zmq.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include "umps/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
 
-/// N.B. A lot of the implementation ideas for this class are from zeromq's 
-///      python interface.  This is a port of the `high-level' C bindings.
-///      My issue with the the `high-level' C bindings was they didn't contain
-///      a custom callback for validation in the case of wanting to use a
-///      database.  The `high-level' C++ bindings have an implementation
-///      as well but are also missing the callback.  Also, it is unclear if
-///      that library is being maintained.  In the future, the cppzmq header
-///      only library may bring this functionality into their tool which would
-///      deprecate all of this - and that's fine.  For more read:
-///      https://github.com/zeromq/pyzmq/blob/main/zmq/auth/certs.py
-///      Ben Baker (September 2021)
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Messaging::Authentication::Certificate;
 
 namespace
 {
@@ -74,7 +63,7 @@ void createRootDirectoryFromFileName(const std::string &fileName)
 
 }
 
-class Certificate::CertificateImpl
+class Keys::KeysImpl
 {
 public:
     std::string mMetadata;
@@ -87,44 +76,44 @@ public:
 };
 
 /// C'tor
-Certificate::Certificate() :
-    pImpl(std::make_unique<CertificateImpl> ())
+Keys::Keys() :
+    pImpl(std::make_unique<KeysImpl> ())
 {
 }
 
 /// Copy c'tor
-Certificate::Certificate(const Certificate &certificate)
+Keys::Keys(const Keys &keys)
 {
-    *this = certificate;
+    *this = keys;
 }
 
 /// Move c'tor
-Certificate::Certificate(Certificate &&certificate) noexcept
+Keys::Keys(Keys &&keys) noexcept
 {
-    *this = std::move(certificate);
+    *this = std::move(keys);
 }
 
 /// Copy assignment
-Certificate& Certificate::operator=(const Certificate &certificate)
+Keys& Keys::operator=(const Keys &keys)
 {
-    if (&certificate == this){return *this;}
-    pImpl = std::make_unique<CertificateImpl> (*certificate.pImpl);
+    if (&keys == this){return *this;}
+    pImpl = std::make_unique<KeysImpl> (*keys.pImpl);
     return *this;
 } 
 
 /// Move assignment
-Certificate& Certificate::operator=(Certificate &&certificate) noexcept
+Keys& Keys::operator=(Keys &&keys) noexcept
 {
-    if (&certificate == this){return *this;}
-    pImpl = std::move(certificate.pImpl);
+    if (&keys == this){return *this;}
+    pImpl = std::move(keys.pImpl);
     return *this;
 }
 
 /// Destructor
-Certificate::~Certificate() = default;
+Keys::~Keys() = default;
 
 /// Clear
-void Certificate::clear() noexcept
+void Keys::clear() noexcept
 {
     pImpl->mMetadata.clear();
     pImpl->mHavePublicKey = false;
@@ -132,7 +121,7 @@ void Certificate::clear() noexcept
 }
 
 /// Creates a keypair
-void Certificate::create()
+void Keys::create()
 {
     std::array<char, 41> publicText; 
     std::array<char, 41> privateText;
@@ -146,7 +135,7 @@ void Certificate::create()
 }
 
 /// Sets the public key
-void Certificate::setPublicKey(const std::array<uint8_t, 32> &key)
+void Keys::setPublicKey(const std::array<uint8_t, 32> &key)
 {
     pImpl->mHavePublicKey = false;
     pImpl->mPublicKey = key;
@@ -160,7 +149,7 @@ void Certificate::setPublicKey(const std::array<uint8_t, 32> &key)
     pImpl->mHavePublicKey = true;
 }
 
-void Certificate::setPublicKey(const std::array<char, 41> &key)
+void Keys::setPublicKey(const std::array<char, 41> &key)
 {
     pImpl->mHavePublicKey = false;
     pImpl->mPublicText = key;
@@ -176,25 +165,25 @@ void Certificate::setPublicKey(const std::array<char, 41> &key)
     pImpl->mHavePublicKey = true;
 }
 
-std::array<uint8_t, 32> Certificate::getPublicKey() const
+std::array<uint8_t, 32> Keys::getPublicKey() const
 {
     if (!havePublicKey()){throw std::runtime_error("Public key not set");}
     return pImpl->mPublicKey;
 }
 
-std::array<char, 41> Certificate::getPublicTextKey() const
+std::array<char, 41> Keys::getPublicTextKey() const
 {
     if (!havePublicKey()){throw std::runtime_error("Public key not set");}
     return pImpl->mPublicText;
 }
 
-bool Certificate::havePublicKey() const noexcept
+bool Keys::havePublicKey() const noexcept
 {
     return pImpl->mHavePublicKey;
 }
 
 /// Sets the private key
-void Certificate::setPrivateKey(const std::array<uint8_t, 32> &key)
+void Keys::setPrivateKey(const std::array<uint8_t, 32> &key)
 {
     pImpl->mHavePrivateKey = false;
     pImpl->mPrivateKey = key;
@@ -208,7 +197,7 @@ void Certificate::setPrivateKey(const std::array<uint8_t, 32> &key)
     pImpl->mHavePrivateKey = true;
 }
 
-void Certificate::setPrivateKey(const std::array<char, 41> &key)
+void Keys::setPrivateKey(const std::array<char, 41> &key)
 {
     pImpl->mHavePrivateKey = false;
     pImpl->mPrivateText = key;
@@ -224,25 +213,25 @@ void Certificate::setPrivateKey(const std::array<char, 41> &key)
     pImpl->mHavePrivateKey = true;
 }
 
-std::array<uint8_t, 32> Certificate::getPrivateKey() const
+std::array<uint8_t, 32> Keys::getPrivateKey() const
 {
     if (!havePrivateKey()){throw std::runtime_error("Private key not set");}
     return pImpl->mPrivateKey;
 }
 
-std::array<char, 41> Certificate::getPrivateTextKey() const
+std::array<char, 41> Keys::getPrivateTextKey() const
 {
     if (!havePrivateKey()){throw std::runtime_error("Private key not set");}
     return pImpl->mPrivateText;
 }
 
-bool Certificate::havePrivateKey() const noexcept
+bool Keys::havePrivateKey() const noexcept
 {
     return pImpl->mHavePrivateKey;
 }
 
 /// Sets a keypair
-void Certificate::setPair(const std::array<uint8_t, 32> &publicKey,
+void Keys::setPair(const std::array<uint8_t, 32> &publicKey,
                           const std::array<uint8_t, 32> &privateKey)
 {
     setPublicKey(publicKey);
@@ -250,7 +239,7 @@ void Certificate::setPair(const std::array<uint8_t, 32> &publicKey,
 }
 
 /// Sets a keypair 
-void Certificate::setPair(const std::array<char, 41> &publicText,
+void Keys::setPair(const std::array<char, 41> &publicText,
                           const std::array<char, 41> &privateText)
 {
     setPublicKey(publicText);
@@ -258,24 +247,24 @@ void Certificate::setPair(const std::array<char, 41> &publicText,
 }
 
 /// Have keypair?
-bool Certificate::haveKeyPair() const noexcept
+bool Keys::haveKeyPair() const noexcept
 {
     return (havePublicKey() && havePrivateKey());
 }
 
 /// Metadata
-void Certificate::setMetadata(const std::string &metadata) noexcept
+void Keys::setMetadata(const std::string &metadata) noexcept
 {
     pImpl->mMetadata = metadata;
 }
 
-std::string Certificate::getMetadata() const noexcept
+std::string Keys::getMetadata() const noexcept
 {
     return pImpl->mMetadata;
 }
 
 /// Write public key
-void Certificate::writePublicKeyToTextFile(const std::string &fileName) const
+void Keys::writePublicKeyToTextFile(const std::string &fileName) const
 {
     if (!havePublicKey())
     {
@@ -306,7 +295,7 @@ R"""(#   ZeroMQ CURVE Public Certificate
 }
 
 /// Write private key
-void Certificate::writePrivateKeyToTextFile(const std::string &fileName) const
+void Keys::writePrivateKeyToTextFile(const std::string &fileName) const
 {
     if (!havePrivateKey())
     {
@@ -338,7 +327,7 @@ R"""(#   ZeroMQ CURVE **Secret** Certificate
 }
 
 /// Read a public key
-void Certificate::loadFromTextFile(const std::string &fileName)
+void Keys::loadFromTextFile(const std::string &fileName)
 {
     if (!std::filesystem::exists(fileName))
     {

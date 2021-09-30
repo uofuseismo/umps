@@ -12,9 +12,10 @@ namespace UMPS
  {
   class IMessage;
  }
- namespace Messaging::Authentication
+ namespace Messaging::Authentication::Certificate
  {
-  class Certificate;
+  class Keys;
+  class UserNameAndPassword;
  }
 }
 namespace zmq
@@ -67,7 +68,9 @@ public:
     /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
     void bind(const std::string &endPoint);
     void bind(const std::string &endPoint,
-              const UMPS::Messaging::Authentication::Certificate &certificate);
+              const UMPS::Messaging::Authentication::Certificate::Keys &keys);
+    void bind(const std::string &endPoint,
+              const UMPS::Messaging::Authentication::Certificate::UserNameAndPassword &plainText);
 
     /// @name Destructors
     /// @{

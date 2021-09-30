@@ -5,7 +5,7 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
-#include "umps/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
@@ -208,8 +208,9 @@ void Publisher::bind(const std::string &endPoint)
 }
 
 /// Binds the publisher a curve server
-void Publisher::bind(const std::string &endPoint,
-                     const UMPS::Messaging::Authentication::Certificate &certificate)
+void Publisher::bind(
+    const std::string &endPoint,
+    const UMPS::Messaging::Authentication::Certificate::Keys &keys)
 {
     pImpl->mPublisher->set(zmq::sockopt::zap_domain, "global");
     pImpl->mPublisher->set(zmq::sockopt::plain_server, 1);

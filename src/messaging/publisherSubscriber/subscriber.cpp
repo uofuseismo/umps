@@ -6,7 +6,7 @@
 #include <zmq_addon.hpp>
 #include <unistd.h>
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messaging/authentication/certificate.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
@@ -270,8 +270,9 @@ void Subscriber::connect(const std::string &endPoint)
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
 }
 
-void Subscriber::connect(const std::string &endPoint,
-                         const UMPS::Messaging::Authentication::Certificate &certificate)
+void Subscriber::connect(
+    const std::string &endPoint,
+    const UMPS::Messaging::Authentication::Certificate::Keys &keys)
 {
     pImpl->mSubscriber->set(zmq::sockopt::zap_domain, "global");
     pImpl->mSubscriber->set(zmq::sockopt::plain_username, "user");

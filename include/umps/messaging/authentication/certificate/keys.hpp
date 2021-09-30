@@ -1,43 +1,42 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_HPP
+#ifndef UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_KEYS_HPP
+#define UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_KEYS_HPP
 #include <memory>
 #include <array>
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Messaging::Authentication::Certificate
 {
-/// @class Certificate "certificate.hpp" "umps/messaging/authentication/certificate.hpp"
-/// @brief A class for managing a certificate (public/private key) for
+/// @class Keys "keys.hpp" "umps/messaging/authentication/certificate/keys.hpp"
+/// @brief A class for managing a public/private key-based certificates
 ///        authenticating a client or server with ZeroMQ and libsodium.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Certificate
+class Keys
 {
 public:
     /// @name Constructors
     /// @{
     /// @brief Constructor.
-    Certificate();
+    Keys();
     /// @brief Copy constructor.
-    /// @param[in] certificate  The certificate from which to initialize
-    ///                         this class.
-    Certificate(const Certificate &certificate);
+    /// @param[in] keys  The certificate from which to initialize this class.
+    Keys(const Keys &keys);
     /// @brief Move constructor.
-    /// @param[in,out] certificate  The certificate from which to initialize
-    ///                             this class.  On exit, certificate's behavior
-    ///                             is undefined.
-    Certificate(Certificate &&certificate) noexcept;
+    /// @param[in,out] keys  The certificate from which to initialize
+    ///                      this class.  On exit, keys's behavior
+    ///                      is undefined.
+    Keys(Keys &&keys) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
     /// @brief Copy assignment operator.
-    /// @param[in] certificate  The certificate to copy to this.
+    /// @param[in] keys  The certificate to copy to this.
     /// @result A deep copy of the input certificate.
-    Certificate& operator=(const Certificate &certificate);
+    Keys& operator=(const Keys &keys);
     /// @brief Move assignment operator.
-    /// @param[in,out] certificate  The certificate whose memory will be moved
-    ///                             to this.  On exit, certificate's behavior
-    ///                             is undefined.
+    /// @param[in,out] keys  The certificate whose memory will be moved
+    ///                      to this.  On exit, keys's behavior
+    ///                      is undefined.
     /// @result The memory moved from certificate to this.
-    Certificate& operator=(Certificate &&certificate) noexcept;
+    Keys& operator=(Keys &&keys) noexcept;
     /// @}
 
     /// @name Keypair Creation
@@ -135,11 +134,11 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~Certificate();
+    ~Keys();
     /// @}
 private:
-    class CertificateImpl;
-    std::unique_ptr<CertificateImpl> pImpl; 
+    class KeysImpl;
+    std::unique_ptr<KeysImpl> pImpl; 
 };
 }
 #endif

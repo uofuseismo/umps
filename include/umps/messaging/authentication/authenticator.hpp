@@ -12,9 +12,13 @@ namespace UMPS::Logging
 {
  class ILog;
 }
+namespace UMPS::Messaging::Authentication::Certificate
+{
+ class Keys;
+ class UserNameAndPassword;
+}
 namespace UMPS::Messaging::Authentication
 {
-class Certificate;
 /// @class Authenticator "authenticator.hpp" "umps/messaging/authentication/authenticator.hpp"
 /// @brief Implementation of ZAP authentication for ZeroMQ connections.
 /// @note This is based on the pyzmq implementation in base.py

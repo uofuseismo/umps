@@ -12,9 +12,10 @@ namespace UMPS
  {
   class IMessage;
  }
- namespace Messaging::Authentication
+ namespace Messaging::Authentication::Certificate
  {
-  class Certificate;
+  class Keys;
+  class UserNameAndPassword;
  }
 }
 namespace zmq
@@ -62,7 +63,11 @@ public:
     /// @note For more see: http://api.zeromq.org/3-2:zmq-connect
     /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
     void connect(const std::string &endPoint);
-    void connect(const std::string &endPointt, const UMPS::Messaging::Authentication::Certificate &certificate);
+    void connect(const std::string &endPoint,
+                 const UMPS::Messaging::Authentication::Certificate::Keys &keys);
+    void connect(const std::string &endPoint,
+                 const UMPS::Messaging::Authentication::Certificate::UserNameAndPassword &plainText);
+
     /// @result True indicates that the class is connected.
     [[nodiscard]] bool isConnected() const noexcept;
 
