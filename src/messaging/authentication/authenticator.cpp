@@ -7,38 +7,37 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 
+/// Magic place where ZMQ will send authentication requests to.
+#define ZAP_ENDPOINT  "inproc://zeromq.zap.01"
+
 using namespace UMPS::Messaging::Authentication;
 
 class Authenticator::AuthenticatorImpl
 {
 public:
-    void makeEndPointName()
-    {
-        std::ostringstream address;
-        address << static_cast<void const *> (this);
-        mEndPoint = "inproc://" + address.str() + ".inproc";
-        //std::cout <<  mEndPoint << std::endl;
-    }
     AuthenticatorImpl() :
-        mContext(std::make_shared<zmq::context_t> (0)),
+/*
+        mContext(std::make_shared<zmq::context_t> (1)),
         mZapSocket(std::make_unique<zmq::socket_t> (*mContext,
                                                     zmq::socket_type::rep)),
+*/
         mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
-        makeEndPointName();
     }
     explicit AuthenticatorImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mContext(std::make_shared<zmq::context_t> (0)),
+/*
+        mContext(std::make_shared<zmq::context_t> (1)),
         mZapSocket(std::make_unique<zmq::socket_t> (*mContext,
                                                     zmq::socket_type::rep)),
+*/
         mLogger(logger)
     {
         if (logger == nullptr)
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
-        makeEndPointName();
     }
+/*
     explicit AuthenticatorImpl(std::shared_ptr<zmq::context_t> &context) :
         mContext(context),
         mZapSocket(std::make_unique<zmq::socket_t> (*mContext,
@@ -48,14 +47,17 @@ public:
         if (context == nullptr)
         {
             mLogger->warn("Context is NULL - creating context");
-            mContext = std::make_shared<zmq::context_t> (0);
+            mContext = std::make_shared<zmq::context_t> (1);
             mZapSocket = std::make_unique<zmq::socket_t> (
                 *mContext, zmq::socket_type::rep);
         }
-        makeEndPointName();
     }
     AuthenticatorImpl(std::shared_ptr<zmq::context_t> &context,
-                      std::shared_ptr<UMPS::Logging::ILog> &logger)
+                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mContext(context),
+        mZapSocket(std::make_unique<zmq::socket_t> (*mContext,
+                                                    zmq::socket_type::rep)), 
+        mLogger(logger)
     {
         if (logger == nullptr)
         {
@@ -64,12 +66,12 @@ public:
         if (context == nullptr)
         {
             mLogger->warn("Context is NULL - creating cotnext");
-            mContext = std::make_shared<zmq::context_t> (0);
+            mContext = std::make_shared<zmq::context_t> (1);
             mZapSocket = std::make_unique<zmq::socket_t> (
                 *mContext, zmq::socket_type::rep);
         }
     }
-
+*/
     /// Add to blacklist
     void addToBlacklist(const std::string &address)
     {
@@ -89,6 +91,16 @@ public:
         else
         {
             mLogger->debug("Address: " + address + " already on blacklist");
+        }
+    }
+    /// Remove from blacklist
+    void removeFromBlacklist(const std::string &address) noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        if (mBlacklist.contains(address))
+        {
+            mBlacklist.erase(address);
+            mLogger->debug("Removing: " + address + " from blacklist");
         }
     }
     /// Add to whitelist
@@ -113,6 +125,16 @@ public:
         }
         
     }
+    /// Remove from whitelist
+    void removeFromWhitelist(const std::string &address) noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        if (mWhitelist.contains(address))
+        {
+            mWhitelist.erase(address);
+            mLogger->debug("Removing: " + address + " from whitelist");
+        }
+    }
     /// Blacklisted?
     bool isBlacklisted(const std::string &address) const noexcept
     {
@@ -127,13 +149,14 @@ public:
     }
 ///private:
     mutable std::mutex mMutex;
+/*
     std::shared_ptr<zmq::context_t> mContext;
     std::unique_ptr<zmq::socket_t> mZapSocket;
+*/
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     std::set<std::string> mBlacklist;
     std::set<std::string> mWhitelist;
     std::set<std::pair<std::string, std::string>> mPasswords;
-    std::string mEndPoint;
     bool mHaveZapSocket = false;
 };
 
@@ -148,6 +171,7 @@ Authenticator::Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+/*
 Authenticator::Authenticator(std::shared_ptr<zmq::context_t> &context) :
     pImpl(std::make_unique<AuthenticatorImpl> (context))
 {
@@ -158,6 +182,7 @@ Authenticator::Authenticator(std::shared_ptr<zmq::context_t> &context,
     pImpl(std::make_unique<AuthenticatorImpl> (context, logger))
 {
 }
+*/
 
 /// Destructor
 Authenticator::~Authenticator() = default;
@@ -173,6 +198,11 @@ bool Authenticator::isBlacklisted(const std::string &address) const noexcept
     return pImpl->isBlacklisted(address);
 } 
 
+void Authenticator::removeFromBlacklist(const std::string &address) noexcept
+{
+    return pImpl->removeFromBlacklist(address);
+}
+
 /// White list
 void Authenticator::addToWhitelist(const std::string &address)
 {
@@ -184,22 +214,55 @@ bool Authenticator::isWhitelisted(const std::string &address) const noexcept
     return pImpl->isWhitelisted(address);
 }
 
+void Authenticator::removeFromWhitelist(const std::string &address) noexcept
+{
+    return pImpl->removeFromWhitelist(address);
+}
+
 /// Start the authenticator
+/*
 void Authenticator::start()
 {
     pImpl->mLogger->debug("Starting authenticator ZAP socket...");
     stop();
-    pImpl->mZapSocket->set(zmq::sockopt::linger, 1);
-    pImpl->mZapSocket->bind("inproc://zeromq.zap.01"); // ZMQ magic happens
+    try
+    {
+        pImpl->mZapSocket->set(zmq::sockopt::linger, 1);
+    }
+    catch (const std::exception &e)
+    {
+        auto error = "Failed to set socket option.  ZMQ failed with: "
+                   + std::string(e.what());
+        throw std::runtime_error(error);
+    }
+    try
+    {
+        pImpl->mZapSocket->connect(ZAP_ENDPOINT);
+    }
+    catch (const std::exception &e)
+    {
+        auto error = "Failed to bind to ZAP.  ZMQ failed with: " 
+                   + std::string(e.what());
+        throw std::runtime_error(error);
+    }
     pImpl->mHaveZapSocket = true;
 }
+*/
 
 void Authenticator::stop()
 {
     if (pImpl->mHaveZapSocket)
     {
         pImpl->mLogger->debug("Stopping authenticator ZAP socket...");
-        pImpl->mZapSocket->close();
+//        pImpl->mZapSocket->close();
         pImpl->mHaveZapSocket = false;
     }
 }
+
+/// Get a handle on the zap socket
+/*
+zmq::socket_t* Authenticator::getZapSocket()
+{
+    return &*pImpl->mZapSocket;
+}
+*/

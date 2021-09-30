@@ -49,12 +49,12 @@ std::string createTimeStamp()
     char cDate[32];
     std::fill(cDate, cDate + 32, '\0');
     sprintf(cDate, "%04d-%02d-%02d %02d:%02d:%02d",
-             utc_tm.tm_year + 1900,
-             utc_tm.tm_mon + 1,
-             utc_tm.tm_mday,
-             utc_tm.tm_hour,
-             utc_tm.tm_min,
-             utc_tm.tm_sec);
+            utc_tm.tm_year + 1900,
+            utc_tm.tm_mon + 1,
+            utc_tm.tm_mday,
+            utc_tm.tm_hour,
+            utc_tm.tm_min,
+            utc_tm.tm_sec);
     return std::string(cDate);
 }
 

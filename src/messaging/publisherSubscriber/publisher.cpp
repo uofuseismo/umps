@@ -5,6 +5,7 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/authentication/certificate.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
@@ -206,6 +207,45 @@ void Publisher::bind(const std::string &endPoint)
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
 }
 
+/// Binds the publisher a curve server
+void Publisher::bind(const std::string &endPoint,
+                     const UMPS::Messaging::Authentication::Certificate &certificate)
+{
+    pImpl->mPublisher->set(zmq::sockopt::zap_domain, "global");
+    pImpl->mPublisher->set(zmq::sockopt::plain_server, 1);
+/*
+    pImpl->mPublisher->set(zmq::sockopt::curve_server, 1);
+//std::cout << pImpl->mPublisher->get(zmq::sockopt::zap_domain) << std::endl;;
+//    pImpl->mPublisher->set(zmq::sockopt::zap_domain, "inproc://zeromq.zap.01");
+    if (certificate.havePublicKey())
+    {
+        auto publicKey = certificate.getPublicKey();
+        auto rc = zmq_setsockopt(pImpl->mPublisher->handle(),
+                                 ZMQ_CURVE_SERVERKEY, //PUBLICKEY,
+                                 publicKey.data(), publicKey.size());
+        if (rc != 0)
+        {
+            throw std::runtime_error("Failed to set CURVE server public key");
+        }
+    }
+*/
+/*
+    if (certificate.havePrivateKey())
+    {
+        auto privateKey = certificate.getPrivateKey();
+        auto rc = zmq_setsockopt(pImpl->mPublisher->handle(), 
+                                 ZMQ_CURVE_SECRETKEY,
+                                 privateKey.data(), privateKey.size());
+        if (rc != 0)
+        {
+            throw std::runtime_error("Failed to set CURVE server private key");
+        }
+    }
+*/
+    pImpl->mPublisher->bind(endPoint);
+    pImpl->mEndPoints.insert(std::pair(endPoint, true));
+}
+
 /// Send a message
 void Publisher::send(const MessageFormats::IMessage &message)
 {
@@ -215,15 +255,15 @@ void Publisher::send(const MessageFormats::IMessage &message)
         pImpl->mLogger->debug("Message type is empty");
     }
     //auto cborMessage = std::string(message.toCBOR());
-    auto cborMessage = message.toMessage();
-    if (cborMessage.empty())
+    auto messageContents = message.toMessage();
+    if (messageContents.empty())
     {
-        pImpl->mLogger->debug("CBOR message is empty");
+        pImpl->mLogger->debug("Message contents are empty");
     }
     //pImpl->mLogger->debug("Sending message of type: " + messageType);
     zmq::const_buffer header{messageType.data(), messageType.size()};
     pImpl->mPublisher->send(header, zmq::send_flags::sndmore);
-    zmq::const_buffer buffer{cborMessage.data(), cborMessage.size()};
+    zmq::const_buffer buffer{messageContents.data(), messageContents.size()};
     pImpl->mPublisher->send(buffer);
 }
 

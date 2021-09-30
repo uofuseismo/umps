@@ -6,6 +6,7 @@
 #include <zmq_addon.hpp>
 #include <unistd.h>
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/authentication/certificate.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
@@ -266,6 +267,57 @@ void Subscriber::connect(const std::string &endPoint)
         pImpl->mLogger->error(errorMsg);
         throw std::runtime_error(errorMsg);
     }
+    pImpl->mEndPoints.insert(std::pair(endPoint, true));
+}
+
+void Subscriber::connect(const std::string &endPoint,
+                         const UMPS::Messaging::Authentication::Certificate &certificate)
+{
+    pImpl->mSubscriber->set(zmq::sockopt::zap_domain, "global");
+    pImpl->mSubscriber->set(zmq::sockopt::plain_username, "user");
+    pImpl->mSubscriber->set(zmq::sockopt::plain_password, "password");
+/*
+    pImpl->mSubscriber->set(zmq::sockopt::curve_server, 0);
+    //pImpl->mSubscriber->set(zmq::sockopt::zap_domain, "zeromq.zap.01");//"inproc://zeromq.zap.01");
+    if (certificate.havePublicKey())
+    {
+        char serverPublicKey[41];
+        auto publicKey = certificate.getPublicTextKey();
+        std::copy(publicKey.begin(), publicKey.end(), serverPublicKey);
+        pImpl->mSubscriber->set(zmq::sockopt::curve_serverkey, serverPublicKey);
+    }
+    if (certificate.havePublicKey())
+    {
+        char clientPublicKey[41];
+        auto publicKey = certificate.getPublicTextKey();
+        std::copy(publicKey.begin(), publicKey.end(), clientPublicKey);
+        pImpl->mSubscriber->set(zmq::sockopt::curve_publickey, clientPublicKey);
+        //auto publicKey = certificate.getPublicKey();
+        //auto rc = zmq_setsockopt(pImpl->mSubscriber->handle(),
+        //                         ZMQ_CURVE_PUBLICKEY, // Set on client
+        //                         publicKey.data(), publicKey.size());
+        //if (rc != 0)
+        //{   
+        //    throw std::runtime_error("Failed to set CURVE server public key");
+        //}
+    }
+    if (certificate.havePrivateKey())
+    {
+        char clientPrivateKey[41];
+        auto privateKey = certificate.getPrivateTextKey();
+        std::copy(privateKey.begin(), privateKey.end(), clientPrivateKey);
+        pImpl->mSubscriber->set(zmq::sockopt::curve_secretkey, clientPrivateKey);
+        //auto privateKey = certificate.getPrivateKey();
+        //auto rc = zmq_setsockopt(pImpl->mSubscriber->handle(),
+        //                         ZMQ_CURVE_SECRETKEY,
+        //                         privateKey.data(), privateKey.size());
+        //if (rc != 0)
+        //{   
+        //    throw std::runtime_error("Failed to set CURVE server private key");
+        //}
+    }
+*/
+    pImpl->mSubscriber->connect(endPoint);
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
 }
 

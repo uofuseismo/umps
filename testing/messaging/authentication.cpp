@@ -1,7 +1,11 @@
-#include <zmq.h>
+#include <zmq.hpp>
+#include <thread>
 #include "umps/messaging/authentication/certificate.hpp"
-#include "umps/messaging/authentication/authenticator.hpp"
-#include "umps/messaging/authentication/threadAuthenticator.hpp"
+//#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/messaging/authentication/service.hpp"
+#include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messageFormats/pick.hpp"
 #include "umps/logging/stdout.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -55,15 +59,79 @@ TEST(Messaging, Certificate)
     std::remove("temp.private_key");
 }
 
+void pub(std::shared_ptr<zmq::context_t> context)
+{
+    Certificate certificate;
+    certificate.create();
+
+    UMPS::Messaging::PublisherSubscriber::Publisher publisher(context);
+    publisher.bind("tcp://*:5555", certificate);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    // Define message to send
+    UMPS::MessageFormats::Pick pick;
+    pick.setIdentifier(4043);
+    pick.setTime(600);
+    pick.setNetwork("UU"); 
+    pick.setStation("NOQ");
+    pick.setChannel("EHZ");
+    pick.setLocationCode("01");
+    pick.setPhaseHint("P");
+    // Send it
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+std::cout << "sending..." << std::endl;
+    publisher.send(pick);
+
+}
+
+void sub()
+{
+    Certificate certificate;
+    certificate.create();
+
+    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber;
+    subscriber.connect("tcp://127.0.0.1:5555", certificate);
+    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
+        = std::make_unique<UMPS::MessageFormats::Pick> ();
+    subscriber.addSubscription(pickMessageType);
+//    std::this_thread::sleep_for(std::chrono::seconds(1));
+std::cout << "getting" << std::endl;
+    auto message = subscriber.receive();
+std::cout << "done" << std::endl;
+
+    //std::this_thread::sleep_for(std::chrono::seconds(3));
+
+}
+
 TEST(Messaging, Authenticator)
 {
+    auto context = std::make_shared<zmq::context_t> (1);
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
-    Authenticator auth(loggerPtr);
-    auth.start();
+    Service auth(context, loggerPtr);
+
+    // Have this thread start the authenticator
+    std::thread t1(&Service::start, &auth);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    //auth.whitelist("127.0.0.1");
+    //auth.start();
+
+    auto publisherThread = std::thread(pub, context);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::thread t3(sub);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+sleep(1);
+std::cout << auth.isRunning() << std::endl;
+    std::cout << "killing it" << std::endl;
+//    auth.stop();
+sleep(1);
+    publisherThread.join();
+    t3.join();
     auth.stop();
+    t1.join();
 }
 
 }

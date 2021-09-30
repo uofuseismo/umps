@@ -104,7 +104,7 @@ TEST(Messaging, PubSub)
     Publisher publisher(loggerPtr);
     publisher.bind(serverHost);//localHost);
     // Give the publisher a chance to bind to the port
-    sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1)); //sleep(1);
     // Define message to send
     UMPS::MessageFormats::Pick pick;
     pick.setIdentifier(4043);

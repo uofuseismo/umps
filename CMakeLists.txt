@@ -71,6 +71,7 @@ set(MESSAGE_FORMAT_SRC
 set(MESSAGING_SRC
     src/messaging/authentication/authenticator.cpp
     src/messaging/authentication/certificate.cpp
+    src/messaging/authentication/service.cpp
     #src/messaging/authentication/generateKeyPair.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp

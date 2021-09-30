@@ -10,7 +10,11 @@ namespace UMPS
  }
  namespace MessageFormats
  {
- class IMessage;
+  class IMessage;
+ }
+ namespace Messaging::Authentication
+ {
+  class Certificate;
  }
 }
 namespace zmq
@@ -58,6 +62,7 @@ public:
     /// @note For more see: http://api.zeromq.org/3-2:zmq-connect
     /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
     void connect(const std::string &endPoint);
+    void connect(const std::string &endPointt, const UMPS::Messaging::Authentication::Certificate &certificate);
     /// @result True indicates that the class is connected.
     [[nodiscard]] bool isConnected() const noexcept;
 
@@ -81,7 +86,7 @@ public:
  
     /// @brief Receives a message.
     /// @throws std::invalid_argument if the message cannot be serialized.
-    std::unique_ptr<MessageFormats::IMessage> receive() const;
+    [[nodiscard]] std::unique_ptr<MessageFormats::IMessage> receive() const;
 
     /// @brief Disconnects from an endpoint.
     /// @param[in] endpoint   The endpoint from which to disconnect.
