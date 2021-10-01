@@ -1,6 +1,7 @@
 #ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBER_HPP
 #define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBER_HPP
 #include <memory>
+#include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -61,12 +62,68 @@ public:
     /// @param[in] endPoint  The endpoint to which to connect.
     ///                      For example, "tcp://127.0.0.1:5555".
     /// @note For more see: http://api.zeromq.org/3-2:zmq-connect
-    /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
+    /// @throws std::runtime_error if zeromq failed to connect to given
+    ///         endpoint.
     void connect(const std::string &endPoint);
+    /// @brief Connects the endpoint as an IP validating server or client.  This is
+    ///        the strawhouse pattern that will authenticate IP addresses.
+    /// @param[in] endPoint   The endpoint for accepting connections.
+    /// @param[in] isAuthenticationServer  True indicates this connection is a
+    ///                                    ZAP server which means this machine
+    ///                                    will validate users.
+    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if plainText.haveUserName() or
+    ///         plainText.havePassword() are false.
+    /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
     void connect(const std::string &endPoint,
-                 const UMPS::Messaging::Authentication::Certificate::Keys &keys);
+                 bool isAuthenticationServer,
+                 const std::string &zapDomain = "global");
+    /// @brief Connects the endpoint as a plain text server or client.  This is
+    ///        the woodhouse pattern.
+    /// @param[in] endPoint   The endpoint for accepting connections.
+    /// @param[in] plainText  The plain text credentials.
+    /// @param[in] isAuthenticationServer  True indicates this connection is a
+    ///                                    ZAP server which means this machine
+    ///                                    will validate users.
+    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if plainText.haveUserName() or
+    ///         plainText.havePassword() are false.
+    /// @throws std::runtime_error if zeromq failed to connect to given
+    ///         endpoint.
     void connect(const std::string &endPoint,
-                 const UMPS::Messaging::Authentication::Certificate::UserNameAndPassword &plainText);
+                 const UMPS::Messaging::Authentication::Certificate::UserNameAndPassword &plainText,
+                 bool isAuthenticationServer,
+                 const std::string &zapDomain = "global");
+    /// @brief Connects the endpoint as a CURVE server.  This is the stonehouse
+    ///        pattern.
+    /// @param[in] endPoint   The endpoint for accepting connections.
+    /// @param[in] serverKeys The public and private keys for the server.
+    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if serverKeys.havePublicKey() or
+    ///         serverKeys.havePrivateKey() is false.
+    /// @throws std::runtime_error if zeromq failed to connect to given
+    ///         endpoint.
+    void connect(const std::string &endPoint,
+                 const UMPS::Messaging::Authentication::Certificate::Keys &serverKeys,
+                 const std::string &zapDomain = "global");
+    /// @brief Connects the endpoint as a CURVE client.  This is the stonehouse
+    ///        pattern.
+    /// @param[in] endPoint   The endpoint for accepting connections.
+    /// @param[in] serverKeys The public and private keys for the server.
+    /// @param[in] clientKeys The public and private keys for the client.
+    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if serverKeys.havePublicKey() is false
+    ///         or \c clientKeys.havePublicKey() or
+    ///         \c clientKeys.havePrivateKey() is false.
+    /// @throws std::runtime_error if zeromq failed to connect to given
+    ///         endpoint.
+    void connect(const std::string &endPoint,
+                 const UMPS::Messaging::Authentication::Certificate::Keys &serverKeys,
+                 const UMPS::Messaging::Authentication::Certificate::Keys &clientKeys, 
+                 const std::string &zapDomain = "global");
+    /// @result The security level of the connection.
+    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+
 
     /// @result True indicates that the class is connected.
     [[nodiscard]] bool isConnected() const noexcept;

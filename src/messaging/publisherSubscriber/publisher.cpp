@@ -5,76 +5,15 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/authentication/enums.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
+#include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
-
-/*
-class Publisher::PublisherImpl
-{
-public:
-    /// C'tor
-    PublisherImpl() :
-        //mContext(std::make_unique<zmq::context_t> (1)),
-        //mPublisher(std::make_unique<zmq::socket_t> (*mContext,
-        //                                            zmq::socket_type::pub)),
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
-    {
-        mContext = std::make_shared<void *> (zmq_ctx_new());
-        mPublisher = zmq_socket(*mContext, ZMQ_PUB);
-    }
-    /// C'tor
-    PublisherImpl(std::shared_ptr<void *> &context) :
-        mContext(context),
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
-        mMadeContext(false)
-    {
-        mMadeContext = false;
-        if (mContext == nullptr)
-        {
-            mLogger->error("Context is NULL - creating one");
-            mContext = std::make_shared<void *> (zmq_ctx_new());
-            mMadeContext = true;
-        }
-        mPublisher = zmq_socket(*mContext, ZMQ_PUB);
-    }
-    /// C'tor
-    PublisherImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-//        mContext(std::make_unique<zmq::context_t> (0)),
-//        mPublisher(std::make_unique<zmq::socket_t> (*mContext,
-//                                                    zmq::socket_type::pub)),
-        mLogger(logger)
-    {
-        mContext = std::make_shared<void *> (zmq_ctx_new());
-        mPublisher = zmq_socket(*mContext, ZMQ_PUB);
-    }
-    /// Destructor
-    ~PublisherImpl()
-    {
-        if (mPublisher){zmq_close(mPublisher);}
-        if (mContext && mMadeContext){zmq_ctx_destroy(*mContext);}
-        mEndPoints.clear();
-        mPublisher = nullptr;
-        mContext = nullptr;
-        mLogger = nullptr;
-        mMadeContext = true;
-    }
-    /// The context is the container for all sockets in a single
-    /// process.  Multiple contexts would behave like separate
-    /// zeromq instances.
-    const int nContexts = 1;
-    //zmq::context_t mContext{nContexts};
-    //zmq::socket_t mPublisher{mContext, zmq::socket_type::pub};
-    void *mPublisher = nullptr;
-    std::shared_ptr<void *> mContext = nullptr;
-    std::map<std::string, bool> mEndPoints;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
-    bool mMadeContext = true;
-};
-*/
 
 class Publisher::PublisherImpl
 {
@@ -136,6 +75,8 @@ public:
     std::unique_ptr<zmq::socket_t> mPublisher;
     std::map<std::string, bool> mEndPoints;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
+    Authentication::SecurityLevel mSecurityLevel
+        = Authentication::SecurityLevel::GRASSLANDS;
 };
 
 /// C'tor
@@ -176,6 +117,7 @@ Publisher& Publisher::operator=(Publisher &&publisher) noexcept
 /// Bind to an address if not already done so
 void Publisher::bind(const std::string &endPoint)
 {
+    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
     auto idx = pImpl->mEndPoints.find(endPoint);
     if (idx == pImpl->mEndPoints.end())
     {
@@ -199,52 +141,150 @@ void Publisher::bind(const std::string &endPoint)
     }
     catch (const std::exception &e)
     {
-        auto errorMsg = "Failed to connect to endpoint: " + endPoint
+        auto errorMsg = "Failed to bind to endpoint: " + endPoint
                       + "\nZeroMQ failed with: " + std::string(e.what());
         pImpl->mLogger->error(errorMsg);
         throw std::runtime_error(errorMsg);
     }
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
 }
 
-/// Binds the publisher a curve server
+/// Strawhouse
 void Publisher::bind(
     const std::string &endPoint,
-    const UMPS::Messaging::Authentication::Certificate::Keys &keys)
+    const bool isAuthenticationServer,
+    const std::string &domain)
 {
-    pImpl->mPublisher->set(zmq::sockopt::zap_domain, "global");
-    pImpl->mPublisher->set(zmq::sockopt::plain_server, 1);
-/*
-    pImpl->mPublisher->set(zmq::sockopt::curve_server, 1);
-//std::cout << pImpl->mPublisher->get(zmq::sockopt::zap_domain) << std::endl;;
-//    pImpl->mPublisher->set(zmq::sockopt::zap_domain, "inproc://zeromq.zap.01");
-    if (certificate.havePublicKey())
+    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
+    if (pImpl->mEndPoints.contains(endPoint))
     {
-        auto publicKey = certificate.getPublicKey();
-        auto rc = zmq_setsockopt(pImpl->mPublisher->handle(),
-                                 ZMQ_CURVE_SERVERKEY, //PUBLICKEY,
-                                 publicKey.data(), publicKey.size());
-        if (rc != 0)
-        {
-            throw std::runtime_error("Failed to set CURVE server public key");
-        }
+        throw std::runtime_error("Already bound to endpoint: " + endPoint);
     }
-*/
-/*
-    if (certificate.havePrivateKey())
+    if (isAuthenticationServer)
     {
-        auto privateKey = certificate.getPrivateKey();
-        auto rc = zmq_setsockopt(pImpl->mPublisher->handle(), 
-                                 ZMQ_CURVE_SECRETKEY,
-                                 privateKey.data(), privateKey.size());
-        if (rc != 0)
-        {
-            throw std::runtime_error("Failed to set CURVE server private key");
-        }
+        pImpl->mPublisher->set(zmq::sockopt::zap_domain, domain); 
     }
-*/
     pImpl->mPublisher->bind(endPoint);
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
+}
+
+
+/// Woodhouse
+void Publisher::bind(
+    const std::string &endPoint,
+    const Authentication::Certificate::UserNameAndPassword &credentials,
+    const bool isAuthenticationServer,
+    const std::string &domain)
+{
+    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
+    if (!isAuthenticationServer)
+    {
+        if (!credentials.haveUserName())
+        {
+            throw std::invalid_argument("Username must be set for ZAP client");
+        }
+        if (!credentials.havePassword())
+        {
+            throw std::invalid_argument("Password must be set for ZAP client");
+        }
+    }
+    if (pImpl->mEndPoints.contains(endPoint))
+    {
+        throw std::runtime_error("Already bound to endpoint: " + endPoint);
+    }
+    pImpl->mPublisher->set(zmq::sockopt::zap_domain, domain);
+    if (!isAuthenticationServer)
+    {
+        pImpl->mPublisher->set(zmq::sockopt::plain_server, 0);
+        pImpl->mPublisher->set(zmq::sockopt::plain_username,
+                               credentials.getUserName());
+        pImpl->mPublisher->set(zmq::sockopt::plain_password,
+                               credentials.getPassword());
+    }
+    else
+    {
+        pImpl->mPublisher->set(zmq::sockopt::plain_server, 1);
+    }
+    pImpl->mPublisher->bind(endPoint);
+    pImpl->mEndPoints.insert(std::pair(endPoint, true));
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
+}
+
+/// Stonehouse server
+void Publisher::bind(
+    const std::string &endPoint,
+    const Authentication::Certificate::Keys &serverKeys,
+    const std::string &domain)
+{
+    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
+    if (!serverKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Server public key not set");
+    }
+    if (!serverKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Server private key not set");
+    }
+    if (pImpl->mEndPoints.contains(endPoint))
+    {
+        throw std::runtime_error("Already bound to endpoint: " + endPoint);
+    }
+    pImpl->mPublisher->set(zmq::sockopt::zap_domain, domain);
+    pImpl->mPublisher->set(zmq::sockopt::curve_server, 1);
+    auto serverKey = serverKeys.getPublicTextKey();
+    auto privateKey = serverKeys.getPrivateTextKey();
+    pImpl->mPublisher->set(zmq::sockopt::curve_publickey, serverKey.data());
+    pImpl->mPublisher->set(zmq::sockopt::curve_secretkey, privateKey.data()); 
+
+    pImpl->mPublisher->bind(endPoint);
+    pImpl->mEndPoints.insert(std::pair(endPoint, true));
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
+}
+
+/// Connect subscriber as a CURVE client 
+void Publisher::bind(
+    const std::string &endPoint,
+    const UMPS::Messaging::Authentication::Certificate::Keys &serverKeys,
+    const UMPS::Messaging::Authentication::Certificate::Keys &clientKeys,
+    const std::string &domain)
+{
+    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
+    if (!serverKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Server public key not set");
+    }
+    if (!clientKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Client public key not set");
+    }
+    if (!clientKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Client private key not set");
+    }
+    if (pImpl->mEndPoints.contains(endPoint))
+    {
+        throw std::runtime_error("Already bound to endpoint: " + endPoint);
+    }
+    pImpl->mPublisher->set(zmq::sockopt::zap_domain, domain);
+    pImpl->mPublisher->set(zmq::sockopt::curve_server, 0); 
+    auto serverPublicKey  = serverKeys.getPublicTextKey();
+    auto clientPublicKey  = clientKeys.getPublicTextKey();
+    auto clientPrivateKey = clientKeys.getPrivateTextKey();
+    pImpl->mPublisher->set(zmq::sockopt::curve_serverkey,
+                            serverPublicKey.data());
+    pImpl->mPublisher->set(zmq::sockopt::curve_publickey,
+                            clientPublicKey.data());
+    pImpl->mPublisher->set(zmq::sockopt::curve_secretkey,
+                            clientPrivateKey.data());
+    pImpl->mPublisher->bind(endPoint);
+    pImpl->mEndPoints.insert(std::pair(endPoint, true));
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
 }
 
 /// Send a message
@@ -268,3 +308,9 @@ void Publisher::send(const MessageFormats::IMessage &message)
     pImpl->mPublisher->send(buffer);
 }
 
+/// Security level
+UMPS::Messaging::Authentication::SecurityLevel 
+    Publisher::getSecurityLevel() const noexcept
+{
+    return pImpl->mSecurityLevel;
+}

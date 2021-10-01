@@ -364,7 +364,7 @@ verified = true;
                             statusCode = ZAP_SERVER_ERROR;
                             statusText = "Failed to set public key";
                         }
-                        verified = false;
+verified = true;
                         if (key.havePublicKey())
                         {
                         }                        

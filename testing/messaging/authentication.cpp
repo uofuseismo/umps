@@ -83,13 +83,18 @@ TEST(Messaging, CertificateKeys)
     std::remove("temp.private_key");
 }
 
-void pub(std::shared_ptr<zmq::context_t> context)
+void pub(std::shared_ptr<zmq::context_t> context,
+         const Certificate::Keys serverCertificate)
 {
-    Certificate::Keys certificate;
-    certificate.create();
+    bool isAuthenticationServer = true;
+    Certificate::UserNameAndPassword plainText; 
+    plainText.setUserName("server");
+    plainText.setPassword("password");
 
     UMPS::Messaging::PublisherSubscriber::Publisher publisher(context);
-    publisher.bind("tcp://*:5555", certificate);
+    //publisher.bind("tcp://*:5555", isAuthenticationServer); // Strawhouse
+    //publisher.bind("tcp://*:5555", plainText, isAuthenticationServer); // Woodhouse
+    publisher.bind("tcp://*:5555", serverCertificate); //  Stonehouse
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // Define message to send
     UMPS::MessageFormats::Pick pick;
@@ -107,13 +112,20 @@ std::cout << "sending..." << std::endl;
 
 }
 
-void sub()
+void sub(const Certificate::Keys serverCertificate)
 {
-    Certificate::Keys certificate;
-    certificate.create();
+    Certificate::Keys clientCertificate;
+    clientCertificate.create();
 
+    Certificate::UserNameAndPassword plainText;
+    plainText.setUserName("client");
+    plainText.setPassword("letMeIn");
+
+    bool isAuthenticationServer = false;
     UMPS::Messaging::PublisherSubscriber::Subscriber subscriber;
-    subscriber.connect("tcp://127.0.0.1:5555", certificate);
+    //subscriber.connect("tcp://127.0.0.1:5555", isAuthenticationServer); // Grasslands/Strawhouse
+    //subscriber.connect("tcp://127.0.0.1:5555", plainText, isAuthenticationServer); // Woodhouse
+    subscriber.connect("tcp://127.0.0.1:5555", serverCertificate, clientCertificate); // Stonehouse
     std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
         = std::make_unique<UMPS::MessageFormats::Pick> ();
     subscriber.addSubscription(pickMessageType);
@@ -128,6 +140,9 @@ std::cout << "done" << std::endl;
 
 TEST(Messaging, Authenticator)
 {
+    Certificate::Keys serverCertificate;
+    serverCertificate.create();
+
     auto context = std::make_shared<zmq::context_t> (1);
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
@@ -141,10 +156,10 @@ TEST(Messaging, Authenticator)
     //auth.whitelist("127.0.0.1");
     //auth.start();
 
-    auto publisherThread = std::thread(pub, context);
+    auto publisherThread = std::thread(pub, context, serverCertificate);
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    std::thread t3(sub);
+    std::thread t3(sub, serverCertificate);
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
 sleep(1);
