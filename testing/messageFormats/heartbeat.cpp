@@ -17,55 +17,55 @@ using namespace UMPS::MessageFormats;
 TEST(HeartbeatTest, Heartbeat)
 {
     Heartbeat heartbeat;
-    auto hostName = heartbeat.getHostName();
+    const std::string moduleName = "heartbeatTest";
+    const std::string hostName = "localhost";
+    auto status = HeartbeatStatus::ALIVE;
+    const std::string timeStamp("2021-10-11 21:36:42.090");
     // Check the defaults
+    EXPECT_EQ(heartbeat.getModule(), "UNKNOWN");
     EXPECT_EQ(heartbeat.getHostName(), boost::asio::ip::host_name());
     EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE); 
     EXPECT_EQ(heartbeat.getStatus(), HeartbeatStatus::UNKNOWN);
     EXPECT_TRUE(!heartbeat.getTimeStamp().empty());
-std::cout << heartbeat.getTimeStamp() << std::endl;
-//std::cout << heartbeat.getHostName() << std::endl;
-//std::cout << boost::asio::ip::address() << std::endl;
-/*
-    const uint64_t pickID = 84823;
-    const std::string network = "UU";
-    const std::string station = "MOUT";
-    const std::string channel = "EHZ";
-    const std::string locationCode = "01";
-    const std::string phaseHint = "P";
-    const std::string algorithm = "autoPicker";
-    const double time = 500;
-    auto polarity = Pick::Polarity::UP;
 
-    pick.setIdentifier(pickID);
-    pick.setTime(time);
-    EXPECT_NO_THROW(pick.setNetwork(network));
-    EXPECT_NO_THROW(pick.setStation(station));
-    EXPECT_NO_THROW(pick.setChannel(channel));
-    EXPECT_NO_THROW(pick.setLocationCode(locationCode));
-*/
+    heartbeat.setStatus(status);
+    EXPECT_NO_THROW(heartbeat.setModule(moduleName));
+    EXPECT_NO_THROW(heartbeat.setHostName(hostName));
+    EXPECT_NO_THROW(heartbeat.setTimeStamp(timeStamp));
+    Heartbeat heartbeatCopy(heartbeat);
+
+    EXPECT_EQ(heartbeatCopy.getMessageType(), MESSAGE_TYPE);
+    EXPECT_EQ(heartbeatCopy.getModule(),      moduleName);
+    EXPECT_EQ(heartbeatCopy.getHostName(),    hostName);
+    EXPECT_EQ(heartbeatCopy.getTimeStamp(),   timeStamp);
+    EXPECT_EQ(heartbeatCopy.getStatus(),      status);
+
+    heartbeat.clear();
+    auto json = heartbeatCopy.toJSON(4);
+    heartbeat.fromJSON(json);
     EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE);
-/*
-    pick.setPolarity(polarity);
-    pick.setPhaseHint(phaseHint);
-    pick.setAlgorithm(algorithm);
+    EXPECT_EQ(heartbeat.getModule(),      moduleName);
+    EXPECT_EQ(heartbeat.getHostName(),    hostName);
+    EXPECT_EQ(heartbeat.getTimeStamp(),   timeStamp);
+    EXPECT_EQ(heartbeat.getStatus(),      status);
 
-    Pick pickCopy(pick);
+    heartbeat.clear();
+    auto cbor = heartbeatCopy.toCBOR();
+    heartbeat.fromCBOR(cbor);
+    EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE);
+    EXPECT_EQ(heartbeat.getModule(),      moduleName);
+    EXPECT_EQ(heartbeat.getHostName(),    hostName);
+    EXPECT_EQ(heartbeat.getTimeStamp(),   timeStamp);
+    EXPECT_EQ(heartbeat.getStatus(),      status);
 
-    EXPECT_EQ(pickCopy.getIdentifier(), pickID);
-    EXPECT_NEAR(pickCopy.getTime(), time, 1.e-10);
-    EXPECT_EQ(pickCopy.getNetwork(), network);
-    EXPECT_EQ(pickCopy.getStation(), station);
-    EXPECT_EQ(pickCopy.getChannel(), channel);
-    EXPECT_EQ(pickCopy.getLocationCode(), locationCode);
-    EXPECT_EQ(pickCopy.getPolarity(), polarity);
-    EXPECT_EQ(pickCopy.getPhaseHint(), phaseHint);
-    EXPECT_EQ(pickCopy.getAlgorithm(), algorithm);
-
-    auto message = pickCopy.toJSON(4);
-
-    pick.clear();
-*/
+    heartbeat.clear();
+    auto msg = heartbeatCopy.toMessage();
+    heartbeat.fromMessage(msg.data(), msg.size());
+    EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE);
+    EXPECT_EQ(heartbeat.getModule(),      moduleName);
+    EXPECT_EQ(heartbeat.getHostName(),    hostName);
+    EXPECT_EQ(heartbeat.getTimeStamp(),   timeStamp);
+    EXPECT_EQ(heartbeat.getStatus(),      status);
 }
 
 }

@@ -52,6 +52,7 @@ nlohmann::json toJSONObject(const Heartbeat &heartbeat)
 {
     nlohmann::json obj;
     obj["MessageType"] = heartbeat.getMessageType();
+    obj["Module"] = heartbeat.getModule();
     obj["HostName"] = heartbeat.getHostName();
     obj["Status"] = static_cast<int> (heartbeat.getStatus());
     obj["TimeStamp"] = heartbeat.getTimeStamp();
@@ -65,27 +66,10 @@ Heartbeat objectToHeartbeat(const nlohmann::json obj)
     {
         throw std::invalid_argument("Message has invalid message type");
     }
-    // Essential stuff
+    heartbeat.setModule(obj["Module"].get<std::string> ());
     heartbeat.setHostName(obj["HostName"].get<std::string> ());
     heartbeat.setStatus(static_cast<HeartbeatStatus> (obj["Status"]));
-/*
-    pick.setStation(obj["Station"].get<std::string> ());
-    pick.setChannel(obj["Channel"].get<std::string> ());
-    pick.setLocationCode(obj["LocationCode"].get<std::string> ());
-    pick.setTime(obj["Time"].get<double> ());
-    pick.setIdentifier(obj["Identifier"].get<uint64_t> ());
-    // Optional stuff
-    pick.setPolarity(
-        static_cast<::Polarity> (obj["Polarity"].get<int> ()));
-    if (!obj["PhaseHint"].is_null())
-    {   
-        pick.setPhaseHint(obj["PhaseHint"].get<std::string> ());
-    }   
-    if (!obj["Algorithm"].is_null())
-    {   
-        pick.setAlgorithm(obj["Algorithm"].get<std::string> ());
-    }   
-*/
+    heartbeat.setTimeStamp(obj["TimeStamp"].get<std::string> ());
     return heartbeat;
 }
 
@@ -106,6 +90,7 @@ Heartbeat fromCBORMessage(const uint8_t *message, const size_t length)
 class Heartbeat::HeartbeatImpl
 {
 public:
+    std::string mModule = "UNKNOWN";
     std::string mHostName = boost::asio::ip::host_name(); 
     std::string mTimeStamp = createTimeStamp();
     HeartbeatStatus mStatus = HeartbeatStatus::UNKNOWN;
@@ -169,6 +154,18 @@ void Heartbeat::setStatus(const HeartbeatStatus status) noexcept
 HeartbeatStatus Heartbeat::getStatus() const noexcept
 {
     return pImpl->mStatus;
+}
+
+/// Module name
+void Heartbeat::setModule(const std::string &module)
+{
+    if (isEmpty(module)){throw std::invalid_argument("Module is empty");}
+    pImpl->mModule = module;
+}
+
+std::string Heartbeat::getModule() const noexcept
+{
+    return pImpl->mModule;
 }
 
 /// Host name

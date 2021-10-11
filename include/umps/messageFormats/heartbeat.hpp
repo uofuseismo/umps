@@ -47,6 +47,14 @@ public:
     Heartbeat& operator=(Heartbeat &&heartbeat) noexcept;
     /// @}
 
+
+    /// @brief Sets the module name that is emitting heartbeat's.  This can
+    ///        also be a service or a broadcast.
+    /// @param[in] name   The name of the module.
+    /// @throws std::invalid_argument if name is empty.
+    void setModule(const std::string &name);
+    [[nodiscard]] std::string getModule() const noexcept;
+ 
     /// @brief Sets the module's status.
     /// @param[in] status  The module's status.
     void setStatus(HeartbeatStatus status) noexcept;
