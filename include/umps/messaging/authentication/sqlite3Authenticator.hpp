@@ -1,6 +1,7 @@
 #ifndef UMPS_MESSAGING_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
 #define UMPS_MESSAGING_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
 #include <memory>
+#include "umps/messaging/authentication/authenticator.hpp"
 /*
 namespace zmq 
 {
@@ -19,27 +20,34 @@ namespace UMPS::Messaging::Authentication::Certificate
 }
 namespace UMPS::Messaging::Authentication
 {
-/// @class Authenticator "sqlite3Authenticator.hpp" "umps/messaging/authentication/sqlite3Authenticator.hpp"
+/// @class SQLite3Authenticator "sqlite3Authenticator.hpp" "umps/messaging/authentication/sqlite3Authenticator.hpp"
 /// @brief Performs user authentication against a SQLite3 database.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Authenticator
+class SQLite3Authenticator : public IAuthenticator
 {
 public:
     /// @name Constructors
     /// @{
     /// @brief Constructor.
-    Authenticator();
+    SQLite3Authenticator();
+    /// @brief Move constructor.
+    /// @param[in] authenticator  The authenticator from which to initialize
+    ///                           this class.  On exit, authenticator's behavior
+    ///                           is undefined.
+    SQLite3Authenticator(SQLite3Authenticator &&authenticator) noexcept;
     /// @brief Constructor with a specified logger.
     /// @param[in] logger   The logging utility.
-    explicit Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger);
-    /// @brief Constructor with a specified context.
-    /// @param[in] context  The ZeroMQ context to on which to open a socket.
-    //explicit Authenticator(std::shared_ptr<zmq::context_t> &context);
-    /// @brief Initializes with a specified context and logger.
-    /// @param[in] context  The ZeroMQ context to on which to open a socket.
-    /// @param[in] logger   The logging utility.
-    //Authenticator(std::shared_ptr<zmq::context_t> &context,
-    //              std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit SQLite3Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @}
+
+    /// @name Operators
+    /// @{
+    /// @brief Move assignment operator.
+    /// @param[in,out] authentciator  The authenticator class whose memory will
+    ///                               be moved to this.  On exit,
+    ///                               authenticator's behavior is undefined.
+    /// @result The memory from authenticator moved to this.
+    SQLite3Authenticator& operator=(SQLite3Authenticator &&authenticator) noexcept;
     /// @}
 
     /// @name White and Blacklisting
@@ -52,7 +60,7 @@ public:
     /// @param[in] address  The address to remove from the blacklist.
     void removeFromBlacklist(const std::string &address) noexcept;
     /// @result True indicates the address is blacklisted.
-    [[nodiscard]] bool isBlacklisted(const std::string &address) const noexcept;
+    [[nodiscard]] bool isBlacklisted(const std::string &address) const noexcept override final;
 
     /// @brief Grants access to a certain IP address.
     /// @param[in] address  The address to add to the whitelist.
@@ -62,24 +70,24 @@ public:
     /// @param[in] address  The address to remove from the whitelist.
     void removeFromWhitelist(const std::string &address) noexcept;
     /// @result True indicates the address is whitelisted.
-    [[nodiscard]] bool isWhitelisted(const std::string &address) const noexcept;
+    [[nodiscard]] virtual bool isWhitelisted(const std::string &address) const noexcept override final;
     /// @}
 
 
     /// @brief Creates and binds the ZAP socket.
-    void start();
+    //void start();
 
     /// @brief Closes the ZAP socket.
-    void stop();
+    //void stop();
 
     /// @name Destructor
     /// @{
     /// @brief Destructor.
-    ~Authenticator();
+    virtual ~SQLite3Authenticator();
     /// @}
 
-    Authenticator(const Authenticator &authenticator) = delete;
-    Authenticator& operator=(const Authenticator &authenticator) = delete;
+//    Authenticator(const Authenticator &authenticator) = delete;
+//    Authenticator& operator=(const Authenticator &authenticator) = delete;
 private:
     class AuthenticatorImpl;
     std::unique_ptr<AuthenticatorImpl> pImpl;

@@ -4,10 +4,12 @@
 #include <set>
 #include <thread>
 #include <mutex>
+#include <sqlite3.h>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/logging/stdout.hpp"
@@ -32,7 +34,7 @@ public:
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
                                                zmq::socket_type::pair)),
         mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
-        mAuthenticator(std::make_unique<Authenticator> (mLogger))
+        mAuthenticator(std::make_shared<SQLite3Authenticator> (mLogger))
     {
         makeEndPointName();
     }
@@ -47,7 +49,7 @@ public:
             mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
         }
         mAuthenticator
-            = std::make_unique<Authenticator> (mLogger);
+            = std::make_shared<SQLite3Authenticator> (mLogger);
         makeEndPointName();
     }
     explicit ServiceImpl(std::shared_ptr<zmq::context_t> &context) :
@@ -62,10 +64,9 @@ public:
             mContext = std::make_shared<zmq::context_t> (1);
             mPipe = std::make_unique<zmq::socket_t> (
                 *mContext, zmq::socket_type::pair);
-            mAuthenticator = std::make_unique<Authenticator> (mLogger);
         }
         mAuthenticator
-            = std::make_unique<Authenticator> (mLogger);
+            = std::make_shared<SQLite3Authenticator> (mLogger);
         makeEndPointName();
     }
     ServiceImpl(std::shared_ptr<zmq::context_t> &context,
@@ -86,7 +87,7 @@ public:
             mPipe = std::make_unique<zmq::socket_t> (
                 *mContext, zmq::socket_type::pair);
         }
-        mAuthenticator = std::make_unique<Authenticator> (mLogger);
+        mAuthenticator = std::make_shared<SQLite3Authenticator> (mLogger);
         makeEndPointName();
     }
     /// Convenience function to make endpoint name
@@ -123,7 +124,7 @@ public:
     std::shared_ptr<zmq::context_t> mContext;
     std::unique_ptr<zmq::socket_t> mPipe;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    std::unique_ptr<Authenticator> mAuthenticator;
+    std::shared_ptr<IAuthenticator> mAuthenticator;
     //std::thread mThread;
     std::string mEndPoint;
     std::chrono::milliseconds mPollTimeOutMS{-1};
@@ -233,9 +234,9 @@ void Service::start()
                         auto address = messagesReceived.at(i + 1).to_string();
                         if (pImpl->mAuthenticator->isWhitelisted(address))
                         {
-                            pImpl->mAuthenticator->removeFromWhitelist(address);
+                            //pImpl->mAuthenticator->removeFromWhitelist(address);
                         }
-                        pImpl->mAuthenticator->addToBlacklist(address); 
+                        //pImpl->mAuthenticator->addToBlacklist(address); 
                     }
                 }
                 else if (command == "ALLOW")
@@ -243,11 +244,11 @@ void Service::start()
                     for (int i = 0; i < static_cast<int> (nAddresses); ++i)
                     {
                         auto address = messagesReceived.at(i + 1).to_string();
-                        if (pImpl->mAuthenticator->isBlacklisted(address))
+			if (pImpl->mAuthenticator->isBlacklisted(address))
                         {
-                            pImpl->mAuthenticator->removeFromBlacklist(address);
+                            //pImpl->mAuthenticator->removeFromBlacklist(address);
                         }
-                        pImpl->mAuthenticator->addToWhitelist(address);
+                        //pImpl->mAuthenticator->addToWhitelist(address);
                     }
                 }
                 else if (command == "CURVE")

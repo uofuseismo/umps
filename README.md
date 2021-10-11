@@ -13,12 +13,12 @@ The following libraries are required to build the core software
    1.  C++20.  Yep, compiled languages just won't die.
    2.  [CMake](cmake.org) to generate makefiles.
    3.  [Boost](https://www.boost.org/) is a set of C++ portable libraries.
-   4.  [libdosium](https://www.sqlite.org/index.html) for cryptographic utilities used in ZeroMQ and the authenticator.
-   4.  [ZeroMQ](https://zeromq.org/) v3 is, loosely speaking, a networking library compiled with [libodium](https://github.com/jedisct1/libsodium).  You may be thinking - Earthworm can send messages to and from computers.  That's absolutely true and UMPS can even ingest and produce some Earthworm messages.   Unfortunately, Earthworm's messaging system was never designed to be used as a library.  ZeroMQ was.  ZeroMQ is also provably scalable, actively maintained by a much broader community, has terrific documentation, a very nice API, and can perform user authentication.  It's also dead easy to install or build from source.  
-   5.  [cppzmq](https://github.com/zeromq/cppzmq) the header-only C++ interface to ZeroMQ.
-   6.  [spdlog](https://github.com/gabime/spdlog) underlies the default logger.  Again, I know, Earthworm can log messages (logit).  But, again, spdlog was built exclusively for logging messages.  Technically, if you really want to use logit then you would simply extend the base class.
-   7.  [GTest](https://github.com/google/googletest) for unit testing.
-   8.  [sqlite3](https://www.sqlite.org/index.html) for database handling.
+   3.  [libsodium](https://github.com/jedisct1/libsodium) for cryptographic utilities used in ZeroMQ and the authenticator.
+   4.  [libsqlite3](https://www.sqlite.org/index.html) provides simple database functionality.  For example, the base authenticator uses it to store keys and passwords.
+   5.  [ZeroMQ](https://zeromq.org/) v3 is, loosely speaking, a networking library compiled with [libsodium](https://github.com/jedisct1/libsodium).  You may be thinking - Earthworm can send messages to and from computers.  That's absolutely true and UMPS can even ingest and produce some Earthworm messages.   Unfortunately, Earthworm's messaging system was never designed to be used as a library.  ZeroMQ was.  ZeroMQ is also provably scalable, actively maintained by a much broader community, has terrific documentation, a very nice API, and can perform user authentication.  It's also dead easy to install or build from source.  
+   6.  [cppzmq](https://github.com/zeromq/cppzmq) the header-only C++ interface to ZeroMQ.
+   7.  [spdlog](https://github.com/gabime/spdlog) underlies the default logger.  Again, I know, Earthworm can log messages (logit).  But, again, spdlog was built exclusively for logging messages.  Technically, if you really want to use logit then you would simply extend the base class.
+   8.  [GTest](https://github.com/google/googletest) for unit testing.
 
 ## Optional
 

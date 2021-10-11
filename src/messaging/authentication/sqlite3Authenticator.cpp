@@ -5,7 +5,7 @@
 #include <zmq.hpp>
 #include <sodium/crypto_pwhash.h>
 #include <sqlite3.h>
-#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 
@@ -16,6 +16,136 @@ using namespace UMPS::Messaging::Authentication;
 
 namespace
 {
+struct User
+{
+    std::string name;
+    std::string email;
+    std::string password;
+    std::string key;
+    int privileges;
+    int id; 
+};
+/*
+int callback(void *data, int argc, char **argv, char **azColName)
+{
+   for (int i = 0; i < argc; i++)
+   {
+       printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   }
+   printf("\n");
+   return 0;
+}
+*/
+/// Creates the user table
+std::pair<int, std::string> createUserTable(sqlite3 *db)
+{
+    std::string sql;
+    sql = "CREATE TABLE IF NOT EXISTS user(";
+    sql = sql + "id INT PRIMARY KEY NOT NULL,";
+    sql = sql + "name TEXT UNIQUE NOT NULL,";
+    sql = sql + "email TEXT NOT NULL,";   
+    sql = sql + "password CHAR("   + std::to_string(crypto_pwhash_STRBYTES) + "),";
+    sql = sql + "public_key CHAR(" + std::to_string(crypto_pwhash_STRBYTES) + "),";
+    sql = sql + "privileges INT NOT NULL)";
+    char *errorMessage = nullptr;
+    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    std::string outputMessage;
+    if (rc != SQLITE_OK)
+    {
+        outputMessage = errorMessage;
+        sqlite3_free(errorMessage);
+    }
+    return std::pair(rc, outputMessage);
+}
+/// Creates the blacklist table
+std::pair<int, std::string> createBlacklistTable(sqlite3 *db)
+{
+    std::string sql;
+    sql = "CREATE TABLE IF NOT EXISTS blacklist(";
+    sql = sql + "ip TEXT PRIMARY KEY)";
+    char *errorMessage = nullptr;
+    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    std::string outputMessage;
+    if (rc != SQLITE_OK)
+    {
+        outputMessage = errorMessage;
+        sqlite3_free(errorMessage);
+    }
+    return std::pair(rc, outputMessage);
+}
+/// Creates the whitelist table
+std::pair<int, std::string> createWhitelistTable(sqlite3 *db)
+{
+    std::string sql;
+    sql = "CREATE TABLE IF NOT EXISTS whitelist(";
+    sql = sql + "ip TEXT PRIMARY KEY)";
+    char *errorMessage = nullptr;
+    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    std::string outputMessage;
+    if (rc != SQLITE_OK)
+    {
+        outputMessage = errorMessage;
+        sqlite3_free(errorMessage);
+    }
+    return std::pair(rc, outputMessage);
+}
+/// Query users from user table
+std::vector<User> queryFromUserTable(sqlite3 *db, const std::string &userName)
+{
+    std::vector<User> users;
+    std::string data("CALLBACK FUNCTION");
+    std::string sql;
+    sqlite3_stmt *result = nullptr;
+    int rc = SQLITE_OK;
+    if (userName.empty())
+    {
+        sql = "SELECT id, name, email, password, public_key, privileges FROM user;";
+        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+        if (rc != SQLITE_OK)
+        {
+            
+            return users;
+        }
+    }
+    else
+    {
+        sql = "SELECT id, name, email, password, public_key, privileges FROM user WHERE name = ?";
+        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+        if (rc != SQLITE_OK)
+        {
+            return users;
+        }
+        sqlite3_bind_text(result, 1, userName.c_str(), userName.length(), NULL);
+    }  
+    // Build up the corresponding user from (matching) rows in the table
+    while (true)
+    {
+        User user;
+        auto step = sqlite3_step(result);
+        if (step != SQLITE_ROW){break;}
+        user.id = sqlite3_column_int(result, 0);
+        user.name
+            = reinterpret_cast<const char *> (sqlite3_column_text(result, 1));
+        if (sqlite3_column_text(result, 3) != NULL)
+        {
+            user.email = reinterpret_cast<const char *>
+                         (sqlite3_column_text(result, 3));
+        }
+        if (sqlite3_column_text(result, 4) != NULL)
+        {
+            user.password = reinterpret_cast<const char *> 
+                            (sqlite3_column_text(result, 4));
+        }
+        if (sqlite3_column_text(result, 5) != NULL)
+        {
+            user.key = reinterpret_cast<const char *>
+                       (sqlite3_column_text(result, 5));
+        }
+        user.privileges = sqlite3_column_int(result, 6);
+    }
+    sqlite3_finalize(result);
+    return users;
+}
 /// @brief This is utility for storing a password by first.
 /// @param[in] password   The plain text password to convert to a hashed
 ///                       password.
@@ -62,7 +192,7 @@ bool doPasswordsMatch(const std::string &password,
 }
 }
 
-class Authenticator::AuthenticatorImpl
+class SQLite3Authenticator::AuthenticatorImpl
 {
 public:
     AuthenticatorImpl() :
@@ -86,6 +216,10 @@ public:
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
+    }
+    ~AuthenticatorImpl()
+    {
+        close();
     }
 /*
     explicit AuthenticatorImpl(std::shared_ptr<zmq::context_t> &context) :
@@ -197,26 +331,57 @@ public:
         std::scoped_lock lock(mMutex);
         return mWhitelist.contains(address);
     }
+    /// Close database
+    void close()
+    {
+        std::scoped_lock lock(mMutex);
+        if (mHaveUserTable && mUserTable){sqlite3_close(mUserTable);}
+        mHaveUserTable = false;
+        mUserTable = nullptr;
+    }
+    /// Open database
+    void openUserTable(const std::string &database)
+    {
+        close();
+        std::scoped_lock lock(mMutex);
+        auto rc = sqlite3_open_v2(database.c_str(), &mUserTable,
+                                  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE |
+                                  SQLITE_OPEN_FULLMUTEX,
+                                  nullptr);
+        if (rc == SQLITE_OK)
+        {
+            mHaveUserTable = true;
+        }
+        else
+        {
+            mLogger->error("Failed to open user table: " + database);
+            mUserTable = nullptr;
+            mHaveUserTable = false;
+        }
+    }
 ///private:
     mutable std::mutex mMutex;
-/*
-    std::shared_ptr<zmq::context_t> mContext;
-    std::unique_ptr<zmq::socket_t> mZapSocket;
-*/
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     std::set<std::string> mBlacklist;
     std::set<std::string> mWhitelist;
-    std::set<std::pair<std::string, std::string>> mPasswords;
-    bool mHaveZapSocket = false;
+    sqlite3 *mUserTable = nullptr;
+    sqlite3 *mWhitelistTable = nullptr;
+    sqlite3 *mBlacklistTable = nullptr;
+    //std::set<std::pair<std::string, std::string>> mPasswords;
+    //bool mHaveZapSocket = false;
+    bool mHaveUserTable = false;
+    bool mHaveBlacklistTable = false;
+    bool mHaveWhiteListTable = false;
 };
 
 /// C'tors
-Authenticator::Authenticator() :
+SQLite3Authenticator::SQLite3Authenticator() :
     pImpl(std::make_unique<AuthenticatorImpl> ())
 {
 }
 
-Authenticator::Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+SQLite3Authenticator::SQLite3Authenticator(
+    std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<AuthenticatorImpl> (logger))
 {
 }
@@ -235,36 +400,38 @@ Authenticator::Authenticator(std::shared_ptr<zmq::context_t> &context,
 */
 
 /// Destructor
-Authenticator::~Authenticator() = default;
+SQLite3Authenticator::~SQLite3Authenticator() = default;
 
 /// Black list
-void Authenticator::addToBlacklist(const std::string &address)
+void SQLite3Authenticator::addToBlacklist(const std::string &address)
 {
     pImpl->addToBlacklist(address); 
 }
 
-bool Authenticator::isBlacklisted(const std::string &address) const noexcept
+bool SQLite3Authenticator::isBlacklisted(const std::string &address) const noexcept
 {
     return pImpl->isBlacklisted(address);
 } 
 
-void Authenticator::removeFromBlacklist(const std::string &address) noexcept
+void SQLite3Authenticator::removeFromBlacklist(const std::string &address) noexcept
 {
     return pImpl->removeFromBlacklist(address);
 }
 
 /// White list
-void Authenticator::addToWhitelist(const std::string &address)
+void SQLite3Authenticator::addToWhitelist(const std::string &address)
 {
     pImpl->addToWhitelist(address);
 }
 
-bool Authenticator::isWhitelisted(const std::string &address) const noexcept
+bool SQLite3Authenticator::isWhitelisted(
+    const std::string &address) const noexcept
 {
     return pImpl->isWhitelisted(address);
 }
 
-void Authenticator::removeFromWhitelist(const std::string &address) noexcept
+void SQLite3Authenticator::removeFromWhitelist(
+    const std::string &address) noexcept
 {
     return pImpl->removeFromWhitelist(address);
 }
@@ -299,6 +466,7 @@ void Authenticator::start()
 }
 */
 
+/*
 void Authenticator::stop()
 {
     if (pImpl->mHaveZapSocket)
@@ -308,6 +476,7 @@ void Authenticator::stop()
         pImpl->mHaveZapSocket = false;
     }
 }
+*/
 
 /// Get a handle on the zap socket
 /*
