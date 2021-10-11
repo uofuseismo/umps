@@ -20,9 +20,9 @@ TEST(HeartbeatTest, Heartbeat)
     const std::string moduleName = "heartbeatTest";
     const std::string hostName = "localhost";
     auto status = HeartbeatStatus::ALIVE;
-    const std::string timeStamp("2021-10-11 21:36:42.090");
+    const std::string timeStamp("2021-10-11T21:36:42.090");
     // Check the defaults
-    EXPECT_EQ(heartbeat.getModule(), "UNKNOWN");
+    EXPECT_EQ(heartbeat.getModule(), "unknown");
     EXPECT_EQ(heartbeat.getHostName(), boost::asio::ip::host_name());
     EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE); 
     EXPECT_EQ(heartbeat.getStatus(), HeartbeatStatus::UNKNOWN);
@@ -66,6 +66,17 @@ TEST(HeartbeatTest, Heartbeat)
     EXPECT_EQ(heartbeat.getHostName(),    hostName);
     EXPECT_EQ(heartbeat.getTimeStamp(),   timeStamp);
     EXPECT_EQ(heartbeat.getStatus(),      status);
+
+    const std::string timeStamp1("2021-10-11T21:36:42.091");
+    heartbeat.setTimeStamp(timeStamp1);
+    EXPECT_TRUE(heartbeat > heartbeatCopy);
+
+    // Test an edge case
+    const std::string timeStamp3("2021-10-11T21:36:59.999");
+    const std::string timeStamp4("2021-10-11T21:36:59.999");
+    EXPECT_NO_THROW(heartbeat.setTimeStamp(timeStamp3));
+    EXPECT_NO_THROW(heartbeatCopy.setTimeStamp(timeStamp4));
+    EXPECT_FALSE(heartbeat > heartbeatCopy);
 }
 
 }

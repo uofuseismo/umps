@@ -69,7 +69,14 @@ public:
     [[nodiscard]] std::string getHostName() const noexcept;
 
     /// @brief Sets the time stamp.
-    /// @param[in] timeStamp   Sets the time stamp.
+    /// @param[in] timeStamp   Sets the time stamp.  This must be a length
+    ///                        23 string with the format:
+    ///                        XXXX:XX:XXTXX:XX:XX.XXX
+    ///                        which is ordered:
+    ///                        Year, Month, Day of Month,
+    ///                        Hour, Minute, Second, Millisecond
+    /// @throws std::invalid_argument if the time stamp is incorrectly
+    ///         formatted.
     void setTimeStamp(const std::string &timeStamp);
     /// @brief Sets the time stamp to now.
     void setTimeStampToNow() noexcept;
@@ -138,5 +145,8 @@ private:
     class HeartbeatImpl;
     std::unique_ptr<HeartbeatImpl> pImpl;
 };
+/// @result True indicates that the lhs heartbeat has a larger time stamp
+///         than the right hand side time stamp.
+[[nodiscard]] bool operator>(const Heartbeat &lhs, const Heartbeat &rhs);
 }
 #endif

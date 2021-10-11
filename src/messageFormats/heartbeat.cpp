@@ -31,13 +31,11 @@ std::string createTimeStamp()
     tp -= s;
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds> (tp);
     tp -= ms;
-    //std::cout << d.count() << "d " << h.count() << ':'
-    //          << m.count() << ':' << s.count();
     time_t tt = std::chrono::system_clock::to_time_t(now);
     tm utc_tm = *gmtime(&tt);
     char cDate[44];
     std::fill(cDate, cDate + 44, '\0');
-    sprintf(cDate, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+    sprintf(cDate, "%04d-%02d-%02dT%02d:%02d:%02d.%03d",
             utc_tm.tm_year + 1900,
             utc_tm.tm_mon + 1,
             utc_tm.tm_mday,
@@ -90,9 +88,9 @@ Heartbeat fromCBORMessage(const uint8_t *message, const size_t length)
 class Heartbeat::HeartbeatImpl
 {
 public:
-    std::string mModule = "UNKNOWN";
+    std::string mModule = "unknown";
     std::string mHostName = boost::asio::ip::host_name(); 
-    std::string mTimeStamp = createTimeStamp();
+    std::string mTimeStamp = "1970:01:01T00:00:00.000";
     HeartbeatStatus mStatus = HeartbeatStatus::UNKNOWN;
 };
 
@@ -100,6 +98,7 @@ public:
 Heartbeat::Heartbeat() :
     pImpl(std::make_unique<HeartbeatImpl> ())
 {
+    setTimeStampToNow();
 }
 
 /// Copy c'tor
@@ -192,6 +191,53 @@ void Heartbeat::setTimeStampToNow() noexcept
 void Heartbeat::setTimeStamp(const std::string &timeStamp)
 {
     if (isEmpty(timeStamp)){throw std::invalid_argument("Time stamp is empty");}
+    if (static_cast<int> (timeStamp.size()) != 23)
+    {
+        throw std::invalid_argument("Time stamp must be length at least 23");
+    }
+    double sec;
+    int year, month, dom, hour, minute, second, milliSecond;
+    sscanf(timeStamp.c_str(), "%04d-%02d-%02dT%02d:%02d:%lf",
+           &year,
+           &month,
+           &dom,
+           &hour,
+           &minute,
+           &sec);
+    second = static_cast<int> (sec);
+    milliSecond = static_cast<int> (std::round((sec - second)*1000));
+    if (milliSecond == 1000){milliSecond = milliSecond - 1;}
+    if (month < 1 || month > 12)
+    {
+        throw std::invalid_argument("Month = " + std::to_string(month)
+                                  + " must be in range [1,12]");
+    }
+    if (dom < 1 || dom > 31)
+    {
+        throw std::invalid_argument("Day of month = " + std::to_string(dom)
+                                  + " must be in range [1,31]");
+    }
+    if (hour < 0 || hour > 23)
+    {
+        throw std::invalid_argument("Hour = " + std::to_string(hour)
+                                  + " must be in range [0,23]");
+    }
+    if (minute < 0 || minute > 59)
+    {
+        throw std::invalid_argument("Minute = " + std::to_string(minute)
+                                  + " must be in range [0,59]");
+    }
+    if (second < 0 || second > 59)
+    {
+        throw std::invalid_argument("Second = " + std::to_string(second)
+                                  + " must be in range [0,59]");
+    }
+    if (milliSecond < 0 || milliSecond > 999)
+    {
+        throw std::invalid_argument("Millisecond = "
+                                  + std::to_string(milliSecond)
+                                  + " must be in range [0,999]");
+    }
     pImpl->mTimeStamp = timeStamp;
 }
 
@@ -266,4 +312,46 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     std::unique_ptr<MessageFormats::IMessage> result
         = std::make_unique<MessageFormats::Heartbeat> (); 
     return result;
+}
+
+/// Compare heartbeats based on time 
+bool UMPS::MessageFormats::operator>(const Heartbeat &lhs,
+                                     const Heartbeat &rhs)
+{
+    auto t1 = lhs.getTimeStamp();
+    auto t2 = rhs.getTimeStamp(); 
+    double sec1;
+    int year1, month1, dom1, hour1, minute1, second1, milliSecond1;
+    sscanf(t1.c_str(), "%04d-%02d-%02dT%02d:%02d:%lf",
+           &year1,
+           &month1,
+           &dom1,
+           &hour1,
+           &minute1,
+           &sec1);
+    second1 = static_cast<int> (sec1);
+    milliSecond1 = static_cast<int> (std::round((sec1 - second1)*1000));
+    if (milliSecond1 == 1000){milliSecond1 = milliSecond1 - 1;}
+
+    double sec2;
+    int year2, month2, dom2, hour2, minute2, second2, milliSecond2;
+    sscanf(t2.c_str(), "%04d-%02d-%02dT%02d:%02d:%lf",
+           &year2,
+           &month2,
+           &dom2,
+           &hour2,
+           &minute2,
+           &sec2);
+    second2 = static_cast<int> (sec2);
+    milliSecond2 = static_cast<int> (std::round((sec2 - second2)*1000));
+    if (milliSecond2 == 1000){milliSecond2 = milliSecond2 - 1;} 
+
+    if (year1 > year2){return true;}
+    if (month1 > month2){return true;}
+    if (dom1 > dom2){return true;}
+    if (hour1 > hour2){return true;}
+    if (minute1 > minute2){return true;}
+    if (second1 > second2){return true;}
+    if (milliSecond1 > milliSecond2){return true;}
+    return false;
 }
