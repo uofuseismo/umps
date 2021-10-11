@@ -27,4 +27,34 @@ The following libraries are required to build the core software
 
 ## Configuration
 
-After the 
+After the prerequisites have been installed you can attempt to configure the software.  For example, I would use the following to configure a GCC build that does not use Earthworm or Python
+
+    #!/bin/bash
+    export CXX=g++
+    export BUILD_DIR=gcc_build
+    if [ -d ${BUILD_DIR} ]; then
+       rm -rf ${BUILD_DIR}
+    fi
+    mkdir ${BUILD_DIR}
+    cd ${BUILD_DIR}
+    cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCMAKE_CXX_FLAGS="-Wall -O2"
+
+## Building, Testing, Installing
+
+Provided the configuration was successful, then descend into the appropriate build directory, say gcc\_build, and compile
+
+    cd gcc_build
+    make
+
+The unit tests can then be run
+
+    make test
+
+Finally, the software may be installed 
+
+    make install
+
+This may require sudo.
