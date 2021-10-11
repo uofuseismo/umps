@@ -35,8 +35,8 @@ std::string createTimeStamp()
     //          << m.count() << ':' << s.count();
     time_t tt = std::chrono::system_clock::to_time_t(now);
     tm utc_tm = *gmtime(&tt);
-    char cDate[36];
-    std::fill(cDate, cDate + 36, '\0');
+    char cDate[40];
+    std::fill(cDate, cDate + 40, '\0');
     sprintf(cDate, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
             utc_tm.tm_year + 1900,
             utc_tm.tm_mon + 1,
