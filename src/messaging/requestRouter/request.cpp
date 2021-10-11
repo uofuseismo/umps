@@ -136,14 +136,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     // Wait for the response
     pImpl->mLogger->debug("Blocking for response...");
     // Receive all parts of the message
-    std::vector<zmq::message_t> responseReceived;
-    zmq::recv_result_t receivedResult =
-        zmq::recv_multipart(*pImpl->mClient,
-                            std::back_inserter(responseReceived));
-    pImpl->mLogger->debug("Response received; unpacking...");
-//std::cout << *receivedResult << std::endl;
-//std::cout << responseReceived.at(0).to_string() << std::endl;
-//std::cout << responseReceived.size() << std::endl;
+    zmq::multipart_t responseReceived(*pImpl->mClient);
 #ifndef NDEBUG
     assert(responseReceived.size() == 2);
 #else
