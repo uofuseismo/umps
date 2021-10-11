@@ -11,6 +11,8 @@ find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(cppzmq REQUIRED)
+find_package(SQLite3 REQUIRED)
+message("hey:" ${SQLite3_INCLUDE_DIRS} ${SQLite3_LIBRARIES})
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
 #set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
@@ -21,8 +23,10 @@ find_package(FindZeroMQ REQUIRED)
 #find_package(FindTime REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(FindEarthworm)
+if (${FindEarthworm_FOUND})
+   find_package(FindMiniSEED)
+endif()
 find_package(FindTBB)
-find_package(FindMiniSEED)
 
 # Versioning information
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
@@ -31,7 +35,7 @@ configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
 
 include_directories(
    ${CMAKE_SOURCE_DIR}/include
-   ${TIME_INCLUDE_DIR}
+   #${TIME_INCLUDE_DIR}
 )
 
 set(BUILD_EW FALSE)
@@ -102,12 +106,14 @@ set_target_properties(umps PROPERTIES
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(umps
-                      PUBLIC ${TIME_LIBRARY} cppzmq #${ZeroMQ_LIBRARY}
+                      PUBLIC cppzmq  ${SQLite3_LIBRARIES}#${ZeroMQ_LIBRARY}
                       PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
 target_include_directories(umps
-                           PRIVATE spdlog::spdlog ${cppzmq_INCLUDE_DIR} #cppzmq #${ZeroMQ_INCLUDE_DIR}
+                           PRIVATE spdlog::spdlog
+                           PRIVATE ${cppzmq_INCLUDE_DIR}
+                           PIRVATE ${SQLite3_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
-                           PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES})
+                           PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
 if (${BUILD_TBB})
     target_include_directories(umps PRIVATE ${TBB_INCLUDE_DIR})
     target_link_libraries(umps PRIVATE ${TBB_LIBRARY})

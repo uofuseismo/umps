@@ -172,7 +172,7 @@ public:
         assert(std::distance(mCircularBuffer.begin(), it0) <
                std::distance(mCircularBuffer.begin(), it1));
 #endif
-        auto nPackets = std::distance(it0, it1);
+        auto nPackets = static_cast<int> (std::distance(it0, it1));
         if (nPackets < 1){return result;}
         result.reserve(nPackets);
         for (auto &it = it0; it != it1; std::advance(it, 1))
@@ -180,7 +180,7 @@ public:
             result.push_back(*it);
         }
 #ifndef NDEBUG
-        assert(nPackets == result.size());
+        assert(nPackets == static_cast<int> (result.size()));
 #endif
 //std::cout << nCopy << " " << result.size() << " " << nPackets << std::endl;
         return result;

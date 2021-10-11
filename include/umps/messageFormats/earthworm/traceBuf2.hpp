@@ -224,7 +224,10 @@ public:
     /// @brief Swaps two tracebuf2 classes.
     /// @param[in,out] lhs  Class to exchange with rhs.
     /// @param[in,out] rhs  Class to exchange with lhs.
-    friend void swap(TraceBuf2<T> &lhs, TraceBuf2<T> &rhs);
+    friend void swap(TraceBuf2<double>  &lhs, TraceBuf2<double>  &rhs);
+    friend void swap(TraceBuf2<float>   &lhs, TraceBuf2<float>   &rhs);
+    friend void swap(TraceBuf2<int>     &lhs, TraceBuf2<int>     &rhs);
+    friend void swap(TraceBuf2<int16_t> &lhs, TraceBuf2<int16_t> &rhs);
 private:
     class TraceBuf2Impl;
     std::unique_ptr<TraceBuf2Impl> pImpl;

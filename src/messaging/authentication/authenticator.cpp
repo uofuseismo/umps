@@ -3,6 +3,8 @@
 #include <string>
 #include <set>
 #include <zmq.hpp>
+#include <sodium/crypto_pwhash.h>
+#include <sqlite3.h>
 #include "umps/messaging/authentication/authenticator.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
@@ -11,6 +13,54 @@
 #define ZAP_ENDPOINT  "inproc://zeromq.zap.01"
 
 using namespace UMPS::Messaging::Authentication;
+
+namespace
+{
+/// @brief This is utility for storing a password by first.
+/// @param[in] password   The plain text password to convert to a hashed
+///                       password.
+/// @param[in] opslimit   Limits the operations.  This will take about
+///                       3 seconds on 
+/// @param[in] opslimit   Controls the max amount of computations performed
+///                       by libsodium.
+/// @param[in] memlimit   Controls the max amount of RAM libsodium will use.
+/// @result The corresponding hashed string to store in a database.
+/// @note The default algorithm will take about 3.5 seconds an a 2.8 GHz
+///       Core i7 CPU and require ~1 Gb of RAM.
+std::string pwhashString(
+    const std::string &password,
+    unsigned long long opslimit = crypto_pwhash_OPSLIMIT_SENSITIVE,
+    unsigned long long memlimit = crypto_pwhash_MEMLIMIT_SENSITIVE)
+{
+    std::string hashedPassword;
+    hashedPassword.resize(crypto_pwhash_STRBYTES); 
+    auto rc = crypto_pwhash_str(hashedPassword.data(),
+                                password.c_str(), password.size(),
+                                opslimit, memlimit);
+    if (rc != 0)
+    {
+        auto errmsg = "Failed to hash string.  Likely hit memory limit";
+        throw std::runtime_error(errmsg);
+    }
+    return hashedPassword; 
+}
+/// @brief Verifies a given password matches a hashed password stored in a
+///        database.
+/// @param[in] password        The password to check against the given hashed
+///                            password.
+/// @param[in] hashedPassword  The hashed password that exists in the database.
+/// @result True indicates the passwords match.
+bool doPasswordsMatch(const std::string &password,
+                      const std::string &hashedPassword)
+{
+    assert(hashedPassword.size() == crypto_pwhash_STRBYTES);
+    auto rc = crypto_pwhash_str_verify(hashedPassword.c_str(),
+                                       password.c_str(),
+                                       password.size());
+    if (rc != 0){return false;} // Wrong password
+    return true;
+}
+}
 
 class Authenticator::AuthenticatorImpl
 {

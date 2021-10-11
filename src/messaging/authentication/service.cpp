@@ -224,11 +224,11 @@ void Service::start()
                                     zmq::recv_flags::none);
             if (*receivedResult > 0)
             {
-                auto nAddresses = messagesReceived.size() - 1;  
+                auto nAddresses = messagesReceived.size() - 1;
                 std::string command{messagesReceived[0].to_string()};
                 if (command == "DENY")
                 {
-                    for (int i = 0; i < nAddresses; ++i)
+                    for (int i = 0; i < static_cast<int> (nAddresses); ++i)
                     {
                         auto address = messagesReceived.at(i + 1).to_string();
                         if (pImpl->mAuthenticator->isWhitelisted(address))
@@ -240,7 +240,7 @@ void Service::start()
                 }
                 else if (command == "ALLOW")
                 {
-                    for (int i = 0; i < nAddresses; ++i)
+                    for (int i = 0; i < static_cast<int> (nAddresses); ++i)
                     {
                         auto address = messagesReceived.at(i + 1).to_string();
                         if (pImpl->mAuthenticator->isBlacklisted(address))
