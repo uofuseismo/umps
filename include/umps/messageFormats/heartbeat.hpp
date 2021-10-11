@@ -4,20 +4,20 @@
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::MessageFormats
 {
+/// @brief Defines the module's status.
+enum class HeartbeatStatus : int8_t
+{
+    UNKNOWN = 0,
+    ALIVE,         /*!< The module is alive. */
+    DISCONNECTED,  /*!< The module has safely disconnected. */
+    DIED           /*!< The module has unexpectedly died.  This likely
+                        indicates that a restart is required. */
+};
 /// @class Heartbeat "heartbeat.hpp" "umps/messageFormats/heartbeat.hpp"
 /// @brief Defines a heartbeat message.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Heartbeat : public IMessage
 {
-public:
-    /// @brief Defines the module's status.
-    enum class Status : int8_t
-    {
-        ALIVE = 0,        /*!< The module is alive. */
-        DISCONNECTED = 1, /*!< The module has safely disconnected. */
-        DIED = 2          /*!< The module has unexpectedly died.  This likely
-                               indicates that a restart is required. */
-    };
 public:
     /// @name Constructors
     /// @{
@@ -25,7 +25,7 @@ public:
     Heartbeat();
     /// @brief Copy constructor.
     /// @param[in] heartbeat  The hearbeat class which to initialize this class.
-    Hearbeat(const Pick &heartbeat);
+    Heartbeat(const Heartbeat &heartbeat);
     /// @brief Move constructor.
     /// @param[in,out] heartbeat  The heartbeat class from which to initialize
     ///                           this class.  On exit, heartbeat's behavior is
@@ -44,14 +44,29 @@ public:
     ///                           to this.  On exit heartbeat's behavior is
     ///                           undefined.
     /// @result The memory from heartbeat moved to this.
-    Heartbeat& operator=(Pick &&heartbeat) noexcept;
+    Heartbeat& operator=(Heartbeat &&heartbeat) noexcept;
     /// @}
 
     /// @brief Sets the module's status.
     /// @param[in] status  The module's status.
-    void setStatus(Status status) noexcept;
+    void setStatus(HeartbeatStatus status) noexcept;
     /// @result The module's status.  By default this is alive.
-    Status getStatus() const noexcept;
+    [[nodiscard]] HeartbeatStatus getStatus() const noexcept;
+
+    /// @brief Sets the host computer's name.  This helps identify the on
+    ///        which computer the module is being run.  
+    /// @param[in] name   The host name.
+    void setHostName(const std::string &name);
+    /// @result The hostname.
+    [[nodiscard]] std::string getHostName() const noexcept;
+
+    /// @brief Sets the time stamp.
+    /// @param[in] timeStamp   Sets the time stamp.
+    void setTimeStamp(const std::string &timeStamp);
+    /// @brief Sets the time stamp to now.
+    void setTimeStampToNow() noexcept;
+    /// @result The time stamp.
+    [[nodiscard]] std::string getTimeStamp() const noexcept;
  
     /// @name Message Abstract Base Class Properties
     /// @{

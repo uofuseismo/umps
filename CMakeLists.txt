@@ -70,6 +70,7 @@ set(LOGGING_SRC
     src/logging/spdlog.cpp)
 set(MESSAGE_FORMAT_SRC
     src/messageFormats/dataPacket.cpp
+    src/messageFormats/heartbeat.cpp
     src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
@@ -183,6 +184,7 @@ endif()
 ##########################################################################################
 set(TEST_SRC
     testing/main.cpp
+    testing/messageFormats/heartbeat.cpp
     testing/messageFormats/pick.cpp
     testing/messageFormats/earthworm.cpp
     testing/messageFormats/dataPacket.cpp
