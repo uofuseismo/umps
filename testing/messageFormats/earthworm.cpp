@@ -166,8 +166,12 @@ TEST(TraceBuf2Test, FromEarthworm)
     strcpy(trh2.net,      "FK");
     strcpy(trh2.chan,     "HHZ");
     strcpy(trh2.loc,      "01");
-    strcpy(trh2.version,  "20");
-    strcpy(trh2.datatype, "f4");
+    //strcpy(trh2.version,  "20");
+    //strcpy(trh2.datatype, "f4");
+    trh2.version[0] = '2';
+    trh2.version[1] = '0';
+    trh2.datatype[0] = 'f';
+    trh2.datatype[1] = '4';
     for (int i = 0; i < nSamples; ++i)
     {
         union
