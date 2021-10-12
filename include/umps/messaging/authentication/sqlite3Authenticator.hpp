@@ -50,6 +50,31 @@ public:
     SQLite3Authenticator& operator=(SQLite3Authenticator &&authenticator) noexcept;
     /// @}
 
+    /// @name Tables
+    /// @{
+    /// @brief Opens the users table.
+    /// @param[in] fileName   The name of the SQLite3 user table file.
+    /// @param[in] createIfDoesNotExist  If true and the table does not exist
+    ///                                  then the application will attempt to
+    ///                                  create the table.
+    void openUsersTable(const std::string &fileName,
+                        bool createIfDoesNotExist = true);
+    /// @brief Opens the blacklist table.
+    /// @param[in] fileName   The name of the SQLite3 blacklist table file.
+    /// @param[in] createIfDoesNotExist  If true and the table does not exist
+    ///                                  then the application will attempt to
+    ///                                  create the table.
+    void openBlacklistTable(const std::string &fileName,
+                            bool createIfDoesNotExist = true);  
+    /// @brief Opens the whitelist table.
+    /// @param[in] fileName   The name of the SQLite3 blacklist table file.
+    /// @param[in] createIfDoesNotExist  If true and the table does not exist
+    ///                                  then the application will attempt to
+    ///                                  create the table.
+    void opendWhitelistTable(const std::string &fileName,
+                             bool createIfDoesNotExist = true);
+    /// @}
+
     /// @name White and Blacklisting
     /// @{
     /// @brief Denies access to a certain IP address.
