@@ -9,6 +9,8 @@
 #include <sqlite3.h>
 #include <cassert>
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 
@@ -40,7 +42,7 @@ int callback(void *data, int argc, char **argv, char **azColName)
 }
 */
 /// Creates the user table
-std::pair<int, std::string> createUserTable(sqlite3 *db)
+std::pair<int, std::string> createUsersTable(sqlite3 *db)
 {
     std::string sql;
     sql = "CREATE TABLE IF NOT EXISTS user(";
@@ -93,7 +95,7 @@ std::pair<int, std::string> createWhitelistTable(sqlite3 *db)
     return std::pair(rc, outputMessage);
 }
 /// Query users from user table
-std::vector<User> queryFromUserTable(sqlite3 *db, const std::string &userName)
+std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userName)
 {
     std::vector<User> users;
     std::string data("CALLBACK FUNCTION");
@@ -213,7 +215,7 @@ public:
     /// Destructor
     ~AuthenticatorImpl()
     {
-        closeUserTable();
+        closeUsersTable();
         closeBlacklistTable();
         closeWhitelistTable();
     }
@@ -293,13 +295,13 @@ public:
         return mWhitelist.contains(address);
     }
     /// Close user database
-    void closeUserTable()
+    void closeUsersTable()
     {
         std::scoped_lock lock(mMutex);
-        if (mHaveUserTable && mUserTable){sqlite3_close(mUserTable);}
-        mHaveUserTable = false;
-        mUserTableFile.clear();
-        mUserTable = nullptr;
+        if (mHaveUsersTable && mUsersTable){sqlite3_close(mUsersTable);}
+        mHaveUsersTable = false;
+        mUsersTableFile.clear();
+        mUsersTable = nullptr;
     }
     /// Close blacklist database
     void closeBlacklistTable()
@@ -326,12 +328,12 @@ public:
         mWhitelistTable = nullptr;
     }
     /// Open user database
-    int openUserTable(const std::string &database, bool create)
+    int openUsersTable(const std::string &database, bool create)
     {
         int error = 0;
-        closeUserTable();
+        closeUsersTable();
         std::scoped_lock lock(mMutex);
-        auto rc = sqlite3_open_v2(database.c_str(), &mUserTable,
+        auto rc = sqlite3_open_v2(database.c_str(), &mUsersTable,
                                   SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE |
                                   SQLITE_OPEN_FULLMUTEX,
                                   nullptr);
@@ -339,20 +341,20 @@ public:
         {
             if (create)
             {
-                auto [rcCreate, message] = createUserTable(mUserTable);
+                auto [rcCreate, message] = createUsersTable(mUsersTable);
                 if (rcCreate != SQLITE_OK)
                 {
                     auto errorMessage = "Failed to create user table: "
                                       + message;
                     mLogger->error(errorMessage);
-                    closeUserTable();
+                    closeUsersTable();
                     error = 1;
                 }
             }
             else
             {
-               mHaveUserTable = true;
-               mUserTableFile = database;
+               mHaveUsersTable = true;
+               mUsersTableFile = database;
             }
         }
         else
@@ -438,20 +440,36 @@ public:
         }
         return error;
     }
+    /// Have tables?
+    bool haveUsersTable() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mHaveUsersTable;
+    }
+    bool haveBlacklistTable() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mHaveBlacklistTable;
+    }
+    bool haveWhitelistTable() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mHaveWhitelistTable;
+    }
 ///private:
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     std::set<std::string> mBlacklist;
     std::set<std::string> mWhitelist;
-    sqlite3 *mUserTable = nullptr;
+    sqlite3 *mUsersTable = nullptr;
     sqlite3 *mWhitelistTable = nullptr;
     sqlite3 *mBlacklistTable = nullptr;
-    std::string mUserTableFile;
+    std::string mUsersTableFile;
     std::string mWhitelistTableFile;
     std::string mBlacklistTableFile;
     //std::set<std::pair<std::string, std::string>> mPasswords;
     //bool mHaveZapSocket = false;
-    bool mHaveUserTable = false;
+    bool mHaveUsersTable = false;
     bool mHaveBlacklistTable = false;
     bool mHaveWhitelistTable = false;
 };
@@ -490,9 +508,17 @@ void SQLite3Authenticator::addToBlacklist(const std::string &address)
     pImpl->addToBlacklist(address); 
 }
 
-bool SQLite3Authenticator::isBlacklisted(const std::string &address) const noexcept
+ValidationResult SQLite3Authenticator::isBlacklisted(
+    const std::string &address) const noexcept
 {
-    return pImpl->isBlacklisted(address);
+    if (!pImpl->isBlacklisted(address))
+    {
+        return ValidationResult::ALLOWED;
+    }
+    else
+    {
+        return ValidationResult::BLACKLISTED;
+    }
 } 
 
 void SQLite3Authenticator::removeFromBlacklist(const std::string &address) noexcept
@@ -506,10 +532,17 @@ void SQLite3Authenticator::addToWhitelist(const std::string &address)
     pImpl->addToWhitelist(address);
 }
 
-bool SQLite3Authenticator::isWhitelisted(
+ValidationResult SQLite3Authenticator::isWhitelisted(
     const std::string &address) const noexcept
 {
-    return pImpl->isWhitelisted(address);
+    if (pImpl->isWhitelisted(address))
+    {
+        return ValidationResult::ALLOWED;
+    }
+    else
+    {
+        return ValidationResult::BLACKLISTED;
+    }
 }
 
 void SQLite3Authenticator::removeFromWhitelist(
@@ -541,7 +574,7 @@ void SQLite3Authenticator::openUsersTable(
         }
         create = true;
     }
-    auto error = pImpl->openUserTable(fileName, create);
+    auto error = pImpl->openUsersTable(fileName, create);
     if (error != 0){throw std::runtime_error("Failed to open user table");}
 }
 
@@ -573,7 +606,7 @@ void SQLite3Authenticator::openBlacklistTable(
 }
 
 /// Open the whitelist table
-void SQLite3Authenticator::opendWhitelistTable(
+void SQLite3Authenticator::openWhitelistTable(
     const std::string &fileName, const bool createIfDoesNotExist)
 {
     bool create = false;
@@ -597,6 +630,41 @@ void SQLite3Authenticator::opendWhitelistTable(
     }
     auto error = pImpl->openWhitelistTable(fileName, create);
     if (error != 0){throw std::runtime_error("Failed to open whitelist table");}
+}
+
+/// Have tables?
+bool SQLite3Authenticator::haveUsersTable() const noexcept
+{
+    return pImpl->haveUsersTable();
+}
+bool SQLite3Authenticator::haveBlacklistTable() const noexcept
+{
+    return pImpl->haveBlacklistTable();
+}
+bool SQLite3Authenticator::haveWhitelistTable() const noexcept
+{
+    return pImpl->haveWhitelistTable();
+}   
+
+/// Validate
+ValidationResult SQLite3Authenticator::isValid(
+    const Certificate::UserNameAndPassword &credentials) const noexcept
+{
+    if (haveUsersTable())
+    {
+
+    }
+    return ValidationResult::ALLOWED;
+}
+
+ValidationResult SQLite3Authenticator::isValid(
+    const Certificate::Keys &keys) const noexcept
+{
+    if (haveUsersTable())
+    {
+
+    }
+    return ValidationResult::ALLOWED;
 }
 
 /*

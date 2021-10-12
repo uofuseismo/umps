@@ -2,6 +2,7 @@
 #include <thread>
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
@@ -83,6 +84,33 @@ TEST(Messaging, CertificateKeys)
     std::remove("temp.private_key");
 }
 
+TEST(Messaging, SQLite3Authenticator)
+{
+    SQLite3Authenticator auth;
+    const bool createIfDoesNotExist = true;
+    std::string users = "tables/users.sqlite3";
+    std::string blacklist = "tables/blacklist.sqlite3";
+    std::string whitelist = "tables/whitelist.sqlite3";
+    EXPECT_FALSE(auth.haveUsersTable());
+    EXPECT_FALSE(auth.haveWhitelistTable());
+    EXPECT_FALSE(auth.haveBlacklistTable());
+
+    EXPECT_NO_THROW(auth.openUsersTable(users, createIfDoesNotExist));
+    EXPECT_TRUE(auth.haveUsersTable());
+
+    EXPECT_NO_THROW(auth.openBlacklistTable(blacklist, createIfDoesNotExist));
+    EXPECT_TRUE(auth.haveBlacklistTable());
+
+    EXPECT_NO_THROW(auth.openWhitelistTable(whitelist, createIfDoesNotExist));
+    EXPECT_TRUE(auth.haveWhitelistTable());
+
+    std::string userName = "user";
+    std::string password = "password";
+    std::string email = "abc@123.com";
+ 
+}
+
+
 void pub(std::shared_ptr<zmq::context_t> context,
          const Certificate::Keys serverCertificate)
 {
@@ -92,8 +120,8 @@ void pub(std::shared_ptr<zmq::context_t> context,
     plainText.setPassword("password");
 
     UMPS::Messaging::PublisherSubscriber::Publisher publisher(context);
-    //publisher.bind("tcp://*:5555", isAuthenticationServer); // Strawhouse
-    //publisher.bind("tcp://*:5555", plainText, isAuthenticationServer); // Woodhouse
+    //publisher.bind("tcp:// *:5555", isAuthenticationServer); // Strawhouse
+    //publisher.bind("tcp:// *:5555", plainText, isAuthenticationServer); // Woodhouse
     publisher.bind("tcp://*:5555", serverCertificate); //  Stonehouse
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // Define message to send
@@ -172,5 +200,6 @@ sleep(1);
     auth.stop();
     t1.join();
 }
+
 
 }

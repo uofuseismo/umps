@@ -240,7 +240,7 @@ void Keys::setPair(const std::array<uint8_t, 32> &publicKey,
 
 /// Sets a keypair 
 void Keys::setPair(const std::array<char, 41> &publicText,
-                          const std::array<char, 41> &privateText)
+                   const std::array<char, 41> &privateText)
 {
     setPublicKey(publicText);
     setPrivateKey(privateText);

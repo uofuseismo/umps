@@ -59,6 +59,9 @@ public:
     ///                                  create the table.
     void openUsersTable(const std::string &fileName,
                         bool createIfDoesNotExist = true);
+    /// @result True indicates that the user's table is opened.
+    [[nodiscard]] bool haveUsersTable() const noexcept;
+
     /// @brief Opens the blacklist table.
     /// @param[in] fileName   The name of the SQLite3 blacklist table file.
     /// @param[in] createIfDoesNotExist  If true and the table does not exist
@@ -66,13 +69,18 @@ public:
     ///                                  create the table.
     void openBlacklistTable(const std::string &fileName,
                             bool createIfDoesNotExist = true);  
+    /// @result True indicates that the blacklist table is opened.
+    [[nodiscard]] bool haveBlacklistTable() const noexcept;
+
     /// @brief Opens the whitelist table.
     /// @param[in] fileName   The name of the SQLite3 blacklist table file.
     /// @param[in] createIfDoesNotExist  If true and the table does not exist
     ///                                  then the application will attempt to
     ///                                  create the table.
-    void opendWhitelistTable(const std::string &fileName,
-                             bool createIfDoesNotExist = true);
+    void openWhitelistTable(const std::string &fileName,
+                            bool createIfDoesNotExist = true);
+    /// @result True indicates that the whitelist table is opened.
+    [[nodiscard]] bool haveWhitelistTable() const noexcept;
     /// @}
 
     /// @name White and Blacklisting
@@ -85,7 +93,7 @@ public:
     /// @param[in] address  The address to remove from the blacklist.
     void removeFromBlacklist(const std::string &address) noexcept;
     /// @result True indicates the address is blacklisted.
-    [[nodiscard]] bool isBlacklisted(const std::string &address) const noexcept override final;
+    [[nodiscard]] ValidationResult isBlacklisted(const std::string &address) const noexcept override final;
 
     /// @brief Grants access to a certain IP address.
     /// @param[in] address  The address to add to the whitelist.
@@ -95,9 +103,14 @@ public:
     /// @param[in] address  The address to remove from the whitelist.
     void removeFromWhitelist(const std::string &address) noexcept;
     /// @result True indicates the address is whitelisted.
-    [[nodiscard]] virtual bool isWhitelisted(const std::string &address) const noexcept override final;
+    [[nodiscard]] virtual ValidationResult isWhitelisted(const std::string &address) const noexcept override final;
     /// @}
 
+    [[nodiscard]] ValidationResult isValid(
+        const Certificate::UserNameAndPassword &credentials) const noexcept override final;
+    /// @brief Validates a provided public key.
+    [[nodiscard]] ValidationResult isValid(
+        const Certificate::Keys &keys) const noexcept override final;
 
     /// @brief Creates and binds the ZAP socket.
     //void start();

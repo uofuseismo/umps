@@ -9,6 +9,7 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
@@ -34,7 +35,7 @@ public:
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
                                                zmq::socket_type::pair)),
         mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
-        mAuthenticator(std::make_shared<SQLite3Authenticator> (mLogger))
+        mAuthenticator(std::make_shared<Grasslands> ())
     {
         makeEndPointName();
     }
@@ -42,21 +43,21 @@ public:
         mContext(std::make_shared<zmq::context_t> (1)),
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
                                                zmq::socket_type::pair)),
-        mLogger(logger)
+        mLogger(logger),
+        mAuthenticator(std::make_shared<Grasslands> ())
     {   
         if (logger == nullptr)
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
         }
-        mAuthenticator
-            = std::make_shared<SQLite3Authenticator> (mLogger);
         makeEndPointName();
     }
     explicit ServiceImpl(std::shared_ptr<zmq::context_t> &context) :
         mContext(context),
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
                                                zmq::socket_type::pair)),
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
+        mAuthenticator(std::make_shared<Grasslands> ())
     {
         if (context == nullptr)
         {
@@ -65,8 +66,6 @@ public:
             mPipe = std::make_unique<zmq::socket_t> (
                 *mContext, zmq::socket_type::pair);
         }
-        mAuthenticator
-            = std::make_shared<SQLite3Authenticator> (mLogger);
         makeEndPointName();
     }
     ServiceImpl(std::shared_ptr<zmq::context_t> &context,
@@ -74,7 +73,8 @@ public:
         mContext(context),
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
                                                zmq::socket_type::pair)),
-        mLogger(logger)
+        mLogger(logger),
+        mAuthenticator(std::make_shared<Grasslands> ())
     {   
         if (logger == nullptr)
         {
@@ -87,7 +87,6 @@ public:
             mPipe = std::make_unique<zmq::socket_t> (
                 *mContext, zmq::socket_type::pair);
         }
-        mAuthenticator = std::make_shared<SQLite3Authenticator> (mLogger);
         makeEndPointName();
     }
     /// Convenience function to make endpoint name
@@ -225,14 +224,16 @@ void Service::start()
                                     zmq::recv_flags::none);
             if (*receivedResult > 0)
             {
-                auto nAddresses = messagesReceived.size() - 1;
                 std::string command{messagesReceived[0].to_string()};
+/*
+                auto nAddresses = messagesReceived.size() - 1;
                 if (command == "DENY")
                 {
                     for (int i = 0; i < static_cast<int> (nAddresses); ++i)
                     {
                         auto address = messagesReceived.at(i + 1).to_string();
-                        if (pImpl->mAuthenticator->isWhitelisted(address))
+                        if (pImpl->mAuthenticator->isWhitelisted(address) !=
+                            ValidationResult::BLACKLISTED)
                         {
                             //pImpl->mAuthenticator->removeFromWhitelist(address);
                         }
@@ -244,7 +245,8 @@ void Service::start()
                     for (int i = 0; i < static_cast<int> (nAddresses); ++i)
                     {
                         auto address = messagesReceived.at(i + 1).to_string();
-			if (pImpl->mAuthenticator->isBlacklisted(address))
+			if (pImpl->mAuthenticator->isBlacklisted(address) ==
+                            ValidationResult::BLACKLISTED)
                         {
                             //pImpl->mAuthenticator->removeFromBlacklist(address);
                         }
@@ -261,7 +263,8 @@ void Service::start()
                     auto domain = messagesReceived.at(1).to_string();
                     auto password = messagesReceived.at(2).to_string();
                 }
-                else if (command == "TERMINATE")
+*/
+                if (command == "TERMINATE")
                 {
                     pImpl->mLogger->debug("Terminating service");
                     pImpl->stop(); // Stop the service
@@ -295,29 +298,31 @@ void Service::start()
             auto ipAddress = messageReceived.at(3).to_string();
             auto identity  = messageReceived.at(4).to_string(); // Originating socket ID
             auto mechanism = messageReceived.at(5).to_string();
-            std::string statusCode = ZAP_CLIENT_ERROR; 
-            std::string statusText;
+            std::string statusCode = ZAP_SERVER_ERROR;  // Default failure
+            std::string statusText = "Unhandled request";
             // Is the IP address blacklisted?
-            if (pImpl->mAuthenticator->isBlacklisted(ipAddress))
+            if (pImpl->mAuthenticator->isBlacklisted(ipAddress) !=
+                ValidationResult::ALLOWED)
             {
                 statusCode = ZAP_CLIENT_ERROR;
                 statusText = "Address blacklisted";
             } 
-            else
+            else // Not blacklisted - get to work
             {
                 // Handle different mechanisms.
-                if (mechanism == "NULL")
+                if (mechanism == "NULL") // Check nothing - blacklist enough
                 {
                     statusCode = ZAP_SUCCESS;
                     statusText = ZAP_OKAY;
                 }
-                else if (mechanism == "PLAIN")
+                else if (mechanism == "PLAIN") // Check username/passsword
                 {
+                    statusCode = ZAP_SERVER_ERROR;
+                    statusText = "Unhandled PLAIN logic";
                     //pImpl->mAuthenticator.verifyPlain( );
                     auto user = messageReceived[5].to_string();
                     auto password = messageReceived[6].to_string();
                     Certificate::UserNameAndPassword plainText;
-                    bool verified = false;
                     try
                     {
                         plainText.setUserName(user);
@@ -327,22 +332,38 @@ void Service::start()
                     {
                         pImpl->mLogger->error("Failed to set username/pwd");
                     }
-
-verified = true;
-                    if (verified)
+                    // Check the username and password
+                    auto status = pImpl->mAuthenticator->isValid(plainText);
+                    if (status == ValidationResult::ALLOWED)
                     {
                         statusCode = ZAP_SUCCESS;
                         statusText = ZAP_OKAY;
                     }
-                    else
+                    else if (status == ValidationResult::INVALID_USER)
                     {
                         statusCode = ZAP_CLIENT_ERROR;
-                        statusText = "Username/password failed";  
+                        statusText = "Invalid user";
+                    }
+                    else if (status == ValidationResult::INVALID_PASSWORD)
+                    {
+                        statusCode = ZAP_CLIENT_ERROR;
+                        statusText = "Invalid password";
+                    }
+                    else if (status == ValidationResult::ALGORITHM_FAILURE)
+                    {
+                        statusCode = ZAP_SERVER_ERROR; 
+                        statusText = "PLAIN algorithmic failure";
+                    }
+                    else
+                    {
+                        statusCode = ZAP_SERVER_ERROR;
+                        statusText = "Unhandled PLAIN return code";
                     }
                 }
-                else if (mechanism == "CURVE")
+                else if (mechanism == "CURVE") // Check public key 
                 {
-                    bool verified = true;
+                    statusCode = ZAP_SERVER_ERROR;
+                    statusText = "Unhandled CURVE logic"; 
                     if (messageReceived.at(6).size() != 32)
                     {
                         statusCode = ZAP_CLIENT_ERROR;
@@ -365,29 +386,41 @@ verified = true;
                             statusCode = ZAP_SERVER_ERROR;
                             statusText = "Failed to set public key";
                         }
-verified = true;
                         if (key.havePublicKey())
                         {
-                        }                        
-                        if (verified)
-                        {
-                            statusCode = ZAP_SUCCESS;
-                            statusText = ZAP_OKAY;
+                            auto status = pImpl->mAuthenticator->isValid(key);
+                            if (status == ValidationResult::ALLOWED)
+                            {
+                                statusCode = ZAP_SUCCESS;
+                                statusText = ZAP_OKAY;
+                            }
+                            else if (status ==
+                                     ValidationResult::INVALID_PUBLIC_KEY)
+                            {
+                                statusCode = ZAP_CLIENT_ERROR;
+                                statusText = "Invalid public key";
+                            }
+                            else if (status ==
+                                     ValidationResult::ALGORITHM_FAILURE)
+                            {
+                                statusCode = ZAP_SERVER_ERROR;
+                                statusText = "CURVE algorithmic failure";
+                            }
+                            else
+                            {
+                                statusCode = ZAP_SERVER_ERROR;
+                                statusText = "Unhandled CURVE return code";
+                            } 
                         }
-                        else
-                        {
-                            statusCode = ZAP_CLIENT_ERROR;
-                            statusText = "Key could not be verified";
-                        } 
                     }
                 }
-                else
+                else // Check on mechanism
                 {
                     statusCode = ZAP_CLIENT_ERROR;
                     statusText = "Security mechanism: " + mechanism
                                 + " not supported"; 
-                }
-            }
+                } // End check on mechanism
+            } // End check on not blacklisted
             if (true)
             {
                 for (auto &m : messageReceived)
