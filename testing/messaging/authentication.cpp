@@ -8,11 +8,40 @@
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/authentication/checkIP.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
 using namespace UMPS::Messaging::Authentication;
+
+TEST(Messaging, isOkayIP)
+{
+    EXPECT_TRUE(isOkayIP("123.345.323.44"));
+    EXPECT_FALSE(isOkayIP("*"));
+    EXPECT_FALSE(isOkayIP("122.*.*.233"));
+    EXPECT_FALSE(isOkayIP("*.121.233.233"));
+    EXPECT_TRUE(isOkayIP("123.*"));
+    EXPECT_TRUE(isOkayIP("123.34.*"));
+    EXPECT_TRUE(isOkayIP("122.35.23.*"));
+}
+
+TEST(Messaging, CheckIP)
+{
+    std::set<std::string> ipAddresses;
+    ipAddresses.insert("127.12.24.58");
+    EXPECT_TRUE(ipExists("127.12.24.58",  ipAddresses));
+    EXPECT_FALSE(ipExists("127.12.24.47", ipAddresses));
+
+    ipAddresses.insert("128.*");
+    EXPECT_TRUE(ipExists("128.488.832.12", ipAddresses));   
+
+    EXPECT_TRUE(ipExists("128.488.*", ipAddresses));
+    ipAddresses.insert("128.488.*");
+    EXPECT_TRUE(ipExists("128.489.832.12", ipAddresses));
+
+    EXPECT_FALSE(ipExists("44.883.85.848", ipAddresses));
+}
 
 TEST(Messaging, CertificateUserNameAndPassword)
 {

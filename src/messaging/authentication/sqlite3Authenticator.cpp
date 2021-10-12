@@ -13,6 +13,7 @@
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
+#include "private/authentication/checkIP.hpp"
 
 /// Magic place where ZMQ will send authentication requests to.
 #define ZAP_ENDPOINT  "inproc://zeromq.zap.01"
