@@ -339,6 +339,8 @@ public:
                                   nullptr);
         if (rc == SQLITE_OK)
         {
+            mHaveUsersTable = true;
+            mUsersTableFile = database;
             if (create)
             {
                 auto [rcCreate, message] = createUsersTable(mUsersTable);
@@ -350,11 +352,6 @@ public:
                     closeUsersTable();
                     error = 1;
                 }
-            }
-            else
-            {
-               mHaveUsersTable = true;
-               mUsersTableFile = database;
             }
         }
         else
@@ -376,6 +373,8 @@ public:
                                   nullptr);
         if (rc == SQLITE_OK)
         {
+            mHaveBlacklistTable = true;
+            mBlacklistTableFile = database;
             if (create)
             {
                 auto [rcCreate, message]
@@ -389,11 +388,6 @@ public:
                     error = 1;
                 }   
             }
-            else
-            {
-               mHaveBlacklistTable = true;
-               mBlacklistTableFile = database;
-            }   
         }
         else
         {
@@ -414,6 +408,8 @@ public:
                                   nullptr);
         if (rc == SQLITE_OK)
         {
+            mHaveWhitelistTable = true;
+            mWhitelistTableFile = database;
             if (create)
             {
                 auto [rcCreate, message]
@@ -427,11 +423,6 @@ public:
                     error = 1;
                 }   
             }
-            else
-            {
-               mHaveWhitelistTable = true;
-               mWhitelistTableFile = database;
-            }   
         }
         else
         {
