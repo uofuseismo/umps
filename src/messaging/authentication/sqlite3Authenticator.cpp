@@ -95,6 +95,63 @@ std::pair<int, std::string> createWhitelistTable(sqlite3 *db)
     }
     return std::pair(rc, outputMessage);
 }
+/// Is it whitelisted?
+bool checkWhitelisted(sqlite3 *db, const std::string &ip)
+{
+    bool matches = false;
+    // No whitelist -> can't match
+    if (db == nullptr)
+    {
+        return matches;
+    }
+    std::string sql = "SELECT ip FROM whitelist;";
+    sqlite3_stmt *result = nullptr;
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+    if (rc != SQLITE_OK){return matches;}
+    while (true)
+    {
+        auto step = sqlite3_step(result);
+        if (step != SQLITE_ROW){break;}
+        std::string targetIP = reinterpret_cast<const char *>
+                               (sqlite3_column_int(result, 0));
+        if (ipMatches(ip, targetIP))
+        {
+            matches = true;
+            break;
+        }
+    }
+    sqlite3_finalize(result);
+    return matches;
+}
+/// Is it blacklisted?
+bool checkBlacklisted(sqlite3 *db, const std::string &ip)
+{
+    bool matches = false;
+    // No blacklist -> can't match
+    if (db == nullptr) 
+    {
+        return matches;
+    }
+    std::string sql = "SELECT ip FROM blacklist;";
+    sqlite3_stmt *result = nullptr;
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+    if (rc != SQLITE_OK){return matches;}
+    while (true)
+    {
+        auto step = sqlite3_step(result);
+        if (step != SQLITE_ROW){break;}
+        std::string targetIP = reinterpret_cast<const char *>
+                               (sqlite3_column_int(result, 0));
+        if (ipMatches(ip, targetIP))
+        {
+            matches = true;
+            break;
+        }
+    }
+    sqlite3_finalize(result);
+    return matches;
+}
+
 /// Query users from user table
 std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userName)
 {
@@ -109,13 +166,12 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userName)
         rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
         if (rc != SQLITE_OK)
         {
-            
             return users;
         }
     }
     else
     {
-        sql = "SELECT id, name, email, password, public_key, privileges FROM user WHERE name = ?";
+        sql = "SELECT id, name, email, password, public_key, privileges FROM user WHERE name = ?;";
         rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
         if (rc != SQLITE_OK)
         {
@@ -245,7 +301,7 @@ public:
     void removeFromBlacklist(const std::string &address) noexcept
     {
         std::scoped_lock lock(mMutex);
-        if (mBlacklist.contains(address))
+        if (ipExists(address, mBlacklist))
         {
             mBlacklist.erase(address);
             mLogger->debug("Removing: " + address + " from blacklist");
@@ -255,9 +311,9 @@ public:
     void addToWhitelist(const std::string &address)
     {
         std::scoped_lock lock(mMutex);
-        if (!mWhitelist.contains(address))
+        if (!ipExists(address, mWhitelist))
         {
-            if (mBlacklist.contains(address))
+            if (ipExists(address, mBlacklist))
             {
                 auto errmsg = "Remove " + address
                             + " from blacklist before whitelisting";
@@ -277,7 +333,7 @@ public:
     void removeFromWhitelist(const std::string &address) noexcept
     {
         std::scoped_lock lock(mMutex);
-        if (mWhitelist.contains(address))
+        if (ipExists(address, mWhitelist))
         {
             mWhitelist.erase(address);
             mLogger->debug("Removing: " + address + " from whitelist");
@@ -287,13 +343,13 @@ public:
     bool isBlacklisted(const std::string &address) const noexcept
     {
         std::scoped_lock lock(mMutex);
-        return mBlacklist.contains(address);
+        return checkBlacklisted(mBlacklistTable, address);
     }
     /// Whitelisted?
     bool isWhitelisted(const std::string &address) const noexcept
     {
         std::scoped_lock lock(mMutex);
-        return mWhitelist.contains(address);
+        return checkWhitelisted(mWhitelistTable, address);
     }
     /// Close user database
     void closeUsersTable()

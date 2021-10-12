@@ -6,6 +6,28 @@
 #include "private/isEmpty.hpp"
 namespace
 {
+/// @brief Checks if an IP address matches another IP address.
+[[maybe_unused]]
+[[nodiscard]]
+bool ipMatches(const std::string &ip,
+               const std::string &targetIP)
+{
+    if (ip.empty()){return false;}
+    if (targetIP.empty()){return false;}
+    if (ip == targetIP){return true;} // Match
+    if (targetIP == "*.*.*.*"){return true;} // Full wild card
+    // More general wild card
+    auto found = targetIP.find_first_of('*');
+    if (found != std::string::npos && found > 0L)
+    {
+        if (std::strncmp(targetIP.c_str(), ip.c_str(), found - 1) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 /// @brief Checks if an IP address matches the list of IP addresses.
 ///        This is slightly more complicated since we allow wildcards.
 [[maybe_unused]]
@@ -20,20 +42,13 @@ bool ipExists(const std::string &ip,
     // Now we need to try a bit harder
     for (const auto &address : ipAddresses)
     {
-        // Is this wildcarded?
-        // This should match things like 127.23.34.55 == 127.*
-        auto found = address.find_first_of('*');
-        if (found != std::string::npos && found > 0)
-        {
-            if (std::strncmp(address.c_str(), ip.c_str(), found - 1) == 0)
-            {
-               return true;
-            }
-        }
+        if (ipMatches(ip, address)){return true;};
     }
     return false;
 }
 /// @brief Determines if I can parse the given IP address
+[[maybe_unused]]
+[[nodiscard]]
 bool isOkayIP(const std::string &ip)
 {
     // String is empty - no
