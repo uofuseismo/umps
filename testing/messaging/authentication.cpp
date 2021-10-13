@@ -8,6 +8,7 @@
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/staticUniquePointerCast.hpp"
 #include "private/authentication/checkIP.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -65,6 +66,10 @@ TEST(Messaging, CertificateUserNameAndPassword)
     Certificate::UserNameAndPassword plainTextCopy(plainText);
     EXPECT_EQ(plainTextCopy.getUserName(), userName);
     EXPECT_EQ(plainTextCopy.getPassword(), password);
+
+    std::string passwordInteractive;
+    EXPECT_NO_THROW(passwordInteractive =
+                    plainTextCopy.getHashedPassword(Certificate::HashLevel::INTERACTIVE));
 }
 
 TEST(Messaging, CertificateKeys)
@@ -139,6 +144,18 @@ TEST(Messaging, SQLite3Authenticator)
  
 }
 
+UMPS::MessageFormats::Pick makePickMessage() noexcept
+{
+    UMPS::MessageFormats::Pick pick;
+    pick.setIdentifier(4043);
+    pick.setTime(600);
+    pick.setNetwork("UU"); 
+    pick.setStation("NOQ");
+    pick.setChannel("EHZ");
+    pick.setLocationCode("01");
+    pick.setPhaseHint("P");
+    return pick;
+}
 
 void pub(std::shared_ptr<zmq::context_t> context,
          const Certificate::Keys serverCertificate)
@@ -154,19 +171,11 @@ void pub(std::shared_ptr<zmq::context_t> context,
     publisher.bind("tcp://*:5555", serverCertificate); //  Stonehouse
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // Define message to send
-    UMPS::MessageFormats::Pick pick;
-    pick.setIdentifier(4043);
-    pick.setTime(600);
-    pick.setNetwork("UU"); 
-    pick.setStation("NOQ");
-    pick.setChannel("EHZ");
-    pick.setLocationCode("01");
-    pick.setPhaseHint("P");
+    auto pick = makePickMessage();
     // Send it
     std::this_thread::sleep_for(std::chrono::seconds(1));
-std::cout << "sending..." << std::endl;
+    //std::cout << "sending..." << std::endl;
     publisher.send(pick);
-
 }
 
 void sub(const Certificate::Keys serverCertificate)
@@ -187,11 +196,24 @@ void sub(const Certificate::Keys serverCertificate)
         = std::make_unique<UMPS::MessageFormats::Pick> ();
     subscriber.addSubscription(pickMessageType);
 //    std::this_thread::sleep_for(std::chrono::seconds(1));
-std::cout << "getting" << std::endl;
+//std::cout << "getting" << std::endl;
     auto message = subscriber.receive();
-std::cout << "done" << std::endl;
+//std::cout << "done" << std::endl;
 
     //std::this_thread::sleep_for(std::chrono::seconds(3));
+    auto pickMessage
+        = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+          (std::move(message));
+    //std::cout << pickMessage->toJSON() << std::endl;
+    auto pick = makePickMessage();
+    EXPECT_NEAR(pickMessage->getTime(), pick.getTime(), 1.e-10);
+    EXPECT_EQ(pickMessage->getIdentifier(),   pick.getIdentifier());
+    EXPECT_EQ(pickMessage->getNetwork(),      pick.getNetwork());
+    EXPECT_EQ(pickMessage->getStation(),      pick.getStation());
+    EXPECT_EQ(pickMessage->getChannel(),      pick.getChannel());
+    EXPECT_EQ(pickMessage->getLocationCode(), pick.getLocationCode());
+    EXPECT_EQ(pickMessage->getPhaseHint(),    pick.getPhaseHint());
+    EXPECT_EQ(pickMessage->getPolarity(),     pick.getPolarity());
 
 }
 
@@ -220,8 +242,8 @@ TEST(Messaging, Authenticator)
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
 sleep(1);
-std::cout << auth.isRunning() << std::endl;
-    std::cout << "killing it" << std::endl;
+//std::cout << auth.isRunning() << std::endl;
+//    std::cout << "killing it" << std::endl;
 //    auth.stop();
 sleep(1);
     publisherThread.join();

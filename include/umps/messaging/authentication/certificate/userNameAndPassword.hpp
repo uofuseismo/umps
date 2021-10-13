@@ -1,6 +1,7 @@
 #ifndef UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_USERNAMEANDPASSWORD_HPP
 #define UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_USERNAMEANDPASSWORD_HPP
 #include <memory>
+#include "umps/messaging/authentication/certificate/enums.hpp"
 namespace UMPS::Messaging::Authentication::Certificate
 {
 /// @class UserNameAndPassword "userNameAndPassword.hpp" "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
@@ -63,6 +64,12 @@ public:
     [[nodiscard]] std::string getPassword() const;
     /// @result True indicates the password was set.
     [[nodiscard]] bool havePassword() const noexcept;
+
+    /// @param[in] level  Controls the strength of the hashing technique
+    ///                   when creating a hashed variant of the password.
+    /// @result The hashed variant of the password.
+    /// @throws std::runtime_error if \c havePassword() is false.
+    [[nodiscard]] std::string getHashedPassword(HashLevel level = HashLevel::SENSITIVE) const;
     /// @}
 
     /// @name Destructors
