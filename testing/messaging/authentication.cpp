@@ -1,7 +1,9 @@
 #include <zmq.hpp>
 #include <thread>
+#include <sodium/crypto_pwhash.h>
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/messaging/authentication/user.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
@@ -48,6 +50,7 @@ TEST(Messaging, CertificateUserNameAndPassword)
 {
     const std::string userName = "user";
     const std::string password = "password";
+    //const std::string password= "o8cZ?nWv7h[jtY]*<H&CT<CL(f{zGz&Z6LK9o[EL";
     Certificate::UserNameAndPassword plainText;
     EXPECT_FALSE(plainText.haveUserName());
     EXPECT_FALSE(plainText.havePassword());
@@ -70,6 +73,7 @@ TEST(Messaging, CertificateUserNameAndPassword)
     std::string passwordInteractive;
     EXPECT_NO_THROW(passwordInteractive =
                     plainTextCopy.getHashedPassword(Certificate::HashLevel::INTERACTIVE));
+    //std::cout << passwordInteractive << std::endl;
 }
 
 TEST(Messaging, CertificateKeys)
@@ -116,6 +120,59 @@ TEST(Messaging, CertificateKeys)
 
     std::remove("temp.public_key");
     std::remove("temp.private_key");
+}
+
+TEST(Messaging, User)
+{
+    User user;
+    const std::string name = "user";
+    const std::string email = "user@domain.com";
+    // Password is password with INTERACTIVE hashing
+    const std::string password = "password";
+    // Senstive
+    //const std::string hashedPassword{"$argon2id$v=19$m=1048576,t=4,p=1$JOU27drJpXOrscvIaX1yUw$Q3PHo5x7hh41aY296u4Yp5E4V+Dc0Qho/ncB3+ocRCI"};
+    // Moderate 
+    //const std::string hashedPassword{"$argon2id$v=19$m=262144,t=3,p=1$oF32CH2F+surUFHAULqM4Q$kUrRKyxjfzIAF1AtIoz88l5/rcn/9WhO6AyzKPIuDQg"};
+    // Interactive
+    const std::string hashedPassword{"$argon2id$v=19$m=65536,t=2,p=1$H1VXeJPv1KHeUT7cb6TluA$3cOCW1EYoVK5ftnFFO/NQWFGkDqqQgUoAAWFCPxYUkQ"};
+    // Key is o8cZ?nWv7h[jtY]*<H&CT<CL(f{zGz&Z6LK9o[EL with SENSITIVE hashing
+    const std::string publicKey = "o8cZ?nWv7h[jtY]*<H&CT<CL(f{zGz&Z6LK9o[EL";
+    // Sensitive
+    //const std::string hashedPublicKey{"$argon2id$v=19$m=1048576,t=4,p=1$bBYEfas+MYYy9hsfND3rqg$NZXhVv8rF8CcE2ERg90L7p0chkrtRqP8+jXTWwfKhn0"};
+    // Moderate
+    //const std::string hashedPublicKey{"$argon2id$v=19$m=262144,t=3,p=1$O6vEofky6H6v9FdbAY+rXg$DK2w9VWV34N2DCepM5gCbZrmtqRXadgwxm9q6iAN/EE"};
+    // Interactive
+    const std::string hashedPublicKey{"$argon2id$v=19$m=65536,t=2,p=1$+YTFJ9DZwiiX8c4866brIA$XJBjmDCmeGXAdh1PL/xfPHqd7Kpvile1rDUAefvWcHU"};
+    const UserPrivileges privileges = UserPrivileges::ADMINISTRATOR;
+ 
+    EXPECT_EQ(user.getMaximumHashedStringLength(), crypto_pwhash_STRBYTES);
+    EXPECT_NO_THROW(user.setName(name));
+    EXPECT_NO_THROW(user.setEmail(email));
+    EXPECT_NO_THROW(user.setHashedPassword(hashedPassword));
+    EXPECT_NO_THROW(user.setHashedPublicKey(hashedPublicKey));
+    user.setPrivileges(privileges);
+
+    User userCopy(user);
+    EXPECT_EQ(userCopy.getName(), name);
+    EXPECT_EQ(userCopy.getEmail(), email);
+    EXPECT_EQ(userCopy.getHashedPassword(), hashedPassword);
+    EXPECT_EQ(userCopy.getHashedPublicKey(), hashedPublicKey);
+    EXPECT_EQ(userCopy.getPrivileges(), privileges);
+
+    std::cout << "Testing password..." << std::endl;
+    EXPECT_TRUE(userCopy.doesPasswordMatch(password));
+    std::cout << "Testing pubilc key..." << std::endl;
+    EXPECT_TRUE(userCopy.doesPublicKeyMatch(publicKey));
+    std::cout << "Testing fast tracks..." << std::endl;
+    EXPECT_FALSE(userCopy.doesPasswordMatch(publicKey));
+    EXPECT_FALSE(userCopy.doesPublicKeyMatch(password));
+    EXPECT_TRUE(userCopy.doesPasswordMatch(password));
+    EXPECT_TRUE(userCopy.doesPublicKeyMatch(publicKey));
+
+    userCopy.clear();
+    std::cout << "Testing other" << std::endl;
+    EXPECT_FALSE(userCopy.doesPasswordMatch(password));
+    EXPECT_FALSE(userCopy.doesPublicKeyMatch(publicKey));
 }
 
 TEST(Messaging, SQLite3Authenticator)

@@ -76,6 +76,7 @@ set(MESSAGE_FORMAT_SRC
 set(MESSAGING_SRC
     src/messaging/authentication/service.cpp
     src/messaging/authentication/sqlite3Authenticator.cpp
+    src/messaging/authentication/user.cpp
     src/messaging/authentication/certificate/keys.cpp
     src/messaging/authentication/certificate/userNameAndPassword.cpp
     #src/messaging/authentication/generateKeyPair.cpp

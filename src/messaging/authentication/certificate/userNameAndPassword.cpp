@@ -37,17 +37,18 @@ std::string pwhashString(
     unsigned long long opslimit = crypto_pwhash_OPSLIMIT_SENSITIVE,
     unsigned long long memlimit = crypto_pwhash_MEMLIMIT_SENSITIVE)
 {
-    std::string hashedPassword;
-    hashedPassword.resize(crypto_pwhash_STRBYTES); 
-    auto rc = crypto_pwhash_str(hashedPassword.data(),
+    std::array<char, crypto_pwhash_STRBYTES> work;
+    std::fill(work.begin(), work.end(), '\0');
+    auto rc = crypto_pwhash_str(work.data(),
                                 password.c_str(), password.size(),
                                 opslimit, memlimit);
     if (rc != 0)
     {
         auto errmsg = "Failed to hash string.  Likely hit memory limit";
         throw std::runtime_error(errmsg);
-    }   
-    return hashedPassword; 
+    }
+    std::string hashedPassword{work.data()};
+    return hashedPassword;
 }
 }
 

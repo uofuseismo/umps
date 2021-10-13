@@ -9,6 +9,7 @@
 #include <sqlite3.h>
 #include <cassert>
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
+#include "umps/messaging/authentication/user.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/logging/stdout.hpp"
@@ -42,6 +43,31 @@ int callback(void *data, int argc, char **argv, char **azColName)
    return 0;
 }
 */
+/// Converts a row from the user table to a user
+User rowToUser(sqlite3_stmt *result)
+{
+    User user;
+    user.id = sqlite3_column_int(result, 0);
+    user.name
+       = reinterpret_cast<const char *> (sqlite3_column_text(result, 1));
+    if (sqlite3_column_text(result, 3) != NULL)
+    {
+        user.email = reinterpret_cast<const char *>
+                     (sqlite3_column_text(result, 3));
+    }
+    if (sqlite3_column_text(result, 4) != NULL)
+    {
+        user.password = reinterpret_cast<const char *>  
+                        (sqlite3_column_text(result, 4));
+    }
+    if (sqlite3_column_text(result, 5) != NULL)
+    {
+        user.key = reinterpret_cast<const char *>
+                   (sqlite3_column_text(result, 5));
+    }
+    user.privileges = sqlite3_column_int(result, 6); 
+    return user;
+}
 /// Creates the user table
 std::pair<int, std::string> createUsersTable(sqlite3 *db)
 {
@@ -180,30 +206,13 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userName)
         sqlite3_bind_text(result, 1, userName.c_str(), userName.length(), NULL);
     }  
     // Build up the corresponding user from (matching) rows in the table
+    users.reserve(1024);
     while (true)
     {
-        User user;
         auto step = sqlite3_step(result);
         if (step != SQLITE_ROW){break;}
-        user.id = sqlite3_column_int(result, 0);
-        user.name
-            = reinterpret_cast<const char *> (sqlite3_column_text(result, 1));
-        if (sqlite3_column_text(result, 3) != NULL)
-        {
-            user.email = reinterpret_cast<const char *>
-                         (sqlite3_column_text(result, 3));
-        }
-        if (sqlite3_column_text(result, 4) != NULL)
-        {
-            user.password = reinterpret_cast<const char *> 
-                            (sqlite3_column_text(result, 4));
-        }
-        if (sqlite3_column_text(result, 5) != NULL)
-        {
-            user.key = reinterpret_cast<const char *>
-                       (sqlite3_column_text(result, 5));
-        }
-        user.privileges = sqlite3_column_int(result, 6);
+        auto user = rowToUser(result);
+        users.push_back(std::move(user));
     }
     sqlite3_finalize(result);
     return users;

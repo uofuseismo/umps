@@ -13,10 +13,14 @@ namespace UMPS::Logging
 {
  class ILog;
 }
-namespace UMPS::Messaging::Authentication::Certificate
+namespace UMPS::Messaging::Authentication
 {
- class Keys;
- class UserNameAndPassword;
+ class User;
+ namespace Certificate
+ {
+  class Keys;
+  class UserNameAndPassword;
+ }
 }
 namespace UMPS::Messaging::Authentication
 {

@@ -29,5 +29,14 @@ enum class ValidationResult
     INVALID_PUBLIC_KEY, /*!< Access denied.  The user's public key is invalid. */
     ALGORITHM_FAILURE   /*!< Access denied.  The validator failed. */
 };
+/// @class UserPrivileges "enums.hpp" "umps/messaging/authentication/enums.hpp"
+/// @brief Defines the user's privileges.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+enum class UserPrivileges
+{
+    READ_ONLY,     /*!< The user has read-only permissions. */
+    READ_WRITE,    /*!< The user has read-write permissions.  */
+    ADMINISTRATOR  /*!< The user has administrative permissions. */
+};
 }
 #endif
