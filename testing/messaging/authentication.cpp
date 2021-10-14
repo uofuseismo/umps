@@ -142,21 +142,21 @@ TEST(Messaging, User)
     // Moderate
     //const std::string hashedPublicKey{"$argon2id$v=19$m=262144,t=3,p=1$O6vEofky6H6v9FdbAY+rXg$DK2w9VWV34N2DCepM5gCbZrmtqRXadgwxm9q6iAN/EE"};
     // Interactive
-    const std::string hashedPublicKey{"$argon2id$v=19$m=65536,t=2,p=1$+YTFJ9DZwiiX8c4866brIA$XJBjmDCmeGXAdh1PL/xfPHqd7Kpvile1rDUAefvWcHU"};
+    //const std::string hashedPublicKey{"$argon2id$v=19$m=65536,t=2,p=1$+YTFJ9DZwiiX8c4866brIA$XJBjmDCmeGXAdh1PL/xfPHqd7Kpvile1rDUAefvWcHU"};
     const UserPrivileges privileges = UserPrivileges::ADMINISTRATOR;
  
     EXPECT_EQ(user.getMaximumHashedStringLength(), crypto_pwhash_STRBYTES);
     EXPECT_NO_THROW(user.setName(name));
     EXPECT_NO_THROW(user.setEmail(email));
     EXPECT_NO_THROW(user.setHashedPassword(hashedPassword));
-    EXPECT_NO_THROW(user.setHashedPublicKey(hashedPublicKey));
+    EXPECT_NO_THROW(user.setPublicKey(publicKey));
     user.setPrivileges(privileges);
 
     User userCopy(user);
     EXPECT_EQ(userCopy.getName(), name);
     EXPECT_EQ(userCopy.getEmail(), email);
     EXPECT_EQ(userCopy.getHashedPassword(), hashedPassword);
-    EXPECT_EQ(userCopy.getHashedPublicKey(), hashedPublicKey);
+    EXPECT_EQ(userCopy.getPublicKey(), publicKey);
     EXPECT_EQ(userCopy.getPrivileges(), privileges);
 
     std::cout << "Testing password..." << std::endl;

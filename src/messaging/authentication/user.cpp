@@ -10,14 +10,13 @@ class User::UserImpl
 {
 public:
     std::string mName;
-    std::string mHashedPublicKey;
-    std::string mMatchingPublicKey;
+    std::string mPublicKey;
     std::string mHashedPassword;
     std::string mMatchingPassword;
     std::string mEmail;
     UserPrivileges mPrivileges = UserPrivileges::READ_ONLY;
     bool mHaveName = false;
-    bool mHaveHashedPublicKey = false;
+    bool mHavePublicKey = false;
     bool mHaveHashedPassword = false;
     bool mHaveEmail = false;
 };
@@ -104,28 +103,27 @@ bool User::haveEmail() const noexcept
 }
 
 /// Public key
-void User::setHashedPublicKey(const std::string &publicKey)
+void User::setPublicKey(const std::string &publicKey)
 {
     if (isEmpty(publicKey)){std::invalid_argument("Public key is empty");}
-    if (static_cast<int> (publicKey.length()) > getMaximumHashedStringLength())
+    if (static_cast<int> (publicKey.length()) != getKeyLength())
     {
-        throw std::invalid_argument("Public key length cannot exceed "
-                              + std::to_string(getMaximumHashedStringLength()));
+        throw std::invalid_argument("Public key length must be "
+                                  + std::to_string(getKeyLength()));
     }
-    pImpl->mHashedPublicKey = publicKey;
-    pImpl->mMatchingPublicKey.clear();
-    pImpl->mHaveHashedPublicKey = true;
+    pImpl->mPublicKey = publicKey;
+    pImpl->mHavePublicKey = true;
 }
 
-std::string User::getHashedPublicKey() const
+std::string User::getPublicKey() const
 {
-    if (!haveHashedPublicKey()){throw std::runtime_error("Public key not set");}
-    return pImpl->mHashedPublicKey;
+    if (!havePublicKey()){throw std::runtime_error("Public key not set");}
+    return pImpl->mPublicKey;
 }
 
-bool User::haveHashedPublicKey() const noexcept
+bool User::havePublicKey() const noexcept
 {
-    return pImpl->mHaveHashedPublicKey;
+    return pImpl->mHavePublicKey;
 }
 
 /// Password
@@ -170,27 +168,19 @@ int User::getMaximumHashedStringLength() const noexcept
     return crypto_pwhash_STRBYTES;
 }
 
+/// Text key length
+int User::getKeyLength() const noexcept
+{
+    return 40;
+}
+
 /// Does the public key match?
 bool User::doesPublicKeyMatch(const std::string &publicKey) const noexcept
 { 
-    if (!haveHashedPublicKey()){return false;}
-    // Short circuit potentially tough calculation
-    if (!pImpl->mMatchingPublicKey.empty())
-    { 
-        return (publicKey == pImpl->mMatchingPublicKey);
-    }
-    auto hashedPublicKey = getHashedPublicKey();
-    std::array<char, crypto_pwhash_STRBYTES> str;
-    std::fill(str.begin(), str.end(), '\0');
-    std::copy(hashedPublicKey.begin(), hashedPublicKey.end(), str.begin());
-    auto error = crypto_pwhash_str_verify(str.data(),
-                                          publicKey.data(), publicKey.length());
-    if (error == 0)
-    {
-        pImpl->mMatchingPublicKey = publicKey;
-        return true;
-    }
-    return false;
+    if (!havePublicKey()){return false;}
+    auto keyLength = getKeyLength();
+    if (static_cast<int> (publicKey.size()) != keyLength){return false;}
+    return (pImpl->mPublicKey == publicKey);
 }
 
 /// Does the password match?

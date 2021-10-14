@@ -84,24 +84,24 @@ public:
 
     /// @name Public Key
     /// @{
-    /// @brief Sets the hashed public key.
+    /// @brief Sets the public key.
     /// @param[in] publicKey  The user's hashed public key.  This must have
-    ///                       length at most \c getMaximumHashedStringLength().
+    ///                       length at most \c getKeyLength().
     /// @throws std::invalid_argument if the public key has the wrong length.
-    void setHashedPublicKey(const std::string &publicKey);
-    /// @result The hashed public key.
-    /// @throws std::runtime_error if \c haveHashedPublicKey() is false.
-    [[nodiscard]] std::string getHashedPublicKey() const; 
-    /// @result True indicates that the hashed public key was set.
-    [[nodiscard]] bool haveHashedPublicKey() const noexcept;
+    void setPublicKey(const std::string &publicKey);
+    /// @result The public key.
+    /// @throws std::runtime_error if \c havePublicKey() is false.
+    [[nodiscard]] std::string getPublicKey() const; 
+    /// @result True indicates that the public key was set.
+    [[nodiscard]] bool havePublicKey() const noexcept;
 
     /// @brief Determines if the text-based public key matches the previously
     ///        specified hashed public key.
-    /// @param[in] publicKey  The public key to compare with the hashed
+    /// @param[in] publicKey  The public key to compare with the given
     ///                       public key.
     /// @result True indicates that the public key matches the hashed
     ///         public key.
-    /// @note This will return false is \c haveHashedPublicKey() is false.
+    /// @note This will return false is \c havePublicKey() is false.
     [[nodiscard]] bool doesPublicKeyMatch(const std::string &publicKey) const noexcept;
     /// @}
 
@@ -116,6 +116,8 @@ public:
 
     /// @result The length of a hashed string.
     [[nodiscard]] int getMaximumHashedStringLength() const noexcept;
+    /// @result The length of the public key.
+    [[nodiscard]] int getKeyLength() const noexcept;
 
     /// @name Destructors
     /// @{

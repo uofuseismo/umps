@@ -77,7 +77,7 @@ std::pair<int, std::string> createUsersTable(sqlite3 *db)
     sql = sql + "name TEXT UNIQUE NOT NULL,";
     sql = sql + "email TEXT NOT NULL,";   
     sql = sql + "password CHAR("   + std::to_string(crypto_pwhash_STRBYTES) + "),";
-    sql = sql + "public_key CHAR(" + std::to_string(crypto_pwhash_STRBYTES) + "),";
+    sql = sql + "public_key CHAR(40),";
     sql = sql + "privileges INT NOT NULL);";
     char *errorMessage = nullptr;
     auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
