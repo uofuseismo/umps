@@ -18,31 +18,19 @@ class Grasslands : public IAuthenticator
 {
 public:
     /// @brief Destructor.
-    virtual ~Grasslands() = default;
+    virtual ~Grasslands();
     /// @result Determines if the given IP address is blacklisted.
-    [[nodiscard]] virtual ValidationResult isBlacklisted(
-        const std::string &address) const noexcept
-    {
-        return ValidationResult::ALLOWED;
-    }
+    [[nodiscard]] virtual std::pair<std::string, std::string> isBlacklisted(
+        const std::string &address) const noexcept override;
     /// @result Determines if the given IP address is whitelisted.
-    [[nodiscard]] virtual ValidationResult isWhitelisted(
-        const std::string &) const noexcept
-    { 
-        return ValidationResult::ALLOWED; 
-    } 
+    [[nodiscard]] virtual std::pair<std::string, std::string> isWhitelisted(
+        const std::string &) const noexcept override;
     /// @result Determines if the given username and password are allowed.
-    [[nodiscard]] virtual ValidationResult isValid(
-        const Certificate::UserNameAndPassword &) const noexcept
-    { 
-        return ValidationResult::ALLOWED; 
-    }
+    [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
+        const Certificate::UserNameAndPassword &) const noexcept override;
     /// @result Determines if the given keys are valid.
-    [[nodiscard]] virtual ValidationResult isValid(
-        const Certificate::Keys &) const noexcept
-    { 
-        return ValidationResult::ALLOWED; 
-    }
+    [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
+        const Certificate::Keys &) const noexcept override;
 };
 }
 #endif
