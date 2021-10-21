@@ -148,7 +148,6 @@ if (${BUILD_EW})
                           CXX_STANDARD_REQUIRED YES
                           CXX_EXTENSIONS NO) 
     target_link_libraries(packetCache PRIVATE umps Boost::program_options pthread)
-    #target_include_directories(packetCache PRIVATE ${Boost_INCLUDE_DIR})
 endif()
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
