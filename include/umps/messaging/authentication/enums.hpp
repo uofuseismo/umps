@@ -16,19 +16,6 @@ enum class SecurityLevel
     IRONHOUSE    /*!< Server validates client's IP address and client's 
                       public key and client validate's server's public key. */
 };
-/// @class ValidationResult "enums.hpp" "umps/messaging/authentication/enums.hpp"
-/// @brief Defines the authenticator result and, if validation fails, 
-///        the reason for failure.
-/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-enum class ValidationResult
-{
-    ALLOWED,            /*!< Access granted to user. */
-    BLACKLISTED,        /*!< Access denied.  The user's IP has been blacklisted. */ 
-    INVALID_USER,       /*!< Access denied.  The provided username cannot be found. */
-    INVALID_PASSWORD,   /*!< Access denied.  The password for this user is invalid. */ 
-    INVALID_PUBLIC_KEY, /*!< Access denied.  The user's public key is invalid. */
-    ALGORITHM_FAILURE   /*!< Access denied.  The validator failed. */
-};
 /// @class UserPrivileges "enums.hpp" "umps/messaging/authentication/enums.hpp"
 /// @brief Defines the user's privileges.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
