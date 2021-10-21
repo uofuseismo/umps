@@ -272,12 +272,13 @@ void Keys::writePublicKeyToTextFile(const std::string &fileName) const
     }
     createRootDirectoryFromFileName(fileName);
     auto timeStamp = "#   **** Generated on " + createTimeStamp()
-                   + " UTC by URMS ****";
+                   + " UTC by UMPS ****";
     const std::string preamble =
 R"""(#   ZeroMQ CURVE Public Certificate
 #   Exchange securely, or use a secure mechanism to verify the contents
 #   of this file after exchange.  It is recommended to store public your
-#   certificates in your ${HOME}/.curve home directory.
+#   certificates in the ${HOME}/.local/share/UMPS/keys/ directory or
+#   the ${HOME}/.curve directory.
 )""";
     std::fstream outfl(fileName, std::ios::out); 
     outfl << timeStamp << std::endl;
@@ -303,7 +304,7 @@ void Keys::writePrivateKeyToTextFile(const std::string &fileName) const
     }
     createRootDirectoryFromFileName(fileName);
     auto timeStamp = "#   **** Generated on " + createTimeStamp()
-                   + " UTC by URMS ****";
+                   + " UTC by UMPS ****";
     const std::string preamble =
 R"""(#   ZeroMQ CURVE **Secret** Certificate
 #   DO NOT PROVIDE THIS FILE TO OTHER USERS nor change its permissions.
