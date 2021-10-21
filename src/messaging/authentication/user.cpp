@@ -2,10 +2,105 @@
 #include <iostream>
 #include <string>
 #include <sodium/crypto_pwhash.h>
+#include <nlohmann/json.hpp>
 #include "umps/messaging/authentication/user.hpp"
 #include "private/isEmpty.hpp"
 
+#define MESSAGE_TYPE "UMPS::Messaging::Authentication::User"
+
 using namespace UMPS::Messaging::Authentication;
+
+namespace
+{
+nlohmann::json toJSONObject(const User &user)
+{
+    nlohmann::json obj;
+    obj["MessageType"] = user.getMessageType();
+    if (user.haveName())
+    {
+         obj["Name"] = user.getName();
+    }
+    else
+    {
+         obj["Name"] = nullptr;
+    }
+    if (user.haveEmail())
+    {
+        obj["Email"] = user.getEmail();
+    }
+    else
+    {
+        obj["Email"] = nullptr;
+    }
+    if (user.haveHashedPassword())
+    {
+        obj["HashedPassword"] = user.getHashedPassword();
+    }
+    else
+    {
+        obj["HashedPassword"] = nullptr;
+    }
+    if (user.havePublicKey())
+    {
+        obj["PublicKey"] = user.getPublicKey();
+    }
+    else
+    {
+        obj["PublicKey"] = nullptr;
+    }
+    if (user.haveIdentifier())
+    {
+        obj["Identifier"] = user.getIdentifier();
+    }
+    else
+    {
+        obj["Identifier"] = nullptr;
+    }
+    obj["Privileges"] = static_cast<int> (user.getPrivileges());
+    return obj;
+}
+
+User objectToUser(const nlohmann::json obj)
+{
+    User user;
+    if (obj["MessageType"] != user.getMessageType())
+    {
+        throw std::invalid_argument("Message has invalid message type");
+    }
+    std::string name = obj["Name"].get<std::string> ();
+    if (!name.empty()){user.setName(name);}
+    std::string email = obj["Email"].get<std::string> ();
+    if (!email.empty()){user.setEmail(email);}
+    std::string password = obj["HashedPassword"].get<std::string> ();
+    if (!password.empty()){user.setHashedPassword(password);}
+    std::string publicKey = obj["PublicKey"].get<std::string> ();
+    if (static_cast<int> (publicKey.length()) == 40)
+    {
+        user.setPublicKey(publicKey);
+    }
+    if (obj["Identifier"] != nullptr)
+    {
+        user.setIdentifier(obj["Identifier"].get<int> ());
+    } 
+    auto privileges
+        = static_cast<UserPrivileges> (obj["Privileges"].get<int> ());
+    user.setPrivileges(privileges);
+    return user;
+}
+
+User fromJSONMessage(const std::string &message)
+{
+    auto obj = nlohmann::json::parse(message);
+    return objectToUser(obj);
+}
+
+User fromCBORMessage(const uint8_t *message, const size_t length)
+{
+    auto obj = nlohmann::json::from_cbor(message, message + length);
+    return objectToUser(obj);
+}
+
+}
 
 class User::UserImpl
 {
@@ -227,6 +322,80 @@ bool User::haveIdentifier() const noexcept
     return pImpl->mHaveIdentifier;
 }
 
+/// To JSON
+std::string User::toJSON(const int nIndent) const
+{
+    auto obj = toJSONObject(*this);
+    return obj.dump(nIndent);
+}
+
+/// To CBOR
+std::string User::toCBOR() const
+{
+    auto obj = toJSONObject(*this);
+    auto v = nlohmann::json::to_cbor(obj);
+    std::string result(v.begin(), v.end());
+    return result;
+}
+
+/// From JSON
+void User::fromJSON(const std::string &message)
+{
+    *this = fromJSONMessage(message);
+}
+
+/// From CBOR
+void User::fromCBOR(const std::string &data)
+{
+    fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
+}
+
+void User::fromCBOR(const uint8_t *data, const size_t length)
+{
+    if (length == 0){throw std::invalid_argument("No data");}
+    if (data == nullptr)
+    {
+        throw std::invalid_argument("data is NULL");
+    }
+    *this = fromCBORMessage(data, length);
+}
+
+/// Message type
+std::string User::getMessageType() const noexcept
+{
+    return MESSAGE_TYPE;
+}
+
+/// Copy this class
+std::unique_ptr<UMPS::MessageFormats::IMessage> User::clone() const
+{
+    std::unique_ptr<UMPS::MessageFormats::IMessage> result
+        = std::make_unique<User> (*this);
+    return result;
+}
+
+/// Convert to message
+std::string User::toMessage() const
+{
+    return toCBOR();
+}
+
+/// Create class from message
+void User::fromMessage(const char *messageIn, const size_t length)
+{
+    auto message = reinterpret_cast<const uint8_t *> (messageIn);
+    fromCBOR(message, length);
+}
+
+/// Create an instance of this class 
+std::unique_ptr<UMPS::MessageFormats::IMessage>
+    User::createInstance() const noexcept
+{
+    std::unique_ptr<UMPS::MessageFormats::IMessage> result
+        = std::make_unique<User> (); 
+    return result;
+}
+
 /// Prints the user information
 std::ostream&
 UMPS::Messaging::Authentication::operator<<(
@@ -257,3 +426,4 @@ UMPS::Messaging::Authentication::operator<<(
     }
     return os << result;
 }
+

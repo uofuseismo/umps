@@ -3,6 +3,7 @@
 #include <memory>
 #include <array>
 #include <string>
+#include "umps/messageFormats/message.hpp"
 #include "umps/messaging/authentication/enums.hpp"
 namespace UMPS::Messaging::Authentication::Certificate
 {
@@ -14,7 +15,7 @@ namespace UMPS::Messaging::Authentication
 /// @class User "user.hpp" "umps/messaging/authentication/user.hpp"
 /// @brief This class defines a user (row) in the user authentication table.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class User
+class User : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
@@ -136,7 +137,46 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~User();
+    virtual ~User();
+    /// @}
+
+    /// @name Message Properties
+    /// @{
+    /// @brief Creates a copy of this class.
+    /// @result A copy of this class.
+    [[nodiscard]] std::unique_ptr<IMessage> clone() const override final;
+    /// @brief Creates an instance of this class.
+    [[nodiscard]] std::unique_ptr<IMessage> createInstance() const noexcept final;
+    /// @brief Serializes this class into a message.
+    [[nodiscard]] std::string toMessage() const final;
+    /// @brief Converts this message from a string representation to data.
+    void fromMessage(const char *data, const size_t length) override final;
+    /// @result The message type.
+    [[nodiscard]] std::string getMessageType() const noexcept override final;
+    /// @}
+
+    /// @name Debugging Properties
+    /// @{
+    /// @param[in] nIndent  The number of spaces to indent.
+    /// @note -1 disables this.
+    /// @result This class converted to a JSON representation.
+    [[nodiscard]] std::string toJSON(const int nIndent =-1) const;
+    /// @result This class converted to  CBOR representation.
+    [[nodiscard]] std::string toCBOR() const;
+    /// @brief Creates the class from a CBOR message.
+    /// @param[in] cbor  The CBOR message.
+    void fromCBOR(const std::string &cbor);
+    /// @brief Creates the class from a JSON message.
+    /// @param[in] message  The message from which to create this class.
+    /// @throws std::runtime_error if the message is invalid.
+    void fromJSON(const std::string &message);
+    /// @brief Creates the class from a CBOR message.
+    /// @param[in] data    The contents of the CBOR message.  This is an
+    ///                    array whose dimension is [length] 
+    /// @param[in] length  The length of data.
+    /// @throws std::runtime_error if the message is invalid.
+    /// @throws std::invalid_argument if data is NULL or length is 0.
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @}
 private:
     class UserImpl;

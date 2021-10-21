@@ -36,8 +36,8 @@ public:
     /// @result Converts this message to a Concise Binary Object Representation
     ///         (CBOR) format.  For more see: http://cbor.io/.
     //[[nodiscard]] virtual std::string toCBOR() const = 0; 
-    /// @result The message type.
 */
+    /// @result The message type.
     [[nodiscard]] virtual std::string getMessageType() const noexcept = 0;
 };
 }

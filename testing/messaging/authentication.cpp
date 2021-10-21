@@ -184,6 +184,28 @@ TEST(Messaging, User)
     //std::cout << "Testing other" << std::endl;
     EXPECT_FALSE(userCopy.doesPasswordMatch(password));
     EXPECT_FALSE(userCopy.doesPublicKeyMatch(publicKey));
+
+    auto json = user.toJSON();
+    userCopy.fromJSON(json);
+    EXPECT_EQ(userCopy.getIdentifier(), id);
+    EXPECT_EQ(userCopy.getName(), name);
+    EXPECT_EQ(userCopy.getEmail(), email);
+    EXPECT_EQ(userCopy.getHashedPassword(), hashedPassword);
+    EXPECT_EQ(userCopy.getPublicKey(), publicKey);
+    EXPECT_EQ(userCopy.getPrivileges(), privileges);
+    userCopy.clear();
+
+    user.setIdentifier(id);
+    auto message = user.toMessage();
+    userCopy.fromMessage(message.c_str(), message.size());
+    EXPECT_EQ(userCopy.getIdentifier(), id);
+    EXPECT_EQ(userCopy.getName(), name);
+    EXPECT_EQ(userCopy.getEmail(), email);
+    EXPECT_EQ(userCopy.getHashedPassword(), hashedPassword);
+    EXPECT_EQ(userCopy.getPublicKey(), publicKey);
+    EXPECT_EQ(userCopy.getPrivileges(), privileges);
+
+
 }
 
 TEST(Messaging, SQLite3Authenticator)
