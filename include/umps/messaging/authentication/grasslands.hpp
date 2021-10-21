@@ -3,6 +3,10 @@
 #include <memory>
 #include "umps/messaging/authentication/enums.hpp"
 #include "umps/messaging/authentication/authenticator.hpp"
+namespace UMPS::Logging
+{
+ class ILog;
+}
 namespace UMPS::Messaging::Authentication::Certificate
 {
  class Keys;
@@ -17,6 +21,10 @@ namespace UMPS::Messaging::Authentication
 class Grasslands : public IAuthenticator
 {
 public:
+    /// @brief Constructor.
+    Grasslands();
+    /// @brief Constructor with a given logger.
+    explicit Grasslands(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Destructor.
     virtual ~Grasslands();
     /// @result Determines if the given IP address is blacklisted.
@@ -31,6 +39,9 @@ public:
     /// @result Determines if the given keys are valid.
     [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
         const Certificate::Keys &) const noexcept override;
+private:
+    class GrasslandsImpl;
+    std::unique_ptr<GrasslandsImpl> pImpl;
 };
 }
 #endif

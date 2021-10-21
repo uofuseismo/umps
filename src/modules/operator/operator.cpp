@@ -8,15 +8,25 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
+#include "umps/messaging/authentication/grasslands.hpp"
+#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
 
+namespace UAuth = UMPS::Messaging::Authentication;
+
 struct ProgramOptions
 {
     std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
     std::string mLogDirectory = "./logs";
+    std::string mTablesDirectory = std::string(std::getenv("HOME"))
+                                 + "/.local/share/UMPS/tables/";
+    std::string mUserTable = mTablesDirectory + "user.sqlite3";
+    std::string mBlacklistTable = mTablesDirectory + "blacklist.sqlite3";
+    std::string mWhiteListTable = mTablesDirectory + "whitelist.sqlite3";
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
 struct Modules
@@ -56,6 +66,30 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    // Create the authenticator
+    const int hour = 0;
+    const int minute = 0;
+    auto authenticatorLogFileName = options.mLogDirectory
+                                  + "/" + "authenticator.log";
+    UMPS::Logging::SpdLog authenticationLogger;
+    authenticationLogger.initialize("Authenticator",
+                                    authenticatorLogFileName,
+                                    UMPS::Logging::Level::INFO,
+                                    hour, minute);
+    std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
+        = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
+    std::shared_ptr<UAuth::IAuthenticator> authenticator;
+    if (options.mSecurityLevel == UAuth::SecurityLevel::GRASSLANDS)
+    {
+        authenticator
+            = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
+    }
+    else
+    {
+        auto sqlite3 = std::make_shared<UAuth::SQLite3Authenticator> (authenticationLoggerPtr);
+//        //sqlite3->initialize( );
+//        authenticator = sqlite3; 
+    }
     // Initialize the services
     Modules modules;
     modules.mIncrementers.reserve(options.mIncrementerParameters.size());
@@ -63,8 +97,6 @@ int main(int argc, char *argv[])
     {
         auto modulesName = "incrementer_" + parameters.getName();
         auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
-        const int hour = 0;
-        const int minute = 0;
         UMPS::Logging::SpdLog logger;
         logger.initialize(modulesName, logFileName,
                           parameters.getVerbosity(), hour, minute);
@@ -218,7 +250,35 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             throw std::runtime_error("Failed to make log directory");
         }
     }
-
+    auto securityLevel
+        = propertyTree.get<int> ("uOperator.securityLevel",
+                                 static_cast<int> (options.mSecurityLevel));
+    if (securityLevel < 0 || securityLevel > 4)
+    {
+        throw std::invalid_argument("Security level must be in range [0,4]");
+    }
+    options.mSecurityLevel = static_cast<UAuth::SecurityLevel> (securityLevel);
+    // Get sqlite3 authentication tables
+    if (options.mSecurityLevel != UAuth::SecurityLevel::GRASSLANDS)
+    {
+        options.mTablesDirectory
+            = propertyTree.get<std::string> ("uOperator.tablesTableDirectory",
+                                             options.mTablesDirectory);
+        options.mUserTable
+            = propertyTree.get<std::string> ("uOperator.userTable",
+                                             options.mUserTable);
+        if (!std::filesystem::exists(options.mUserTable))
+        {
+            throw std::invalid_argument("User table: "
+                                      + options.mUserTable + " does not exist");
+        }
+        options.mBlacklistTable 
+            = propertyTree.get<std::string> ("uOperator.blackListTable",
+                                             options.mBlacklistTable);
+        options.mWhiteListTable
+            = propertyTree.get<std::string> ("uOperator.whiteListTable",
+                                             options.mWhiteListTable);
+    }
     // First get all the counters
     std::vector<std::string> counters;
     for (const auto &p : propertyTree)
