@@ -1,6 +1,6 @@
 #ifndef UMPS_MESSAGING_AUTHENTICATION_AUTHENTICATOR_HPP
 #define UMPS_MESSAGING_AUTHENTICATION_AUTHENTICATOR_HPP
-#include <memory>
+#include <string>
 #include "umps/messaging/authentication/enums.hpp"
 namespace UMPS::Logging
 {
@@ -21,15 +21,33 @@ class IAuthenticator
 {
 public:
     /// @result Determines if the given IP address is blacklisted.
-    [[nodiscard]] virtual ValidationResult isBlacklisted(const std::string &address) const noexcept = 0;
+    [[nodiscard]] virtual std::pair<std::string, std::string> isBlacklisted(const std::string &address) const noexcept = 0;
     /// @result Determines if the given IP address is whitelisted.
-    [[nodiscard]] virtual ValidationResult isWhitelisted(const std::string &address) const noexcept = 0;
+    [[nodiscard]] virtual std::pair<std::string, std::string> isWhitelisted(const std::string &address) const noexcept = 0;
     /// @result Determines if the given username and password are allowed.
-    [[nodiscard]] virtual ValidationResult isValid(
+    /// @result result.first is the status code where "200" means okay,
+    ///         "400" means a client error - i.e., invalid credentials,
+    ///         and "500" indicates a server error.
+    ///         result.second is the corresonding message to return via the
+    ///         ZeroMQ Authentication Protocol.
+    [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
         const Certificate::UserNameAndPassword &credentials) const noexcept = 0;
     /// @result Determines if the given keys are valid.
-    [[nodiscard]] virtual ValidationResult isValid(
+    /// @result result.first is the status code where "200" means okay,
+    ///         "400" means a client error - i.e., invalid credentials,
+    ///         and "500" indicates a server error.
+    ///         result.second is the corresonding message to return via the
+    ///         ZeroMQ Authentication Protocol.
+    [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
         const Certificate::Keys &keys) const noexcept = 0;
+    /// @result The okay status code to check against.
+    [[nodiscard]] static std::string okayStatus() noexcept;
+    /// @result An OK message to pass back when validation succeeds.
+    [[nodiscard]] static std::string okayMessage() noexcept;
+    /// @result Client error status code to check against.
+    [[nodiscard]] static std::string clientErrorStatus() noexcept;
+    /// @result Server error status code to check against.
+    [[nodiscard]] static std::string serverErrorStatus() noexcept;
 };
 }
 #endif

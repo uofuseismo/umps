@@ -23,15 +23,14 @@ using namespace UMPS::Messaging::Authentication;
 
 namespace
 {
-struct User
+struct UserComparitor
 {
-    std::string name;
-    std::string email;
-    std::string password;
-    std::string key;
-    int privileges;
-    int id; 
+    bool operator()(const User &lhs, const User &rhs) const
+    {
+        return lhs.getName() < rhs.getName();
+    }
 };
+
 /*
 int callback(void *data, int argc, char **argv, char **azColName)
 {
@@ -43,41 +42,142 @@ int callback(void *data, int argc, char **argv, char **azColName)
    return 0;
 }
 */
+
 /// Converts a row from the user table to a user
 User rowToUser(sqlite3_stmt *result)
 {
     User user;
-    user.id = sqlite3_column_int(result, 0);
-    user.name
-       = reinterpret_cast<const char *> (sqlite3_column_text(result, 1));
+    // Identifier
+    auto id = sqlite3_column_int(result, 0);
+    user.setIdentifier(id);
+    // Name
+    std::string name(reinterpret_cast<const char *> (sqlite3_column_text(result, 1)));
+    user.setName(name);
+    // Email
+    if (sqlite3_column_text(result, 2) != NULL)
+    {
+        std::string email(reinterpret_cast<const char *>
+                          (sqlite3_column_text(result, 2)));
+        user.setEmail(email);
+    }
+    // Hashed password
     if (sqlite3_column_text(result, 3) != NULL)
     {
-        user.email = reinterpret_cast<const char *>
-                     (sqlite3_column_text(result, 3));
+        std::string hashedPassword = (reinterpret_cast<const char *>
+                                      (sqlite3_column_text(result, 3)));
+        user.setHashedPassword(hashedPassword);
     }
+    // Public key 
     if (sqlite3_column_text(result, 4) != NULL)
     {
-        user.password = reinterpret_cast<const char *>  
-                        (sqlite3_column_text(result, 4));
+        std::string publicKey(reinterpret_cast<const char *>
+                              (sqlite3_column_text(result, 4)));
+        user.setPublicKey(publicKey);
+        //std::cout << publicKey << " " << publicKey.size() << std::endl;
     }
-    if (sqlite3_column_text(result, 5) != NULL)
-    {
-        user.key = reinterpret_cast<const char *>
-                   (sqlite3_column_text(result, 5));
-    }
-    user.privileges = sqlite3_column_int(result, 6); 
+    // Privileges
+    auto privileges
+        = static_cast<UserPrivileges> (sqlite3_column_int(result, 5));
+    user.setPrivileges(privileges);
     return user;
 }
+
+std::string addUserToRow(const User &user)
+{
+    std::string fields = "name, email, password, public_key, privileges";
+    std::string values;
+    if (user.haveName())
+    {
+        values = values + "'" + user.getName() + "', ";
+    }
+    else
+    {
+        values = values + "NULL, ";
+    }
+    if (user.haveEmail())
+    {
+        values = values + "'" + user.getEmail() + "', ";
+    }
+    else
+    {
+        values = values + "NULL, ";
+    }
+    if (user.haveHashedPassword())
+    {
+        values = values + "'" + user.getHashedPassword() + "', ";
+    }
+    else
+    {
+        values = values + "NULL, ";
+    }
+    if (user.havePublicKey())
+    {
+        values = values + "'" + user.getPublicKey() + "', ";
+    }
+    else
+    {
+        values = values + "NULL, ";
+    }
+    auto privileges = static_cast<int> (user.getPrivileges());
+    values = values + std::to_string(privileges);
+    std::string sql;
+    sql = "INSERT INTO user (" + fields + ") VALUES (" + values + ");";
+    return sql;
+}
+
+std::string updateUserToRow(const User &user)
+{
+    std::string sql = "UPDATE user SET ";
+    auto id = user.getIdentifier();
+    if (user.haveName())
+    {
+        sql = sql + "name = '" + user.getName() + "', ";
+    }   
+    else
+    {
+        sql = sql + "name = NULL, ";
+    }   
+    if (user.haveEmail())
+    {
+        sql = sql + "email = '" + user.getEmail() + "', ";
+    }
+    else
+    {
+        sql = sql + "email = NULL, ";
+    }
+    if (user.haveHashedPassword())
+    {
+        sql = sql + "password = '" + user.getHashedPassword() + "', ";
+    }   
+    else
+    {
+        sql = sql + "password = NULL, ";
+    }
+    if (user.havePublicKey())
+    {
+        sql = sql + "public_key = '" + user.getPublicKey() + "', ";
+    }
+    else
+    {
+        sql = sql + "public_key = NULL, ";
+    }
+    auto privileges = static_cast<int> (user.getPrivileges());
+    sql = sql + "privileges = " + std::to_string(privileges);
+    sql = sql + " WHERE id = " + std::to_string(id) + ";";
+    //std::cout << sql << std::endl;
+    return sql;
+}
+
 /// Creates the user table
 std::pair<int, std::string> createUsersTable(sqlite3 *db)
 {
     std::string sql;
     sql = "CREATE TABLE IF NOT EXISTS user(";
-    sql = sql + "id INT PRIMARY KEY NOT NULL,";
+    sql = sql + "id INTEGER PRIMARY KEY AUTOINCREMENT,";
     sql = sql + "name TEXT UNIQUE NOT NULL,";
     sql = sql + "email TEXT NOT NULL,";   
     sql = sql + "password CHAR("   + std::to_string(crypto_pwhash_STRBYTES) + "),";
-    sql = sql + "public_key CHAR(40),";
+    sql = sql + "public_key CHAR(40) UNIQUE,";
     sql = sql + "privileges INT NOT NULL);";
     char *errorMessage = nullptr;
     auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
@@ -179,14 +279,15 @@ bool checkBlacklisted(sqlite3 *db, const std::string &ip)
 }
 
 /// Query users from user table
-std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userName)
+std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userNameOrKey,
+                                      bool queryUser = true)
 {
     std::vector<User> users;
     std::string data("CALLBACK FUNCTION");
     std::string sql;
     sqlite3_stmt *result = nullptr;
     int rc = SQLITE_OK;
-    if (userName.empty())
+    if (userNameOrKey.empty())
     {
         sql = "SELECT id, name, email, password, public_key, privileges FROM user;";
         rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
@@ -194,19 +295,33 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userName)
         {
             return users;
         }
+        users.reserve(1024);
     }
     else
     {
-        sql = "SELECT id, name, email, password, public_key, privileges FROM user WHERE name = ?;";
+        if (queryUser)
+        {
+            sql = "SELECT id, name, email, password, public_key, privileges FROM user WHERE name = ?;";
+        }
+        else
+        {
+            sql = "SELECT id, name, email, password, public_key, privileges FROM user WHERE public_key = ?;";
+        }
         rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
         if (rc != SQLITE_OK)
         {
             return users;
         }
-        sqlite3_bind_text(result, 1, userName.c_str(), userName.length(), NULL);
-    }  
+        rc = sqlite3_bind_text(result, 1, userNameOrKey.c_str(),
+                               userNameOrKey.length(), NULL);
+        if (rc != SQLITE_OK)
+        {
+            std::cerr << "Failed to bind text" << std::endl;
+            return users;
+        }
+        users.reserve(1);
+    }
     // Build up the corresponding user from (matching) rows in the table
-    users.reserve(1024);
     while (true)
     {
         auto step = sqlite3_step(result);
@@ -217,52 +332,37 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userName)
     sqlite3_finalize(result);
     return users;
 }
-/// @brief This is utility for storing a password by first.
-/// @param[in] password   The plain text password to convert to a hashed
-///                       password.
-/// @param[in] opslimit   Limits the operations.  This will take about
-///                       3 seconds on 
-/// @param[in] opslimit   Controls the max amount of computations performed
-///                       by libsodium.
-/// @param[in] memlimit   Controls the max amount of RAM libsodium will use.
-/// @result The corresponding hashed string to store in a database.
-/// @note The default algorithm will take about 3.5 seconds an a 2.8 GHz
-///       Core i7 CPU and require ~1 Gb of RAM.
-std::string pwhashString(
-    const std::string &password,
-    unsigned long long opslimit = crypto_pwhash_OPSLIMIT_SENSITIVE,
-    unsigned long long memlimit = crypto_pwhash_MEMLIMIT_SENSITIVE)
+/// Add user
+void addUserToDatabase(sqlite3 *db, const User &user)
 {
-    std::string hashedPassword;
-    hashedPassword.resize(crypto_pwhash_STRBYTES); 
-    auto rc = crypto_pwhash_str(hashedPassword.data(),
-                                password.c_str(), password.size(),
-                                opslimit, memlimit);
-    if (rc != 0)
+    auto sql = addUserToRow(user);
+    char *errorMessage = nullptr;
+    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    if (rc != SQLITE_OK)
     {
-        auto errmsg = "Failed to hash string.  Likely hit memory limit";
-        throw std::runtime_error(errmsg);
+        std::string error = "Failed to add : " + sql + " to table user\n"
+                          + "SQLite3 failed with: " + errorMessage;
+        throw std::runtime_error(error);
     }
-    return hashedPassword; 
 }
-/// @brief Verifies a given password matches a hashed password stored in a
-///        database.
-/// @param[in] password        The password to check against the given hashed
-///                            password.
-/// @param[in] hashedPassword  The hashed password that exists in the database.
-/// @result True indicates the passwords match.
-bool doPasswordsMatch(const std::string &password,
-                      const std::string &hashedPassword)
+/// Update user
+void updateUserToDatabase(sqlite3 *db, const User &user)
 {
-    assert(hashedPassword.size() == crypto_pwhash_STRBYTES);
-    auto rc = crypto_pwhash_str_verify(hashedPassword.c_str(),
-                                       password.c_str(),
-                                       password.size());
-    if (rc != 0){return false;} // Wrong password
-    return true;
+    auto sql = updateUserToRow(user);
+    char *errorMessage = nullptr;
+    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    if (rc != SQLITE_OK)
+    {   
+        std::string error = "Failed to update : " + sql + "to table user\n"
+                          + "SQLite3 failed with: " + errorMessage;
+        throw std::runtime_error(error);
+    }   
 }
 }
 
+///--------------------------------------------------------------------------///
+///                                Implementation                            ///
+///--------------------------------------------------------------------------///
 class SQLite3Authenticator::AuthenticatorImpl
 {
 public:
@@ -513,9 +613,124 @@ public:
         std::scoped_lock lock(mMutex);
         return mHaveWhitelistTable;
     }
+    /// Add user
+    void addUser(const User &user)
+    {
+        std::scoped_lock lock(mMutex);
+        if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
+        auto userName = user.getName();
+        constexpr bool queryUser = true;
+        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
+        if (users.empty())
+        {
+            mLogger->info("Adding user: " + userName);
+            addUserToDatabase(mUsersTable, user);
+        }
+        else
+        {
+            throw std::invalid_argument("User: " + user.getName() + " exists");
+        }
+    }
+    /// Update user - if doesn't exist then add
+    void updateUser(const User &user)
+    {
+        if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
+        auto userName = user.getName();
+        constexpr bool queryUser = true;
+        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
+        if (users.empty())
+        {
+            mLogger->info("Adding user: " + userName);
+            addUserToDatabase(mUsersTable, user);
+        }
+        else
+        {
+            auto userWork = user;
+#ifndef NDEBUG
+            assert(static_cast<int> (users.size()) == 1);
+#endif
+            mLogger->info("Updating user: " + userName);
+            userWork.setIdentifier(users[0].getIdentifier());
+            updateUserToDatabase(mUsersTable, userWork);
+        }
+    }
+    /// Load the users
+    void loadAllUsers() 
+    {
+        std::scoped_lock lock(mMutex);
+        if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
+        const std::string userName{};
+        constexpr bool queryUser = true;
+        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
+        mUsers.clear();
+        for (const auto &user : users)
+        {
+            mUsers.insert(user);
+        }
+    }
+    /// Query user
+    std::pair<std::string, std::string> 
+        isValid(const std::string &userName, const std::string &password) const
+    {
+        std::scoped_lock lock(mMutex);
+        if (!mHaveUsersTable)
+        {
+            return std::pair(serverErrorStatus(), "User table not opened");
+        }
+        // Query all users named userName
+        const bool queryUser = true;
+        auto returnedUsers = queryFromUsersTable(mUsersTable, userName,
+                                                 queryUser);
+        // No user exists
+        if (returnedUsers.empty())
+        {
+            return std::pair(clientErrorStatus(),
+                            "User: " + userName + " does not exist");
+        }
+#ifndef NDEBUG 
+        assert(static_cast<int> (returnedUsers.size()) == 1); 
+#endif
+        if (!returnedUsers[0].haveHashedPassword())
+        {
+            return std::pair(clientErrorStatus(),
+                             "User: " + userName + " does not have password");
+        }
+        if (!returnedUsers[0].doesPasswordMatch(password))
+        {
+            return std::pair(clientErrorStatus(),
+                             "Given password: " + password
+                           + " does not match user's " + userName
+                           + " password");
+        }
+        return std::pair(okayStatus(), okayMessage());
+    }
+    /// Does public key match?
+    std::pair<std::string, std::string>
+        isValid(const std::string &publicKey)
+    {
+        std::scoped_lock lock(mMutex);
+        if (!mHaveUsersTable)
+        {
+            return std::pair(serverErrorStatus(), "User table not opened");
+        }
+        // Query for this public key
+        const bool queryUser = false;
+        auto returnedUsers = queryFromUsersTable(mUsersTable, publicKey,
+                                                 queryUser);
+        // No user exists
+        if (returnedUsers.empty())
+        {
+            return std::pair(clientErrorStatus(), "Public key does not exist");
+        }
+#ifndef NDEBUG 
+        assert(static_cast<int> (returnedUsers.size()) == 1);  
+#endif
+        return std::pair(okayStatus(), okayMessage()); 
+    }
 ///private:
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
+    std::set<User, UserComparitor> mUsers;
     std::set<std::string> mBlacklist;
     std::set<std::string> mWhitelist;
     sqlite3 *mUsersTable = nullptr;
@@ -565,16 +780,17 @@ void SQLite3Authenticator::addToBlacklist(const std::string &address)
     pImpl->addToBlacklist(address); 
 }
 
-ValidationResult SQLite3Authenticator::isBlacklisted(
+std::pair<std::string, std::string> SQLite3Authenticator::isBlacklisted(
     const std::string &address) const noexcept
 {
     if (!pImpl->isBlacklisted(address))
     {
-        return ValidationResult::ALLOWED;
+        return std::pair(okayStatus(), "OK");
     }
     else
     {
-        return ValidationResult::BLACKLISTED;
+        return std::pair("400",
+                         "Address: " + address + " is blacklisted");
     }
 } 
 
@@ -589,16 +805,17 @@ void SQLite3Authenticator::addToWhitelist(const std::string &address)
     pImpl->addToWhitelist(address);
 }
 
-ValidationResult SQLite3Authenticator::isWhitelisted(
+std::pair<std::string, std::string> SQLite3Authenticator::isWhitelisted(
     const std::string &address) const noexcept
 {
     if (pImpl->isWhitelisted(address))
     {
-        return ValidationResult::ALLOWED;
+        return std::pair(okayStatus(), "OK");
     }
     else
     {
-        return ValidationResult::BLACKLISTED;
+        return std::pair("400",
+                         "Address: " + address + " is blacklisted");
     }
 }
 
@@ -701,27 +918,64 @@ bool SQLite3Authenticator::haveBlacklistTable() const noexcept
 bool SQLite3Authenticator::haveWhitelistTable() const noexcept
 {
     return pImpl->haveWhitelistTable();
-}   
-
-/// Validate
-ValidationResult SQLite3Authenticator::isValid(
-    const Certificate::UserNameAndPassword &credentials) const noexcept
-{
-    if (haveUsersTable())
-    {
-
-    }
-    return ValidationResult::ALLOWED;
 }
 
-ValidationResult SQLite3Authenticator::isValid(
+/// Add user
+void SQLite3Authenticator::addUser(const User &user)
+{
+    // Check input
+    if (!user.haveName()){throw std::invalid_argument("User name not set");} 
+    if (!user.haveEmail()){throw std::invalid_argument("User email not set");}
+    // Attempt to add to database
+    pImpl->addUser(user);
+}
+
+/// Update user
+void SQLite3Authenticator::updateUser(const User &user)
+{
+    // Check input
+    if (!user.haveName()){throw std::invalid_argument("User name not set");} 
+    if (!user.haveEmail()){throw std::invalid_argument("User email not set");}
+    // Attempt to add to database
+    pImpl->updateUser(user);
+}
+
+/// Validate
+std::pair<std::string, std::string> SQLite3Authenticator::isValid(
+    const Certificate::UserNameAndPassword &credentials) const noexcept
+{
+    if (!haveUsersTable())
+    {
+        return std::pair(serverErrorStatus(), "User table not loaded");
+    }
+    if (!credentials.haveUserName())
+    {
+        return std::pair(serverErrorStatus(),
+                         "User name not set on credentials");
+    }
+    if (!credentials.havePassword())
+    {
+        return std::pair(serverErrorStatus(),
+                         "Password not set on credentials");
+    }
+    return pImpl->isValid(credentials.getUserName(),
+                          credentials.getPassword());
+}
+
+std::pair<std::string, std::string> SQLite3Authenticator::isValid(
     const Certificate::Keys &keys) const noexcept
 {
-    if (haveUsersTable())
+    if (!haveUsersTable())
     {
-
+        return std::pair(serverErrorStatus(), "user table not loaded");
     }
-    return ValidationResult::ALLOWED;
+    if (!keys.havePublicKey())
+    {
+        return std::pair(serverErrorStatus(),
+                         "Public key not set on keys");
+    }
+    auto textKey = std::string(keys.getPublicTextKey().data());
+    return pImpl->isValid(textKey);
 }
 
 /*

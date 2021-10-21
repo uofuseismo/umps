@@ -114,6 +114,18 @@ public:
     [[nodiscard]] UserPrivileges getPrivileges() const noexcept;
     /// @}
 
+    /// @name Identifier Number
+    /// @{
+    /// @brief Sets the user's unique identifier number.  
+    /// @param[in] identifier  The identifier number.
+    void setIdentifier(int identifier) noexcept; 
+    /// @result The user's identifier number.
+    /// @throws std::runtime_error if \c haveIdentifier() is false.
+    [[nodiscard]] int getIdentifier() const;
+    /// @result True indicates the user's identifier number has been set.
+    [[nodiscard]] bool haveIdentifier() const noexcept;
+    /// @}
+
     /// @result The length of a hashed string.
     [[nodiscard]] int getMaximumHashedStringLength() const noexcept;
     /// @result The length of the public key.
@@ -130,5 +142,7 @@ private:
     class UserImpl;
     std::unique_ptr<UserImpl> pImpl;    
 };
+/// Prints the user information to stdout for debugging
+std::ostream& operator<<(std::ostream &os, const User &user);
 }
 #endif

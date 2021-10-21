@@ -1,3 +1,4 @@
+#include <ostream>
 #include <iostream>
 #include <string>
 #include <sodium/crypto_pwhash.h>
@@ -15,10 +16,12 @@ public:
     std::string mMatchingPassword;
     std::string mEmail;
     UserPrivileges mPrivileges = UserPrivileges::READ_ONLY;
+    int mIdentifier = 0;
     bool mHaveName = false;
     bool mHavePublicKey = false;
     bool mHaveHashedPassword = false;
     bool mHaveEmail = false;
+    bool mHaveIdentifier = false;
 };
 
 /// C'tor
@@ -204,4 +207,53 @@ bool User::doesPasswordMatch(const std::string &password) const noexcept
         return true;
     }
     return false;
+}
+
+/// Sets the user identifier number
+void User::setIdentifier(const int identifier) noexcept
+{
+    pImpl->mIdentifier = identifier;
+    pImpl->mHaveIdentifier = true;
+}
+
+int User::getIdentifier() const
+{
+    if (!haveIdentifier()){throw std::runtime_error("Identifier not set");}
+    return pImpl->mIdentifier;
+}
+
+bool User::haveIdentifier() const noexcept
+{
+    return pImpl->mHaveIdentifier;
+}
+
+/// Prints the user information
+std::ostream&
+UMPS::Messaging::Authentication::operator<<(
+    std::ostream &os, const User &user)
+{
+    std::string result = "User:\n";
+    if (user.haveName())
+    {
+        result = result + "   Name: " + user.getName() + "\n";
+    }
+    if (user.haveEmail())
+    {
+        result = result + "   Email: " + user.getEmail() + "\n";
+    }
+    if (user.haveHashedPassword())
+    {
+        result = result
+               + "   Hashed Password: " + user.getHashedPassword() + "\n";
+    }
+    if (user.havePublicKey())
+    {
+        result = result + "   Public Key: " + user.getPublicKey() + "\n";
+    }
+    if (user.haveIdentifier())
+    {
+        result = result + "   Identifier: "
+                        + std::to_string(user.getIdentifier()) + "\n";
+    }
+    return os << result;
 }

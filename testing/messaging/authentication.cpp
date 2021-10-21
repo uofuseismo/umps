@@ -18,6 +18,14 @@ namespace
 
 using namespace UMPS::Messaging::Authentication;
 
+TEST(Messaging, IAuthenticator)
+{
+    EXPECT_EQ(IAuthenticator::okayStatus(), std::string("200"));
+    EXPECT_EQ(IAuthenticator::okayMessage(), std::string("OK"));
+    EXPECT_EQ(IAuthenticator::clientErrorStatus(), std::string("400"));
+    EXPECT_EQ(IAuthenticator::serverErrorStatus(), std::string("500"));
+}
+
 TEST(Messaging, isOkayIP)
 {
     EXPECT_TRUE(isOkayIP("123.345.323.44"));
@@ -125,6 +133,7 @@ TEST(Messaging, CertificateKeys)
 TEST(Messaging, User)
 {
     User user;
+    int id = 12345;
     const std::string name = "user";
     const std::string email = "user@domain.com";
     // Password is password with INTERACTIVE hashing
@@ -146,6 +155,7 @@ TEST(Messaging, User)
     const UserPrivileges privileges = UserPrivileges::ADMINISTRATOR;
  
     EXPECT_EQ(user.getMaximumHashedStringLength(), crypto_pwhash_STRBYTES);
+    user.setIdentifier(id);
     EXPECT_NO_THROW(user.setName(name));
     EXPECT_NO_THROW(user.setEmail(email));
     EXPECT_NO_THROW(user.setHashedPassword(hashedPassword));
@@ -153,24 +163,25 @@ TEST(Messaging, User)
     user.setPrivileges(privileges);
 
     User userCopy(user);
+    EXPECT_EQ(userCopy.getIdentifier(), id);
     EXPECT_EQ(userCopy.getName(), name);
     EXPECT_EQ(userCopy.getEmail(), email);
     EXPECT_EQ(userCopy.getHashedPassword(), hashedPassword);
     EXPECT_EQ(userCopy.getPublicKey(), publicKey);
     EXPECT_EQ(userCopy.getPrivileges(), privileges);
 
-    std::cout << "Testing password..." << std::endl;
+    //std::cout << "Testing password..." << std::endl;
     EXPECT_TRUE(userCopy.doesPasswordMatch(password));
-    std::cout << "Testing pubilc key..." << std::endl;
+    //std::cout << "Testing pubilc key..." << std::endl;
     EXPECT_TRUE(userCopy.doesPublicKeyMatch(publicKey));
-    std::cout << "Testing fast tracks..." << std::endl;
+    //std::cout << "Testing fast tracks..." << std::endl;
     EXPECT_FALSE(userCopy.doesPasswordMatch(publicKey));
     EXPECT_FALSE(userCopy.doesPublicKeyMatch(password));
     EXPECT_TRUE(userCopy.doesPasswordMatch(password));
     EXPECT_TRUE(userCopy.doesPublicKeyMatch(publicKey));
 
     userCopy.clear();
-    std::cout << "Testing other" << std::endl;
+    //std::cout << "Testing other" << std::endl;
     EXPECT_FALSE(userCopy.doesPasswordMatch(password));
     EXPECT_FALSE(userCopy.doesPublicKeyMatch(publicKey));
 }
@@ -179,26 +190,67 @@ TEST(Messaging, SQLite3Authenticator)
 {
     SQLite3Authenticator auth;
     const bool createIfDoesNotExist = true;
-    std::string users = "tables/users.sqlite3";
-    std::string blacklist = "tables/blacklist.sqlite3";
-    std::string whitelist = "tables/whitelist.sqlite3";
+    std::string usersTable = "tables/users.sqlite3";
+    std::string blacklistTable = "tables/blacklist.sqlite3";
+    std::string whitelistTable = "tables/whitelist.sqlite3";
     EXPECT_FALSE(auth.haveUsersTable());
     EXPECT_FALSE(auth.haveWhitelistTable());
     EXPECT_FALSE(auth.haveBlacklistTable());
 
-    EXPECT_NO_THROW(auth.openUsersTable(users, createIfDoesNotExist));
+    EXPECT_NO_THROW(auth.openUsersTable(usersTable, createIfDoesNotExist));
     EXPECT_TRUE(auth.haveUsersTable());
 
-    EXPECT_NO_THROW(auth.openBlacklistTable(blacklist, createIfDoesNotExist));
+    EXPECT_NO_THROW(auth.openBlacklistTable(blacklistTable,
+                                            createIfDoesNotExist));
     EXPECT_TRUE(auth.haveBlacklistTable());
 
-    EXPECT_NO_THROW(auth.openWhitelistTable(whitelist, createIfDoesNotExist));
+    EXPECT_NO_THROW(auth.openWhitelistTable(whitelistTable,
+                                           createIfDoesNotExist));
     EXPECT_TRUE(auth.haveWhitelistTable());
-
-    std::string userName = "user";
-    std::string password = "password";
-    std::string email = "abc@123.com";
  
+    // Create users
+    std::vector<User> users;
+    for (int i = 0; i < 5; ++i)
+    {
+        std::string userName = "user" + std::to_string(i);
+        std::string password = "password" + std::to_string(i);
+        std::string email = userName + "@domain.com";
+        Certificate::UserNameAndPassword plainText;
+        plainText.setUserName(userName);
+        plainText.setPassword(password);
+        
+        Certificate::Keys certificate;
+        EXPECT_NO_THROW(certificate.create());
+
+        // In real-life use a more secure method
+        auto hashedPassword =
+           plainText.getHashedPassword(Certificate::HashLevel::INTERACTIVE);
+        // Build up the user
+        User user;
+        user.setName(plainText.getUserName());
+        user.setEmail(email);
+        user.setHashedPassword(hashedPassword);
+        user.setPrivileges(UserPrivileges::READ_WRITE);
+        // Add the user
+        auth.addUser(user);
+        // Give the user a public key
+        auto publicKey = std::string(certificate.getPublicTextKey().data());
+        user.setPublicKey(publicKey);
+        auth.updateUser(user);
+        // Save the credentials 
+        users.push_back(user);
+
+        std::string status, reason;
+        std::tie(status, reason) = auth.isValid(plainText);
+        EXPECT_EQ(status, auth.okayStatus());
+
+        std::tie(status, reason) = auth.isValid(certificate);
+        EXPECT_EQ(status, auth.okayStatus());
+    }
+
+    std::remove(usersTable.c_str());
+    std::remove(blacklistTable.c_str());
+    std::remove(whitelistTable.c_str());
 }
 
 UMPS::MessageFormats::Pick makePickMessage() noexcept

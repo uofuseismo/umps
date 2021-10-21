@@ -10,7 +10,7 @@
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/authentication/authenticator.hpp"
 #include "umps/messaging/authentication/grasslands.hpp"
-#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
+//#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/logging/stdout.hpp"
@@ -18,10 +18,12 @@
 
 using namespace UMPS::Messaging::Authentication;
 
+/*
 #define ZAP_OKAY "OK"
 #define ZAP_SUCCESS "200"
 #define ZAP_CLIENT_ERROR "400"
 #define ZAP_SERVER_ERROR "500"
+*/
 
 /// Magic place where ZMQ will send authentication requests to.
 #define ZAP_ENDPOINT  "inproc://zeromq.zap.01"
@@ -282,13 +284,6 @@ void Service::start()
         {
             pImpl->mLogger->debug("ZAP request received");
             zmq::multipart_t messageReceived(zap);
-/*
-            std::vector<zmq::message_t> messagesReceived;
-            zmq::recv_result_t receivedResult =
-                zmq::recv_multipart(zap,
-                                    std::back_inserter(messagesReceived),
-                                    zmq::recv_flags::none);
-*/
 #ifndef NDEBUG
             assert(messageReceived.size() >= 6);
 #endif
@@ -298,26 +293,23 @@ void Service::start()
             auto ipAddress = messageReceived.at(3).to_string();
             auto identity  = messageReceived.at(4).to_string(); // Originating socket ID
             auto mechanism = messageReceived.at(5).to_string();
-            std::string statusCode = ZAP_SERVER_ERROR;  // Default failure
+            // Default failure
+            std::string statusCode = IAuthenticator::serverErrorStatus();
             std::string statusText = "Unhandled request";
             // Is the IP address blacklisted?
-            if (pImpl->mAuthenticator->isBlacklisted(ipAddress) !=
-                ValidationResult::ALLOWED)
-            {
-                statusCode = ZAP_CLIENT_ERROR;
-                statusText = "Address blacklisted";
-            } 
-            else // Not blacklisted - get to work
+            std::tie (statusCode, statusText)
+                = pImpl->mAuthenticator->isBlacklisted(ipAddress);
+            if (statusCode == IAuthenticator::okayStatus())
             {
                 // Handle different mechanisms.
                 if (mechanism == "NULL") // Check nothing - blacklist enough
                 {
-                    statusCode = ZAP_SUCCESS;
-                    statusText = ZAP_OKAY;
+                    statusCode = IAuthenticator::okayStatus();
+                    statusText = IAuthenticator::okayMessage();
                 }
                 else if (mechanism == "PLAIN") // Check username/passsword
                 {
-                    statusCode = ZAP_SERVER_ERROR;
+                    statusCode = IAuthenticator::serverErrorStatus();
                     statusText = "Unhandled PLAIN logic";
                     //pImpl->mAuthenticator.verifyPlain( );
                     auto user = messageReceived[5].to_string();
@@ -333,40 +325,18 @@ void Service::start()
                         pImpl->mLogger->error("Failed to set username/pwd");
                     }
                     // Check the username and password
-                    auto status = pImpl->mAuthenticator->isValid(plainText);
-                    if (status == ValidationResult::ALLOWED)
-                    {
-                        statusCode = ZAP_SUCCESS;
-                        statusText = ZAP_OKAY;
-                    }
-                    else if (status == ValidationResult::INVALID_USER)
-                    {
-                        statusCode = ZAP_CLIENT_ERROR;
-                        statusText = "Invalid user";
-                    }
-                    else if (status == ValidationResult::INVALID_PASSWORD)
-                    {
-                        statusCode = ZAP_CLIENT_ERROR;
-                        statusText = "Invalid password";
-                    }
-                    else if (status == ValidationResult::ALGORITHM_FAILURE)
-                    {
-                        statusCode = ZAP_SERVER_ERROR; 
-                        statusText = "PLAIN algorithmic failure";
-                    }
-                    else
-                    {
-                        statusCode = ZAP_SERVER_ERROR;
-                        statusText = "Unhandled PLAIN return code";
-                    }
+statusCode = IAuthenticator::okayStatus();
+statusText = IAuthenticator::okayMessage();
+                   std::tie(statusCode, statusText) 
+                        = pImpl->mAuthenticator->isValid(plainText);
                 }
                 else if (mechanism == "CURVE") // Check public key 
                 {
-                    statusCode = ZAP_SERVER_ERROR;
+                    statusCode = IAuthenticator::serverErrorStatus();
                     statusText = "Unhandled CURVE logic"; 
                     if (messageReceived.at(6).size() != 32)
                     {
-                        statusCode = ZAP_CLIENT_ERROR;
+                        statusCode = IAuthenticator::clientErrorStatus();
                         statusText = "Key is invalid length";
                     }
                     else
@@ -383,40 +353,21 @@ void Service::start()
                         catch (const std::exception &e)
                         {
                             pImpl->mLogger->error("Failed to set public key");
-                            statusCode = ZAP_SERVER_ERROR;
+                            statusCode = IAuthenticator::serverErrorStatus();
                             statusText = "Failed to set public key";
                         }
                         if (key.havePublicKey())
                         {
-                            auto status = pImpl->mAuthenticator->isValid(key);
-                            if (status == ValidationResult::ALLOWED)
-                            {
-                                statusCode = ZAP_SUCCESS;
-                                statusText = ZAP_OKAY;
-                            }
-                            else if (status ==
-                                     ValidationResult::INVALID_PUBLIC_KEY)
-                            {
-                                statusCode = ZAP_CLIENT_ERROR;
-                                statusText = "Invalid public key";
-                            }
-                            else if (status ==
-                                     ValidationResult::ALGORITHM_FAILURE)
-                            {
-                                statusCode = ZAP_SERVER_ERROR;
-                                statusText = "CURVE algorithmic failure";
-                            }
-                            else
-                            {
-                                statusCode = ZAP_SERVER_ERROR;
-                                statusText = "Unhandled CURVE return code";
-                            } 
+statusCode = IAuthenticator::okayStatus();
+statusText = IAuthenticator::okayMessage();
+                            std::tie(statusCode, statusText)
+                                = pImpl->mAuthenticator->isValid(key);
                         }
                     }
                 }
                 else // Check on mechanism
                 {
-                    statusCode = ZAP_CLIENT_ERROR;
+                    statusCode = IAuthenticator::clientErrorStatus();
                     statusText = "Security mechanism: " + mechanism
                                 + " not supported"; 
                 } // End check on mechanism

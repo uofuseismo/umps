@@ -65,6 +65,16 @@ public:
                         bool createIfDoesNotExist = true);
     /// @result True indicates that the user's table is opened.
     [[nodiscard]] bool haveUsersTable() const noexcept;
+    /// @brief Adds a user to the users table.
+    /// @param[in] user  The user to add to the table. 
+    /// @throws std::invalid_argument if the username and email is undefined.
+    /// @throws std::runtime_error if \c haveUsersTable() is false.
+    void addUser(const User &user);
+    /// @brief Updates the user information in the user table.
+    /// @param[in] user  The user whose information is to be updated.
+    /// @throws std::invalid_argument if the username and email is undefined.
+    /// @throws std::runtime_error if \c haveUsersTable() is false.
+    void updateUser(const User &user);
 
     /// @brief Opens the blacklist table.
     /// @param[in] fileName   The name of the SQLite3 blacklist table file.
@@ -97,7 +107,7 @@ public:
     /// @param[in] address  The address to remove from the blacklist.
     void removeFromBlacklist(const std::string &address) noexcept;
     /// @result True indicates the address is blacklisted.
-    [[nodiscard]] ValidationResult isBlacklisted(const std::string &address) const noexcept override final;
+    [[nodiscard]] std::pair<std::string, std::string> isBlacklisted(const std::string &address) const noexcept override final;
 
     /// @brief Grants access to a certain IP address.
     /// @param[in] address  The address to add to the whitelist.
@@ -107,13 +117,13 @@ public:
     /// @param[in] address  The address to remove from the whitelist.
     void removeFromWhitelist(const std::string &address) noexcept;
     /// @result True indicates the address is whitelisted.
-    [[nodiscard]] virtual ValidationResult isWhitelisted(const std::string &address) const noexcept override final;
+    [[nodiscard]] virtual std::pair<std::string, std::string> isWhitelisted(const std::string &address) const noexcept override final;
     /// @}
 
-    [[nodiscard]] ValidationResult isValid(
+    [[nodiscard]] std::pair<std::string, std::string> isValid(
         const Certificate::UserNameAndPassword &credentials) const noexcept override final;
     /// @brief Validates a provided public key.
-    [[nodiscard]] ValidationResult isValid(
+    [[nodiscard]] std::pair<std::string, std::string> isValid(
         const Certificate::Keys &keys) const noexcept override final;
 
     /// @brief Creates and binds the ZAP socket.

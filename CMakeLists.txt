@@ -74,8 +74,10 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC
+    src/messaging/authentication/authenticator.cpp
     src/messaging/authentication/service.cpp
     src/messaging/authentication/sqlite3Authenticator.cpp
+    src/messaging/authentication/grasslands.cpp
     src/messaging/authentication/user.cpp
     src/messaging/authentication/certificate/keys.cpp
     src/messaging/authentication/certificate/userNameAndPassword.cpp
