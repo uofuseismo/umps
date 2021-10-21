@@ -32,6 +32,7 @@ class Service::ServiceImpl
 {
 public:
     /// C'tor 
+/*
     ServiceImpl() :
         mContext(std::make_shared<zmq::context_t> (1)),
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
@@ -41,6 +42,7 @@ public:
     {
         makeEndPointName();
     }
+
     explicit ServiceImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mContext(std::make_shared<zmq::context_t> (1)),
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
@@ -54,6 +56,7 @@ public:
         }
         makeEndPointName();
     }
+
     explicit ServiceImpl(std::shared_ptr<zmq::context_t> &context) :
         mContext(context),
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
@@ -70,8 +73,23 @@ public:
         }
         makeEndPointName();
     }
+
+    explicit ServiceImpl(std::shared_ptr<IAuthenticator> &authenticator) :
+        mContext(std::make_shared<zmq::context_t> (1)),
+        mPipe(std::make_unique<zmq::socket_t> (*mContext,
+                                               zmq::socket_type::pair)),
+        mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
+        mAuthenticator(authenticator)
+    {
+        if (mAuthenticator == nullptr)
+        {
+            mAuthenticator = std::make_shared<Grasslands> ();
+        }
+        makeEndPointName();
+    }
+
     ServiceImpl(std::shared_ptr<zmq::context_t> &context,
-                            std::shared_ptr<UMPS::Logging::ILog> &logger) :
+                std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mContext(context),
         mPipe(std::make_unique<zmq::socket_t> (*mContext,
                                                zmq::socket_type::pair)),
@@ -89,6 +107,31 @@ public:
             mPipe = std::make_unique<zmq::socket_t> (
                 *mContext, zmq::socket_type::pair);
         }
+        makeEndPointName();
+    }
+*/
+
+    ServiceImpl(std::shared_ptr<zmq::context_t> context,
+                std::shared_ptr<UMPS::Logging::ILog> logger,
+                std::shared_ptr<IAuthenticator> authenticator) :
+        mContext(context),
+        mLogger(logger),
+        mAuthenticator(authenticator)
+    {
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        if (authenticator == nullptr)
+        {
+            mAuthenticator = std::make_shared<Grasslands> (mLogger);
+        }
+        mPipe = std::make_unique<zmq::socket_t> (*mContext,
+                                                 zmq::socket_type::pair);
         makeEndPointName();
     }
     /// Convenience function to make endpoint name
@@ -136,26 +179,43 @@ public:
 
 /// C'tor
 Service::Service() :
-    pImpl(std::make_unique<ServiceImpl> ())
+    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr, nullptr))
 {
 }
 
-Service::Service(
-    std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ServiceImpl> (logger))
+Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger, nullptr))
 {
 }
 
-Service::Service(
-    std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<ServiceImpl> (context))
+Service::Service(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<ServiceImpl> (context, nullptr, nullptr))
 {
 }
 
-Service::Service(
-    std::shared_ptr<zmq::context_t> &context,
-    std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ServiceImpl> (context, logger))
+Service::Service(std::shared_ptr<zmq::context_t> &context,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (context, logger, nullptr))
+{
+}
+
+Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
+                 std::shared_ptr<IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger, authenticator))
+{
+}
+
+Service::Service(std::shared_ptr<zmq::context_t> &context,
+                 std::shared_ptr<IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ServiceImpl> (context, nullptr, authenticator))
+{
+}
+
+
+Service::Service(std::shared_ptr<zmq::context_t> &context,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger,
+                 std::shared_ptr<IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ServiceImpl> (context, logger, authenticator))
 {
 }
 

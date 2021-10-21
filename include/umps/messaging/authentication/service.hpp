@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "umps/messaging/authentication/authenticator.hpp"
 namespace zmq 
 {
  class context_t;
@@ -36,12 +37,33 @@ public:
     /// @brief Constructor with a specified context.
     /// @param[in] context  The ZeroMQ context to on which to open a socket.
     explicit Service(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Constructor with a specified authenticator
+    explicit Service(std::shared_ptr<IAuthenticator> &authenticator);
     /// @brief Initializes with a specified context and logger.
     /// @param[in] context  The ZeroMQ context to on which to open a socket.
     /// @param[in] logger   The logging utility.
     Service(std::shared_ptr<zmq::context_t> &context,
-                        std::shared_ptr<UMPS::Logging::ILog> &logger);
+            std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Initializes with a specified logger and authenticator.
+    /// @param[in] logger         The logging utility.
+    /// @param[in] authenticator  The authentication utility.
+    Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
+            std::shared_ptr<IAuthenticator> &authenticator);
+    /// @brief Initializes with a specified context and authenticator.
+    /// @param[in] context  The ZeroMQ context to on which to open a socket.
+    /// @param[in] logger   The logging utility.
+    Service(std::shared_ptr<zmq::context_t> &context,
+            std::shared_ptr<IAuthenticator> &authenticator);
+    /// @brief Initializes with a specified context, logger, and authenticator.
+    /// @param[in] context        The ZeroMQ context to on which to open a
+    ///                           socket.
+    /// @param[in] logger         The logging utility.
+    /// @param[in] authenticator  The authentication utility.
+    Service(std::shared_ptr<zmq::context_t> &context,
+            std::shared_ptr<UMPS::Logging::ILog> &logger,
+            std::shared_ptr<IAuthenticator> &authenticator);
     /// @}
+
 
     /// @name Service State
     /// @{
