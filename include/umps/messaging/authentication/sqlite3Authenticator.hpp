@@ -1,14 +1,8 @@
 #ifndef UMPS_MESSAGING_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
 #define UMPS_MESSAGING_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
 #include <memory>
+#include <vector>
 #include "umps/messaging/authentication/authenticator.hpp"
-/*
-namespace zmq 
-{
- class context_t;
- class socket_t;
-}
-*/
 namespace UMPS::Logging
 {
  class ILog;
@@ -74,7 +68,16 @@ public:
     /// @param[in] user  The user whose information is to be updated.
     /// @throws std::invalid_argument if the username and email is undefined.
     /// @throws std::runtime_error if \c haveUsersTable() is false.
+    /// @note All the fields in user will be set.  Hence, if something exists
+    ///       in the database but does not exist in user then the updated
+    ///       user will lose that information.
     void updateUser(const User &user);
+    /// @brief Deletes the user from the user table.
+    /// @throws std::invalid_argument if the username is not set.
+    /// @throws std::runtime_error if \c haveUsersTable() is false. 
+    void deleteUser(const User &user);
+    /// @result Gets the user information currently stored in the database.
+    [[nodiscard]] std::vector<User> getUsers() const;
 
     /// @brief Opens the blacklist table.
     /// @param[in] fileName   The name of the SQLite3 blacklist table file.

@@ -151,12 +151,19 @@ if (${BUILD_EW})
     #target_include_directories(packetCache PRIVATE ${Boost_INCLUDE_DIR})
 endif()
 
-add_executable(uKeyPair src/modules/keypair/keypair.cpp)
+add_executable(uKeyPair src/modules/authentication/keypair.cpp)
 set_target_properties(uKeyPair PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(uKeyPair PRIVATE Boost::program_options umps)
+
+add_executable(uUserTable src/modules/authentication/userTable.cpp)
+set_target_properties(uUserTable PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES 
+                      CXX_EXTENSIONS NO) 
+target_link_libraries(uUserTable PRIVATE Boost::program_options umps)
 
 
 ##########################################################################################

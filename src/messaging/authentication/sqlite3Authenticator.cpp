@@ -655,18 +655,13 @@ public:
         }
     }
     /// Load the users
-    void loadAllUsers() 
+    std::vector<User> loadAllUsers() 
     {
         std::scoped_lock lock(mMutex);
         if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
         const std::string userName{};
         constexpr bool queryUser = true;
-        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
-        mUsers.clear();
-        for (const auto &user : users)
-        {
-            mUsers.insert(user);
-        }
+        return queryFromUsersTable(mUsersTable, userName, queryUser);
     }
     /// Query user
     std::pair<std::string, std::string> 
@@ -730,7 +725,7 @@ public:
 ///private:
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    std::set<User, UserComparitor> mUsers;
+    //std::set<User, UserComparitor> mUsers;
     std::set<std::string> mBlacklist;
     std::set<std::string> mWhitelist;
     sqlite3 *mUsersTable = nullptr;
@@ -938,6 +933,12 @@ void SQLite3Authenticator::updateUser(const User &user)
     if (!user.haveEmail()){throw std::invalid_argument("User email not set");}
     // Attempt to add to database
     pImpl->updateUser(user);
+}
+
+/// Get all user info
+std::vector<User> SQLite3Authenticator::getUsers() const
+{
+    return pImpl->loadAllUsers();
 }
 
 /// Validate
