@@ -4,9 +4,13 @@
 #include <vector>
 #include <thread>
 #include <map>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ip/host_name.hpp>
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/algorithm/string.hpp>
 #include <filesystem>
 #include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
@@ -20,12 +24,14 @@ namespace UAuth = UMPS::Messaging::Authentication;
 struct ProgramOptions
 {
     std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
+    std::vector<std::pair<int, bool>> mAvailablePorts;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
                                  + "/.local/share/UMPS/tables/";
     std::string mUserTable = mTablesDirectory + "user.sqlite3";
     std::string mBlacklistTable = mTablesDirectory + "blacklist.sqlite3";
     std::string mWhiteListTable = mTablesDirectory + "whitelist.sqlite3";
+    std::string mIPAddress;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
@@ -37,11 +43,34 @@ struct Modules
 ProgramOptions parseIniFile(const std::string &iniFile);
 std::string parseCommandLineOptions(int argc, char *argv[]);
 
+std::string ipResolver(const std::string &serverName)
+{
+    boost::asio::io_context ioContext;
+    boost::asio::ip::tcp::resolver resolver(ioContext);
+    boost::system::error_code error;
+    boost::asio::ip::tcp::resolver::results_type results
+        = resolver.resolve(serverName, "", error);
+    std::string myIPAddress;
+    for (const auto &endPoint : results)
+    {
+        std::string address = endPoint.endpoint().address().to_string();
+        if (!address.empty())
+        {
+            myIPAddress = address;
+            break; // Take the first one
+        }
+    }
+    return myIPAddress;
+}
+
 ///-------------------------------------------------------------------------///
 ///                                 Main Program                            ///
 ///-------------------------------------------------------------------------///
 int main(int argc, char *argv[])
 {
+    //auto myIPAddress = ipResolver("waldorf.seis.utah.edu");
+    //std::cout << myIPAddress << std::endl;
+    //return 0;
     // Get the ini file from the command line
     std::string iniFile;
     try
@@ -240,6 +269,35 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     // Parse the initialization file
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
+    // Need an IP address
+    options.mIPAddress = propertyTree.get<std::string> ("uOperator.ipAddress");
+    if (options.mIPAddress.empty())
+    {
+        throw std::runtime_error("uOperator.ipAddress not not defined");
+    }
+    auto portStart = propertyTree.get<int> ("uOperator.openPortBlockStart",
+                                            8000);
+    auto portEnd   = propertyTree.get<int> ("uOperator.openPortBlockEnd",
+                                            8899);
+    if (portStart < 0)
+    {
+        throw std::runtime_error("uOperator.openPortBlockStart = "
+                               + std::to_string(portStart)
+                               + " must be positive");
+    }
+    if (portEnd < portStart)
+    {
+        throw std::runtime_error("uOperator.openPortBlockEnd = "
+                       + std::to_string(portEnd)
+                       + " must be greater than uOperator.openPortBlockStart = "
+                       + std::to_string(portStart));
+    }
+    int nPorts = portEnd - portStart + 1;
+    options.mAvailablePorts.reserve(nPorts);
+    for (int port = portStart; port <= portEnd; ++port)
+    {
+        options.mAvailablePorts.push_back(std::pair(port, false));
+    }
     // Parse the general properties
     options.mLogDirectory = propertyTree.get<std::string>
         ("uOperator.logFileDirectory", options.mLogDirectory);

@@ -2,6 +2,7 @@
 #define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PROXY_HPP
 #include <memory>
 #include <string>
+#include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -9,9 +10,10 @@ namespace UMPS
  {
   class ILog;
  }
- namespace MessageFormats
+ namespace Messaging::Authentication::Certificate
  {
-  class IMessage;
+  class Keys;
+  class UserNameAndPassword;
  }
 }
 namespace zmq 
@@ -54,7 +56,7 @@ public:
 
     /// @name Initialization
     /// @{
-    /// @brief Initializes the proxy.
+    /// @brief Initializes the proxy.  This is a grasslands pattern.
     /// @param[in] frontendAddress  This is the address XSUB (consumers) will 
     ///                             bind to.  This faces the internal network.
     /// @param[in] backendAddress   This is the address XPUB (producers) will
@@ -63,11 +65,66 @@ public:
     ///                    since an inter-process communication context will
     ///                    be created from this name and be used to control
     ///                    this proxy.
-    /// @throws std::invalid_argument if the any of the addresses are blank.
+    /// @throws std::invalid_argument if any of the addresses are blank.
     /// @throws std::runtime_error if the creation of the proxy fails.
     void initialize(const std::string &frontendAddress,
                     const std::string &backendAddress,
                     const std::string &topic);
+    /// @brief Initializes the proxy.  This is a strawhouse pattern that can
+    ///        validate IP addresses.
+    /// @param[in] frontendAddress  This is the address XSUB (consumers) will 
+    ///                             bind to.  This faces the internal network.
+    /// @param[in] backendAddress   This is the address XPUB (producers) will
+    ///                             bind to.  This faces the external network.
+    /// @param[in] topic   This is the proxy's topic.  This should be unique
+    ///                    since an inter-process communication context will
+    ///                    be created from this name and be used to control
+    ///                    this proxy.
+    /// @param[in] isAuthenticationServer  True indicates this connection is a
+    ///                                    ZAP server which means this machine
+    ///                                    will validate users.
+    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if any of the addresses are blank.
+    /// @throws std::runtime_error if the creation of the proxy fails.
+    void initialize(const std::string &frontendAddress,
+                    const std::string &backendAddress,
+                    const std::string &topic,
+                    bool isAuthenticationServer,
+                    const std::string &zapDomain = "global");
+    /// @brief Initializes the proxy.  This is a woodhouse pattern that can
+    ///        validate IP addresses and usernames and passwords.
+    /// @throws std::invalid_argument if the user name and password are not set
+    ///         on the credentials.
+    void initialize(const std::string &frontendAddress,
+                    const std::string &backendAddress,
+                    const std::string &topic,
+                    const Authentication::Certificate::UserNameAndPassword &credentials,
+                    bool isAuthenticationServer,
+                    const std::string &zapDomain = "global");
+    /// @brief Initializes the proxy as a CURVE server.  This is a stonehouse
+    ///        pattern that can validate IP addresses and public keys.
+    /// @throws std::invalid_argument if any of the addresses are blank or the
+    ///         server's private key is not set. 
+    /// @throws std::runtime_error if the creation of the proxy fails.
+    void initialize(const std::string &frontendAddress,
+                    const std::string &backendAddress,
+                    const std::string &topic,
+                    const Authentication::Certificate::Keys &serverKeys,
+                    const std::string &zapDomain = "global");
+    /// @throws std::invalid_argument if any of the addresses are blank, the
+    ///         server's public keys are not set, the client's public key is
+    ///         not set, or the client's private key is not set. 
+    /// @throws std::runtime_error if the creation of the proxy fails.
+    void initialize(const std::string &frontendAddress,
+                    const std::string &backendAddress,
+                    const std::string &topic,
+                    const Authentication::Certificate::Keys &serverKeys,
+                    const UMPS::Messaging::Authentication::Certificate::Keys &clientKeys,
+                    const std::string &zapDomain = "global");
+
+    /// @result The security level of the connection.
+    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The address to which the consumers will subscribe.

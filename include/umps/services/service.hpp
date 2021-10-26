@@ -19,15 +19,15 @@ public:
     ///         to this service.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] virtual std::string getRequestAddress() const = 0;
-    /// @brief Starts the broadcast.
+    /// @brief Starts the service.
     /// @note This would be run like:
-    ///       Broadcast thisBroadcast;
-    ///       std::thread broadcastThread(&Broadcast::start, &thisBroadcast);
+    ///       Service thisService;
+    ///       std::thread serviceThread(&Service::start, &thisService);
     ///       .
     ///       .
     ///       .
-    ///       thisBroadcast.stop(); // Called by main thread
-    ///       broadcastThread.join();
+    ///       thisService.stop(); // Called by main thread
+    ///       serviceThread.join();
     virtual void start() = 0;
     /// @brief Stops the broadcast.
     virtual void stop() = 0;

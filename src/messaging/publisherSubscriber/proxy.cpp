@@ -5,6 +5,9 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/publisherSubscriber/proxy.hpp"
+#include "umps/messaging/authentication/enums.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
@@ -56,6 +59,101 @@ public:
        auto started = mStarted;
        return started;
     }
+    void disconnectFrontend()
+    {
+        if (mHaveFrontend)
+        {
+            mLogger->debug("Disconnecting from current frontend: "
+                         + mFrontendAddress);
+            mFrontend->disconnect(mFrontendAddress);
+            mHaveFrontend = false;
+        }
+    }
+    void disconnectBackend()
+    {
+        if (mHaveBackend)
+        {
+            mLogger->debug("Disconnecting from current backend: "
+                         + mBackendAddress);
+            mBackend->disconnect(mBackendAddress);
+            mHaveBackend = false;
+        }
+    }
+    void disconnectControl()
+    {
+        if (mHaveControl)
+        {
+            mLogger->debug("Disconnecting from current control: "
+                         + mControlAddress);
+            mControl->disconnect(mControlAddress);
+            mHaveControl = false;
+        }
+    }
+    void bindBackend(const std::string &backendAddress)
+    {
+        mBackendAddress = backendAddress;
+        try
+        {
+            mLogger->debug("Attempting to bind to backend: "
+                         + mBackendAddress);
+            mBackend->bind(mBackendAddress);
+            mHaveBackend = true;
+        }
+        catch (const std::exception &e)
+        {
+            auto errorMsg = "Proxy failed to bind to backend: "
+                          + mBackendAddress
+                          + ".\nZeroMQ failed with:\n" + std::string(e.what());
+            mLogger->error(errorMsg);
+            throw std::runtime_error(errorMsg);
+        }
+    }
+    void connectFrontend(const std::string &frontendAddress)
+    {
+        mFrontendAddress = frontendAddress;
+        try 
+        {
+            mLogger->debug("Attempting to connect to frontend: "
+                         + mFrontendAddress);
+            mFrontend->connect(mFrontendAddress);
+            //mFrontend->set(zmq::sockopt::rcvhwm, mHighWaterMark);
+            mHaveFrontend = true;
+        }
+        catch (const std::exception &e)
+        {
+            auto errorMsg = "Proxy failed to connect to frontend: "
+                          + mFrontendAddress + ".\nZeroMQ failed with:\n"
+                          + std::string(e.what());
+            mLogger->error(errorMsg);
+            throw std::runtime_error(errorMsg);
+        }
+    }
+    void connectControl(const std::string &topic)
+    {
+        mTopic = topic;
+        mControlAddress = "inproc://" + mTopic + "_control";
+        // Connect the control
+        try
+        {
+            mLogger->debug("Attempting to bind to control: "
+                         + mControlAddress);
+            mControl->connect(mControlAddress);
+            // The command will issue simple commands without topics so listen
+            // to `everything.' 
+            mControl->set(zmq::sockopt::subscribe, std::string(""));
+            mCommand->bind(mControlAddress);
+            mHaveControl = true;
+        }
+        catch (const std::exception &e)
+        {
+            auto errorMsg = "Proxy failed to bind to control: "
+                           + mControlAddress
+                          + ".\nZeroMQ failed with:\n" + std::string(e.what());
+            mLogger->error(errorMsg);
+            throw std::runtime_error(errorMsg);
+        }
+    }
+///private:
     mutable std::mutex mMutex;
     // This context handles external communication with other servers
     std::shared_ptr<zmq::context_t> mContext = nullptr;
@@ -75,6 +173,8 @@ public:
     std::string mBackendAddress;
     std::string mTopic;
     std::string mControlAddress;
+    Authentication::SecurityLevel mSecurityLevel
+        = Authentication::SecurityLevel::GRASSLANDS;
     //int mHighWaterMark = 4*1024;
     bool mHaveFrontend = false;
     bool mHaveBackend = false;
@@ -109,7 +209,7 @@ Proxy& Proxy::operator=(Proxy &&proxy) noexcept
     return *this;
 }
 
-/// Initialize the proxy
+/// Setup grasslands proxy
 void Proxy::initialize(const std::string &frontendAddress,
                        const std::string &backendAddress,
                        const std::string &topic)
@@ -122,89 +222,222 @@ void Proxy::initialize(const std::string &frontendAddress,
     {
         throw std::invalid_argument("Backend address is blank");
     }
-    if (isEmpty(topic))
+    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    pImpl->mInitialized = false;
+    // Disconnect from old connections
+    pImpl->disconnectFrontend();
+    pImpl->disconnectBackend();
+    pImpl->disconnectControl();
+    // (Re)Establish connections
+    pImpl->connectFrontend(frontendAddress);
+    pImpl->bindBackend(backendAddress);
+    pImpl->connectControl(topic);
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
+    pImpl->mInitialized = true;
+}
+
+/// Setup strawhouse proxy
+void Proxy::initialize(const std::string &frontendAddress,
+                       const std::string &backendAddress,
+                       const std::string &topic,
+                       const bool isAuthenticationServer,
+                       const std::string &domain)
+{
+    if (isEmpty(frontendAddress))
+    {   
+        throw std::invalid_argument("Frontend address is blank");
+    }   
+    if (isEmpty(backendAddress))
+    {   
+        throw std::invalid_argument("Backend address is blank");
+    }
+    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
+    pImpl->mInitialized = false;
+    // Disconnect from old connections
+    pImpl->disconnectFrontend();
+    pImpl->disconnectBackend();
+    pImpl->disconnectControl();
+    // Authentication server?
+    if (isAuthenticationServer)
     {
-        throw std::invalid_argument("Topic is blank");
+        pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
+        pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
+    }
+    // (Re)Establish connections
+    pImpl->connectFrontend(frontendAddress);
+    pImpl->bindBackend(backendAddress);
+    pImpl->connectControl(topic);
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
+    pImpl->mInitialized = true;
+}
+
+/// Setup woodhouse proxy
+void Proxy::initialize(
+    const std::string &frontendAddress,
+    const std::string &backendAddress,
+    const std::string &topic,
+    const Authentication::Certificate::UserNameAndPassword &credentials,
+    const bool isAuthenticationServer,
+    const std::string &domain)
+{
+    if (isEmpty(frontendAddress))
+    {
+        throw std::invalid_argument("Frontend address is blank");
+    }
+    if (isEmpty(backendAddress))
+    {
+        throw std::invalid_argument("Backend address is blank");
+    }
+    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
+    if (!isAuthenticationServer)
+    {
+        if (!credentials.haveUserName())
+        {
+            throw std::invalid_argument("Username not set");
+        }
+        if (!credentials.havePassword())
+        {
+            throw std::invalid_argument("Password not set");
+        }
     }
     pImpl->mInitialized = false;
     // Disconnect from old connections
-    if (pImpl->mHaveFrontend)
+    pImpl->disconnectFrontend();
+    pImpl->disconnectBackend();
+    pImpl->disconnectControl();
+    // Must set this in woodhouse/stonehouse/ironhouse
+    pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
+    pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
+    if (!isAuthenticationServer)
     {
-        pImpl->mLogger->debug("Disconnecting from current frontend: "
-                            + pImpl->mFrontendAddress);
-        pImpl->mFrontend->disconnect(pImpl->mFrontendAddress);
-        pImpl->mHaveFrontend = false;
+        pImpl->mFrontend->set(zmq::sockopt::plain_server, 0);
+        pImpl->mFrontend->set(zmq::sockopt::plain_username,
+                              credentials.getUserName());
+        pImpl->mFrontend->set(zmq::sockopt::plain_password,
+                              credentials.getPassword());
+
+        pImpl->mBackend->set(zmq::sockopt::plain_server, 0);
+        pImpl->mBackend->set(zmq::sockopt::plain_username,
+                             credentials.getUserName());
+        pImpl->mBackend->set(zmq::sockopt::plain_password,
+                             credentials.getPassword());
     }
-    if (pImpl->mHaveBackend)
+    // (Re)Establish connections
+    pImpl->connectFrontend(frontendAddress);
+    pImpl->bindBackend(backendAddress);
+    pImpl->connectControl(topic);
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
+    pImpl->mInitialized = true;
+}
+
+/// Setup stonehouse CURVE server proxy
+void Proxy::initialize(
+    const std::string &frontendAddress,
+    const std::string &backendAddress,
+    const std::string &topic,
+    const Authentication::Certificate::Keys &serverKeys,
+    const std::string &domain)
+{
+    if (isEmpty(frontendAddress))
     {
-        pImpl->mLogger->debug("Disconnecting from current backend: "
-                            + pImpl->mBackendAddress);
-        pImpl->mBackend->disconnect(pImpl->mBackendAddress);
-        pImpl->mHaveBackend = false;
+        throw std::invalid_argument("Frontend address is blank");
     }
-    if (pImpl->mHaveControl)
+    if (isEmpty(backendAddress))
     {
-        pImpl->mLogger->debug("Disconnecting from current control: "
-                            + pImpl->mControlAddress);
-        pImpl->mControl->disconnect(pImpl->mControlAddress);
-        pImpl->mHaveControl = false;
+        throw std::invalid_argument("Backend address is blank");
     }
-    pImpl->mFrontendAddress = frontendAddress;
-    pImpl->mBackendAddress = backendAddress;
-    pImpl->mControlAddress = "inproc://" + topic + "_control";
-    // Connect the frontend
-    try
+    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
+    if (!serverKeys.havePublicKey())
     {
-        pImpl->mLogger->debug("Attempting to connect to frontend: "
-                            + pImpl->mFrontendAddress);
-        pImpl->mFrontend->connect(pImpl->mFrontendAddress);
-        //pImpl->mFrontend->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
-        pImpl->mHaveFrontend = true;
+        throw std::invalid_argument("Server public key not set");
     }
-    catch (const std::exception &e)
+    pImpl->mInitialized = false;
+    // Disconnect from old connections
+    pImpl->disconnectFrontend();
+    pImpl->disconnectBackend();
+    pImpl->disconnectControl();
+    // Set ZAP protocol
+    auto serverKey = serverKeys.getPublicTextKey();
+    pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
+    pImpl->mFrontend->set(zmq::sockopt::curve_server, 1);
+    pImpl->mFrontend->set(zmq::sockopt::curve_publickey, serverKey.data());
+
+    pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
+    pImpl->mBackend->set(zmq::sockopt::curve_server, 1);
+    pImpl->mBackend->set(zmq::sockopt::curve_publickey, serverKey.data());
+    // (Re)Establish connections
+    pImpl->connectFrontend(frontendAddress);
+    pImpl->bindBackend(backendAddress);
+    pImpl->connectControl(topic);
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
+    pImpl->mInitialized = true;
+}
+
+/// Setup a CURVE client proxy
+void Proxy::initialize(
+    const std::string &frontendAddress,
+    const std::string &backendAddress,
+    const std::string &topic,
+    const Authentication::Certificate::Keys &serverKeys,
+    const Authentication::Certificate::Keys &clientKeys,
+    const std::string &domain)
+{
+    if (isEmpty(frontendAddress))
     {
-        auto errorMsg = "Proxy failed to connect to frontend: "
-                      + frontendAddress + ".  ZeroMQ failed with:\n"
-                      + std::string(e.what());
-        pImpl->mLogger->error(errorMsg);
-        throw std::runtime_error(errorMsg);
+        throw std::invalid_argument("Frontend address is blank");
     }
-    // Bind the backend
-    try
+    if (isEmpty(backendAddress))
     {
-        pImpl->mLogger->debug("Attempting to bind to backend: "
-                            + pImpl->mBackendAddress);
-        pImpl->mBackend->bind(pImpl->mBackendAddress);
-        pImpl->mHaveBackend = true;
+        throw std::invalid_argument("Backend address is blank");
     }
-    catch (const std::exception &e) 
-    {   
-        auto errorMsg = "Proxy failed to bind to backend: " + backendAddress
-                      + ".  ZeroMQ failed with:\n" + std::string(e.what());
-        pImpl->mLogger->error(errorMsg);
-        throw std::runtime_error(errorMsg);
-    }
-    // Bind the control
-    try
+    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
+    if (!serverKeys.havePublicKey())
     {
-        pImpl->mLogger->debug("Attempting to bind to control: "
-                            + pImpl->mControlAddress);
-        pImpl->mControl->connect(pImpl->mControlAddress);
-        // The command will issue simple commands without topics so listen
-        // to `everything.' 
-        pImpl->mControl->set(zmq::sockopt::subscribe, std::string(""));
-        pImpl->mCommand->bind(pImpl->mControlAddress);
-        pImpl->mHaveControl = true;
+        throw std::invalid_argument("Server public key not set");
     }
-    catch (const std::exception &e)
+    if (!clientKeys.havePublicKey())
     {
-        auto errorMsg = "Proxy failed to bind to control: "
-                      + pImpl->mControlAddress
-                      + ".  ZeroMQ failed with:\n" + std::string(e.what());
-        pImpl->mLogger->error(errorMsg);
-        throw std::runtime_error(errorMsg);
+        throw std::invalid_argument("Client public key not set");
     }
-    pImpl->mTopic = topic;
+    if (!clientKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Client private key not set");
+    }
+    pImpl->mInitialized = false;
+    // Disconnect from old connections
+    pImpl->disconnectFrontend();
+    pImpl->disconnectBackend();
+    pImpl->disconnectControl();
+    // Set ZAP protocol
+    auto serverPublicKey  = serverKeys.getPublicTextKey();
+    auto clientPublicKey  = clientKeys.getPublicTextKey();
+    auto clientPrivateKey = clientKeys.getPrivateTextKey();
+    pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
+    pImpl->mFrontend->set(zmq::sockopt::curve_server, 0);
+    pImpl->mFrontend->set(zmq::sockopt::curve_serverkey,
+                          serverPublicKey.data());
+    pImpl->mFrontend->set(zmq::sockopt::curve_publickey,
+                          clientPublicKey.data());
+    pImpl->mFrontend->set(zmq::sockopt::curve_secretkey,
+                          clientPrivateKey.data());
+
+    pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
+    pImpl->mBackend->set(zmq::sockopt::curve_server, 0);
+    pImpl->mBackend->set(zmq::sockopt::curve_serverkey,
+                        serverPublicKey.data());
+    pImpl->mBackend->set(zmq::sockopt::curve_publickey,
+                         clientPublicKey.data());
+    pImpl->mBackend->set(zmq::sockopt::curve_secretkey,
+                         clientPrivateKey.data());
+    // (Re)Establish connections
+    pImpl->connectFrontend(frontendAddress);
+    pImpl->bindBackend(backendAddress);
+    pImpl->connectControl(topic);
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
     pImpl->mInitialized = true;
 }
 
@@ -224,6 +457,13 @@ std::string Proxy::getBackendAddress() const
 {
     if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
     return pImpl->mBackendAddress;
+}
+
+/// Security level
+UMPS::Messaging::Authentication::SecurityLevel
+    Proxy::getSecurityLevel() const noexcept
+{
+    return pImpl->mSecurityLevel;
 }
 
 /// Destructor
@@ -252,6 +492,7 @@ void Proxy::start()
                                      zmq::socket_ref(),
                                      *pImpl->mControl);
                 pImpl->mLogger->debug("Exiting steerable proxy");
+                pImpl->disconnectControl();
                 pImpl->setStarted(false);
             }
             catch (const std::exception &e)
@@ -286,6 +527,9 @@ void Proxy::stop()
         pImpl->mLogger->debug("Terminating proxy...");
         pImpl->mCommand->send(zmq::str_buffer("TERMINATE"),
                               zmq::send_flags::none);
+        pImpl->disconnectFrontend();
+        pImpl->disconnectBackend();
+/*
         if (pImpl->mHaveFrontend)
         {
             pImpl->mLogger->debug("Disconnecting from frontend");
@@ -298,6 +542,7 @@ void Proxy::stop()
             pImpl->mBackend->disconnect(pImpl->mBackendAddress);
             pImpl->mHaveBackend = false;
         }
+*/
     }
     pImpl->mInitialized = false;
     pImpl->mStarted = false;

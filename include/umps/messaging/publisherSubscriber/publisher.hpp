@@ -63,8 +63,7 @@ public:
     Publisher& operator=(Publisher &&publisher) noexcept;
     /// @}
 
-    /// @brief Binds the endpoint.  This is the grasslands or strawhouse
-    ///        pattern.
+    /// @brief Binds the endpoint.  This is the grasslands pattern.
     /// @param[in] endPoint    The endpoint for accepting connections.
     ///                        For example, "tcp://127.0.0.1:5555".
     /// @note For more see: http://api.zeromq.org/2-1:zmq-bind. 
@@ -77,8 +76,6 @@ public:
     ///                                    ZAP server which means this machine
     ///                                    will validate users.
     /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if plainText.haveUserName() or
-    ///         plainText.havePassword() are false.
     /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
     void bind(const std::string &endPoint,
               bool isAuthenticationServer,
