@@ -5,78 +5,78 @@
 #include <limits>
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/host_name.hpp>
-#include "umps/messageFormats/heartbeat.hpp"
+#include "umps/broadcasts/heartbeat/status.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
-#define MESSAGE_TYPE "UMPS::MessageFormats::Heartbeat"
+#define MESSAGE_TYPE "UMPS::Broadcasts::Heartbeat::Status"
 
-using namespace UMPS::MessageFormats;
+using namespace UMPS::Broadcasts::Heartbeat;
 
-TEST(HeartbeatTest, Heartbeat)
+TEST(HeartbeatTest, Status)
 {
-    Heartbeat heartbeat;
+    Status status;
     const std::string moduleName = "heartbeatTest";
     const std::string hostName = "localhost";
-    auto status = HeartbeatStatus::ALIVE;
+    auto moduleStatus = ModuleStatus::ALIVE;
     const std::string timeStamp("2021-10-11T21:36:42.090");
     // Check the defaults
-    EXPECT_EQ(heartbeat.getModule(), "unknown");
-    EXPECT_EQ(heartbeat.getHostName(), boost::asio::ip::host_name());
-    EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE); 
-    EXPECT_EQ(heartbeat.getStatus(), HeartbeatStatus::UNKNOWN);
-    EXPECT_TRUE(!heartbeat.getTimeStamp().empty());
+    EXPECT_EQ(status.getModule(), "unknown");
+    EXPECT_EQ(status.getHostName(), boost::asio::ip::host_name());
+    EXPECT_EQ(status.getMessageType(), MESSAGE_TYPE); 
+    EXPECT_EQ(status.getModuleStatus(), ModuleStatus::UNKNOWN);
+    EXPECT_TRUE(!status.getTimeStamp().empty());
 
-    heartbeat.setStatus(status);
-    EXPECT_NO_THROW(heartbeat.setModule(moduleName));
-    EXPECT_NO_THROW(heartbeat.setHostName(hostName));
-    EXPECT_NO_THROW(heartbeat.setTimeStamp(timeStamp));
-    Heartbeat heartbeatCopy(heartbeat);
+    status.setModuleStatus(moduleStatus);
+    EXPECT_NO_THROW(status.setModule(moduleName));
+    EXPECT_NO_THROW(status.setHostName(hostName));
+    EXPECT_NO_THROW(status.setTimeStamp(timeStamp));
+    Status statusCopy(status);
 
-    EXPECT_EQ(heartbeatCopy.getMessageType(), MESSAGE_TYPE);
-    EXPECT_EQ(heartbeatCopy.getModule(),      moduleName);
-    EXPECT_EQ(heartbeatCopy.getHostName(),    hostName);
-    EXPECT_EQ(heartbeatCopy.getTimeStamp(),   timeStamp);
-    EXPECT_EQ(heartbeatCopy.getStatus(),      status);
+    EXPECT_EQ(statusCopy.getMessageType(),  MESSAGE_TYPE);
+    EXPECT_EQ(statusCopy.getModule(),       moduleName);
+    EXPECT_EQ(statusCopy.getHostName(),     hostName);
+    EXPECT_EQ(statusCopy.getTimeStamp(),    timeStamp);
+    EXPECT_EQ(statusCopy.getModuleStatus(), moduleStatus);
 
-    heartbeat.clear();
-    auto json = heartbeatCopy.toJSON(4);
-    heartbeat.fromJSON(json);
-    EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE);
-    EXPECT_EQ(heartbeat.getModule(),      moduleName);
-    EXPECT_EQ(heartbeat.getHostName(),    hostName);
-    EXPECT_EQ(heartbeat.getTimeStamp(),   timeStamp);
-    EXPECT_EQ(heartbeat.getStatus(),      status);
+    status.clear();
+    auto json = statusCopy.toJSON(4);
+    status.fromJSON(json);
+    EXPECT_EQ(status.getMessageType(),  MESSAGE_TYPE);
+    EXPECT_EQ(status.getModule(),       moduleName);
+    EXPECT_EQ(status.getHostName(),     hostName);
+    EXPECT_EQ(status.getTimeStamp(),    timeStamp);
+    EXPECT_EQ(status.getModuleStatus(), moduleStatus);
 
-    heartbeat.clear();
-    auto cbor = heartbeatCopy.toCBOR();
-    heartbeat.fromCBOR(cbor);
-    EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE);
-    EXPECT_EQ(heartbeat.getModule(),      moduleName);
-    EXPECT_EQ(heartbeat.getHostName(),    hostName);
-    EXPECT_EQ(heartbeat.getTimeStamp(),   timeStamp);
-    EXPECT_EQ(heartbeat.getStatus(),      status);
+    status.clear();
+    auto cbor = statusCopy.toCBOR();
+    status.fromCBOR(cbor);
+    EXPECT_EQ(status.getMessageType(),  MESSAGE_TYPE);
+    EXPECT_EQ(status.getModule(),       moduleName);
+    EXPECT_EQ(status.getHostName(),     hostName);
+    EXPECT_EQ(status.getTimeStamp(),    timeStamp);
+    EXPECT_EQ(status.getModuleStatus(), moduleStatus);
 
-    heartbeat.clear();
-    auto msg = heartbeatCopy.toMessage();
-    heartbeat.fromMessage(msg.data(), msg.size());
-    EXPECT_EQ(heartbeat.getMessageType(), MESSAGE_TYPE);
-    EXPECT_EQ(heartbeat.getModule(),      moduleName);
-    EXPECT_EQ(heartbeat.getHostName(),    hostName);
-    EXPECT_EQ(heartbeat.getTimeStamp(),   timeStamp);
-    EXPECT_EQ(heartbeat.getStatus(),      status);
+    status.clear();
+    auto msg = statusCopy.toMessage();
+    status.fromMessage(msg.data(), msg.size());
+    EXPECT_EQ(status.getMessageType(),  MESSAGE_TYPE);
+    EXPECT_EQ(status.getModule(),       moduleName);
+    EXPECT_EQ(status.getHostName(),     hostName);
+    EXPECT_EQ(status.getTimeStamp(),    timeStamp);
+    EXPECT_EQ(status.getModuleStatus(), moduleStatus);
 
     const std::string timeStamp1("2021-10-11T21:36:42.091");
-    heartbeat.setTimeStamp(timeStamp1);
-    EXPECT_TRUE(heartbeat > heartbeatCopy);
+    status.setTimeStamp(timeStamp1);
+    EXPECT_TRUE(status > statusCopy);
 
     // Test an edge case
     const std::string timeStamp3("2021-10-11T21:36:59.999");
     const std::string timeStamp4("2021-10-11T21:36:59.999");
-    EXPECT_NO_THROW(heartbeat.setTimeStamp(timeStamp3));
-    EXPECT_NO_THROW(heartbeatCopy.setTimeStamp(timeStamp4));
-    EXPECT_FALSE(heartbeat > heartbeatCopy);
+    EXPECT_NO_THROW(status.setTimeStamp(timeStamp3));
+    EXPECT_NO_THROW(statusCopy.setTimeStamp(timeStamp4));
+    EXPECT_FALSE(status > statusCopy);
 }
 
 }

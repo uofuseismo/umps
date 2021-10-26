@@ -70,7 +70,7 @@ set(LOGGING_SRC
     src/logging/spdlog.cpp)
 set(MESSAGE_FORMAT_SRC
     src/messageFormats/dataPacket.cpp
-    src/messageFormats/heartbeat.cpp
+    src/broadcasts/heartbeat/status.cpp
     src/messageFormats/pick.cpp
     src/messageFormats/earthworm/traceBuf2.cpp)
 set(MESSAGING_SRC

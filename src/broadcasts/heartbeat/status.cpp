@@ -4,12 +4,12 @@
 #include <chrono>
 #include <nlohmann/json.hpp>
 #include <boost/asio/ip/host_name.hpp>
-#include "umps/messageFormats/heartbeat.hpp"
+#include "umps/broadcasts/heartbeat/status.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "UMPS::MessageFormats::Heartbeat"
+#define MESSAGE_TYPE "UMPS::Broadcasts::Heartbeat::Status"
 
-using namespace UMPS::MessageFormats;
+using namespace UMPS::Broadcasts::Heartbeat;
 
 namespace
 {
@@ -46,129 +46,129 @@ std::string createTimeStamp()
     return std::string(cDate);
 }
 
-nlohmann::json toJSONObject(const Heartbeat &heartbeat)
+nlohmann::json toJSONObject(const Status &status)
 {
     nlohmann::json obj;
-    obj["MessageType"] = heartbeat.getMessageType();
-    obj["Module"] = heartbeat.getModule();
-    obj["HostName"] = heartbeat.getHostName();
-    obj["Status"] = static_cast<int> (heartbeat.getStatus());
-    obj["TimeStamp"] = heartbeat.getTimeStamp();
+    obj["MessageType"] = status.getMessageType();
+    obj["Module"] = status.getModule();
+    obj["HostName"] = status.getHostName();
+    obj["ModuleStatus"] = static_cast<int> (status.getModuleStatus());
+    obj["TimeStamp"] = status.getTimeStamp();
     return obj;
 }
 
-Heartbeat objectToHeartbeat(const nlohmann::json obj)
+Status objectToStatus(const nlohmann::json obj)
 {
-    Heartbeat heartbeat;
-    if (obj["MessageType"] != heartbeat.getMessageType())
+    Status status;
+    if (obj["MessageType"] != status.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
     }
-    heartbeat.setModule(obj["Module"].get<std::string> ());
-    heartbeat.setHostName(obj["HostName"].get<std::string> ());
-    heartbeat.setStatus(static_cast<HeartbeatStatus> (obj["Status"]));
-    heartbeat.setTimeStamp(obj["TimeStamp"].get<std::string> ());
-    return heartbeat;
+    status.setModule(obj["Module"].get<std::string> ());
+    status.setHostName(obj["HostName"].get<std::string> ());
+    status.setModuleStatus(static_cast<ModuleStatus> (obj["ModuleStatus"]));
+    status.setTimeStamp(obj["TimeStamp"].get<std::string> ());
+    return status;
 }
 
-Heartbeat fromJSONMessage(const std::string &message)
+Status fromJSONMessage(const std::string &message)
 {
     auto obj = nlohmann::json::parse(message);
-    return objectToHeartbeat(obj);
+    return objectToStatus(obj);
 }
 
-Heartbeat fromCBORMessage(const uint8_t *message, const size_t length)
+Status fromCBORMessage(const uint8_t *message, const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
-    return objectToHeartbeat(obj);
+    return objectToStatus(obj);
 }
 
 }
 
-class Heartbeat::HeartbeatImpl
+class Status::StatusImpl
 {
 public:
     std::string mModule = "unknown";
     std::string mHostName = boost::asio::ip::host_name(); 
     std::string mTimeStamp = "1970:01:01T00:00:00.000";
-    HeartbeatStatus mStatus = HeartbeatStatus::UNKNOWN;
+    ModuleStatus mStatus = ModuleStatus::UNKNOWN;
 };
 
 /// C'tor
-Heartbeat::Heartbeat() :
-    pImpl(std::make_unique<HeartbeatImpl> ())
+Status::Status() :
+    pImpl(std::make_unique<StatusImpl> ())
 {
     setTimeStampToNow();
 }
 
 /// Copy c'tor
-Heartbeat::Heartbeat(const Heartbeat &heartbeat)
+Status::Status(const Status &status)
 {
-    *this = heartbeat;
+    *this = status;
 }
 
 /// Move c'tor
-Heartbeat::Heartbeat(Heartbeat &&heartbeat) noexcept
+Status::Status(Status &&status) noexcept
 {
-    *this = std::move(heartbeat);
+    *this = std::move(status);
 }
 
 /// Copy assignment
-Heartbeat& Heartbeat::operator=(const Heartbeat &heartbeat)
+Status& Status::operator=(const Status &status)
 {
-    if (&heartbeat == this){return *this;}
-    pImpl = std::make_unique<HeartbeatImpl> (*heartbeat.pImpl);
+    if (&status == this){return *this;}
+    pImpl = std::make_unique<StatusImpl> (*status.pImpl);
     return *this;
 }
 
 /// Move assignment
-Heartbeat& Heartbeat::operator=(Heartbeat &&heartbeat) noexcept
+Status& Status::operator=(Status &&status) noexcept
 {
-    if (&heartbeat == this){return *this;}
-    pImpl = std::move(heartbeat.pImpl);
+    if (&status == this){return *this;}
+    pImpl = std::move(status.pImpl);
     return *this;
 }
 
 /// Destructor
-Heartbeat::~Heartbeat() = default;
+Status::~Status() = default;
 
 /// Reset class
-void Heartbeat::clear() noexcept
+void Status::clear() noexcept
 {
-    pImpl = std::make_unique<HeartbeatImpl> ();
+    pImpl = std::make_unique<StatusImpl> ();
 }
 
 /// Message type
-std::string Heartbeat::getMessageType() const noexcept
+std::string Status::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
 
 /// Status
-void Heartbeat::setStatus(const HeartbeatStatus status) noexcept
+void Status::setModuleStatus(const ModuleStatus status) noexcept
 {
     pImpl->mStatus = status;
 }
 
-HeartbeatStatus Heartbeat::getStatus() const noexcept
+ModuleStatus Status::getModuleStatus() const noexcept
 {
     return pImpl->mStatus;
 }
 
 /// Module name
-void Heartbeat::setModule(const std::string &module)
+void Status::setModule(const std::string &module)
 {
     if (isEmpty(module)){throw std::invalid_argument("Module is empty");}
     pImpl->mModule = module;
 }
 
-std::string Heartbeat::getModule() const noexcept
+std::string Status::getModule() const noexcept
 {
     return pImpl->mModule;
 }
 
 /// Host name
-void Heartbeat::setHostName(const std::string &hostName)
+void Status::setHostName(const std::string &hostName)
 {
     if (isEmpty(hostName))
     {
@@ -177,18 +177,18 @@ void Heartbeat::setHostName(const std::string &hostName)
     pImpl->mHostName = hostName;
 }
 
-std::string Heartbeat::getHostName() const noexcept
+std::string Status::getHostName() const noexcept
 {
     return pImpl->mHostName;
 }
 
 /// Time stamp
-void Heartbeat::setTimeStampToNow() noexcept
+void Status::setTimeStampToNow() noexcept
 {
     setTimeStamp(createTimeStamp());
 }
 
-void Heartbeat::setTimeStamp(const std::string &timeStamp)
+void Status::setTimeStamp(const std::string &timeStamp)
 {
     if (isEmpty(timeStamp)){throw std::invalid_argument("Time stamp is empty");}
     if (static_cast<int> (timeStamp.size()) != 23)
@@ -241,20 +241,20 @@ void Heartbeat::setTimeStamp(const std::string &timeStamp)
     pImpl->mTimeStamp = timeStamp;
 }
 
-std::string Heartbeat::getTimeStamp() const noexcept
+std::string Status::getTimeStamp() const noexcept
 {
     return pImpl->mTimeStamp;
 } 
 
 /// Create JSON
-std::string Heartbeat::toJSON(const int nIndent) const
+std::string Status::toJSON(const int nIndent) const
 {
     auto obj = toJSONObject(*this);
     return obj.dump(nIndent);
 }
 
 /// Create CBOR
-std::string Heartbeat::toCBOR() const
+std::string Status::toCBOR() const
 {
     auto obj = toJSONObject(*this);
     auto v = nlohmann::json::to_cbor(obj);
@@ -263,18 +263,18 @@ std::string Heartbeat::toCBOR() const
 }
 
 /// From JSON
-void Heartbeat::fromJSON(const std::string &message)
+void Status::fromJSON(const std::string &message)
 {   
     *this = fromJSONMessage(message);
 }
 
 /// From CBOR
-void Heartbeat::fromCBOR(const std::string &data)
+void Status::fromCBOR(const std::string &data)
 {
     fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
 }
 
-void Heartbeat::fromCBOR(const uint8_t *data, const size_t length)
+void Status::fromCBOR(const uint8_t *data, const size_t length)
 {
     if (length == 0){throw std::invalid_argument("No data");}
     if (data == nullptr)
@@ -285,12 +285,12 @@ void Heartbeat::fromCBOR(const uint8_t *data, const size_t length)
 }
 
 ///  Convert message
-std::string Heartbeat::toMessage() const
+std::string Status::toMessage() const
 {
     return toCBOR();
 }
 
-void Heartbeat::fromMessage(const char *messageIn, const size_t length)
+void Status::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
     fromCBOR(message, length);
@@ -298,25 +298,25 @@ void Heartbeat::fromMessage(const char *messageIn, const size_t length)
 
 
 /// Copy this class
-std::unique_ptr<UMPS::MessageFormats::IMessage> Heartbeat::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> Status::clone() const
 {
-    std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<MessageFormats::Heartbeat> (*this);
+    std::unique_ptr<UMPS::MessageFormats::IMessage> result
+        = std::make_unique<Broadcasts::Heartbeat::Status> (*this);
     return result;
 }
 
 /// Create an instance of this class 
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    Heartbeat::createInstance() const noexcept
+    Status::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<MessageFormats::Heartbeat> (); 
+        = std::make_unique<Broadcasts::Heartbeat::Status> (); 
     return result;
 }
 
-/// Compare heartbeats based on time 
-bool UMPS::MessageFormats::operator>(const Heartbeat &lhs,
-                                     const Heartbeat &rhs)
+/// Compare status's based on time 
+bool UMPS::Broadcasts::Heartbeat::operator>(const Status &lhs,
+                                            const Status &rhs)
 {
     auto t1 = lhs.getTimeStamp();
     auto t2 = rhs.getTimeStamp(); 

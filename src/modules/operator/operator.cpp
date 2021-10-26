@@ -81,11 +81,13 @@ int main(int argc, char *argv[])
     std::shared_ptr<UAuth::IAuthenticator> authenticator;
     if (options.mSecurityLevel == UAuth::SecurityLevel::GRASSLANDS)
     {
+        std::cout << "Creating grasslands authenticator..." << std::endl;
         authenticator
             = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
     }
     else
     {
+        std::cout << "Creating SQLite3 authenticator..." << std::endl;
         auto sqlite3 = std::make_shared<UAuth::SQLite3Authenticator> (authenticationLoggerPtr);
 //        //sqlite3->initialize( );
 //        authenticator = sqlite3; 

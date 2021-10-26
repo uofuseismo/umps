@@ -1,11 +1,11 @@
-#ifndef UMPS_MESSAGEFORMATS_HEARTBEAT_HPP
-#define UMPS_MESSAGEFORMATS_HEARTBEAT_HPP
+#ifndef UMPS_BROADCASTS_HEARTBEAT_STATUS_HPP
+#define UMPS_BROADCASTS_HEARTBEAT_STATUS_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::MessageFormats
+namespace UMPS::Broadcasts::Heartbeat
 {
 /// @brief Defines the module's status.
-enum class HeartbeatStatus : int8_t
+enum class ModuleStatus : int8_t
 {
     UNKNOWN = 0,
     ALIVE,         /*!< The module is alive. */
@@ -13,38 +13,39 @@ enum class HeartbeatStatus : int8_t
     DIED           /*!< The module has unexpectedly died.  This likely
                         indicates that a restart is required. */
 };
-/// @class Heartbeat "heartbeat.hpp" "umps/messageFormats/heartbeat.hpp"
-/// @brief Defines a heartbeat message.
+/// @class Status "status.hpp" "umps/broadcasts/heartbeat/status.hpp"
+/// @brief Defines a modules status message.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Heartbeat : public IMessage
+class Status : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
     /// @brief Constructor.
-    Heartbeat();
+    Status();
     /// @brief Copy constructor.
-    /// @param[in] heartbeat  The hearbeat class which to initialize this class.
-    Heartbeat(const Heartbeat &heartbeat);
+    /// @param[in] status  The hearbeat status class which to initialize
+    ///                    this class.
+    Status(const Status &status);
     /// @brief Move constructor.
-    /// @param[in,out] heartbeat  The heartbeat class from which to initialize
-    ///                           this class.  On exit, heartbeat's behavior is
-    ///                           undefined.
-    Heartbeat(Heartbeat &&heartbeat) noexcept;
+    /// @param[in,out] status  The heartbeat status class from which to 
+    ///                        initialize this class.  On exit, status's
+    ///                        behavior is undefined.
+    Status(Status &&status) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
     /// @brief Copy assignment.
-    /// @param[in] heartbeat  The heartbeat class to copy to this.
-    /// @result A deep copy of the heartbeat.
-    Heartbeat& operator=(const Heartbeat &heartbeat);
+    /// @param[in] status  The heartbeat status class to copy to this.
+    /// @result A deep copy of the status.
+    Status& operator=(const Status &Status);
     /// @brief Move assignment.
-    /// @param[in,out] heartbeat  The heartbeat class whose memory will be moved
-    ///                           to this.  On exit heartbeat's behavior is
-    ///                           undefined.
-    /// @result The memory from heartbeat moved to this.
-    Heartbeat& operator=(Heartbeat &&heartbeat) noexcept;
+    /// @param[in,out] status  The heartbeat status class whose memory will
+    ///                        be moved to this.  On exit status's behavior is
+    ///                        undefined.
+    /// @result The memory from status moved to this.
+    Status& operator=(Status &&status) noexcept;
     /// @}
 
 
@@ -57,9 +58,9 @@ public:
  
     /// @brief Sets the module's status.
     /// @param[in] status  The module's status.
-    void setStatus(HeartbeatStatus status) noexcept;
+    void setModuleStatus(ModuleStatus status) noexcept;
     /// @result The module's status.  By default this is alive.
-    [[nodiscard]] HeartbeatStatus getStatus() const noexcept;
+    [[nodiscard]] ModuleStatus getModuleStatus() const noexcept;
 
     /// @brief Sets the host computer's name.  This helps identify the on
     ///        which computer the module is being run.  
@@ -98,7 +99,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     virtual void fromMessage(const char *data, size_t length) override final;
-    /// @result A message type indicating this is a heartbeat message.
+    /// @result A message type indicating this is a heartbeat status message.
     [[nodiscard]] virtual std::string getMessageType() const noexcept override final;
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
@@ -108,16 +109,16 @@ public:
 
     /// @name Debugging Utilities
     /// @{
-    /// @brief Creates the class from a JSON heartbeat message.
+    /// @brief Creates the class from a JSON status message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
-    /// @brief Converts the heartbeat class to a JSON message.
+    /// @brief Converts the status class to a JSON message.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
     /// @result A JSON representation of this class.
     [[nodiscard]] std::string toJSON(int nIndent =-1) const;
-    /// @brief Converts the heartbeat class to a CBOR message.
+    /// @brief Converts the status class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 
@@ -139,14 +140,14 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~Heartbeat();
+    virtual ~Status();
     /// @}
 private:
-    class HeartbeatImpl;
-    std::unique_ptr<HeartbeatImpl> pImpl;
+    class StatusImpl;
+    std::unique_ptr<StatusImpl> pImpl;
 };
-/// @result True indicates that the lhs heartbeat has a larger time stamp
-///         than the right hand side time stamp.
-[[nodiscard]] bool operator>(const Heartbeat &lhs, const Heartbeat &rhs);
+/// @result True indicates that the lhs status has a larger time stamp
+///         than the right hand side status's time stamp.
+[[nodiscard]] bool operator>(const Status &lhs, const Status &rhs);
 }
 #endif
