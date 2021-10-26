@@ -85,6 +85,9 @@ Status fromCBORMessage(const uint8_t *message, const size_t length)
 
 }
 
+///--------------------------------------------------------------------------///
+///                            Implementation                                ///
+///--------------------------------------------------------------------------///
 class Status::StatusImpl
 {
 public:
