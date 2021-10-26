@@ -24,6 +24,7 @@ namespace UAuth = UMPS::Messaging::Authentication;
 struct ProgramOptions
 {
     std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
+    //std::vector<UMPS::Broadcasts::DataPackets::Parameters> mBroadcastParameters;
     std::vector<std::pair<int, bool>> mAvailablePorts;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
@@ -38,11 +39,13 @@ struct ProgramOptions
 struct Modules
 {
     std::vector<UMPS::Services::Incrementer::Service> mIncrementers;
+    //std::vector<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcasts;
 };
 
 ProgramOptions parseIniFile(const std::string &iniFile);
 std::string parseCommandLineOptions(int argc, char *argv[]);
 
+/*
 std::string ipResolver(const std::string &serverName)
 {
     boost::asio::io_context ioContext;
@@ -62,6 +65,7 @@ std::string ipResolver(const std::string &serverName)
     }
     return myIPAddress;
 }
+*/
 
 ///-------------------------------------------------------------------------///
 ///                                 Main Program                            ///
@@ -117,7 +121,8 @@ int main(int argc, char *argv[])
     else
     {
         std::cout << "Creating SQLite3 authenticator..." << std::endl;
-        auto sqlite3 = std::make_shared<UAuth::SQLite3Authenticator> (authenticationLoggerPtr);
+        auto sqlite3 = std::make_shared<UAuth::SQLite3Authenticator>
+                       (authenticationLoggerPtr);
 //        //sqlite3->initialize( );
 //        authenticator = sqlite3; 
     }
@@ -197,6 +202,7 @@ int main(int argc, char *argv[])
                     std::cerr << e.what() << std::endl;
                 }
             }
+            std::cout << "Broadcasts:" << std::endl;
         }
         else
         {

@@ -5,7 +5,7 @@
 namespace UMPS::Services
 {
 /// @class IServer "service.hpp" "umps/services/service.hpp"
-/// @brief This is the abstract base class which defines a broadcast.
+/// @brief This is the abstract base class which defines a service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class IService
 {
@@ -29,7 +29,7 @@ public:
     ///       thisService.stop(); // Called by main thread
     ///       serviceThread.join();
     virtual void start() = 0;
-    /// @brief Stops the broadcast.
+    /// @brief Stops the service.
     virtual void stop() = 0;
 };
 }
