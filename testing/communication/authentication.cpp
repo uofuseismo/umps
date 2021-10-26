@@ -18,6 +18,7 @@ namespace
 
 using namespace UMPS::Messaging::Authentication;
 
+/*
 TEST(Messaging, IAuthenticator)
 {
     EXPECT_EQ(IAuthenticator::okayStatus(), std::string("200"));
@@ -274,8 +275,8 @@ TEST(Messaging, SQLite3Authenticator)
     std::remove(blacklistTable.c_str());
     std::remove(whitelistTable.c_str());
 }
+*/
 
-/*
 UMPS::MessageFormats::Pick makePickMessage() noexcept
 {
     UMPS::MessageFormats::Pick pick;
@@ -300,7 +301,7 @@ void pub(std::shared_ptr<zmq::context_t> context,
     UMPS::Messaging::PublisherSubscriber::Publisher publisher(context);
     //publisher.bind("tcp:// *:5555", isAuthenticationServer); // Strawhouse
     //publisher.bind("tcp:// *:5555", plainText, isAuthenticationServer); // Woodhouse
-    publisher.bind("tcp:// *:5555", serverCertificate); //  Stonehouse
+    publisher.bind("tcp://*:5555", serverCertificate); //  Stonehouse
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // Define message to send
     auto pick = makePickMessage();
@@ -383,6 +384,6 @@ sleep(1);
     auth.stop();
     t1.join();
 }
-*/
+
 
 }

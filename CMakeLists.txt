@@ -200,9 +200,6 @@ set(TEST_SRC
     testing/modules/packetCache.cpp
     testing/modules/incrementer.cpp
     testing/messaging/authentication.cpp
-    testing/messaging/pubsub.cpp
-    testing/messaging/requestRouter.cpp
-    testing/messaging/xpubxsub.cpp
     )
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
@@ -213,8 +210,29 @@ target_link_libraries(unitTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} pthread)
 target_include_directories(unitTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+
+# Actually test communication
+set(TEST_COMMUNICATION_SRC
+    testing/communication/main.cpp
+    testing/communication/pubsub.cpp
+    testing/communication/authentication.cpp
+    testing/communication/requestRouter.cpp
+    testing/communication/xpubxsub.cpp)
+add_executable(commTests ${TEST_COMMUNICATION_SRC})
+set_target_properties(commTests PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_link_libraries(commTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} pthread)
+target_include_directories(commTests
+                           PRIVATE ${GTEST_INCLUDE_DIRS}
+                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+
+# Add the tests
 add_test(NAME unitTests
          COMMAND unitTests)
+add_test(NAME commTests
+         COMMAND commTests)
 
 if (WRAP_PYTHON)
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)

@@ -7,10 +7,12 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <nlohmann/json.hpp>
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/user.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "private/isEmpty.hpp"
 
 namespace UAuth = UMPS::Messaging::Authentication;
 
@@ -21,6 +23,40 @@ struct ProgramOptions
 };
 
 ProgramOptions parseCommandLineOptions(int argc, char *argv[]);
+
+[[nodiscard]] UAuth::User loadUserFromJSONFile(const std::string &fileName)
+{
+    UAuth::User user;
+    std::ifstream inFile(fileName);
+    nlohmann::json obj;
+    inFile >> obj;
+    std::string name = obj["Name"].get<std::string> (); 
+    user.setName(name); // Throws
+    std::string email = obj["Email"].get<std::string> (); 
+    user.setEmail(email); // Throws
+    std::string password = obj["Password"].get<std::string> (); 
+    if (password.empty())
+    {
+    }
+    //if (!password.empty()){user.setHashedPassword(password);}
+    //std::string publicKey = obj["PublicKey"].get<std::string> (); 
+    //if (static_cast<int> (publicKey.length()) == 40) 
+
+    return user;
+}
+
+[[nodiscard]] UAuth::User getUserFromJSON()
+{
+    std::string fileName;
+    std::cout << "Enter user JSON file" << std::endl << ">";
+    std::cin >> fileName;
+    if (!std::filesystem::exists(fileName))
+    {
+        throw std::invalid_argument("User JSON file does: "
+                                  + fileName + " not exist");
+    }
+    return loadUserFromJSONFile(fileName);
+}
 
 std::string generalHelpMessage = R"""(
 Available commands:
@@ -79,12 +115,12 @@ int main(int argc, char *argv[])
             std::cout << generalHelpMessage << std::endl;
             continue;
         }
-        if (command == "q" || command == "quit")
+        else if (command == "q" || command == "quit")
         {
             std::cout << std::endl << "Bye!" << std::endl;
             return EXIT_SUCCESS;
         }
-        if (command == "l" || command == "list")
+        else if (command == "l" || command == "list")
         {
             auto users = authenticator.getUsers();
             if (users.empty())
@@ -100,7 +136,33 @@ int main(int argc, char *argv[])
             }
             continue;
         }
-        std::cout << "Unknown command: " << command << std::endl;
+        else if (command == "a" || command == "add")
+        {
+            UAuth::User thisUser;
+            try
+            {
+                thisUser = getUserFromJSON();
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << e.what() << std::endl;
+            }
+            auto users = authenticator.getUsers();
+            for (const auto &user : users)
+            {
+                if (user.getName() == thisUser.getName())
+                {
+                    std::cerr << "User: " << user.getName() + " already exists."
+                              << "  Consider updating information."
+                              << std::endl;
+                    continue;
+                }
+            }
+        }
+        else
+        {
+            std::cout << "Unknown command: " << command << std::endl;
+        }
         std::cout << generalHelpMessage << std::endl;
     }
     return EXIT_SUCCESS;
