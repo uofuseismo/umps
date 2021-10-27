@@ -26,8 +26,22 @@ public:
     Details(Details &&details) noexcept;
     /// @}
 
+    /// @name Operators
+    /// @{
+    /// @brief Move constructor.
+    /// @param[in] details  The details to copy this.
+    /// @result A deep copy of the input details.
+    Details& operator=(const Details &details);
+    /// @brief Move constructor.
+    /// @param[in,out] details  The details whose memory will be moved to this.
+    ///                         On exit, details's behavior is undefined.
+    /// @result The memory from details moved to this.
+    Details& operator=(Details &&details) noexcept;
+    /// @}
+
     /// @brief Sets the name of the broadcast (or service).
     /// @param[in] name  The name of the broadcast or service.
+    /// @throws std::invalid_argument if the name is empty.
     void setName(const std::string &name); 
     /// @result The name of the service.
     /// @throws std::runtime_error if \c haveName() is false.
