@@ -59,8 +59,15 @@ public:
     /// @result True indicates that the connection string is set. 
     [[nodiscard]] bool haveConnectionString() const noexcept;
 
+    /// @brief The required privileges to connect.
+    /// @param[in] privileges  The privileges required to connect.
+    void setUserPrivileges(const UMPS::Messaging::Authentication::UserPrivileges privileges) noexcept;
+    /// @result The requisite privileges to connect.
+    [[nodiscard]] UMPS::Messaging::Authentication::UserPrivileges getUserPrivileges() const noexcept;
+
     /// @brief Sets the security level required to establish a connection.
-    void setSecurityLevel(UMPS::Messaging::Authentication::SecurityLevel level) noexcept;
+    /// @param[in] securityLevel  The requisite security level.
+    void setSecurityLevel(UMPS::Messaging::Authentication::SecurityLevel securityLevel) noexcept;
     /// @result The security level required to establish a connection.
     [[nodiscard]] UMPS::Messaging::Authentication::SecurityLevel getSecurityLevel() const noexcept;
 

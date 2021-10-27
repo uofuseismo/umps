@@ -11,6 +11,7 @@ public:
     std::string mName;
     std::string mConnectionString;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS; 
+    UAuth::UserPrivileges mUserPrivileges = UAuth::UserPrivileges::READ_ONLY;
 };
 
 /// C'tor
@@ -110,4 +111,15 @@ void Details::setSecurityLevel(UAuth::SecurityLevel securityLevel) noexcept
 UAuth::SecurityLevel Details::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
+}
+
+/// Privileges
+void Details::setUserPrivileges(UAuth::UserPrivileges privileges) noexcept
+{
+    pImpl->mUserPrivileges = privileges;
+}
+
+UAuth::UserPrivileges Details::getUserPrivileges() const noexcept
+{
+    return pImpl->mUserPrivileges;
 }
