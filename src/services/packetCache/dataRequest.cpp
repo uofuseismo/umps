@@ -32,7 +32,7 @@ nlohmann::json toJSONObject(const DataRequest &request)
     return obj;
 }
 
-DataRequest objectToDataRequest(const nlohmann::json obj)
+DataRequest objectToDataRequest(const nlohmann::json &obj)
 {
     DataRequest request;
     if (obj["MessageType"] != request.getMessageType())

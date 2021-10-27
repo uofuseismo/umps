@@ -89,8 +89,8 @@ public:
     virtual ~AvailableBroadcastsResponse(); 
     /// @}
 private:
-    class BroadcastResponseImpl;
-    std::unique_ptr<BroadcastResponseImpl> pImpl; 
+    class ResponseImpl;
+    std::unique_ptr<ResponseImpl> pImpl; 
 
 };
 }

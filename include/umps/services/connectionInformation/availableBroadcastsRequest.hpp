@@ -59,8 +59,8 @@ public:
     virtual ~AvailableBroadcastsRequest(); 
     /// @}
 private:
-    class BroadcastRequestImpl;
-    std::unique_ptr<BroadcastRequestImpl> pImpl; 
+    class RequestImpl;
+    std::unique_ptr<RequestImpl> pImpl; 
 };
 }
 #endif

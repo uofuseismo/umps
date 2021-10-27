@@ -43,7 +43,7 @@ nlohmann::json toJSONObject(const Pick &pick)
     return obj;
 }
 
-Pick objectToPick(const nlohmann::json obj)
+Pick objectToPick(const nlohmann::json &obj)
 {
     Pick pick;
     if (obj["MessageType"] != pick.getMessageType())

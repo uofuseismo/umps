@@ -32,7 +32,7 @@ nlohmann::json toJSONObject(const Response &response)
     return obj;
 }
 
-Response objectToResponse(const nlohmann::json obj)
+Response objectToResponse(const nlohmann::json &obj)
 {
     Response response;
     if (obj["MessageType"] != response.getMessageType())

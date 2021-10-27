@@ -26,7 +26,7 @@ nlohmann::json toJSONObject(const Request &request)
     return obj;
 }
 
-Request objectToRequest(const nlohmann::json obj)
+Request objectToRequest(const nlohmann::json &obj)
 {
     Request request;
     // Essential stuff

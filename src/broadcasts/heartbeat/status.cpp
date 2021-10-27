@@ -57,7 +57,7 @@ nlohmann::json toJSONObject(const Status &status)
     return obj;
 }
 
-Status objectToStatus(const nlohmann::json obj)
+Status objectToStatus(const nlohmann::json &obj)
 {
     Status status;
     if (obj["MessageType"] != status.getMessageType())

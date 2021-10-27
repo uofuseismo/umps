@@ -378,7 +378,7 @@ nlohmann::json toJSONObject(const TraceBuf2<T> &tb)
 }
 
 template<typename T>
-void objectToTraceBuf2(const nlohmann::json obj,
+void objectToTraceBuf2(const nlohmann::json &obj,
                        TraceBuf2<T> *tb)
 {
     tb->clear();
