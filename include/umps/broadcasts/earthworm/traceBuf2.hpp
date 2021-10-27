@@ -1,16 +1,16 @@
-#ifndef UMPS_MESSAGEFORMATS_EARTHWORM_TRACEBUF2
-#define UMPS_MESSAGEFORMATS_EARTHWORM_TRACEBUF2
+#ifndef UMPS_BROADCASTS_EARTHWORM_TRACEBUF2
+#define UMPS_BROADCASTS_EARTHWORM_TRACEBUF2
 #include <memory>
 #include <vector>
 #include <string>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::MessageFormats::Earthworm
+namespace UMPS::Broadcasts::Earthworm
 {
-/// @name TraceBuf2 "tracebuf2.hpp" "umps/messageFormats/earthworm/tracebuf2.hpp"
+/// @name TraceBuf2 "tracebuf2.hpp" "umps/broadcasts/earthworm/tracebuf2.hpp"
 /// @brief Defines an Earthworm tracebuf2 message format.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 template<class T = double>
-class TraceBuf2 : public IMessage
+class TraceBuf2 : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors

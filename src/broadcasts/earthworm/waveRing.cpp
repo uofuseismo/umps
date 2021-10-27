@@ -20,13 +20,12 @@ extern "C"
 #include <trace_buf.h>
 }
 #endif
-#include "umps/messaging/earthworm/waveRing.hpp"
-#include "umps/messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/broadcasts/earthworm/waveRing.hpp"
+#include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
 
-namespace EWMessageFormat = UMPS::MessageFormats::Earthworm;
-using namespace UMPS::Messaging::Earthworm;
+using namespace UMPS::Broadcasts::Earthworm;
 
 namespace
 {
@@ -56,7 +55,7 @@ public:
         }  
     }
     /// Earthworm messages
-    std::vector<EWMessageFormat::TraceBuf2<double>> mTraceBuf2Messages;
+    std::vector<TraceBuf2<double>> mTraceBuf2Messages;
     /// Name of earthworm ring to connect to
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     /// Logos to scrounge from the ring.
@@ -443,7 +442,7 @@ void WaveRing::read()
         pImpl->mTraceBuf2Messages.erase(
             std::remove_if(pImpl->mTraceBuf2Messages.begin(),
                            pImpl->mTraceBuf2Messages.end(),
-                           [](const EWMessageFormat::TraceBuf2<double> &tb2)
+                           [](const TraceBuf2<double> &tb2)
                            {
                               return tb2.getNumberOfSamples() == 0;
                            }),
@@ -519,13 +518,13 @@ bool WaveRing::haveEarthworm() const noexcept
 }
 
 /// Get tracebuf2 messages
-std::vector<UMPS::MessageFormats::Earthworm::TraceBuf2<double>> 
+std::vector<TraceBuf2<double>> 
     WaveRing::getTraceBuf2Messages() const noexcept
 {
     return pImpl->mTraceBuf2Messages;
 }
 
-const UMPS::MessageFormats::Earthworm::TraceBuf2<double> *
+const UMPS::Broadcasts::Earthworm::TraceBuf2<double> *
     WaveRing::getTraceBuf2MessagesPointer() const noexcept
 {
     return pImpl->mTraceBuf2Messages.data();

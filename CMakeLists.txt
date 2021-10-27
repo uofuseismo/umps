@@ -3,7 +3,7 @@ project(UMPS VERSION 0.1.0 LANGUAGES CXX)
 enable_testing()
 
 # Some options
-option(EARTHWORM_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" 4096)
+option(EARTHWORM_DEFAULT_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" ON)
 
 # Ensure we have necessary packages 
 include(CheckCXXCompilerFlag)
@@ -12,7 +12,6 @@ find_package(spdlog REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(cppzmq REQUIRED)
 find_package(SQLite3 REQUIRED)
-message("hey:" ${SQLite3_INCLUDE_DIRS} ${SQLite3_LIBRARIES})
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
 #set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
@@ -43,8 +42,11 @@ set(BUILD_MSEED FALSE)
 if (${FindEarthworm_FOUND})
    message("Will compile Earthworm")
    set(BUILD_EW TRUE)
+   if (${EARTHWORM_DEFAULT_TRACEBUF2_SIZE})
+      set(EARTHWORM_TRACEBUF2_SIZE 4096)
+   endif()
    add_compile_definitions(WITH_EARTHWORM)
-   message("Using TraceBuf2 message size of:" ${EARTHWORM_TRACEBUF2_SIZE})
+   message("Using TraceBuf2 message size of: " ${EARTHWORM_TRACEBUF2_SIZE})
    if (${FindMiniSEED_FOUND})
       message("Will compile earthworm modules with MiniSEED")
       set(BUILD_MSEED TRUE)
@@ -71,8 +73,7 @@ set(LOGGING_SRC
 set(MESSAGE_FORMAT_SRC
     src/messageFormats/dataPacket.cpp
     src/broadcasts/heartbeat/status.cpp
-    src/messageFormats/pick.cpp
-    src/messageFormats/earthworm/traceBuf2.cpp)
+    src/messageFormats/pick.cpp)
 set(MESSAGING_SRC
     src/messaging/authentication/authenticator.cpp
     src/messaging/authentication/service.cpp
@@ -98,7 +99,8 @@ set(MODULES_LIBSRC
     src/services/packetCache/dataRequest.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
-       src/messaging/earthworm/waveRing.cpp)
+       src/broadcasts/earthworm/traceBuf2.cpp
+       src/broadcasts/earthworm/waveRing.cpp)
 endif()
 
 set(BUILD_SHARED_LIBS YES)
@@ -197,8 +199,9 @@ set(TEST_SRC
     testing/messageFormats/pick.cpp
     testing/messageFormats/earthworm.cpp
     testing/messageFormats/dataPacket.cpp
-    testing/modules/packetCache.cpp
-    testing/modules/incrementer.cpp
+    testing/services/packetCache.cpp
+    testing/services/incrementer.cpp
+    testing/services/connectionInformation.cpp
     testing/messaging/authentication.cpp
     )
 add_executable(unitTests ${TEST_SRC})

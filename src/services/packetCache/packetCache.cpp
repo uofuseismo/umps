@@ -8,9 +8,9 @@
 #include <filesystem>
 #include "umps/services/packetCache/cappedCollection.hpp"
 #include "umps/services/packetCache/dataRequest.hpp"
-#include "umps/messaging/earthworm/waveRing.hpp"
+#include "umps/broadcasts/earthworm/waveRing.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "umps/logging/spdlog.hpp"
 #include "umps/logging/stdout.hpp"
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     setenv("EW_PARAMS", options.earthwormParametersDirectory.c_str(), true);
     setenv("EW_INSTALLATION", options.earthwormInstallation.c_str(), true);
     logger.debug("Constructing wave ring connection..."); 
-    UMPS::Messaging::Earthworm::WaveRing waveRing(loggerPtr);
+    UMPS::Broadcasts::Earthworm::WaveRing waveRing(loggerPtr);
     try
     {
         waveRing.connect(options.earthwormWaveRingName,

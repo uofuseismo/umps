@@ -1,18 +1,21 @@
-#ifndef UMPS_MESSAGING_EARTHWORM_WAVERING_HPP
-#define UMPS_MESSAGING_EARTHWORM_WAVERING_HPP
+#ifndef UMPS_BROADCASTS_EARTHWORM_WAVERING_HPP
+#define UMPS_BROADCASTS_EARTHWORM_WAVERING_HPP
 #include <memory>
-namespace UMPS::Logging
+namespace UMPS
 {
-class ILog;
+ namespace Logging
+ {
+  class ILog;
+ }
+ namespace Broadcasts::Earthworm
+ {
+  template<typename T> class TraceBuf2;
+ }
 }
-namespace UMPS::MessageFormats::Earthworm
+namespace UMPS::Broadcasts::Earthworm
 {
-template<typename T> class TraceBuf2;
-}
-namespace UMPS::Messaging::Earthworm
-{
-/// @name WaveRing "waveRing.hpp" "umps/messaging/earthworm/waveRing.hpp"
-/// @brief A utility for reading from an earthworm wave ring.
+/// @name WaveRing "waveRing.hpp" "umps/broadcasts/earthworm/waveRing.hpp"
+/// @brief A utility for reading from an Earthworm wave ring.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class WaveRing
 {
@@ -71,15 +74,14 @@ public:
     void read();
 
     /// @result The traceBuf2 messages read from the ring.
-    [[nodiscard]] std::vector<MessageFormats::Earthworm::TraceBuf2<double>>
+    [[nodiscard]] std::vector<TraceBuf2<double>>
         getTraceBuf2Messages() const noexcept;
     /// @result The number of traceBuf2 messages.
     [[nodiscard]] int getNumberOfTraceBuf2Messages() const noexcept;
     /// @result A pointer to the array of traceBuf2 messages read from the
     ///         ring.  This has dimension [\c getNumberOfTraceBuf2Messages()].
     /// @note This is not recommended for general use.
-    [[nodiscard]] const MessageFormats::Earthworm::TraceBuf2<double> *
-        getTraceBuf2MessagesPointer() const noexcept;
+    [[nodiscard]] const TraceBuf2<double> *getTraceBuf2MessagesPointer() const noexcept;
     /// @}
 
     /// @name Destructors

@@ -2,14 +2,14 @@
 #include <cstring>
 #include <vector>
 #include <limits>
-#include "umps/messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
-#define MESSAGE_TYPE "UMPS::MessageFormats::Earthworm::TraceBuf2"
+#define MESSAGE_TYPE "UMPS::Broadcasts::Earthworm::TraceBuf2"
 
-using namespace UMPS::MessageFormats::Earthworm;
+using namespace UMPS::Broadcasts::Earthworm;
 
 using MyTypes = ::testing::Types<double, float, int, int16_t>;
 

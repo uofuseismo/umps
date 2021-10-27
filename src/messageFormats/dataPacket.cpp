@@ -4,7 +4,7 @@
 #include <cmath>
 #include <nlohmann/json.hpp>
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/messageFormats/earthworm/traceBuf2.hpp"
+#include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::MessageFormats::DataPacket"
@@ -140,7 +140,7 @@ DataPacket<T>::DataPacket(const DataPacket<T> &packet)
 /// Copy c'tor
 template<class T>
 template<typename U>
-DataPacket<T>::DataPacket(const Earthworm::TraceBuf2<U> &traceBuf2) :
+DataPacket<T>::DataPacket(const Broadcasts::Earthworm::TraceBuf2<U> &traceBuf2) :
     pImpl(std::make_unique<DataPacketImpl> ())
 {
     DataPacket<T> packet; 
@@ -512,16 +512,17 @@ template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSample
 template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int *data);
 template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int16_t *data);
 
-template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
-template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
-template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
-template UMPS::MessageFormats::DataPacket<double>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
+#ifdef WITH_EARTHWORM
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<double> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<float> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<int> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<double>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t> &traceBuf2);
 
-template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<double> &traceBuf2);
-template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<float> &traceBuf2);
-template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int> &traceBuf2);
-template UMPS::MessageFormats::DataPacket<float>::DataPacket(const Earthworm::TraceBuf2<int16_t> &traceBuf2);
-
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<double> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<float> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<int> &traceBuf2);
+template UMPS::MessageFormats::DataPacket<float>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t> &traceBuf2);
+#endif
 /*
 template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<double> &tb);
 template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<float> &tb);

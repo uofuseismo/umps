@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::MessageFormats
+namespace UMPS::Broadcasts
 {
  namespace Earthworm
  {
@@ -30,7 +30,7 @@ public:
     /// @param[in] tracebuf2  The traceBuf2 packet from which to initialize this
     ///                       class.
     template<typename U>
-    DataPacket(const Earthworm::TraceBuf2<U> &traceBuf2);
+    DataPacket(const Broadcasts::Earthworm::TraceBuf2<U> &traceBuf2);
     /// @brief Move constructor.
     /// @param[in,out] packet  The data packet from which to initialize this
     ///                        class.  On exit, packet's behavior is undefined.
