@@ -45,7 +45,6 @@ if (${FindEarthworm_FOUND})
    if (${EARTHWORM_DEFAULT_TRACEBUF2_SIZE})
       set(EARTHWORM_TRACEBUF2_SIZE 4096)
    endif()
-   add_compile_definitions(WITH_EARTHWORM)
    message("Using TraceBuf2 message size of: " ${EARTHWORM_TRACEBUF2_SIZE})
    if (${FindMiniSEED_FOUND})
       message("Will compile earthworm modules with MiniSEED")
@@ -128,6 +127,7 @@ endif()
 if (${BUILD_EW})
     target_include_directories(umps PRIVATE ${EARTHWORM_INCLUDE_DIR})
     target_link_libraries(umps PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
+    target_compile_definitions(umps PRIVATE WITH_EARTHWORM)
     if (${BUILD_MSEED})
        target_include_directories(umps PRIVATE ${MINISEED_INCLUDE_DIR})
        target_link_libraries(umps PRIVATE ${MINISEED_LIBRARY})
@@ -198,13 +198,15 @@ set(TEST_SRC
     testing/main.cpp
     testing/messageFormats/heartbeat.cpp
     testing/messageFormats/pick.cpp
-    testing/messageFormats/earthworm.cpp
     testing/messageFormats/dataPacket.cpp
     testing/services/packetCache.cpp
     testing/services/incrementer.cpp
     testing/services/connectionInformation.cpp
     testing/messaging/authentication.cpp
     )
+if (${BUILD_EW})
+   set(TEST_SRC ${TEST_SRC} testing/messageFormats/earthworm.cpp)
+endif()
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
