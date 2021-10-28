@@ -89,6 +89,7 @@ set(MESSAGING_SRC
     src/messaging/requestRouter/router.cpp)
 set(MODULES_LIBSRC
     src/services/connectionInformation/availableBroadcastsRequest.cpp
+    src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/services/connectionInformation/details.cpp
     src/services/incrementer/request.cpp
     src/services/incrementer/response.cpp

@@ -3,7 +3,7 @@
 
 using namespace UMPS::Services::ConnectionInformation;
 
-#define MESSAGE_TYPE "UMPS::Services::ConnectionInformation:AvailableBroadcastsRequest"
+#define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableBroadcastsRequest"
 
 namespace
 {

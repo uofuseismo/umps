@@ -116,6 +116,8 @@ public:
 
     /// @name Destructors
     /// @{
+    /// @brief Reset class and release all memory.
+    void clear() noexcept;
     /// @brief Destructor.
     virtual ~AvailableBroadcastsResponse(); 
     /// @}
