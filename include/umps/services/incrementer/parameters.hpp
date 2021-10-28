@@ -77,7 +77,6 @@ public:
     /// @brief Sets the proxy's address to which the clients will connect.
     /// @param[in] address  The address from which clients will connect to this
     ///                     incrementer service.
-    /// @throws std::invalid_argument if the address is blank.
     void setClientAccessAddress(const std::string &address);
     /// @result The address from which clients will access the service.
     /// @throws std::runtime_error if \c haveClientAccessAddress() is false.

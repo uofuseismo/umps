@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <thread>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include <map>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -14,6 +17,7 @@
 #include <filesystem>
 #include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
+#include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/logging/stdout.hpp"
@@ -302,7 +306,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     options.mAvailablePorts.reserve(nPorts);
     for (int port = portStart; port <= portEnd; ++port)
     {
-        options.mAvailablePorts.push_back(std::pair(port, false));
+        options.mAvailablePorts.push_back(std::pair(port, true));
     }
     // Parse the general properties
     options.mLogDirectory = propertyTree.get<std::string>
@@ -373,14 +377,40 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         try
         {
             counterOptions.parseInitializationFile(iniFile, counter);
-            options.mIncrementerParameters.push_back(std::move(counterOptions));
         }
-        catch (const std::exception &e)
+        catch (const std::exception &e) 
         {
            std::cerr << "Failed to read incrementer options for: " << counter
                      << " Failed with:\n" << e.what() << std::endl;
         }
-    }        
+        // Assign an IP address
+        if (!counterOptions.haveClientAccessAddress())
+        {
+            bool madeAddress = false;
+            for (auto &availablePort : options.mAvailablePorts)
+            {
+                auto port = availablePort.first;
+                auto isAvailable = availablePort.second;
+                if (isAvailable) 
+                {
+                    auto address = "tcp://" + options.mIPAddress
+                                 + ":" + std::to_string(port);
+                    counterOptions.setClientAccessAddress(address);
+                    availablePort = std::pair(port, false);
+                    madeAddress = true;
+                    break;
+                }
+            }
+            if (!madeAddress)
+            {
+                throw std::runtime_error("All ports are exhausted");
+            }
+        }
+#ifndef NDEBUG
+        assert(counterOptions.haveClientAccessAddress());
+#endif
+        options.mIncrementerParameters.push_back(std::move(counterOptions));
+    }
 //std::cout << p.first << std::endl;
 /*
     // EW_PARAMS environment variable

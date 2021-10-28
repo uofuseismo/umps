@@ -192,9 +192,13 @@ void Parameters::parseInitializationFile(const std::string &iniFile,
     //auto serverAddress
     //    = propertyTree.get<std::string> (section + ".serverAccessAddress");
     //parameters.setServerAccessAddress(serverAddress);
-    auto clientAddress
-        = propertyTree.get<std::string> (section + ".clientAccessAddress");
-    parameters.setClientAccessAddress(clientAddress);
+    auto clientAccessAddress
+        = propertyTree.get<std::string> (section + ".clientAccessAddress",
+                                         "");
+    if (!clientAccessAddress.empty())
+    {
+        parameters.setClientAccessAddress(clientAccessAddress);
+    }
 
     auto increment = propertyTree.get<int> (section + ".increment", 1);
     parameters.setIncrement(increment);
