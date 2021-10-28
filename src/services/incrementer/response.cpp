@@ -200,6 +200,7 @@ std::string Response::toMessage() const
     return toCBOR();
 }
 
+/// Convert from message
 void Response::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
