@@ -7,8 +7,12 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/request.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/isEmpty.hpp"
+#include "private/authentication/zapOptions.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
 
@@ -43,6 +47,8 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::string mEndpoint;
     int mHighWaterMark = 200;
+    Authentication::SecurityLevel mSecurityLevel
+        = Authentication::SecurityLevel::GRASSLANDS;
     bool mConnected = false;
 };
 
@@ -58,16 +64,18 @@ Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
-/// Connect
+/// Connect grasslands
 void Request::connect(const std::string &endpoint)
 {
+    if (isEmpty(endpoint)){throw std::invalid_argument("Endpoint is empty");}
     disconnect(); // Hang up before reconnecting
     try
     {
         pImpl->mLogger->debug("Attempting to connect to: " + endpoint);
-        pImpl->mClient->connect(endpoint);
         pImpl->mClient->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+        pImpl->mClient->connect(endpoint);
         pImpl->mEndpoint = endpoint;
+        pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
         pImpl->mConnected = true;
         pImpl->mLogger->debug("Connected to: " + endpoint + "!");
     }
@@ -79,6 +87,119 @@ void Request::connect(const std::string &endpoint)
     }
 }
 
+/// Connect strawhouse
+void Request::connect(const std::string &endpoint,
+                      const bool isAuthenticationServer,
+                      const std::string &zapDomain)
+{
+    if (isEmpty(endpoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    disconnect(); // Hangup
+    // ZAP
+    setStrawhouse(pImpl->mClient.get(), isAuthenticationServer, zapDomain);
+
+    pImpl->mClient->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+
+    pImpl->mClient->connect(endpoint);
+    pImpl->mEndpoint = endpoint;
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
+    pImpl->mConnected = true;
+}
+
+/// Connect woodhouse
+void Request::connect(
+    const std::string &endpoint,
+    const Authentication::Certificate::UserNameAndPassword &credentials,
+    const bool isAuthenticationServer,
+    const std::string &zapDomain)
+{
+    if (isEmpty(endpoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    if (!isAuthenticationServer)
+    {
+        if (!credentials.haveUserName())
+        {
+            throw std::invalid_argument("Username not set");
+        }
+        if (!credentials.havePassword())
+        {
+            throw std::invalid_argument("Password not set");
+        }
+    }
+    disconnect(); // Hangup
+    // Authentication server?
+    setWoodhouse(pImpl->mClient.get(), credentials,
+                 isAuthenticationServer, zapDomain);
+
+    pImpl->mClient->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+
+    pImpl->mClient->connect(endpoint);
+    pImpl->mEndpoint = endpoint;
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
+    pImpl->mConnected = true;
+}
+
+/// Connect stonehouse CURVE server
+void Request::connect(const std::string &endpoint,
+                      const Authentication::Certificate::Keys &serverKeys,
+                      const std::string &zapDomain)
+{
+    if (isEmpty(endpoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    if (!serverKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Server public key not set");
+    }
+    if (!serverKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Server private key not set");
+    }
+    disconnect(); // Hangup
+    // Set ZAP 
+    setStonehouseServer(pImpl->mClient.get(), serverKeys, zapDomain);
+
+    pImpl->mClient->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+
+    pImpl->mClient->connect(endpoint);
+    pImpl->mEndpoint = endpoint;
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
+    pImpl->mConnected = true;
+}
+
+/// Connect stonehouse CURVE client
+void Request::connect(const std::string &endpoint,
+                      const Authentication::Certificate::Keys &serverKeys,
+                      const Authentication::Certificate::Keys &clientKeys,
+                      const std::string &zapDomain)
+{
+    if (isEmpty(endpoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    if (!serverKeys.havePublicKey())
+    {   
+        throw std::invalid_argument("Server public key not set");
+    }   
+    if (!clientKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Client public key not set");
+    }
+    if (!clientKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Client private key not set");
+    }
+    disconnect(); // Hangup
+    // Set ZAP protocol
+    setStonehouseClient(pImpl->mClient.get(), serverKeys,
+                        clientKeys, zapDomain);
+
+    pImpl->mClient->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+
+    pImpl->mClient->connect(endpoint);
+    pImpl->mEndpoint = endpoint;
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
+    pImpl->mConnected = true;
+}
+
+/// Connected?
 bool Request::isConnected() const noexcept
 {
     return pImpl->mConnected;
@@ -186,4 +307,9 @@ void Request::disconnect()
 /// Destructor 
 Request::~Request() = default;
 
-
+/// Security level
+UMPS::Messaging::Authentication::SecurityLevel
+    Request::getSecurityLevel() const noexcept
+{
+    return pImpl->mSecurityLevel;
+}

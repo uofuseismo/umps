@@ -12,6 +12,7 @@
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
+#include "private/authentication/zapOptions.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
 
@@ -245,10 +246,7 @@ void Subscriber::connect(
     {
         throw std::runtime_error("Already bound to endpoint: " + endPoint);
     }
-    if (isAuthenticationServer)
-    {
-        pImpl->mSubscriber->set(zmq::sockopt::zap_domain, domain);
-    }
+    setStrawhouse(pImpl->mSubscriber.get(), isAuthenticationServer, domain);
     pImpl->mSubscriber->connect(endPoint);
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
@@ -262,35 +260,12 @@ void Subscriber::connect(
     const std::string &domain)
 {
     if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
-    if (!isAuthenticationServer)
-    {
-        if (!credentials.haveUserName())
-        {
-            throw std::invalid_argument("Username must be set for ZAP client");
-        }
-        if (!credentials.havePassword())
-        {
-            throw std::invalid_argument("Password must be set for ZAP client");
-        }
-    }
     if (pImpl->mEndPoints.contains(endPoint))
     {
         throw std::runtime_error("Already bound to endpoint: " + endPoint);
     }
-    pImpl->mSubscriber->set(zmq::sockopt::zap_domain, domain);
-    if (!isAuthenticationServer)
-    {
-        pImpl->mSubscriber->set(zmq::sockopt::plain_server, 0); 
-        pImpl->mSubscriber->set(zmq::sockopt::plain_username,
-                                credentials.getUserName());
-        pImpl->mSubscriber->set(zmq::sockopt::plain_password,
-                                credentials.getPassword());
-    }
-    else
-    {
-        pImpl->mSubscriber->set(zmq::sockopt::plain_server, 1);
-    }
+    setWoodhouse(pImpl->mSubscriber.get(), credentials,
+                 isAuthenticationServer, domain);
     pImpl->mSubscriber->connect(endPoint);
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
     pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
@@ -303,19 +278,11 @@ void Subscriber::connect(
     const std::string &domain)
 {
     if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
-    if (!serverKeys.havePublicKey())
-    {   
-        throw std::invalid_argument("Server public key not set");
-    }   
     if (pImpl->mEndPoints.contains(endPoint))
     {   
         throw std::runtime_error("Already bound to endpoint: " + endPoint);
     }
-    pImpl->mSubscriber->set(zmq::sockopt::zap_domain, domain);
-    pImpl->mSubscriber->set(zmq::sockopt::curve_server, 1);
-    auto serverKey = serverKeys.getPublicTextKey();
-    pImpl->mSubscriber->set(zmq::sockopt::curve_publickey, serverKey.data());
+    setStonehouseServer(pImpl->mSubscriber.get(), serverKeys, domain);
     pImpl->mSubscriber->connect(endPoint);
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
@@ -329,34 +296,12 @@ void Subscriber::connect(
     const std::string &domain)
 {
     if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
-    if (!serverKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Server public key not set");
-    }
-    if (!clientKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Client public key not set");
-    }
-    if (!clientKeys.havePrivateKey())
-    {
-        throw std::invalid_argument("Client private key not set");
-    }
     if (pImpl->mEndPoints.contains(endPoint))
     {
         throw std::runtime_error("Already bound to endpoint: " + endPoint);
     }
-    pImpl->mSubscriber->set(zmq::sockopt::zap_domain, domain);
-    pImpl->mSubscriber->set(zmq::sockopt::curve_server, 0);
-    auto serverPublicKey  = serverKeys.getPublicTextKey();
-    auto clientPublicKey  = clientKeys.getPublicTextKey();
-    auto clientPrivateKey = clientKeys.getPrivateTextKey();
-    pImpl->mSubscriber->set(zmq::sockopt::curve_serverkey,
-                            serverPublicKey.data());
-    pImpl->mSubscriber->set(zmq::sockopt::curve_publickey,
-                            clientPublicKey.data());
-    pImpl->mSubscriber->set(zmq::sockopt::curve_secretkey,
-                            clientPrivateKey.data());
+    setStonehouseClient(pImpl->mSubscriber.get(),
+                        serverKeys, clientKeys, domain);
     pImpl->mSubscriber->connect(endPoint);
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;

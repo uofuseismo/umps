@@ -93,8 +93,14 @@ public:
                     const std::string &zapDomain = "global");
     /// @brief Initializes the proxy.  This is a woodhouse pattern that can
     ///        validate IP addresses and usernames and passwords.
+    /// @param[in] credentials  The client's user name and password.  This
+    ///                         is only accessed if this is not an 
+    ///                         authentication server.
+    /// @param[in] isAuthenticationServer  True indicates that this server will
+    ///                                    authenticate credentials.
+    /// @param[in] zapDomain    The ZeroMQ Authentication Protocol domain.
     /// @throws std::invalid_argument if the user name and password are not set
-    ///         on the credentials.
+    ///         on the credentials and this is not an authentication server.
     void initialize(const std::string &frontendAddress,
                     const std::string &backendAddress,
                     const std::string &topic,
@@ -103,8 +109,10 @@ public:
                     const std::string &zapDomain = "global");
     /// @brief Initializes the proxy as a CURVE server.  This is a stonehouse
     ///        pattern that can validate IP addresses and public keys.
+    /// @param[in] serverKeys  The server's public key.
+    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
     /// @throws std::invalid_argument if any of the addresses are blank or the
-    ///         server's private key is not set. 
+    ///         server's public key or private key is not set. 
     /// @throws std::runtime_error if the creation of the proxy fails.
     void initialize(const std::string &frontendAddress,
                     const std::string &backendAddress,
@@ -114,12 +122,15 @@ public:
     /// @throws std::invalid_argument if any of the addresses are blank, the
     ///         server's public keys are not set, the client's public key is
     ///         not set, or the client's private key is not set. 
+    /// @param[in] serverKeys  The server's public key.
+    /// @param[in] clientKeys  The client's public and private key.
+    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
     /// @throws std::runtime_error if the creation of the proxy fails.
     void initialize(const std::string &frontendAddress,
                     const std::string &backendAddress,
                     const std::string &topic,
                     const Authentication::Certificate::Keys &serverKeys,
-                    const UMPS::Messaging::Authentication::Certificate::Keys &clientKeys,
+                    const Authentication::Certificate::Keys &clientKeys,
                     const std::string &zapDomain = "global");
 
     /// @result The security level of the connection.

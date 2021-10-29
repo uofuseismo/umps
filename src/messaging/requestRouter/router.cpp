@@ -7,10 +7,16 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/router.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/isEmpty.hpp"
+#include "private/authentication/zapOptions.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
+
+namespace UAuth = UMPS::Messaging::Authentication;
 
 class Router::RouterImpl
 {
@@ -54,6 +60,17 @@ public:
         auto running = mRunning;
         return running;
     }
+    // Unbind
+    void unbind()
+    {
+       std::scoped_lock lock(mMutex);
+       if (mBound)
+       {
+           mServer->disconnect(mEndPoint);
+           mEndPoint.clear();
+           mBound = false;
+       }
+    }
 
     std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         mSubscriptions;
@@ -62,13 +79,18 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::function<
           std::unique_ptr<UMPS::MessageFormats::IMessage>
-          (const std::string &messageType, const uint8_t *contents, const size_t length) //(const UMPS::MessageFormats::IMessage *)
+          (const std::string &messageType, const uint8_t *contents,
+           const size_t length)
     > mCallback;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{10};
     mutable std::mutex mMutex;
-    std::map<std::string, bool> mEndPoints;
+    std::string mEndPoint;
+    int mHighWaterMark = 100; 
+    Authentication::SecurityLevel mSecurityLevel
+        = Authentication::SecurityLevel::GRASSLANDS;
+    bool mBound = false;
     bool mRunning = false; 
     bool mConnected = false;
     bool mHaveCallback = false;
@@ -91,11 +113,10 @@ Router::~Router() = default;
 
 //void Router::initialize(const std::string &endPoint,
 void Router::setCallback(
-    //const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage> (const UMPS::MessageFormats::IMessage *)> &callback)
     const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-                        (const std::string &, const uint8_t *, size_t)> &callback)
+                        (const std::string &, const uint8_t *, size_t)>
+                        &callback)
 {
- //   pImpl->mServer->bind(endPoint);
     pImpl->mCallback = callback;
     pImpl->mHaveCallback = true;
 }
@@ -108,38 +129,19 @@ bool Router::haveCallback() const noexcept
 /// Connected?
 bool Router::isBound() const noexcept
 {
-    for (const auto &endpoint : pImpl->mEndPoints)
-    {
-        if (endpoint.second){return true;}
-    }
-    return false;
+    return pImpl->mBound;
 }
 
 /// Bind to an address if not already done so
 void Router::bind(const std::string &endPoint)
 {
-    auto idx = pImpl->mEndPoints.find(endPoint);
-    if (idx == pImpl->mEndPoints.end())
-    {
-        pImpl->mLogger->debug("Attempting to bind to: " + endPoint);
-    }
-    else
-    {
-        if (idx->second)
-        {
-            pImpl->mLogger->info("Already bound to end point: " + endPoint);
-            return;
-        }
-        else
-        {
-            pImpl->mLogger->info("Attempting to rebind to: " + endPoint);
-        }
-    }
+    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
+    pImpl->unbind();
     try
     {
+        pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+        pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
         pImpl->mServer->bind(endPoint);
-        pImpl->mServer->set(zmq::sockopt::rcvhwm, 100);// pImpl->mHighWaterMark);
-        pImpl->mServer->set(zmq::sockopt::sndhwm, 100);//pImpl->mHighWaterMark);
     }
     catch (const std::exception &e) 
     {
@@ -148,7 +150,131 @@ void Router::bind(const std::string &endPoint)
         pImpl->mLogger->error(errorMsg);
         throw std::runtime_error(errorMsg);
     }
-    pImpl->mEndPoints.insert(std::pair(endPoint, true));
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
+    pImpl->mEndPoint = endPoint;
+    pImpl->mBound = true;
+}
+
+/// Bind to an address - strawhouse 
+void Router::bind(const std::string &endPoint,
+                  const bool isAuthenticationServer,
+                  const std::string &zapDomain)
+{
+    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    pImpl->unbind(); // Hangup
+    // ZAP 
+    setStrawhouse(pImpl->mServer.get(), isAuthenticationServer, zapDomain);
+    // Options
+    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
+    // Bind
+    pImpl->mServer->bind(endPoint);
+  
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
+    pImpl->mEndPoint = endPoint;
+    pImpl->mBound = true;
+}
+
+/// Bind to an address - woodhouse
+void Router::bind(
+    const std::string &endPoint,
+    const Authentication::Certificate::UserNameAndPassword &credentials,
+    const bool isAuthenticationServer,
+    const std::string &zapDomain)
+{
+    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    if (!isAuthenticationServer)
+    {   
+        if (!credentials.haveUserName())
+        {
+            throw std::invalid_argument("Username must be set for ZAP client");
+        }
+        if (!credentials.havePassword())
+        {
+            throw std::invalid_argument("Password must be set for ZAP client");
+        }
+    }
+    pImpl->unbind(); // Hangup
+    // ZAP 
+    setWoodhouse(pImpl->mServer.get(), credentials,
+                 isAuthenticationServer, zapDomain);
+    // Options
+    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
+    // Bind
+    pImpl->mServer->bind(endPoint);
+
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
+    pImpl->mEndPoint = endPoint;
+    pImpl->mBound = true;
+}
+
+/// Bind to an address
+void Router::bind(
+    const std::string &endPoint,
+    const Authentication::Certificate::Keys &serverKeys,
+    const std::string &zapDomain)
+{
+    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    if (!serverKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Server public key not set");
+    }
+    if (!serverKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Server private key not set");
+    }
+    pImpl->unbind(); // Hangup
+    // Set ZAP
+    setStonehouseServer(pImpl->mServer.get(), serverKeys, zapDomain);
+    // Options
+    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
+    // Bind
+    pImpl->mServer->bind(endPoint);
+
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
+    pImpl->mEndPoint = endPoint;
+    pImpl->mBound = true;
+}
+
+/// Bind to an address
+void Router::bind(
+    const std::string &endPoint,
+    const Authentication::Certificate::Keys &serverKeys,
+    const Authentication::Certificate::Keys &clientKeys,
+    const std::string &zapDomain)
+{
+    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
+    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
+    if (!serverKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Server public key not set");
+    }
+    if (!clientKeys.havePublicKey())
+    {
+        throw std::invalid_argument("Client public key not set");
+    }
+    if (!clientKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Client private key not set");
+    }
+    pImpl->unbind(); // Hangup
+    // Set ZAP protocol
+    setStonehouseClient(pImpl->mServer.get(), serverKeys,
+                       clientKeys, zapDomain);
+    // Options
+    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
+    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
+    // Bind
+    pImpl->mServer->bind(endPoint);
+
+    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
+    pImpl->mEndPoint = endPoint;
+    pImpl->mBound = true;
 }
 
 /// Add a subscription
@@ -177,19 +303,6 @@ void Router::addMessageType(
         pImpl->mLogger->debug("Overwriting subscription: " + messageType);
         idx->second = std::move(message);
     }
-//    // Listen on this topic
-//    pImpl->mLogger->debug("Subscribing to: " + messageType);
-//    try
-//    {
-//        pImpl->mServer->set(zmq::sockopt::subscribe, messageType);
-//    }
-//    catch (const std::exception &e)
-//    {
-//        auto errorMsg = "Failed to add filter: " + messageType
-//                      + "ZMQ failed with:\n" + std::string(e.what());
-//        pImpl->mLogger->error(errorMsg);
-//        throw std::runtime_error(errorMsg);
-//    }
 }
 
 /// Stop
@@ -209,7 +322,8 @@ void Router::start()
     {
         throw std::runtime_error("Router does not have a callback");
     }
-    stop(); 
+    stop(); // Make sure service is stopped
+    // Poll setup
     constexpr size_t nPollItems = 1;
     zmq::pollitem_t items[] =
     {
@@ -222,14 +336,9 @@ void Router::start()
         if (items[0].revents & ZMQ_POLLIN)
         {
             // Get the next message
-            std::vector<zmq::message_t> messagesReceived;
-            zmq::recv_result_t receivedResult =
-                zmq::recv_multipart(*pImpl->mServer,
-                                    std::back_inserter(messagesReceived),
-                                    zmq::recv_flags::none);
-            if (*receivedResult == 0){continue;}
+            zmq::multipart_t messagesReceived(*pImpl->mServer);
+            if (messagesReceived.empty()){continue;}
 /*
-std::cout << *receivedResult << std::endl;
 std::cout << messagesReceived.size() << std::endl;
 std::cout << messagesReceived.at(0).to_string() << std::endl;
 std::cout << messagesReceived.at(1).to_string() << std::endl;
@@ -238,13 +347,11 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
 */
 #ifndef NDEBUG
             assert(messagesReceived.size() == 4);
-            //assert(*receivedResult == 4); 
 #else
             if (messagesReceived.size() != 4)
             {
                 pImpl->mLogger->error("Only 2-part messages handled");
                 continue; 
-                //returnDumby = true;
             }
 #endif
             std::string messageType = messagesReceived.at(2).to_string();
@@ -254,34 +361,14 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
                 auto errorMsg = "Unhandled message type: " + messageType;
                 pImpl->mLogger->error(errorMsg);
                 continue;
-                //returnDumby = true;
             }
             auto messageContents = reinterpret_cast<const uint8_t *>
                                    (messagesReceived.at(3).data());
             auto messageSize = messagesReceived.at(3).size();
             auto response = pImpl->mCallback(messageType,
                                              messageContents, messageSize);
-/*
-            const auto payload = static_cast<uint8_t *> (messagesReceived.at(1).data());
-            auto messageLength = messagesReceived.at(1).size();
-            auto message = index->second->createInstance();
-            try
-            {
-                message->fromCBOR(payload, messageLength);
-            }
-            catch (const std::exception &e)
-            {
-               auto errorMsg = "Failed to unpack message of type: "
-                             + messageType;
-               pImpl->mLogger->error(errorMsg);
-               returnDumby = true;
-            }
-            // Process the message with the provided callback
-            auto response = pImpl->mCallback(&*message);
-*/
             // Send the response back
             auto responseMessageType = response->getMessageType();
-            //auto responseMessage = std::string(response->toCBOR());
             auto responseMessage = response->toMessage(); 
             if (responseMessage.empty())
             {
@@ -305,9 +392,17 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
     pImpl->mLogger->debug("Service loop finished");
 }
 
+/// Is the router running?
 bool Router::isRunning() const noexcept
 {
     return pImpl->isRunning();
+}
+
+/// Security level
+UMPS::Messaging::Authentication::SecurityLevel
+    Router::getSecurityLevel() const noexcept
+{
+    return pImpl->mSecurityLevel;
 }
 
 void Router::operator()()

@@ -354,20 +354,32 @@ void Proxy::initialize(
     {
         throw std::invalid_argument("Server public key not set");
     }
+    if (!serverKeys.havePrivateKey())
+    {
+        throw std::invalid_argument("Server private key not set");
+    }
     pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
     pImpl->disconnectControl();
     // Set ZAP protocol
-    auto serverKey = serverKeys.getPublicTextKey();
+    auto serverPublicKey = serverKeys.getPublicTextKey();
+    auto serverPrivateKey = serverKeys.getPrivateTextKey();
+
     pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
     pImpl->mFrontend->set(zmq::sockopt::curve_server, 1);
-    pImpl->mFrontend->set(zmq::sockopt::curve_publickey, serverKey.data());
+    pImpl->mFrontend->set(zmq::sockopt::curve_publickey,
+                          serverPublicKey.data());
+    pImpl->mFrontend->set(zmq::sockopt::curve_secretkey,
+                          serverPrivateKey.data()); 
 
     pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
     pImpl->mBackend->set(zmq::sockopt::curve_server, 1);
-    pImpl->mBackend->set(zmq::sockopt::curve_publickey, serverKey.data());
+    pImpl->mBackend->set(zmq::sockopt::curve_publickey,
+                         serverPublicKey.data());
+    pImpl->mBackend->set(zmq::sockopt::curve_secretkey,
+                         serverPrivateKey.data());
     // (Re)Establish connections
     pImpl->connectFrontend(frontendAddress);
     pImpl->bindBackend(backendAddress);

@@ -2,6 +2,7 @@
 #define UMPS_MESSAGING_REQUESTROUTER_REQUEST_HPP
 #include <memory>
 #include <functional>
+#include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -12,6 +13,11 @@ namespace UMPS
  namespace MessageFormats
  {
   class IMessage;
+ }
+ namespace Messaging::Authentication::Certificate
+ {
+  class Keys;
+  class UserNameAndPassword;
  }
 }
 namespace zmq
@@ -44,16 +50,78 @@ public:
     explicit Request(std::shared_ptr<zmq::context_t> &context);
     /// @}
 
-    /// @brief Sets the message format for receiving responses. 
+    /// @brief Sets the message format for receiving responses.
     void setResponse(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
-    void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-                                         (const std::string &, const uint8_t *, size_t)> &callback);
+    //void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+    //                                     (const std::string &, const uint8_t *, size_t)> &callback);
 
-    /// @brief Connects to the given address.
+    /// @name Connecting
+    /// @{
+    /// @brief Connects to the given address.  This is the grasslands
+    ///        security model.
     /// @param[in] endpoint  The endpoint to which to connect.
+    /// @throws std::runtime_error if the connection fails.
     void connect(const std::string &endpoint);
+    /// @brief Connects to the given address.  This is a strawhouse pattern
+    ///        that can validate IP addresses.
+    /// @param[in] endpoint  The endpoint to which to connect.
+    /// @param[in] isAuthenticationServer  True indicates this connection is a
+    ///                                    ZAP server which means this machine
+    ///                                    will validate users.
+    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if the endpoint or the zapDomain is empty
+    ///         and this is an authenticaiton server.
+    /// @throws std::runtime_error if the connection fails.
+    void connect(const std::string &endpoint,
+                 bool isAuthenticationServer,
+                 const std::string &zapDomain = "global");
+    /// @brief Connects to the given address.  This is a woodhouse pattern
+    ///        that can validate IP addresses and usernames and passwords.
+    /// @param[in] endpoint  The endpoint to which to connect.
+    /// @param[in] isAuthenticationServer  True indicates this connection is a
+    ///                                    ZAP server which means this machine
+    ///                                    will validate users.
+    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if the username and password are not set
+    ///         and this is an authentciation server.
+    /// @throws std::invalid_argument if the endpoint or the zapDomain is empty
+    ///         and this is an authenticaiton server.
+    /// @throws std::runtime_error if the connection fails.
+    void connect(const std::string &endpoint,
+                 const Authentication::Certificate::UserNameAndPassword &credentials,
+                 bool isAuthenticationServer,
+                 const std::string &zapDomain = "global"); 
+    /// @brief Connects to the given address as a CURVE server.  This is a
+    ///        stonehouse pattern that can validate IP addresses and public
+    ///        keys.
+    /// @param[in] endpoint    The endpoint to which to connect.
+    /// @param[in] serverKeys  The server's public and private key. 
+    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if the server's private key is not set.
+    void connect(const std::string &endpoint,
+                 const Authentication::Certificate::Keys &serverKeys,
+                 const std::string &zapDomain = "global");
+    /// @brief Connects to the given address as a CURVE client.  This is a
+    ///        stonehouse pattern that can validate the client's IP address and
+    ///        credentials.
+    /// @param[in] endpoint    The endpoint to which to connect.
+    /// @param[in] serverKeys  The server's public key.
+    /// @param[in] serverKeys  The clients's public and private key.
+    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
+    /// @throws std::invalid_argument if the server's public key is not set,
+    ///         the client's public and private key are not set, the endpoint
+    ///         is empty, or the zapDomain is empty. 
+    /// @throws std::runtime_error if the connection cannot be established.
+    void connect(const std::string &endpoint,
+                 const Authentication::Certificate::Keys &serverKeys,
+                 const Authentication::Certificate::Keys &clientKeys,
+                 const std::string &zapDomain = "global");
+
+    /// @result The security level of the connection.
+    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates that the requester is connected.
     [[nodiscard]] bool isConnected() const noexcept;
+    /// @}
 
     /// @brief Performs a blocking request of from the router.
     /// @param[in] request  The request to make to the server via the router. 
@@ -63,7 +131,7 @@ public:
         const MessageFormats::IMessage &request);
 
     /// @brief Disconnects.
-    void disconnect(); //const std::string &endpoint);
+    void disconnect();
 
     /// @name Destructors
     /// @{
