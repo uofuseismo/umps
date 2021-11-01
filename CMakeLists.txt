@@ -85,6 +85,7 @@ set(MESSAGING_SRC
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
     src/messaging/publisherSubscriber/proxy.cpp
+    src/messaging/publisherSubscriber/proxyOptions.cpp
     src/messaging/requestRouter/request.cpp
     src/messaging/requestRouter/router.cpp)
 set(MODULES_LIBSRC
@@ -205,6 +206,7 @@ set(TEST_SRC
     testing/services/incrementer.cpp
     testing/services/connectionInformation.cpp
     testing/messaging/authentication.cpp
+    testing/messaging/options.cpp
     )
 if (${BUILD_EW})
    set(TEST_SRC ${TEST_SRC} testing/messageFormats/earthworm.cpp)
