@@ -7,6 +7,7 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/router.hpp"
+#include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
@@ -82,6 +83,7 @@ public:
           (const std::string &messageType, const uint8_t *contents,
            const size_t length)
     > mCallback;
+    RouterOptions mOptions;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{10};

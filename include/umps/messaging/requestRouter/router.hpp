@@ -19,6 +19,10 @@ namespace UMPS
   class Keys;
   class UserNameAndPassword;
  }
+ namespace Messaging::RequestRouter
+ {
+  class RouterOptions;
+ }
 }
 namespace zmq
 {
