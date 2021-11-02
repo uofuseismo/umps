@@ -10,8 +10,8 @@ public:
     std::string mBackendAddress;
     std::string mFrontendAddress;
     std::string mTopic;
-    int64_t mBackendHighWaterMark = 0;
-    int64_t mFrontendHighWaterMark = 0;
+    int mBackendHighWaterMark = 0;
+    int mFrontendHighWaterMark = 0;
 };
 
 /// C'tor
@@ -58,7 +58,7 @@ ProxyOptions& ProxyOptions::operator=(ProxyOptions &&options) noexcept
 }
 
 /// Frontend HWM
-void ProxyOptions::setFrontendHighWaterMark(const int64_t hwm)
+void ProxyOptions::setFrontendHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
@@ -67,13 +67,13 @@ void ProxyOptions::setFrontendHighWaterMark(const int64_t hwm)
     pImpl->mFrontendHighWaterMark = hwm;
 }
 
-int64_t ProxyOptions::getFrontendHighWaterMark() const noexcept
+int ProxyOptions::getFrontendHighWaterMark() const noexcept
 {
     return pImpl->mFrontendHighWaterMark;
 }
 
 /// Backend HWM
-void ProxyOptions::setBackendHighWaterMark(const int64_t hwm)
+void ProxyOptions::setBackendHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
@@ -82,7 +82,7 @@ void ProxyOptions::setBackendHighWaterMark(const int64_t hwm)
     pImpl->mBackendHighWaterMark = hwm;
 }
 
-int64_t ProxyOptions::getBackendHighWaterMark() const noexcept
+int ProxyOptions::getBackendHighWaterMark() const noexcept
 {
     return pImpl->mBackendHighWaterMark;
 }

@@ -13,10 +13,14 @@ namespace UMPS
  {
   class IMessage;
  }
- namespace Messaging::Authentication::Certificate
+ namespace Messaging::Authentication
  {
-  class Keys;
-  class UserNameAndPassword;
+  class ZAPOptions;
+  namespace Certificate
+  {
+   class Keys;
+   class UserNameAndPassword;
+  }
  }
 }
 namespace zmq

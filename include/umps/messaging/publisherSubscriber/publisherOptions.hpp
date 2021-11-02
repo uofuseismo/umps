@@ -2,6 +2,7 @@
 #define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHEROPTIONS_HPP
 namespace UMPS::Messaging::PublisherSubscriber
 {
+/// @brief Options for initializing the publisher.
 class PublisherOptions
 {
 public:

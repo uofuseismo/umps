@@ -2,6 +2,10 @@
 #define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PROXYOPTIONS_HPP
 #include <memory>
 #include <string>
+namespace UMPS::Messaging::Authentication
+{
+ class ZAPOptions;
+}
 namespace UMPS::Messaging::PublisherSubscriber
 {
 /// @class ProxyOptions "proxyOptions.hpp" "umps/messaging/publisherSubscriber/proxyOptions.hpp"
@@ -58,9 +62,9 @@ public:
     ///                           messages that this socket can queue.
     ///                           0 sets this to "infinite."  
     /// @throws std::invalid_argument if the high water mark is negative. 
-    void setFrontendHighWaterMark(int64_t highWaterMark);
+    void setFrontendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
-    [[nodiscard]] int64_t getFrontendHighWaterMark() const noexcept;
+    [[nodiscard]] int getFrontendHighWaterMark() const noexcept;
     /// @}
 
     /// @name Subscriber Options
@@ -81,9 +85,9 @@ public:
     ///                           messages that this socket can queue.
     ///                           0 sets this to "infinite."  
     /// @throws std::invalid_argument if the high water mark is negative. 
-    void setBackendHighWaterMark(int64_t highWaterMark);
+    void setBackendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
-    [[nodiscard]] int64_t getBackendHighWaterMark() const noexcept;
+    [[nodiscard]] int getBackendHighWaterMark() const noexcept;
     /// @}
  
     /// @name Topic
@@ -99,6 +103,16 @@ public:
     [[nodiscard]] std::string getTopic() const;
     /// @result True indicates that the topic was set.
     [[nodiscard]] bool haveTopic() const noexcept;
+    /// @}
+
+    /// @name ZeroMQ Authentication Protocol Options
+    /// @{
+    /// @brief Defines the ZAP options to be used when configuring the socket.
+    /// @param[in] options  The ZAP options.
+    void setZAPOptions(const Authentication::ZAPOptions &options);
+    /// @result The ZAP options.  By default this will configure sockets with
+    ///         the grasslands (no security) pattern.
+    Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
     /// @name Destructors

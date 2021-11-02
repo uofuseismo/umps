@@ -1,6 +1,7 @@
 #ifndef PRIVATE_AUTHENTICATION_ZAPOPTIONS_HPP
 #define PRIVATE_AUTHENTICATION_ZAPOPTIONS_HPP
 #include <zmq.hpp>
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "private/isEmpty.hpp"

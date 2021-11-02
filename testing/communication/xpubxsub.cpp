@@ -8,6 +8,7 @@
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/proxy.hpp"
+#include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
@@ -33,6 +34,12 @@ using namespace UMPS::Messaging::PublisherSubscriber;
 
 void proxy()
 {
+    ProxyOptions options;
+    options.setFrontendAddress(frontendAddress);
+    options.setFrontendHighWaterMark(100);
+    options.setBackendAddress(backendAddress);
+    options.setBackendHighWaterMark(200);
+    options.setTopic(topic);
     // Make a logger
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
@@ -40,7 +47,7 @@ void proxy()
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Initialize the server
     UMPS::Messaging::PublisherSubscriber::Proxy proxy(loggerPtr);
-    proxy.initialize(frontendAddress, backendAddress, topic);
+    proxy.initialize(options);
     // A thread runs the proxy
     std::thread t1(&UMPS::Messaging::PublisherSubscriber::Proxy::start,
                    &proxy);

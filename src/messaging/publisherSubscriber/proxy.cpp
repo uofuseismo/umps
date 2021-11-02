@@ -5,6 +5,7 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/publisherSubscriber/proxy.hpp"
+#include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
 #include "umps/messaging/authentication/enums.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
@@ -12,6 +13,27 @@
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
+
+namespace 
+{
+
+void checkOptions(const ProxyOptions &options)
+{
+    if (!options.haveFrontendAddress())
+    {
+        throw std::invalid_argument("Frontend address not specified");
+    }
+    if (!options.haveBackendAddress())
+    {
+        throw std::invalid_argument("Backend address not specified");
+    } 
+    if (!options.haveTopic())
+    {
+        throw std::invalid_argument("Topic not specified");
+    }
+}
+
+}
 
 class Proxy::ProxyImpl
 {
@@ -89,14 +111,16 @@ public:
             mHaveControl = false;
         }
     }
-    void bindBackend(const std::string &backendAddress)
+    void bindBackend() //const std::string &backendAddress)
     {
-        mBackendAddress = backendAddress;
+        mBackendAddress = mOptions.getBackendAddress();
         try
         {
             mLogger->debug("Attempting to bind to backend: "
                          + mBackendAddress);
             mBackend->bind(mBackendAddress);
+            int hwm = mOptions.getBackendHighWaterMark();
+            if (hwm > 0){mBackend->set(zmq::sockopt::sndhwm, hwm);}
             mHaveBackend = true;
         }
         catch (const std::exception &e)
@@ -108,15 +132,16 @@ public:
             throw std::runtime_error(errorMsg);
         }
     }
-    void connectFrontend(const std::string &frontendAddress)
+    void connectFrontend() //const std::string &frontendAddress)
     {
-        mFrontendAddress = frontendAddress;
+        mFrontendAddress = mOptions.getFrontendAddress(); //frontendAddress;
         try 
         {
             mLogger->debug("Attempting to connect to frontend: "
                          + mFrontendAddress);
             mFrontend->connect(mFrontendAddress);
-            //mFrontend->set(zmq::sockopt::rcvhwm, mHighWaterMark);
+            int hwm = mOptions.getFrontendHighWaterMark();
+            if (hwm > 0){mFrontend->set(zmq::sockopt::rcvhwm, hwm);}
             mHaveFrontend = true;
         }
         catch (const std::exception &e)
@@ -128,10 +153,9 @@ public:
             throw std::runtime_error(errorMsg);
         }
     }
-    void connectControl(const std::string &topic)
+    void connectControl() //const std::string &topic)
     {
-        mTopic = topic;
-        mControlAddress = "inproc://" + mTopic + "_control";
+        mControlAddress = "inproc://" + mOptions.getTopic() + "_control";
         // Connect the control
         try
         {
@@ -169,9 +193,10 @@ public:
     // The command socket issues terminate/pause/start messages to the control.
     std::unique_ptr<zmq::socket_t> mCommand = nullptr;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
+    // Options
+    ProxyOptions mOptions;
     std::string mFrontendAddress;
     std::string mBackendAddress;
-    std::string mTopic;
     std::string mControlAddress;
     Authentication::SecurityLevel mSecurityLevel
         = Authentication::SecurityLevel::GRASSLANDS;
@@ -210,49 +235,31 @@ Proxy& Proxy::operator=(Proxy &&proxy) noexcept
 }
 
 /// Setup grasslands proxy
-void Proxy::initialize(const std::string &frontendAddress,
-                       const std::string &backendAddress,
-                       const std::string &topic)
+void Proxy::initialize(const ProxyOptions &options)
 {
-    if (isEmpty(frontendAddress))
-    {
-        throw std::invalid_argument("Frontend address is blank");
-    }
-    if (isEmpty(backendAddress))
-    {
-        throw std::invalid_argument("Backend address is blank");
-    }
-    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    checkOptions(options);
+    pImpl->mOptions = options; 
     pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
     pImpl->disconnectControl();
     // (Re)Establish connections
-    pImpl->connectFrontend(frontendAddress);
-    pImpl->bindBackend(backendAddress);
-    pImpl->connectControl(topic);
+    pImpl->connectFrontend();
+    pImpl->bindBackend();
+    pImpl->connectControl();
     pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
     pImpl->mInitialized = true;
 }
 
 /// Setup strawhouse proxy
-void Proxy::initialize(const std::string &frontendAddress,
-                       const std::string &backendAddress,
-                       const std::string &topic,
+void Proxy::initialize(const ProxyOptions &options,
                        const bool isAuthenticationServer,
                        const std::string &domain)
 {
-    if (isEmpty(frontendAddress))
-    {   
-        throw std::invalid_argument("Frontend address is blank");
-    }   
-    if (isEmpty(backendAddress))
-    {   
-        throw std::invalid_argument("Backend address is blank");
-    }
-    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    checkOptions(options);
     if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
+    pImpl->mOptions = options;
     pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();
@@ -265,31 +272,21 @@ void Proxy::initialize(const std::string &frontendAddress,
         pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
     }
     // (Re)Establish connections
-    pImpl->connectFrontend(frontendAddress);
-    pImpl->bindBackend(backendAddress);
-    pImpl->connectControl(topic);
+    pImpl->connectFrontend();
+    pImpl->bindBackend();
+    pImpl->connectControl();
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
     pImpl->mInitialized = true;
 }
 
 /// Setup woodhouse proxy
 void Proxy::initialize(
-    const std::string &frontendAddress,
-    const std::string &backendAddress,
-    const std::string &topic,
+    const ProxyOptions &options,
     const Authentication::Certificate::UserNameAndPassword &credentials,
     const bool isAuthenticationServer,
     const std::string &domain)
 {
-    if (isEmpty(frontendAddress))
-    {
-        throw std::invalid_argument("Frontend address is blank");
-    }
-    if (isEmpty(backendAddress))
-    {
-        throw std::invalid_argument("Backend address is blank");
-    }
-    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    checkOptions(options);
     if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
     if (!isAuthenticationServer)
     {
@@ -302,6 +299,7 @@ void Proxy::initialize(
             throw std::invalid_argument("Password not set");
         }
     }
+    pImpl->mOptions = options;
     pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();
@@ -325,30 +323,20 @@ void Proxy::initialize(
                              credentials.getPassword());
     }
     // (Re)Establish connections
-    pImpl->connectFrontend(frontendAddress);
-    pImpl->bindBackend(backendAddress);
-    pImpl->connectControl(topic);
+    pImpl->connectFrontend();
+    pImpl->bindBackend();
+    pImpl->connectControl();
     pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
     pImpl->mInitialized = true;
 }
 
 /// Setup stonehouse CURVE server proxy
 void Proxy::initialize(
-    const std::string &frontendAddress,
-    const std::string &backendAddress,
-    const std::string &topic,
+    const ProxyOptions &options,
     const Authentication::Certificate::Keys &serverKeys,
     const std::string &domain)
 {
-    if (isEmpty(frontendAddress))
-    {
-        throw std::invalid_argument("Frontend address is blank");
-    }
-    if (isEmpty(backendAddress))
-    {
-        throw std::invalid_argument("Backend address is blank");
-    }
-    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    checkOptions(options);
     if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
     if (!serverKeys.havePublicKey())
     {
@@ -358,6 +346,7 @@ void Proxy::initialize(
     {
         throw std::invalid_argument("Server private key not set");
     }
+    pImpl->mOptions = options;
     pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();
@@ -381,31 +370,21 @@ void Proxy::initialize(
     pImpl->mBackend->set(zmq::sockopt::curve_secretkey,
                          serverPrivateKey.data());
     // (Re)Establish connections
-    pImpl->connectFrontend(frontendAddress);
-    pImpl->bindBackend(backendAddress);
-    pImpl->connectControl(topic);
+    pImpl->connectFrontend();
+    pImpl->bindBackend();
+    pImpl->connectControl();
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
     pImpl->mInitialized = true;
 }
 
 /// Setup a CURVE client proxy
 void Proxy::initialize(
-    const std::string &frontendAddress,
-    const std::string &backendAddress,
-    const std::string &topic,
+    const ProxyOptions &options,
     const Authentication::Certificate::Keys &serverKeys,
     const Authentication::Certificate::Keys &clientKeys,
     const std::string &domain)
 {
-    if (isEmpty(frontendAddress))
-    {
-        throw std::invalid_argument("Frontend address is blank");
-    }
-    if (isEmpty(backendAddress))
-    {
-        throw std::invalid_argument("Backend address is blank");
-    }
-    if (isEmpty(topic)){throw std::invalid_argument("Topic is blank");}
+    checkOptions(options);
     if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
     if (!serverKeys.havePublicKey())
     {
@@ -419,6 +398,7 @@ void Proxy::initialize(
     {
         throw std::invalid_argument("Client private key not set");
     }
+    pImpl->mOptions = options;
     pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();
@@ -446,9 +426,9 @@ void Proxy::initialize(
     pImpl->mBackend->set(zmq::sockopt::curve_secretkey,
                          clientPrivateKey.data());
     // (Re)Establish connections
-    pImpl->connectFrontend(frontendAddress);
-    pImpl->bindBackend(backendAddress);
-    pImpl->connectControl(topic);
+    pImpl->connectFrontend();
+    pImpl->bindBackend();
+    pImpl->connectControl();
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
     pImpl->mInitialized = true;
 }
