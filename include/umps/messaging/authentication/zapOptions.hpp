@@ -2,6 +2,11 @@
 #define UMPS_MESSAGING_AUTHENTICATION_ZAPOPTIONS_HPP
 #include <memory>
 #include "umps/messaging/authentication/enums.hpp"
+// Forward declarations
+namespace zmq
+{
+ class socket_t;
+}
 namespace UMPS::Messaging::Authentication::Certificate
 {
  class UserNameAndPassword;
@@ -48,7 +53,10 @@ public:
     /// @{
     /// @brief This enables the grasslands security pattern.  Effectively, there
     ///        is no security.  This is the default security pattern.
-    void setGrasslands();
+    void setGrasslandsClient() noexcept;
+    /// @brief This enables the grasslands security pattern.  Effectively, there
+    ///        is no security.  This is the default security pattern.
+    void setGrasslandsServer() noexcept;
     /// @}
     
     /// @name Strawhouse
@@ -126,7 +134,7 @@ public:
     /// @{
     /// @result The currently set security level.
     /// @note This is automatically set by the most recent call to the
-    ///       \c setGrasslands(),
+    ///       \c setGrasslandsClient(), \c setGrasslandsServer(),
     ///       \c setStrawhouseClient(), \c setStrawhouseServer(),
     ///       \c setWoodhouseClient(), \c setWoodhouseServer(),
     ///       \c setStonehouseClient(), \c setStonehouseServer().
@@ -134,12 +142,23 @@ public:
     /// @result True indicates this is a ZAP authentication server.
     ///         False indicates this is a ZAP authentication client.
     /// @note This is automatically set by the most recent call to the
-    ///       \c setGrasslands(),
+    ///       \c setGrasslandsClient(), \c setGrasslandsServer(),
     ///       \c setStrawhouseClient(), \c setStrawhouseServer(),
     ///       \c setWoodhouseClient(), \c setWoodhouseServer(),
     ///       \c setStonehouseClient(), \c setStonehouseServer().
     [[nodiscard]] bool isAuthenticationServer() const noexcept;
     /// @}
+
+    /// @brief A utility routine that sets the ZAP options on the
+    ///        ZeroMQ socket.
+    /// @param[in,out] socket  The ZeroMQ socket.  On input, this socket must
+    ///                        not be connected when this is called, i.e.,
+    ///                        use this method before a zmq_bind or zmq_connect 
+    ///                        call.  On exit, the appropriate ZeroMQ ZAP
+    ///                        options for the desired security level will be
+    ///                        set on the socket.
+    /// @throws std::runtime_error if the options cannot be set.
+    void setSocketOptions(zmq::socket_t *socket) const;
 
     /// @name Destructors
     /// @{

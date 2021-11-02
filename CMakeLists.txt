@@ -79,6 +79,7 @@ set(MESSAGING_SRC
     src/messaging/authentication/sqlite3Authenticator.cpp
     src/messaging/authentication/grasslands.cpp
     src/messaging/authentication/user.cpp
+    src/messaging/authentication/zapOptions.cpp
     src/messaging/authentication/certificate/keys.cpp
     src/messaging/authentication/certificate/userNameAndPassword.cpp
     #src/messaging/authentication/generateKeyPair.cpp
