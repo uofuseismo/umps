@@ -9,6 +9,7 @@
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/proxy.hpp"
 #include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
@@ -31,15 +32,18 @@ const double time = 5600;
 const uint64_t idBase = 100;
 const UMPS::MessageFormats::Pick::Polarity polarity = UMPS::MessageFormats::Pick::Polarity::UP;
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace UAuth = UMPS::Messaging::Authentication;
 
 void proxy()
 {
     ProxyOptions options;
+    UAuth::ZAPOptions zapOptions;
     options.setFrontendAddress(frontendAddress);
     options.setFrontendHighWaterMark(100);
     options.setBackendAddress(backendAddress);
     options.setBackendHighWaterMark(200);
     options.setTopic(topic);
+    options.setZAPOptions(zapOptions);
     // Make a logger
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);

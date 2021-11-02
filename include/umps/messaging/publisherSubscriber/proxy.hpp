@@ -65,88 +65,15 @@ public:
 
     /// @name Initialization
     /// @{
-    /// @brief Initializes the proxy.  This is a grasslands pattern.
-    /// @param[in] frontendAddress  This is the address XSUB (publishers) will 
-    ///                             bind to.  This faces the internal network.
-    /// @param[in] backendAddress   This is the address XPUB (subscribers) will
-    ///                             connect to. This faces the external network.
-    /// @param[in] topic   This is the proxy's topic.  This should be unique
-    ///                    since an inter-process communication context will
-    ///                    be created from this name and be used to control
-    ///                    this proxy.
-    /// @throws std::invalid_argument if any of the addresses are blank.
+    /// @brief Initializes the proxy.
+    /// @param[in] options   The options must contain the frontend and backend
+    ///                      addresses as well as the proxy's topic.
+    ///                      Additionally, options will contain the security
+    ///                      protocol.
+    /// @throws std::invalid_argument the frontend or backend address is not
+    ///         specified or the topic is not specified.
     /// @throws std::runtime_error if the creation of the proxy fails.
     void initialize(const ProxyOptions &options);
-    /// @brief Initializes the proxy.  This is a strawhouse pattern that can
-    ///        validate IP addresses.
-    /// @param[in] frontendAddress  This is the address XSUB (publishers) will 
-    ///                             bind to.  This faces the internal network.
-    /// @param[in] backendAddress   This is the address XPUB (subscribers) will
-    ///                             connect to. This faces the external network.
-    /// @param[in] topic   This is the proxy's topic.  This should be unique
-    ///                    since an inter-process communication context will
-    ///                    be created from this name and be used to control
-    ///                    this proxy.
-    /// @param[in] isAuthenticationServer  True indicates this connection is a
-    ///                                    ZAP server which means this machine
-    ///                                    will validate users.
-    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if any of the addresses are blank.
-    /// @throws std::runtime_error if the creation of the proxy fails.
-    void initialize(const ProxyOptions &options,
-                    bool isAuthenticationServer,
-                    const std::string &zapDomain = "global");
-    /// @brief Initializes the proxy.  This is a woodhouse pattern that can
-    ///        validate IP addresses and usernames and passwords.
-    /// @param[in] frontendAddress  This is the address XSUB (publishers) will 
-    ///                             bind to.  This faces the internal network.
-    /// @param[in] backendAddress   This is the address XPUB (subscribers) will
-    ///                             connect to. This faces the external network.
-    /// @param[in] topic   The proxy's topic.
-    /// @param[in] credentials  The client's user name and password.  This
-    ///                         is only accessed if this is not an 
-    ///                         authentication server.
-    /// @param[in] isAuthenticationServer  True indicates that this server will
-    ///                                    authenticate credentials.
-    /// @param[in] zapDomain    The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if the user name and password are not set
-    ///         on the credentials and this is not an authentication server.
-    void initialize(const ProxyOptions &options,
-                    const Authentication::Certificate::UserNameAndPassword &credentials,
-                    bool isAuthenticationServer,
-                    const std::string &zapDomain = "global");
-    /// @brief Initializes the proxy as a CURVE server.  This is a stonehouse
-    ///        pattern that can validate IP addresses and public keys.
-    /// @param[in] frontendAddress  This is the address XSUB (publishers) will 
-    ///                             bind to.  This faces the internal network.
-    /// @param[in] backendAddress   This is the address XPUB (subscribers) will
-    ///                             connect to. This faces the external network.
-    /// @param[in] topic    The proxy's topic.
-    /// @param[in] serverKeys  The server's public key.
-    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if any of the addresses are blank or the
-    ///         server's public key or private key is not set. 
-    /// @throws std::runtime_error if the creation of the proxy fails.
-    void initialize(const ProxyOptions &options,
-                    const Authentication::Certificate::Keys &serverKeys,
-                    const std::string &zapDomain = "global");
-    /// @throws std::invalid_argument if any of the addresses are blank, the
-    ///         server's public keys are not set, the client's public key is
-    ///         not set, or the client's private key is not set. 
-    /// @param[in] frontendAddress  This is the address XSUB (publishers) will 
-    ///                             bind to.  This faces the internal network.
-    /// @param[in] backendAddress   This is the address XPUB (subscribers) will
-    ///                             connect to. This faces the external network.
-    /// @param[in] topic    The proxy's topic.
-    /// @param[in] serverKeys  The server's public key.
-    /// @param[in] clientKeys  The client's public and private key.
-    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
-    /// @throws std::runtime_error if the creation of the proxy fails.
-    void initialize(const ProxyOptions &options,
-                    const Authentication::Certificate::Keys &serverKeys,
-                    const Authentication::Certificate::Keys &clientKeys,
-                    const std::string &zapDomain = "global");
-
     /// @result The security level of the connection.
     [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
 

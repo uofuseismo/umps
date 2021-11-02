@@ -9,6 +9,7 @@
 #include "umps/messaging/authentication/enums.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
@@ -234,9 +235,10 @@ Proxy& Proxy::operator=(Proxy &&proxy) noexcept
     return *this;
 }
 
-/// Setup grasslands proxy
+/// Setup the socket
 void Proxy::initialize(const ProxyOptions &options)
 {
+    // Check and copy options
     checkOptions(options);
     pImpl->mOptions = options; 
     pImpl->mInitialized = false;
@@ -244,192 +246,15 @@ void Proxy::initialize(const ProxyOptions &options)
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
     pImpl->disconnectControl();
+    // Create zap options
+    auto zapOptions = pImpl->mOptions.getZAPOptions();
+    zapOptions.setSocketOptions(&*pImpl->mFrontend);
+    zapOptions.setSocketOptions(&*pImpl->mBackend);
     // (Re)Establish connections
     pImpl->connectFrontend();
     pImpl->bindBackend();
     pImpl->connectControl();
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
-    pImpl->mInitialized = true;
-}
-
-/// Setup strawhouse proxy
-void Proxy::initialize(const ProxyOptions &options,
-                       const bool isAuthenticationServer,
-                       const std::string &domain)
-{
-    checkOptions(options);
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
-    pImpl->mOptions = options;
-    pImpl->mInitialized = false;
-    // Disconnect from old connections
-    pImpl->disconnectFrontend();
-    pImpl->disconnectBackend();
-    pImpl->disconnectControl();
-    // Authentication server?
-    if (isAuthenticationServer)
-    {
-        pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
-        pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
-    }
-    // (Re)Establish connections
-    pImpl->connectFrontend();
-    pImpl->bindBackend();
-    pImpl->connectControl();
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
-    pImpl->mInitialized = true;
-}
-
-/// Setup woodhouse proxy
-void Proxy::initialize(
-    const ProxyOptions &options,
-    const Authentication::Certificate::UserNameAndPassword &credentials,
-    const bool isAuthenticationServer,
-    const std::string &domain)
-{
-    checkOptions(options);
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
-    if (!isAuthenticationServer)
-    {
-        if (!credentials.haveUserName())
-        {
-            throw std::invalid_argument("Username not set");
-        }
-        if (!credentials.havePassword())
-        {
-            throw std::invalid_argument("Password not set");
-        }
-    }
-    pImpl->mOptions = options;
-    pImpl->mInitialized = false;
-    // Disconnect from old connections
-    pImpl->disconnectFrontend();
-    pImpl->disconnectBackend();
-    pImpl->disconnectControl();
-    // Must set this in woodhouse/stonehouse/ironhouse
-    pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
-    pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
-    if (!isAuthenticationServer)
-    {
-        pImpl->mFrontend->set(zmq::sockopt::plain_server, 0);
-        pImpl->mFrontend->set(zmq::sockopt::plain_username,
-                              credentials.getUserName());
-        pImpl->mFrontend->set(zmq::sockopt::plain_password,
-                              credentials.getPassword());
-
-        pImpl->mBackend->set(zmq::sockopt::plain_server, 0);
-        pImpl->mBackend->set(zmq::sockopt::plain_username,
-                             credentials.getUserName());
-        pImpl->mBackend->set(zmq::sockopt::plain_password,
-                             credentials.getPassword());
-    }
-    // (Re)Establish connections
-    pImpl->connectFrontend();
-    pImpl->bindBackend();
-    pImpl->connectControl();
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
-    pImpl->mInitialized = true;
-}
-
-/// Setup stonehouse CURVE server proxy
-void Proxy::initialize(
-    const ProxyOptions &options,
-    const Authentication::Certificate::Keys &serverKeys,
-    const std::string &domain)
-{
-    checkOptions(options);
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
-    if (!serverKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Server public key not set");
-    }
-    if (!serverKeys.havePrivateKey())
-    {
-        throw std::invalid_argument("Server private key not set");
-    }
-    pImpl->mOptions = options;
-    pImpl->mInitialized = false;
-    // Disconnect from old connections
-    pImpl->disconnectFrontend();
-    pImpl->disconnectBackend();
-    pImpl->disconnectControl();
-    // Set ZAP protocol
-    auto serverPublicKey = serverKeys.getPublicTextKey();
-    auto serverPrivateKey = serverKeys.getPrivateTextKey();
-
-    pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
-    pImpl->mFrontend->set(zmq::sockopt::curve_server, 1);
-    pImpl->mFrontend->set(zmq::sockopt::curve_publickey,
-                          serverPublicKey.data());
-    pImpl->mFrontend->set(zmq::sockopt::curve_secretkey,
-                          serverPrivateKey.data()); 
-
-    pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
-    pImpl->mBackend->set(zmq::sockopt::curve_server, 1);
-    pImpl->mBackend->set(zmq::sockopt::curve_publickey,
-                         serverPublicKey.data());
-    pImpl->mBackend->set(zmq::sockopt::curve_secretkey,
-                         serverPrivateKey.data());
-    // (Re)Establish connections
-    pImpl->connectFrontend();
-    pImpl->bindBackend();
-    pImpl->connectControl();
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
-    pImpl->mInitialized = true;
-}
-
-/// Setup a CURVE client proxy
-void Proxy::initialize(
-    const ProxyOptions &options,
-    const Authentication::Certificate::Keys &serverKeys,
-    const Authentication::Certificate::Keys &clientKeys,
-    const std::string &domain)
-{
-    checkOptions(options);
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is blank");}
-    if (!serverKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Server public key not set");
-    }
-    if (!clientKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Client public key not set");
-    }
-    if (!clientKeys.havePrivateKey())
-    {
-        throw std::invalid_argument("Client private key not set");
-    }
-    pImpl->mOptions = options;
-    pImpl->mInitialized = false;
-    // Disconnect from old connections
-    pImpl->disconnectFrontend();
-    pImpl->disconnectBackend();
-    pImpl->disconnectControl();
-    // Set ZAP protocol
-    auto serverPublicKey  = serverKeys.getPublicTextKey();
-    auto clientPublicKey  = clientKeys.getPublicTextKey();
-    auto clientPrivateKey = clientKeys.getPrivateTextKey();
-    pImpl->mFrontend->set(zmq::sockopt::zap_domain, domain);
-    pImpl->mFrontend->set(zmq::sockopt::curve_server, 0);
-    pImpl->mFrontend->set(zmq::sockopt::curve_serverkey,
-                          serverPublicKey.data());
-    pImpl->mFrontend->set(zmq::sockopt::curve_publickey,
-                          clientPublicKey.data());
-    pImpl->mFrontend->set(zmq::sockopt::curve_secretkey,
-                          clientPrivateKey.data());
-
-    pImpl->mBackend->set(zmq::sockopt::zap_domain, domain);
-    pImpl->mBackend->set(zmq::sockopt::curve_server, 0);
-    pImpl->mBackend->set(zmq::sockopt::curve_serverkey,
-                        serverPublicKey.data());
-    pImpl->mBackend->set(zmq::sockopt::curve_publickey,
-                         clientPublicKey.data());
-    pImpl->mBackend->set(zmq::sockopt::curve_secretkey,
-                         clientPrivateKey.data());
-    // (Re)Establish connections
-    pImpl->connectFrontend();
-    pImpl->bindBackend();
-    pImpl->connectControl();
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
+    pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
     pImpl->mInitialized = true;
 }
 
