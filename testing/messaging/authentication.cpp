@@ -211,11 +211,17 @@ TEST(Messaging, User)
 
 TEST(Messaging, ZAPOptions)
 {
+    zmq::context_t context(1);
+    zmq::socket_t socket(context, zmq::socket_type::pub);
     Certificate::Keys clientKeys, serverKeys;
     serverKeys.create();
     serverKeys.setMetadata("Test serverkey");
     clientKeys.create();
     clientKeys.setMetadata("Test clientkey");
+    auto serverPublicKeyRef  = std::string(serverKeys.getPublicTextKey().data());
+    auto serverPrivateKeyRef = std::string(serverKeys.getPrivateTextKey().data());
+    auto clientPublicKeyRef  = std::string(clientKeys.getPublicTextKey().data());
+    auto clientPrivateKeyRef = std::string(clientKeys.getPrivateTextKey().data());
 
     const std::string defaultDomain = "global";
     std::string domain = "globalTest";
@@ -235,6 +241,7 @@ TEST(Messaging, ZAPOptions)
     options.setGrasslandsServer();
     EXPECT_TRUE(options.isAuthenticationServer());
     EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+
     options.setGrasslandsClient();
     EXPECT_FALSE(options.isAuthenticationServer());
     EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
@@ -242,6 +249,10 @@ TEST(Messaging, ZAPOptions)
     options.setStrawhouseServer();
     EXPECT_TRUE(options.isAuthenticationServer());
     EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STRAWHOUSE);
+    EXPECT_NO_THROW(options.setSocketOptions(&socket));
+    std::string domainWork(socket.get(zmq::sockopt::zap_domain).data());
+    EXPECT_EQ(domain, domainWork);
+
     options.setStrawhouseClient();
     EXPECT_FALSE(options.isAuthenticationServer());
     EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STRAWHOUSE);
@@ -249,6 +260,8 @@ TEST(Messaging, ZAPOptions)
     options.setWoodhouseServer();
     EXPECT_TRUE(options.isAuthenticationServer());
     EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::WOODHOUSE);
+    EXPECT_NO_THROW(options.setSocketOptions(&socket));
+    EXPECT_EQ(socket.get(zmq::sockopt::plain_server), 1); 
 
     EXPECT_NO_THROW(options.setWoodhouseClient(plainText));
     EXPECT_FALSE(options.isAuthenticationServer());
@@ -256,10 +269,23 @@ TEST(Messaging, ZAPOptions)
     auto plainTextCopy = options.getClientCredentials();
     EXPECT_EQ(plainTextCopy.getUserName(), plainText.getUserName());
     EXPECT_EQ(plainTextCopy.getPassword(), plainText.getPassword());
+    EXPECT_NO_THROW(options.setSocketOptions(&socket));
+    EXPECT_EQ(socket.get(zmq::sockopt::plain_server), 0);
+
 
     EXPECT_NO_THROW(options.setStonehouseServer(serverKeys));
     EXPECT_TRUE(options.isAuthenticationServer());
     EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STONEHOUSE);
+    EXPECT_NO_THROW(options.setSocketOptions(&socket));
+    EXPECT_EQ(socket.get(zmq::sockopt::curve_server), 1); 
+    auto publicKeyText
+        = std::string(socket.get(zmq::sockopt::curve_publickey).data());
+    auto privateKeyText
+        = std::string(socket.get(zmq::sockopt::curve_secretkey).data());
+    EXPECT_EQ(publicKeyText,  serverPublicKeyRef);
+    EXPECT_EQ(privateKeyText, serverPrivateKeyRef);
+    domainWork = std::string(socket.get(zmq::sockopt::zap_domain).data());
+    EXPECT_EQ(domain, domainWork);
 
     EXPECT_NO_THROW(options.setStonehouseClient(serverKeys, clientKeys));
     EXPECT_FALSE(options.isAuthenticationServer());
@@ -269,6 +295,18 @@ TEST(Messaging, ZAPOptions)
     EXPECT_EQ(serverKeysCopy.getPublicKey(),  serverKeys.getPublicKey());
     EXPECT_EQ(clientKeysCopy.getPublicKey(),  clientKeys.getPublicKey());
     EXPECT_EQ(clientKeysCopy.getPrivateKey(), clientKeys.getPrivateKey());
+    EXPECT_NO_THROW(options.setSocketOptions(&socket));
+    publicKeyText
+        = std::string(socket.get(zmq::sockopt::curve_serverkey).data());
+    EXPECT_EQ(publicKeyText,  serverPublicKeyRef);
+    publicKeyText
+        = std::string(socket.get(zmq::sockopt::curve_publickey).data());
+    privateKeyText
+        = std::string(socket.get(zmq::sockopt::curve_secretkey).data());
+    EXPECT_EQ(publicKeyText,  clientPublicKeyRef);
+    EXPECT_EQ(privateKeyText, clientPrivateKeyRef);
+    EXPECT_EQ(socket.get(zmq::sockopt::curve_server), 0);
+    EXPECT_EQ(domain, domainWork);
 
     // Check check on copy
     ZAPOptions optionsCopy(options);
