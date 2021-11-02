@@ -2,7 +2,7 @@
 #define UMPS_MESSAGING_AUTHENTICATION_ZAPOPTIONS_HPP
 #include <memory>
 #include "umps/messaging/authentication/enums.hpp"
-namespace UMPS::Messaging::Authentication::Certificates
+namespace UMPS::Messaging::Authentication::Certificate
 {
  class UserNameAndPassword;
  class Keys;
@@ -19,10 +19,29 @@ public:
     /// @{
     /// @brief Constructor.
     ZAPOptions();
-    /// @brief  
+    /// @brief Copy assignment operator.
+    /// @param[in] options  The options class from which to initialize
+    ///                     this class. 
     ZAPOptions(const ZAPOptions &options);
     /// @brief Move assignment operator.
+    /// @param[in,out] options  The options class from which to initialize
+    ///                         this class.  On exit, options's behavior is
+    ///                         undefined.
     ZAPOptions(ZAPOptions &&options) noexcept;
+    /// @}
+
+    /// @name Operators
+    /// @{
+    /// @brief Copy assignment.
+    /// @param[in] options   The options to copy to this.
+    /// @result A deep copy of the input options.
+    ZAPOptions& operator=(const ZAPOptions &options);
+    /// @brief Move assignment.
+    /// @param[in,out] options  The options class whose memory will be moved
+    ///                         to this.  On exit, options's behavior is
+    ///                         undefined.
+    /// @result The memory from options moved to this.
+    ZAPOptions& operator=(ZAPOptions &&options) noexcept;
     /// @}
 
     /// @name Grasslands
@@ -52,11 +71,13 @@ public:
     /// @param[in] credentials  The client's name and corresponding password.
     /// @throws std::invalid_argument if credentials.haveName() or 
     ///         credentials.havePassword() is false.
-    void setWoodhouseClient(const Certificates::UserNameAndPassword &credentials);
+    void setWoodhouseClient(const Certificate::UserNameAndPassword &credentials);
     /// @brief This enables the woodhouse security pattern for the server.
     ///        The server will be provided the client's name, password, and IP
     ///        on \c getDomain() then an auxiliary service will verify.
     void setWoodhouseServer() noexcept;
+    /// @result The client's username and password.
+    [[nodiscard]] Certificate::UserNameAndPassword getClientCredentials() const;
     /// @}
 
     /// @name Stonehouse
@@ -73,17 +94,23 @@ public:
     ///         is false. 
     /// @note Upon successful completion, isAuthenticationServer() will
     ///       be false.
-    void setStonehouseClient(const Certificates::Keys &serverKeys,
-                             const Certificates::Keys &clientKeys); 
+    void setStonehouseClient(const Certificate::Keys &serverKeys,
+                             const Certificate::Keys &clientKeys); 
     /// @brief This enbales the stonehouse security pattern for the server.
     ///        The server will be provided the client's public key and IP
     ///        on \c getDomain() then an auxiliary service will verify.
     /// @param[in] serverKeys  The server's public and private keys.
     /// @throws std::invalid_argument if server.havePublicKey() or 
     ///         \c server.havePrivateKey() is false.
-    void setStonehouseServer(const Certificates::Keys &serverKeys);
+    void setStonehouseServer(const Certificate::Keys &serverKeys);
+    /// @result The server's public and, potentially, private key information.
+    [[nodiscard]] Certificate::Keys getServerKeys() const;
+    /// @result The client's public and, potentially, private key information. 
+    [[nodiscard]] Certificate::Keys getClientKeys() const;
     /// @}
 
+    /// @name ZAP Domain
+    /// @{
     /// @brief Sets the ZeroMQ Authentication Protocol Domain.  Effectively,
     ///        ZeroMQ will send an inter-process message to the authenticator
     ///        on a connection that utilizes this name.
@@ -93,12 +120,35 @@ public:
     void setDomain(const std::string &domain);
     /// @result The ZAP domain.  By default this is "global".
     [[nodiscard]] std::string getDomain() const noexcept;
+    /// @}
 
+    /// @name Auxiliary Properties
+    /// @{
     /// @result The currently set security level.
+    /// @note This is automatically set by the most recent call to the
+    ///       \c setGrasslands(),
+    ///       \c setStrawhouseClient(), \c setStrawhouseServer(),
+    ///       \c setWoodhouseClient(), \c setWoodhouseServer(),
+    ///       \c setStonehouseClient(), \c setStonehouseServer().
     [[nodiscard]] SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates this is a ZAP authentication server.
     ///         False indicates this is a ZAP authentication client.
+    /// @note This is automatically set by the most recent call to the
+    ///       \c setGrasslands(),
+    ///       \c setStrawhouseClient(), \c setStrawhouseServer(),
+    ///       \c setWoodhouseClient(), \c setWoodhouseServer(),
+    ///       \c setStonehouseClient(), \c setStonehouseServer().
     [[nodiscard]] bool isAuthenticationServer() const noexcept;
+    /// @}
+
+    /// @name Destructors
+    /// @{
+    /// @brief Resets the class to the grasslands pattern and releases
+    ///        all memory.
+    void clear() noexcept;
+    /// @brief Destructor.
+    ~ZAPOptions();
+    /// @}
 private:
     class ZAPOptionsImpl; 
     std::unique_ptr<ZAPOptionsImpl> pImpl;

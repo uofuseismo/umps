@@ -1,5 +1,6 @@
 #ifndef PRIVATE_AUTHENTICATION_ZAPOPTIONS_HPP
 #define PRIVATE_AUTHENTICATION_ZAPOPTIONS_HPP
+#include <cassert>
 #include <zmq.hpp>
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
@@ -108,6 +109,60 @@ void setStonehouseClient(
                 clientPublicKey.data());
     socket->set(zmq::sockopt::curve_secretkey,
                 clientPrivateKey.data());
+}
+
+void setZAPOptionsOnSocket(
+    zmq::socket_t *socket,
+    const UMPS::Messaging::Authentication::ZAPOptions &options)
+{
+    namespace UAuth = UMPS::Messaging::Authentication;
+    // Nothing to do - exit early
+    if (options.getSecurityLevel() == UAuth::SecurityLevel::GRASSLANDS)
+    {
+        return;
+    }
+    // Get some information required for all higher order security
+    auto isAuthenticationServer = options.isAuthenticationServer();
+    std::string zapDomain;
+    if (isAuthenticationServer){zapDomain = options.getDomain();}
+
+    if (options.getSecurityLevel() == UAuth::SecurityLevel::STRAWHOUSE)
+    {
+        setStrawhouse(socket, isAuthenticationServer, zapDomain);
+    }
+    else if (options.getSecurityLevel() == UAuth::SecurityLevel::WOODHOUSE)
+    {
+        UAuth::Certificate::UserNameAndPassword credentials;
+        if (isAuthenticationServer)
+        {
+            credentials = options.getClientCredentials();
+        }
+        setWoodhouse(socket, credentials, isAuthenticationServer, zapDomain);
+    }
+    else if (options.getSecurityLevel() == UAuth::SecurityLevel::STONEHOUSE)
+    {
+        auto serverKeys = options.getServerKeys();
+        if (!isAuthenticationServer)
+        {
+            auto clientKeys = options.getClientKeys();
+            setStonehouseClient(socket, serverKeys, clientKeys, zapDomain);
+        }
+        else
+        {
+            setStonehouseServer(socket, serverKeys, zapDomain);
+        }
+    }
+    else if (options.getSecurityLevel() == UAuth::SecurityLevel::IRONHOUSE)
+    {
+        throw std::runtime_error("Ironhouse not handled");
+    }
+    else
+    {
+#ifndef NDEBUG
+        assert(false);
+#endif
+        throw std::runtime_error("Unhandled security protocol in zapOptions");
+    }
 }
 
 }
