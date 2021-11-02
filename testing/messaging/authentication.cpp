@@ -6,9 +6,10 @@
 #include "umps/messaging/authentication/user.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/service.hpp"
-#include "umps/messaging/publisherSubscriber/publisher.hpp"
-#include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messageFormats/pick.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
+//#include "umps/messaging/publisherSubscriber/publisher.hpp"
+//#include "umps/messaging/publisherSubscriber/subscriber.hpp"
+//#include "umps/messageFormats/pick.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include "private/authentication/checkIP.hpp"
@@ -206,6 +207,78 @@ TEST(Messaging, User)
     EXPECT_EQ(userCopy.getPrivileges(), privileges);
 
 
+}
+
+TEST(Messaging, ZAPOptions)
+{
+    Certificate::Keys clientKeys, serverKeys;
+    serverKeys.create();
+    serverKeys.setMetadata("Test serverkey");
+    clientKeys.create();
+    clientKeys.setMetadata("Test clientkey");
+
+    const std::string defaultDomain = "global";
+    std::string domain = "globalTest";
+
+    const std::string userName = "user";
+    const std::string password = "password";
+    Certificate::UserNameAndPassword plainText;
+    plainText.setUserName(userName);
+    plainText.setPassword(password);
+
+    ZAPOptions options;
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+    EXPECT_EQ(options.getDomain(), defaultDomain);
+
+    options.setDomain(domain);
+
+    options.setGrasslandsServer();
+    EXPECT_TRUE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+    options.setGrasslandsClient();
+    EXPECT_FALSE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+
+    options.setStrawhouseServer();
+    EXPECT_TRUE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STRAWHOUSE);
+    options.setStrawhouseClient();
+    EXPECT_FALSE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STRAWHOUSE);
+
+    options.setWoodhouseServer();
+    EXPECT_TRUE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::WOODHOUSE);
+
+    EXPECT_NO_THROW(options.setWoodhouseClient(plainText));
+    EXPECT_FALSE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::WOODHOUSE);
+    auto plainTextCopy = options.getClientCredentials();
+    EXPECT_EQ(plainTextCopy.getUserName(), plainText.getUserName());
+    EXPECT_EQ(plainTextCopy.getPassword(), plainText.getPassword());
+
+    EXPECT_NO_THROW(options.setStonehouseServer(serverKeys));
+    EXPECT_TRUE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STONEHOUSE);
+
+    EXPECT_NO_THROW(options.setStonehouseClient(serverKeys, clientKeys));
+    EXPECT_FALSE(options.isAuthenticationServer());
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STONEHOUSE);
+    auto serverKeysCopy = options.getServerKeys();
+    auto clientKeysCopy = options.getClientKeys(); 
+    EXPECT_EQ(serverKeysCopy.getPublicKey(),  serverKeys.getPublicKey());
+    EXPECT_EQ(clientKeysCopy.getPublicKey(),  clientKeys.getPublicKey());
+    EXPECT_EQ(clientKeysCopy.getPrivateKey(), clientKeys.getPrivateKey());
+
+    // Check check on copy
+    ZAPOptions optionsCopy(options);
+    EXPECT_EQ(optionsCopy.getDomain(), domain);
+    EXPECT_FALSE(optionsCopy.isAuthenticationServer());
+    EXPECT_EQ(optionsCopy.getSecurityLevel(), SecurityLevel::STONEHOUSE);
+
+    options.clear();
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+    EXPECT_EQ(options.getDomain(), defaultDomain);
 }
 
 TEST(Messaging, SQLite3Authenticator)

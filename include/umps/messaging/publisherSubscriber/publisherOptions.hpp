@@ -19,6 +19,16 @@ public:
     ///         have been set.
     [[nodiscard]] bool haveAddresses() const noexcept;
 
+    /// @name ZeroMQ Authentication Protocol Options
+    /// @{
+    /// @brief Defines the ZAP options to be used when configuring the socket.
+    /// @param[in] options  The ZAP options.
+    void setZAPOptions(const Authentication::ZAPOptions &options);
+    /// @result The ZAP options.  By default this will configure sockets with
+    ///         the grasslands (no security) pattern.
+    Authentication::ZAPOptions getZAPOptions() const noexcept;
+    /// @}
+
     /// @name Destructors
     /// @{
     void clear() noexcept;

@@ -1,5 +1,6 @@
 #include <string>
 #include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
@@ -7,6 +8,7 @@ using namespace UMPS::Messaging::PublisherSubscriber;
 class ProxyOptions::ProxyOptionsImpl
 {
 public:
+    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string mBackendAddress;
     std::string mFrontendAddress;
     std::string mTopic;
@@ -145,4 +147,17 @@ std::string ProxyOptions::getTopic() const
 bool ProxyOptions::haveTopic() const noexcept
 {
     return !pImpl->mTopic.empty();
+}
+
+/// ZAP options
+void ProxyOptions::setZAPOptions(
+    const UMPS::Messaging::Authentication::ZAPOptions &options)
+{
+    pImpl->mZAPOptions = options;
+} 
+
+UMPS::Messaging::Authentication::ZAPOptions 
+    ProxyOptions::getZAPOptions() const noexcept
+{
+    return pImpl->mZAPOptions;
 }
