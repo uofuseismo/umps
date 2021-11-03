@@ -139,7 +139,7 @@ public:
 //    void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
 //                                        (const UMPS::MessageFormats::IMessage *)> &callback);
     void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-                                         (const std::string &, const uint8_t *, size_t)> &callback);
+                                         (const std::string &, const void *, size_t)> &callback);
     /// @result True indicates that the callback was set.
     [[nodiscard]] bool haveCallback() const noexcept;
     /// @result True indicates that the class is initialized.

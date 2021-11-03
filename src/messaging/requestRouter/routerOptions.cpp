@@ -1,6 +1,7 @@
 #include <string>
 #include <chrono>
 #include "umps/messaging/requestRouter/routerOptions.hpp"
+#include "umps/messageFormats/message.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
@@ -11,8 +12,14 @@ class RouterOptions::RouterOptionsImpl
 public:
     UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string mEndPoint;
+    std::function<
+          std::unique_ptr<UMPS::MessageFormats::IMessage>
+          (const std::string &messageType, const void *contents,
+           const size_t length)
+    > mCallback;
     std::chrono::milliseconds mPollTimeOutInMilliSeconds{10};
     int mHighWaterMark = 0;
+    bool mHaveCallback = false;
 };
 
 /// C'tor
@@ -118,3 +125,14 @@ std::chrono::milliseconds RouterOptions::getPollTimeOut() const noexcept
 {
     return pImpl->mPollTimeOutInMilliSeconds;
 }
+
+/*
+void RouterOptions::setCallback(
+    const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+                        (const std::string &, const uint8_t *, size_t)>
+                        &callback)
+{
+    pImpl->mCallback = callback;
+    pImpl->mHaveCallback = true;
+}
+*/

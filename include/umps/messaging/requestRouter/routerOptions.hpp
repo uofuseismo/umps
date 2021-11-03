@@ -1,16 +1,39 @@
 #ifndef UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
 #define UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
 #include <memory>
+#include <functional>
 #include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
-namespace UMPS::Messaging::Authentication
+namespace UMPS
 {
- class ZAPOptions;
+ namespace MessageFormats
+ {
+  class IMessage;
+ }
+ namespace Messaging::Authentication
+ {
+  class ZAPOptions;
+ }
 }
 namespace UMPS::Messaging::RequestRouter
 {
 /// @class RouterOptions "routerOptions.hpp" "umps/messaging/requestRouter/routerOptions.hpp"
-/// @brief Defines the router socket options.
+/// @brief Defines the router socket options.  A router works like a service.
+///        After binding to the endpoint, the service will run in a thread
+///        according to the following pseudo-code
+///        while (true)
+///        {
+///            Wait for message on the end point until specified time out
+///            if (Message Received)
+///            {
+///                Process message with callback
+///                Return response to sender.
+///            }
+///            if (Termination Requested)
+///            {
+///                Exit while loop.
+///            }
+///        }
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class RouterOptions
 {
@@ -100,6 +123,21 @@ public:
     void clear() noexcept;
     /// @brief Destructor.
     ~RouterOptions();
+    /// @}
+
+    /// @name Callback
+    /// @{
+    /// @brief The callback function is specified by the user and processes
+    ///        messages of type messageType, with data of type void * which
+    ///        the callback converts to the appropriate datatype, and having
+    ///        length elements.  The result is an UMPS message that the router
+    ///        can transmit on the wire.  The callback function should be very 
+    ///        robust and not throw exceptions.
+    /// @param[in] callback  The callback function which processes the message.
+    void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+                                         (const std::string &messageType, const void *data, size_t length)> &callback);
+    /// @result True indicates the callback was set.
+    [[nodiscard]] bool haveCallback() const noexcept; 
     /// @}
 private:
     class RouterOptionsImpl;

@@ -80,7 +80,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::function<
           std::unique_ptr<UMPS::MessageFormats::IMessage>
-          (const std::string &messageType, const uint8_t *contents,
+          (const std::string &messageType, const void *contents,
            const size_t length)
     > mCallback;
     RouterOptions mOptions;
@@ -116,7 +116,7 @@ Router::~Router() = default;
 //void Router::initialize(const std::string &endPoint,
 void Router::setCallback(
     const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-                        (const std::string &, const uint8_t *, size_t)>
+                        (const std::string &, const void *, size_t)>
                         &callback)
 {
     pImpl->mCallback = callback;
@@ -364,7 +364,7 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
                 pImpl->mLogger->error(errorMsg);
                 continue;
             }
-            auto messageContents = reinterpret_cast<const uint8_t *>
+            auto messageContents = reinterpret_cast<const void *>
                                    (messagesReceived.at(3).data());
             auto messageSize = messagesReceived.at(3).size();
             auto response = pImpl->mCallback(messageType,

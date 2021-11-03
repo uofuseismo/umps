@@ -22,7 +22,7 @@ class ProcessData
 public:
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         process(const std::string &messageType,
-                const uint8_t *messageContents, const size_t length)
+                const void *messageContents, const size_t length)
     {
         UMPS::Services::Incrementer::Request request;
         auto response
@@ -30,7 +30,9 @@ public:
         //std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
         if (messageType == request.getMessageType())
         {
-            request.fromCBOR(messageContents, length);
+            auto cborMessageContents
+                = reinterpret_cast<const uint8_t *> (messageContents);
+            request.fromCBOR(cborMessageContents, length);
             response->setIdentifier(request.getIdentifier());
             //std::cout << "Unpacking: " << request.getIdentifier() << std::endl;
             response->setValue(request.getIdentifier());

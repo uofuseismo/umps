@@ -35,7 +35,7 @@ public:
     /// The callback to handle incrementer requests
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
-                 const uint8_t *messageContents, const size_t length) noexcept
+                 const void *messageContents, const size_t length) noexcept
     {
         mLogger->debug("ServiceImpl::callback: Message of type: " + messageType 
                      + " with length: " + std::to_string(length)
@@ -48,7 +48,9 @@ public:
             // Unpack the request
             try
             {
-                request.fromCBOR(messageContents, length);
+                auto cborMessageContents
+                    = static_cast<const uint8_t *> (messageContents); 
+                request.fromCBOR(cborMessageContents, length);
             }
             catch (const std::exception &e)
             {
