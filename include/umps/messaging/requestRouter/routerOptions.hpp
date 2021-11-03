@@ -1,5 +1,6 @@
 #ifndef UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
 #define UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
+#include <map>
 #include <memory>
 #include <functional>
 #include "umps/messaging/authentication/enums.hpp"
@@ -8,6 +9,7 @@ namespace UMPS
 {
  namespace MessageFormats
  {
+  class Messages;
   class IMessage;
  }
  namespace Messaging::Authentication
@@ -136,8 +138,24 @@ public:
     /// @param[in] callback  The callback function which processes the message.
     void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
                                          (const std::string &messageType, const void *data, size_t length)> &callback);
+    /// @result The callback function.
+    /// @throws std::invalid_argument if \c haveCallback() is false.
+    std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+        (const std::string &messageType, const void *data, size_t length)> getCallback() const;
     /// @result True indicates the callback was set.
     [[nodiscard]] bool haveCallback() const noexcept; 
+    /// @}
+
+    /// @name Message types
+    /// @{
+    /// @brief Adds a message format that the router can receive from ZeroMQ
+    ///        and process.
+    /// @param[in] message  The message type.
+    void addMessageFormat(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
+    /// @result The types of messages that the router can receive via
+    ///         ZeroMQ and process.
+    /// @note If this is empty then the router will listen for all messages.
+    UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
     /// @}
 private:
     class RouterOptionsImpl;

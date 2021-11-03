@@ -3,6 +3,7 @@
 #include <string>
 #include <thread>
 #include "umps/messaging/requestRouter/router.hpp"
+#include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/services/incrementer/request.hpp"
 #include "umps/services/incrementer/response.hpp"
@@ -90,7 +91,20 @@ void server()
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     ProcessData pStruct;
     // Initialize the server
+    UMPS::Messaging::RequestRouter::RouterOptions routerOptions;
+    routerOptions.setEndPoint(serverHost);
+    routerOptions.setCallback(std::bind(&ProcessData::process,
+                              &pStruct, //process,
+                              std::placeholders::_1,
+                              std::placeholders::_2,
+                              std::placeholders::_3));
+    std::unique_ptr<UMPS::MessageFormats::IMessage> messageSubscriptionType
+        = std::make_unique<UMPS::Services::Incrementer::Request> (); 
+    routerOptions.addMessageFormat(messageSubscriptionType);
+
     UMPS::Messaging::RequestRouter::Router server(loggerPtr);
+    server.initialize(routerOptions);
+/*
     server.bind(serverHost);
     server.setCallback(std::bind(&ProcessData::process,
                                  &pStruct, //process,
@@ -100,6 +114,7 @@ void server()
     std::unique_ptr<UMPS::MessageFormats::IMessage> messageSubscriptionType
         = std::make_unique<UMPS::Services::Incrementer::Request> ();
     server.addMessageType(messageSubscriptionType);
+*/
     // Launch the server
     std::thread t1(&UMPS::Messaging::RequestRouter::Router::start,
                    &server);

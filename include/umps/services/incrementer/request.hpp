@@ -88,7 +88,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     virtual void fromMessage(const char *data, size_t length) override final;
-    /// @result The message type - e.g., "DataPacket".
+    /// @result The message type.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
 

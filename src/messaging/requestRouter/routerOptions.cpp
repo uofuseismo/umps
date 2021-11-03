@@ -1,6 +1,8 @@
+#include <map>
 #include <string>
 #include <chrono>
 #include "umps/messaging/requestRouter/routerOptions.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
@@ -10,12 +12,13 @@ using namespace UMPS::Messaging::RequestRouter;
 class RouterOptions::RouterOptionsImpl
 {
 public:
+    UMPS::MessageFormats::Messages mMessageFormats;
     UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string mEndPoint;
     std::function<
-          std::unique_ptr<UMPS::MessageFormats::IMessage>
-          (const std::string &messageType, const void *contents,
-           const size_t length)
+        std::unique_ptr<UMPS::MessageFormats::IMessage>
+        (const std::string &messageType, const void *contents,
+         const size_t length)
     > mCallback;
     std::chrono::milliseconds mPollTimeOutInMilliSeconds{10};
     int mHighWaterMark = 0;
@@ -126,13 +129,43 @@ std::chrono::milliseconds RouterOptions::getPollTimeOut() const noexcept
     return pImpl->mPollTimeOutInMilliSeconds;
 }
 
-/*
+/// Sets the callback
 void RouterOptions::setCallback(
     const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-                        (const std::string &, const uint8_t *, size_t)>
+                        (const std::string &, const void *, size_t)>
                         &callback)
 {
     pImpl->mCallback = callback;
     pImpl->mHaveCallback = true;
 }
-*/
+
+std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+                        (const std::string &, const void *, size_t)>
+    RouterOptions::getCallback() const
+{
+    if (!haveCallback())
+    {
+        throw std::runtime_error("Callback not set");
+    }
+    return pImpl->mCallback;
+}
+
+bool RouterOptions::haveCallback() const noexcept
+{
+    return pImpl->mHaveCallback;
+}
+
+/// Add a message subscription
+void RouterOptions::addMessageFormat(
+    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
+{
+    if (message == nullptr){throw std::invalid_argument("Message is NULL");}
+    if (pImpl->mMessageFormats.contains(message)){return;}
+    pImpl->mMessageFormats.add(message);
+}
+
+
+UMPS::MessageFormats::Messages RouterOptions::getMessageFormats() const noexcept
+{
+    return pImpl->mMessageFormats;
+}

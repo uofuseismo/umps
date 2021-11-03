@@ -1,3 +1,4 @@
+#include <iostream>
 #include <atomic>
 #include <mutex>
 #include <chrono>
@@ -5,6 +6,7 @@
 #include <cassert>
 #include "umps/services/incrementer/service.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
+#include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/services/incrementer/counter.hpp"
 #include "umps/services/incrementer/response.hpp"
@@ -17,7 +19,7 @@ using namespace UMPS::Services::Incrementer;
 class Service::ServiceImpl
 {
 public:
-    /// Constructs
+    /// Constructors
     ServiceImpl() :
         mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
         mRouter(mLogger)
@@ -37,12 +39,15 @@ public:
         callback(const std::string &messageType,
                  const void *messageContents, const size_t length) noexcept
     {
-        mLogger->debug("ServiceImpl::callback: Message of type: " + messageType 
-                     + " with length: " + std::to_string(length)
-                     + " bytes was received.  Processing...");
+        if (mLogger->getLevel() >= UMPS::Logging::Level::DEBUG)
+        {
+            mLogger->debug("ServiceImpl::callback: Message of type: "
+                         + messageType 
+                         + " with length: " + std::to_string(length)
+                         + " bytes was received.  Processing...");
+        }
+        auto response = std::make_unique<Response> ();
         Request request;
-        auto response
-            = std::make_unique<Response> ();
         if (messageType == request.getMessageType())
         {
             // Unpack the request
@@ -159,8 +164,24 @@ void Service::initialize(const Parameters &parameters)
     auto increment = parameters.getIncrement();
     Counter counter;
     counter.initialize(name, initialValue, increment);
-    // Initialize the socket
+    // Initialize the socket - Step 1: Initialize options
+    Messaging::RequestRouter::RouterOptions routerOptions;
     auto clientAccessAddress = parameters.getClientAccessAddress();
+    routerOptions.setEndPoint(clientAccessAddress);
+    routerOptions.setCallback(std::bind(&ServiceImpl::callback,
+                                        &*this->pImpl,
+                                        std::placeholders::_1,
+                                        std::placeholders::_2,
+                                        std::placeholders::_3));
+    // Add the message types
+    std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
+        = std::make_unique<Request> (); 
+    routerOptions.addMessageFormat(requestType);
+    pImpl->mRouter.initialize(routerOptions); 
+    // Copy some last things
+    pImpl->mName = name;
+    pImpl->mInitialized = true;
+/*
     pImpl->mRouter.bind(clientAccessAddress);
     if (!pImpl->mRouter.isBound())
     {
@@ -168,8 +189,6 @@ void Service::initialize(const Parameters &parameters)
                                + clientAccessAddress);
     }
     // This service only handles request types
-    std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
-        = std::make_unique<Request> (); 
     pImpl->mRouter.addMessageType(requestType);
     // Bind a callback function so that requests can be processed and this
     // class's counter can be incremented.
@@ -187,6 +206,7 @@ void Service::initialize(const Parameters &parameters)
     pImpl->mParameters = parameters;
     pImpl->mName = name;
     pImpl->mInitialized = true;
+*/
 }
 
 /// Is the service initialized?
@@ -205,88 +225,6 @@ void Service::start()
     pImpl->mLogger->debug("Beginning service...");
     pImpl->mRouter.start(); // This should hang until the service is stopped
     pImpl->mLogger->debug("Thread exiting service");
-/*
-    pImpl->setRunning(true);
-    auto name = pImpl->mCounter.getName();
-    constexpr size_t nPollItems = 1; 
-    zmq::pollitem_t items[] =
-    {
-        {pImpl->mServer->handle(), 0, ZMQ_POLLIN, 0}
-    };
-    while (isRunning())
-    {
-        zmq::poll(&items[0], nPollItems, pImpl->mPollTimeOutMS);
-        if (items[0].revents & ZMQ_POLLIN)
-        {
-            // Get the next message
-            std::vector<zmq::message_t> messagesReceived;
-            zmq::recv_result_t receivedResult =
-                zmq::recv_multipart(*pImpl->mServer,
-                                    std::back_inserter(messagesReceived),
-                                    zmq::recv_flags::none);
-#ifndef NDEBUG
-            assert(*receivedResult == 2);
-#else
-            if (*receivedResult != 2)
-            {
-                pImpl->mLogger->error("Only 2-part messages handled");
-                //throw std::runtime_error("Only 2-part messages handled");
-            }
-#endif
-            // Process the message 
-            std::string messageType = messagesReceived.at(0).to_string();
-            const auto payload
-                = static_cast<uint8_t *> (messagesReceived.at(1).data());
-            auto messageLength = messagesReceived.at(1).size();
-            auto name = pImpl->mCounter.getName();
-            Response response;
-            try
-            {
-                Request request;
-                request.fromCBOR(payload, messageLength); 
-                auto id = request.getIdentifier();
-                response.setIdentifier(id);
-                // Ensure I'm counting the right item
-                auto item = request.getItem();
-                if (item != name)
-                {
-                    response.setValue(0);
-                    response.setReturnCode(ReturnCode::NO_ITEM);
-                    pImpl->mLogger->error("Request of type: " + item
-                                       + " does not match this counter's item: "
-                                       + name);
-                }
-                else
-                {
-                    try
-                    {
-                        auto nextValue = pImpl->mCounter.getNextValue();
-                        response.setValue(nextValue);
-                        response.setReturnCode(ReturnCode::SUCCESS);
-                    }
-                    catch (const std::exception &e)
-                    {
-                        pImpl->mLogger->error("Failed to get next counter");
-                        response.setReturnCode(ReturnCode::ALGORITHM_FAILURE);
-                    }
-                }
-            }
-            catch (const std::exception &e)
-            {
-                pImpl->mLogger->error("Failed to unpack request: "
-                                     + std::string(e.what()));
-                response.setReturnCode(ReturnCode::INVALID_MESSAGE);
-            }
-            // Send result back
-            auto cborMessage = response.toCBOR();
-            zmq::const_buffer header{messageType.data(), messageType.size()};
-            pImpl->mServer->send(header, zmq::send_flags::sndmore);
-            zmq::const_buffer buffer{cborMessage.data(), cborMessage.size()};
-            pImpl->mServer->send(buffer);
-        }
-    }
-    pImpl->mLogger->debug("Thread exiting service");
-*/
 }
 
 /// Gets the service name

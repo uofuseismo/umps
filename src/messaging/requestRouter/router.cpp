@@ -10,6 +10,7 @@
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
@@ -73,8 +74,9 @@ public:
        }
     }
 
-    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
-        mSubscriptions;
+//    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
+        //mSubscriptions;
+    UMPS::MessageFormats::Messages mMessageFormats;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mServer;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
@@ -114,6 +116,7 @@ Router::Router(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 Router::~Router() = default;
 
 //void Router::initialize(const std::string &endPoint,
+/*
 void Router::setCallback(
     const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
                         (const std::string &, const void *, size_t)>
@@ -127,13 +130,54 @@ bool Router::haveCallback() const noexcept
 {
     return pImpl->mHaveCallback;
 }
+*/
 
-/// Connected?
-bool Router::isBound() const noexcept
+/// Initialized?
+bool Router::isInitialized() const noexcept
 {
-    return pImpl->mBound;
+    return pImpl->mInitialized;
 }
 
+/// Initializes the router
+void Router::initialize(const RouterOptions &options)
+{
+    if (!options.haveEndPoint())
+    {
+        throw std::invalid_argument("End point not set");
+    }
+    if (!options.haveCallback())
+    {
+        throw std::invalid_argument("Callback not set");
+    }
+    pImpl->mMessageFormats = options.getMessageFormats();
+    if (pImpl->mMessageFormats.empty())
+    {
+        pImpl->mLogger->warn("No message types set in options");
+    }
+
+    pImpl->mOptions.clear();
+    pImpl->unbind();
+    pImpl->mOptions = options;
+    //  
+    auto zapOptions = pImpl->mOptions.getZAPOptions();
+    auto highWaterMark = pImpl->mOptions.getHighWaterMark();
+    auto endPoint = pImpl->mOptions.getEndPoint();
+    // Set the ZAP options
+    zapOptions.setSocketOptions(&*pImpl->mServer);
+    pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    // Set the high water mark
+    pImpl->mServer->set(zmq::sockopt::rcvhwm, highWaterMark);
+    pImpl->mServer->set(zmq::sockopt::sndhwm, highWaterMark); 
+    // Set the callback 
+    pImpl->mCallback = pImpl->mOptions.getCallback(); 
+    pImpl->mHaveCallback = true;
+    // Bind
+    pImpl->mServer->bind(endPoint);
+    pImpl->mBound = true;
+    pImpl->mInitialized = true;
+}
+
+/*
 /// Bind to an address if not already done so
 void Router::bind(const std::string &endPoint)
 {
@@ -293,6 +337,15 @@ void Router::addMessageType(
     {
         throw std::invalid_argument("Message type is empty");
     }
+    if (!pImpl->mMessageFormats.contains(messageType))
+    {
+        pImpl->mLogger->debug("Adding subscription: " + messageType);
+        pImpl->mMessageFormats.add(message);
+    }
+    else
+    {
+        pImpl->mLogger->debug(messageType + " already exists");
+    }
     auto idx = pImpl->mSubscriptions.find(messageType);
     if (idx == pImpl->mSubscriptions.end())
     {
@@ -306,6 +359,7 @@ void Router::addMessageType(
         idx->second = std::move(message);
     }
 }
+*/
 
 /// Stop
 void Router::stop()
@@ -316,13 +370,20 @@ void Router::stop()
 /// Starts the service
 void Router::start()
 {
+/*
     if (!isBound())
     {
         throw std::runtime_error("Router not yet bound to a socket");
     }
+    
     if (!haveCallback())
     {
         throw std::runtime_error("Router does not have a callback");
+    }
+*/
+    if (!isInitialized())
+    {
+         throw std::runtime_error("Router not initialized");
     }
     stop(); // Make sure service is stopped
     // Poll setup
@@ -357,6 +418,13 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
             }
 #endif
             std::string messageType = messagesReceived.at(2).to_string();
+            if (!pImpl->mMessageFormats.contains(messageType))
+            {
+                auto errorMsg = "Unhandled message type: " + messageType;
+                pImpl->mLogger->error(errorMsg);
+                continue;
+            }
+/*
             auto index = pImpl->mSubscriptions.find(messageType);
             if (index == pImpl->mSubscriptions.end())
             {
@@ -364,6 +432,7 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
                 pImpl->mLogger->error(errorMsg);
                 continue;
             }
+*/
             auto messageContents = reinterpret_cast<const void *>
                                    (messagesReceived.at(3).data());
             auto messageSize = messagesReceived.at(3).size();
