@@ -202,6 +202,7 @@ endif()
 ##########################################################################################
 set(TEST_SRC
     testing/main.cpp
+    testing/messageFormats/messages.cpp
     testing/messageFormats/heartbeat.cpp
     testing/messageFormats/pick.cpp
     testing/messageFormats/dataPacket.cpp

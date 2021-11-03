@@ -23,20 +23,6 @@ public:
     [[nodiscard]] virtual std::string toMessage() const = 0;
     /// @brief Converts this message from a string representation to data.
     virtual void fromMessage(const char *data, const size_t length) = 0;
-/*
-
-    /// @brief Converts this class to a CBOR message.
-    /// @result The class expressed in Compressed Binary Object Representation
-    ///         (CBOR) format.
-    [[nodiscard]] virtual std::string toCBOR() const = 0;
-    /// @brief Creates this class from a CBOR message. 
-    /// @result The class created from a Compressed Binary Object Represenation
-    ///         message.
-    virtual void fromCBOR(const uint8_t *data, const size_t length) = 0;
-    /// @result Converts this message to a Concise Binary Object Representation
-    ///         (CBOR) format.  For more see: http://cbor.io/.
-    //[[nodiscard]] virtual std::string toCBOR() const = 0; 
-*/
     /// @result The message type.
     [[nodiscard]] virtual std::string getMessageType() const noexcept = 0;
 };

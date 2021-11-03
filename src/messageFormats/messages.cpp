@@ -114,7 +114,24 @@ std::unique_ptr<IMessage> Messages::get(const std::string &messageType) const
     auto it = pImpl->mMessages.find(messageType);
     return it->second->createInstance();
 }
- 
+
+/// Remove a message
+void Messages::remove(const std::unique_ptr<IMessage> &message)
+{
+    if (message == nullptr){throw std::invalid_argument("Message is NULL");}
+    remove(message->getMessageType());
+}
+
+void Messages::remove(const std::string &messageType)
+{
+   if (!contains(messageType))
+   {
+       throw std::invalid_argument("Message type: " + messageType
+                                 + " does not exist");
+   }
+   auto it = pImpl->mMessages.find(messageType);
+   pImpl->mMessages.erase(it);
+}
 
 /// Clear
 void Messages::clear() noexcept
@@ -128,7 +145,7 @@ int Messages::size() const noexcept
     return static_cast<int> (pImpl->mMessages.size());
 }
 
-/// Empy?
+/// Empty?
 bool Messages::empty() const noexcept
 {
     return (size() == 0);

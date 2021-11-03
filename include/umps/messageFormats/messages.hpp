@@ -45,18 +45,23 @@ public:
     /// @param[in] message   The message to add to the container.
     /// @throws std::invalid_argument if the message type already exists.
     void add(const std::unique_ptr<IMessage> &message);
-    void add(const IMessage &message);
 
-    /// @brief Removes the matching message type.
+    /// @param[in] message  Determines if the message is set b calling
+    ///                     \c contains(getMessageType()).
+    /// @result True indicates the message type exists.
+    /// @throws std::invalid_argument if the message is NULL.
+    [[nodiscard]] bool contains(const std::unique_ptr<IMessage> &message) const;
+    /// @param[in] messageType   The name of the message type.
+    /// @result True indicates the message type exists.
+    [[nodiscard]] bool contains(const std::string &messageType) const noexcept;
+
+    /// @brief Removes the message.
+    /// @throws std::invalid_argument if the message is NULL.
     void remove(const std::unique_ptr<IMessage> &message);
-    //void remove(const IMessage &message);
+    /// @param[in] messageType  The name of the message type to remove.
+    /// @throws std::runtime_error if \c contains(messageType) is false.
     void remove(const std::string &messageType);
 
-    /// @result True indicates the message type exists.
-    [[nodiscard]] bool contains(const std::unique_ptr<IMessage> &message) const;
-    [[nodiscard]] bool contains(const std::string &messageType) const noexcept;
-    /// @brief Removes the message.
-    void remove(const IMessage &message); 
     /// @result The number of message formats.
     [[nodiscard]] int size() const noexcept;
     /// @result True indicates there are no messages.
