@@ -53,9 +53,8 @@ public:
             // Unpack the request
             try
             {
-                auto cborMessageContents
-                    = static_cast<const uint8_t *> (messageContents); 
-                request.fromCBOR(cborMessageContents, length);
+                auto messagePtr = static_cast<const char *> (messageContents);
+                request.fromMessage(messagePtr, length);
             }
             catch (const std::exception &e)
             {
@@ -84,7 +83,7 @@ public:
         {
             mLogger->error("Expecting message type: " + messageType
                          + " but received: " + request.getMessageType());
-            response->setReturnCode(ReturnCode::NO_ITEM);
+            response->setReturnCode(ReturnCode::INVALID_MESSAGE);
         }
         return response;
     }
