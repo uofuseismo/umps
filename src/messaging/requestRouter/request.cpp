@@ -1,5 +1,4 @@
 #include <iostream>
-#include <map>
 #include <string>
 #include <thread>
 #include <mutex>
@@ -10,6 +9,7 @@
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 #include "private/authentication/zapOptions.hpp"
@@ -40,8 +40,9 @@ public:
         }
     }
 //private:
-    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
-        mSubscriptions;
+    //std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
+    //    mSubscriptions;
+    UMPS::MessageFormats::Messages mMessages;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mClient;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
@@ -215,17 +216,14 @@ void Request::setResponse(
     {
         throw std::invalid_argument("Message type is empty");
     }
-    auto idx = pImpl->mSubscriptions.find(messageType);
-    if (idx == pImpl->mSubscriptions.end())
+    if (pImpl->mMessages.contains(messageType))
     {
-        pImpl->mLogger->debug("Adding subscription: " + messageType);
-        pImpl->mSubscriptions.insert(std::pair(messageType,
-                                               std::move(message)));
+        pImpl->mLogger->debug("Messaget type: " + messageType
+                            + " alread exists");
     }
     else
     {
-        pImpl->mLogger->debug("Overwriting subscription: " + messageType);
-        idx->second = std::move(message);
+        pImpl->mMessages.add(message);
     }
 }
 
@@ -269,15 +267,15 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 #endif
     // Unpack the response
     std::string responseMessageType = responseReceived.at(0).to_string();
-    auto index = pImpl->mSubscriptions.find(responseMessageType);
-    if (index == pImpl->mSubscriptions.end())
+    if (!pImpl->mMessages.contains(responseMessageType))
     {
-        throw std::runtime_error("Unhandled response type");
-    } 
+        throw std::runtime_error("Unhandled response type: "
+                               + responseMessageType);
+    }
     //const auto payload = static_cast<uint8_t *> (responseReceived.at(1).data());
     const auto payload = static_cast<char *> (responseReceived.at(1).data());
     auto responseLength = responseReceived.at(1).size();
-    auto response = index->second->createInstance();
+    auto response = pImpl->mMessages.get(responseMessageType);
     try
     {
         //response->fromCBOR(payload, responseLength);
