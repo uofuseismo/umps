@@ -45,9 +45,9 @@ public:
     [[nodiscard]] bool haveAddress() const noexcept;
 
     /// @result Defines whether peers should connect or bind.
-    static ConnectOrBind connectOrBind() noexcept;
+    [[nodiscard]] static ConnectOrBind connectOrBind() noexcept;
     /// @result The socket type.
-    static SocketType getSocketType() noexcept;
+    [[nodiscard]] static SocketType getSocketType() noexcept;
 
     /// @name Destructors
     /// @{

@@ -4,8 +4,11 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/request.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/messaging/authentication/enums.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
@@ -62,6 +65,18 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());  
     }
+    else if (socketType == SocketType::REQUEST)
+    {
+        auto socket = detail.getRequestSocketDetails();
+        obj["Address"] = socket.getAddress();
+        obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());
+    }
+    else if (socketType == SocketType::ROUTER)
+    {
+        auto socket = detail.getRouterSocketDetails();
+        obj["Address"] = socket.getAddress();
+        obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());
+    }
     else if (socketType == SocketType::XPUBLISHER)
     {
         auto socket = detail.getXPublisherSocketDetails(); 
@@ -73,6 +88,46 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         auto socket = detail.getXSubscriberSocketDetails();
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());
+    }
+    else if (socketType == SocketType::PROXY)
+    {
+        auto proxy = detail.getProxySocketDetails();
+        auto frontendType = proxy.getFrontendSocketType();
+        auto backendType  = proxy.getBackendSocketType();
+        if (frontendType == SocketType::XSUBSCRIBER)
+        {
+            auto socket = proxy.getXSubscriberFrontend(); 
+            obj["FrontendAddress"] = socket.getAddress();
+            obj["FrontendSocketType"]
+                = static_cast<int> (socket.getSocketType());
+            obj["FrontendConnectOrBind"]
+                = static_cast<int> (socket.connectOrBind());
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled frontend");
+        }
+ 
+        if (backendType == SocketType::XPUBLISHER)
+        {
+            auto socket = proxy.getXPublisherBackend();
+            obj["BackendAddress"] = socket.getAddress();
+            obj["BackendSocketType"]
+                = static_cast<int> (socket.getSocketType());
+            obj["BackendConnectOrBind"]
+                = static_cast<int> (socket.connectOrBind());
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled backend");
+        }
+    }
+    else
+    {
+        if (socketType != SocketType::UNKNOWN)
+        {
+            throw std::runtime_error("Unhandled socket");
+        }
     }
 
     if (detail.haveConnectionType())
@@ -106,7 +161,82 @@ Details objectToDetails(const nlohmann::json &obj)
         auto connectionType = static_cast<ConnectionType>
                               (obj["ConnectionType"].get<int> ());
         details.setConnectionType(connectionType);
-    } 
+    }
+    auto socketType = static_cast<SocketType> (obj["SocketType"].get<int> ());
+    if (socketType == SocketType::PUBLISHER)
+    {
+        SocketDetails::Publisher socket;
+        auto address = obj["Address"];
+        socket.setAddress(address);
+        details.setSocketDetails(socket);
+    }
+    else if (socketType == SocketType::SUBSCRIBER)
+    {
+        SocketDetails::Subscriber socket;
+        auto address = obj["Address"];
+        socket.setAddress(address);
+        details.setSocketDetails(socket); 
+    }
+    else if (socketType == SocketType::REQUEST)
+    {
+        SocketDetails::Request socket;
+        auto address = obj["Address"];
+        socket.setAddress(address);
+        details.setSocketDetails(socket);
+    }
+    else if (socketType == SocketType::ROUTER)
+    {
+        SocketDetails::Router socket;
+        auto address = obj["Address"];
+        socket.setAddress(address);
+        details.setSocketDetails(socket);
+    }
+    else if (socketType == SocketType::XPUBLISHER)
+    {
+        SocketDetails::XPublisher socket;
+        auto address = obj["Address"];
+        socket.setAddress(address);
+        details.setSocketDetails(socket);
+    }
+    else if (socketType == SocketType::XSUBSCRIBER)
+    {
+        SocketDetails::XSubscriber socket;
+        auto address = obj["Address"];
+        socket.setAddress(address);
+        details.setSocketDetails(socket);
+    }
+    else if (socketType == SocketType::PROXY)
+    {
+        SocketDetails::Proxy proxy;
+        auto frontendSocketType = static_cast<SocketType>
+            (obj["FrontendSocketType"].get<int> ());
+        auto backendSocketType = static_cast<SocketType>
+            (obj["BackendSocketType"].get<int> ());
+        if (frontendSocketType == SocketType::XSUBSCRIBER &&
+            backendSocketType  == SocketType::XPUBLISHER)
+        {
+            SocketDetails::XSubscriber frontendSocket;
+            SocketDetails::XPublisher  backendSocket;
+            auto frontendAddress = obj["FrontendAddress"];
+            frontendSocket.setAddress(frontendAddress);
+            auto backendAddress = obj["BackendAddress"];
+            backendSocket.setAddress(backendAddress); 
+            proxy.setSocketPair(std::pair(frontendSocket, backendSocket));
+        }
+        else
+        {
+            throw std::runtime_error("Unhandled frontend/backend pair");
+        }
+        details.setSocketDetails(proxy);
+    }
+    else
+    {
+        if (socketType != SocketType::UNKNOWN)
+        {
+            throw std::runtime_error("Unhandled socket");
+        }
+    }
+
     if (!obj["UserPrivileges"].is_null())
     {
         auto privileges = static_cast<UAuth::UserPrivileges>

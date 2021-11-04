@@ -1,9 +1,12 @@
-#include <nlohmann/json.hpp>
+#include <string>
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/request.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
@@ -15,7 +18,10 @@ public:
     std::string mName;
     std::string mConnectionString;
     ConnectionType mConnectionType;
+    SocketDetails::Proxy mProxy;
     SocketDetails::Publisher mPublisher;
+    SocketDetails::Request mRequest;
+    SocketDetails::Router mRouter;
     SocketDetails::Subscriber mSubscriber;
     SocketDetails::XPublisher mXPublisher;
     SocketDetails::XSubscriber mXSubscriber;
@@ -177,6 +183,26 @@ void Details::setSocketDetails(const SocketDetails::Subscriber &socket)
     pImpl->mSocketType = socket.getSocketType();
 }
 
+void Details::setSocketDetails(const SocketDetails::Request &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mRequest = socket;
+    pImpl->mSocketType = socket.getSocketType();
+}
+
+void Details::setSocketDetails(const SocketDetails::Router &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mRouter = socket;
+    pImpl->mSocketType = socket.getSocketType();
+}
+
 void Details::setSocketDetails(const SocketDetails::XPublisher &socket)
 {
     if (!socket.haveAddress())
@@ -194,6 +220,16 @@ void Details::setSocketDetails(const SocketDetails::XSubscriber &socket)
         throw std::invalid_argument("Address not set");
     }
     pImpl->mXSubscriber = socket; 
+    pImpl->mSocketType = socket.getSocketType();
+}
+
+void Details::setSocketDetails(const SocketDetails::Proxy &socket)
+{
+    if (!socket.haveSocketPair())
+    {
+        throw std::invalid_argument("Socket pair not set");
+    }
+    pImpl->mProxy = socket;
     pImpl->mSocketType = socket.getSocketType();
 }
 
@@ -216,6 +252,24 @@ SocketDetails::Subscriber Details::getSubscriberSocketDetails() const
     return pImpl->mSubscriber;
 }
 
+SocketDetails::Request Details::getRequestSocketDetails() const
+{
+    if (getSocketType() != SocketType::REQUEST)
+    {
+        throw std::runtime_error("Request socket details not set");
+    }
+    return pImpl->mRequest;
+}
+
+SocketDetails::Router Details::getRouterSocketDetails() const
+{
+    if (getSocketType() != SocketType::ROUTER)
+    {
+        throw std::runtime_error("Router socket details not set");
+    }
+    return pImpl->mRouter;
+}
+
 SocketDetails::XPublisher Details::getXPublisherSocketDetails() const
 {
     if (getSocketType() != SocketType::XPUBLISHER)
@@ -232,6 +286,15 @@ SocketDetails::XSubscriber Details::getXSubscriberSocketDetails() const
         throw std::runtime_error("XSubscriber socket details not set");
     }
     return pImpl->mXSubscriber;
+}
+
+SocketDetails::Proxy Details::getProxySocketDetails() const
+{
+    if (getSocketType() != SocketType::PROXY)
+    {
+        throw std::runtime_error("Proxy socket details not set");
+    }
+    return pImpl->mProxy;
 }
 
 SocketType Details::getSocketType() const noexcept

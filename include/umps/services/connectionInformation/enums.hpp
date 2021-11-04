@@ -47,9 +47,14 @@ enum class SocketType
     SUBSCRIBER,  /*!< This is a subscription socket.
                       This will accept connections from a PUBLISH or
                       XPUBLISH socket. */
-    XSUBSCRIBER  /*!< This is an extended subscription socket.
+    XSUBSCRIBER, /*!< This is an extended subscription socket.
                       This accept connections from a PUBLISH or
                       XPUBLISH socket. */
+    PROXY        /*!< A proxy really isn't a socket but a paradigm. 
+                      It indicates that there could be a REQUEST-ROUTER
+                      or XPUB-XSUB pattern.  For this socket type the
+                      user will have to get the frontend and backend
+                      connection details. */
 };
 /// @brief Defines the return codes for the service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

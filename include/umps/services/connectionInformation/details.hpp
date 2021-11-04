@@ -6,7 +6,10 @@
 #include "umps/messaging/authentication/enums.hpp"
 namespace UMPS::Services::ConnectionInformation::SocketDetails
 {
+ class Proxy;
  class Publisher;
+ class Request;
+ class Router;
  class Subscriber;
  class XPublisher;
  class XSubscriber;
@@ -67,14 +70,27 @@ public:
     /// @param[in] socket  The subscriber socket connection details.
     /// @throws std::invalid_argument if \c socket.haveAddress() is false.
     void setSocketDetails(const SocketDetails::Subscriber &socket);
+    /// @brief Sets the request socket connection details.
+    /// @param[in] socket  The request socket connection details.
+    /// @throws std::invalid_argument if \c socket.haveAddress() is false.
+    void setSocketDetails(const SocketDetails::Request &socket);
+    /// @brief Sets the router socket connection details.
+    /// @param[in] socket  The router socket connection details.
+    /// @throws std::invalid_argument if \c socket.haveAddress() is false.
+    void setSocketDetails(const SocketDetails::Router &socket);
     /// @brief Sets the extended publisher socket connection details.
-    /// @param[in] socket  The publisher socket connection details.
+    /// @param[in] socket  The extended publisher socket connection details.
     /// @throws std::invalid_argument if \c socket.haveAddress() is false.
     void setSocketDetails(const SocketDetails::XPublisher &socket);
     /// @brief Sets the extended subscriber socket connection details.
-    /// @param[in] socket  The subscriber socket connection details.
+    /// @param[in] socket  The extended subscriber socket connection details.
     /// @throws std::invalid_argument if \c socket.haveAddress() is false.
     void setSocketDetails(const SocketDetails::XSubscriber &socket);
+    /// @brief Sets the proxy pattern.
+    /// @param[in] proxy   The socket details for the frontend and backend
+    ///                    of the proxy.
+    /// @throws std::invalid_argument if \c socket.haveSocketPair() is false.
+    void setSocketDetails(const SocketDetails::Proxy &proxy);
 
     /// @result The publisher socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
@@ -84,14 +100,26 @@ public:
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::SUBSCRIBER.
     SocketDetails::Subscriber getSubscriberSocketDetails() const;
+    /// @result The request socket details.
+    /// @throws std::runtime_error if \c getSocketType() does not equal
+    ///         SocketType::REQUEST.
+    SocketDetails::Request getRequestSocketDetails() const;
+    /// @result The router socket details.
+    /// @throws std::runtime_error if \c getSocketType() does not equal
+    ///         SocketType::ROUTER.
+    SocketDetails::Router getRouterSocketDetails() const;
     /// @result The publisher socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
-    ///         SocketType::PUBLISHER.
+    ///         SocketType::XPUBLISHER.
     SocketDetails::XPublisher  getXPublisherSocketDetails() const;
     /// @result The subscriber socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
-    ///         SocketType::SUBSCRIBER.
+    ///         SocketType::XSUBSCRIBER.
     SocketDetails::XSubscriber getXSubscriberSocketDetails() const;
+    /// @result The proxy socket details.
+    /// @throws std::runtime_error if \c getSocketType() does not equal
+    ///         SocketType::PROXY.
+    SocketDetails::Proxy getProxySocketDetails() const;
     /// @result The socket type.
     /// @note By default this is unknown and will obtain value from the last
     ///       call to \c setSocketDetails().
