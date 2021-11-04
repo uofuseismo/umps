@@ -94,6 +94,10 @@ set(MESSAGING_SRC
 set(MODULES_LIBSRC
     src/services/connectionInformation/availableBroadcastsRequest.cpp
     src/services/connectionInformation/availableBroadcastsResponse.cpp
+    src/services/connectionInformation/socketDetails/publisher.cpp
+    src/services/connectionInformation/socketDetails/subscriber.cpp
+    src/services/connectionInformation/socketDetails/xPublisher.cpp
+    src/services/connectionInformation/socketDetails/xSubscriber.cpp
     src/services/connectionInformation/details.cpp
     src/services/incrementer/request.cpp
     src/services/incrementer/response.cpp

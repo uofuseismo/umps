@@ -16,6 +16,7 @@ TEST(ConnectionInformation, Details)
 {
     const std::string moduleName = "testModule";
     const std::string connectionString = "tcp://127.0.0.1:8080";
+    auto connectionType = ConnectionType::BROADCAST;
     auto securityLevel = UAuth::SecurityLevel::GRASSLANDS;
     auto privileges = UAuth::UserPrivileges::READ_WRITE;
 
@@ -23,6 +24,7 @@ TEST(ConnectionInformation, Details)
 
     EXPECT_NO_THROW(details.setName(moduleName));
     EXPECT_NO_THROW(details.setConnectionString(connectionString));
+    details.setConnectionType(connectionType);
     details.setSecurityLevel(securityLevel);
     details.setUserPrivileges(privileges);
 
@@ -30,6 +32,7 @@ TEST(ConnectionInformation, Details)
     Details detailsCopy(details);
     EXPECT_EQ(detailsCopy.getName(), moduleName);
     EXPECT_EQ(detailsCopy.getConnectionString(), connectionString);
+    EXPECT_EQ(detailsCopy.getConnectionType(), connectionType);
     EXPECT_EQ(detailsCopy.getSecurityLevel(), securityLevel);
     EXPECT_EQ(detailsCopy.getUserPrivileges(), privileges);
     
@@ -37,6 +40,7 @@ TEST(ConnectionInformation, Details)
     details.clear();
     EXPECT_FALSE(details.haveName());
     EXPECT_FALSE(details.haveConnectionString());
+    EXPECT_FALSE(details.haveConnectionType());
 }
 
 TEST(ConnectionInformation, AvailableBroadcastsRequest)
@@ -62,6 +66,8 @@ TEST(ConnectionInformation, AvailableBroadcastsResponse)
     std::vector<std::string> names{"Test1", "Test2"};
     std::vector<std::string> connectionStrings{"tcp://127.0.0.1:5050",
                                                "tcp://127.0.0.1:5060"};
+    std::vector<ConnectionType> connectionTypes{ConnectionType::BROADCAST,
+                                                ConnectionType::SERVICE};
     std::vector<UAuth::UserPrivileges>
         privileges{UAuth::UserPrivileges::READ_WRITE,
                    UAuth::UserPrivileges::ADMINISTRATOR};
@@ -75,6 +81,7 @@ TEST(ConnectionInformation, AvailableBroadcastsResponse)
         Details detail;
         detail.setName(names[i]);
         detail.setConnectionString(connectionStrings[i]);
+        detail.setConnectionType(connectionTypes[i]);
         detail.setUserPrivileges(privileges[i]);
         detail.setSecurityLevel(securityLevels[i]);
         details.push_back(detail);
@@ -97,6 +104,8 @@ TEST(ConnectionInformation, AvailableBroadcastsResponse)
         EXPECT_EQ(detailsCopy[i].getName(), details[i].getName());
         EXPECT_EQ(detailsCopy[i].getConnectionString(),
                   details[i].getConnectionString());
+        EXPECT_EQ(detailsCopy[i].getConnectionType(),
+                  details[i].getConnectionType());
         EXPECT_EQ(detailsCopy[i].getUserPrivileges(),
                   details[i].getUserPrivileges());
         EXPECT_EQ(detailsCopy[i].getSecurityLevel(),

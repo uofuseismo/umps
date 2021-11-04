@@ -6,7 +6,7 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 using namespace UMPS::Services::ConnectionInformation::SocketDetails;
 
 
-class xSubscriber::XSubscriberImpl
+class XSubscriber::XSubscriberImpl
 {
 public:
     std::string mAddress;

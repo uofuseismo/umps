@@ -2,6 +2,10 @@
 #include <nlohmann/json.hpp>
 #include "umps/services/connectionInformation/availableBroadcastsResponse.hpp"
 #include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/publisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/messaging/authentication/enums.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
@@ -44,6 +48,41 @@ nlohmann::json detailsToJSONObject(const Details &detail)
     {
         obj["ConnectionString"] = nullptr;
     }
+    auto socketType = detail.getSocketType();
+    obj["SocketType"] = static_cast<int> (socketType);
+    if (socketType == SocketType::PUBLISHER)
+    {
+        auto socket = detail.getPublisherSocketDetails(); 
+        obj["Address"] = socket.getAddress();
+        obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());  
+    }
+    else if (socketType == SocketType::SUBSCRIBER)
+    {
+        auto socket = detail.getSubscriberSocketDetails();
+        obj["Address"] = socket.getAddress();
+        obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());  
+    }
+    else if (socketType == SocketType::XPUBLISHER)
+    {
+        auto socket = detail.getXPublisherSocketDetails(); 
+        obj["Address"] = socket.getAddress();
+        obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());  
+    }   
+    else if (socketType == SocketType::XSUBSCRIBER)
+    {
+        auto socket = detail.getXSubscriberSocketDetails();
+        obj["Address"] = socket.getAddress();
+        obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());
+    }
+
+    if (detail.haveConnectionType())
+    {
+        obj["ConnectionType"] = detail.getConnectionType();
+    }
+    else
+    {
+        obj["ConnectionString"] = nullptr;
+    }
 
     auto privileges = static_cast<int> (detail.getUserPrivileges());
     obj["UserPrivileges"] = privileges;
@@ -62,6 +101,12 @@ Details objectToDetails(const nlohmann::json &obj)
     {
         details.setConnectionString(obj["ConnectionString"]);
     }
+    if (!obj["ConnectionType"].is_null())
+    {
+        auto connectionType = static_cast<ConnectionType>
+                              (obj["ConnectionType"].get<int> ());
+        details.setConnectionType(connectionType);
+    } 
     if (!obj["UserPrivileges"].is_null())
     {
         auto privileges = static_cast<UAuth::UserPrivileges>

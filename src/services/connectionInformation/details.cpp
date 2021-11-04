@@ -1,5 +1,9 @@
 #include <nlohmann/json.hpp>
 #include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/publisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
@@ -10,8 +14,15 @@ class Details::DetailsImpl
 public:
     std::string mName;
     std::string mConnectionString;
+    ConnectionType mConnectionType;
+    SocketDetails::Publisher mPublisher;
+    SocketDetails::Subscriber mSubscriber;
+    SocketDetails::XPublisher mXPublisher;
+    SocketDetails::XSubscriber mXSubscriber;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS; 
     UAuth::UserPrivileges mUserPrivileges = UAuth::UserPrivileges::READ_ONLY;
+    SocketType mSocketType = SocketType::UNKNOWN;
+    bool mHaveConnectionType = false;
 };
 
 /// C'tor
@@ -122,4 +133,108 @@ void Details::setUserPrivileges(UAuth::UserPrivileges privileges) noexcept
 UAuth::UserPrivileges Details::getUserPrivileges() const noexcept
 {
     return pImpl->mUserPrivileges;
+}
+
+/// Connection type
+void Details::setConnectionType(const ConnectionType connectionType) noexcept
+{
+    pImpl->mConnectionType = connectionType;
+    pImpl->mHaveConnectionType = true;
+}
+
+ConnectionType Details::getConnectionType() const
+{
+    if (!haveConnectionType())
+    {
+        throw std::runtime_error("Connection type not set");
+    }
+    return pImpl->mConnectionType;
+}
+
+bool Details::haveConnectionType() const noexcept
+{
+    return pImpl->mHaveConnectionType;
+}
+
+/// Set socket details
+void Details::setSocketDetails(const SocketDetails::Publisher &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mPublisher = socket;
+    pImpl->mSocketType = socket.getSocketType();
+}
+
+void Details::setSocketDetails(const SocketDetails::Subscriber &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mSubscriber = socket;
+    pImpl->mSocketType = socket.getSocketType();
+}
+
+void Details::setSocketDetails(const SocketDetails::XPublisher &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mXPublisher = socket;
+    pImpl->mSocketType = socket.getSocketType();
+}
+    
+void Details::setSocketDetails(const SocketDetails::XSubscriber &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mXSubscriber = socket; 
+    pImpl->mSocketType = socket.getSocketType();
+}
+
+/// Get socket details
+SocketDetails::Publisher Details::getPublisherSocketDetails() const
+{
+    if (getSocketType() != SocketType::PUBLISHER)
+    {
+        throw std::runtime_error("Publisher socket details not set");
+    }
+    return pImpl->mPublisher;
+}
+
+SocketDetails::Subscriber Details::getSubscriberSocketDetails() const
+{
+    if (getSocketType() != SocketType::SUBSCRIBER)
+    {
+        throw std::runtime_error("Subscriber socket details not set");
+    }
+    return pImpl->mSubscriber;
+}
+
+SocketDetails::XPublisher Details::getXPublisherSocketDetails() const
+{
+    if (getSocketType() != SocketType::XPUBLISHER)
+    {
+        throw std::runtime_error("XPublisher socket details not set");
+    }
+    return pImpl->mXPublisher;
+}
+
+SocketDetails::XSubscriber Details::getXSubscriberSocketDetails() const
+{
+    if (getSocketType() != SocketType::XSUBSCRIBER)
+    {
+        throw std::runtime_error("XSubscriber socket details not set");
+    }
+    return pImpl->mXSubscriber;
+}
+
+SocketType Details::getSocketType() const noexcept
+{
+    return pImpl->mSocketType;
 }
