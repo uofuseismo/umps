@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include <unistd.h>
@@ -9,6 +8,7 @@
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
@@ -73,8 +73,7 @@ public:
         }
     }
  
-    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
-        mSubscriptions;
+    UMPS::MessageFormats::Messages mMessageTypes;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mSubscriber;
     std::map<std::string, bool> mEndPoints;
@@ -137,49 +136,8 @@ bool Subscriber::isConnected() const noexcept
 /// Have subscriptions?
 bool Subscriber::haveSubscriptions() const noexcept
 {
-    return !pImpl->mSubscriptions.empty();
+    return !pImpl->mMessageTypes.empty();
 }
-
-/*
-void Subscriber::addSubscription(
-    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
-{
-    if (message == nullptr){throw std::invalid_argument("Message is NULL");}
-    if (!isConnected())
-    {
-        throw std::runtime_error("Subscriber not yet connected");
-    }
-    auto messageType = message->getMessageType();
-    if (messageType.empty())
-    {
-        throw std::invalid_argument("Message type is empty");
-    }
-    auto idx = pImpl->mSubscriptions.find(messageType);
-    if (idx == pImpl->mSubscriptions.end())
-    {
-        pImpl->mLogger->debug("Adding subscription: " + messageType);
-        pImpl->mSubscriptions.insert(std::pair(messageType,
-                                               std::move(message)));
-    } 
-    else
-    {
-        pImpl->mLogger->debug("Overwriting subscription: " + messageType);
-        idx->second = std::move(message);
-    }
-    // Listen on this topic
-    pImpl->mLogger->debug("Subscribing to: " + messageType);
-    auto zmqError = zmq_setsockopt(pImpl->mSubscriber, ZMQ_SUBSCRIBE,
-                                   messageType.c_str(), messageType.size());
-    if (zmqError != 0)
-    {
-        auto zmqErrorMsg = zmq_strerror(zmqError);
-        auto errorMsg = "Failed to subscribe to filter: " + messageType + "\n"
-                      + "ZMQ failed with:\n" + zmqErrorMsg;
-        pImpl->mLogger->error(errorMsg);
-        throw std::runtime_error(errorMsg);
-    }
-}
-*/
 
 /// Connect to an address if not already done so
 void Subscriber::connect(const std::string &endPoint)
@@ -365,19 +323,14 @@ void Subscriber::addSubscription(
     if (messageType.empty())
     {
         throw std::invalid_argument("Message type is empty");
-    }   
-    auto idx = pImpl->mSubscriptions.find(messageType);
-    if (idx == pImpl->mSubscriptions.end())
+    }
+    if (pImpl->mMessageTypes.contains(messageType))
     {
-        pImpl->mLogger->debug("Adding subscription: " + messageType);
-        pImpl->mSubscriptions.insert(std::pair(messageType,
-                                               std::move(message)));
-    }   
-    else
-    {
-        pImpl->mLogger->debug("Overwriting subscription: " + messageType);
-        idx->second = std::move(message);
-    }   
+        pImpl->mLogger->debug("Already subscribed to message type: "
+                            + messageType);
+        return;
+    }
+    pImpl->mMessageTypes.add(message);
     // Listen on this topic
     pImpl->mLogger->debug("Subscribing to: " + messageType);
     try
@@ -414,8 +367,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
     }
 #endif
     std::string messageType = messagesReceived.at(0).to_string();
-    auto index = pImpl->mSubscriptions.find(messageType);
-    if (index == pImpl->mSubscriptions.end())
+    if (!pImpl->mMessageTypes.contains(messageType))
     {
         auto errorMsg = "Unhandled message type: " + messageType;
         pImpl->mLogger->error(errorMsg); 
@@ -424,10 +376,9 @@ std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
     //const auto payload = static_cast<uint8_t *> (messagesReceived.at(1).data());
     const auto payload = static_cast<char *> (messagesReceived.at(1).data());
     auto messageLength = messagesReceived.at(1).size();
-    auto result = index->second->createInstance();
+    auto result = pImpl->mMessageTypes.get(messageType);
     try
     {
-        //result->fromCBOR(payload, messageLength);
         result->fromMessage(payload, messageLength);
     }
     catch (const std::exception &e)
