@@ -11,6 +11,8 @@
 #include "umps/services/incrementer/counter.hpp"
 #include "umps/services/incrementer/response.hpp"
 #include "umps/services/incrementer/request.hpp"
+#include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
@@ -111,6 +113,9 @@ public:
     UMPS::Messaging::RequestRouter::Router mRouter;
     //mutable std::mutex mMutex;
     std::string mName;
+    // Where clients can access this service
+    ConnectionInformation::Details mConnectionDetails;
+    std::string mClientAccessAddress;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{0};
@@ -178,8 +183,14 @@ void Service::initialize(const Parameters &parameters)
     routerOptions.addMessageFormat(requestType);
     pImpl->mRouter.initialize(routerOptions); 
     // Copy some last things
+    pImpl->mClientAccessAddress = pImpl->mRouter.getConnectionString();
     pImpl->mName = name;
     pImpl->mInitialized = true;
+    // Create the connection details
+    ConnectionInformation::SocketDetails::Router socketDetails;
+    socketDetails.setAddress(pImpl->mRouter.getConnectionString());
+    pImpl->mConnectionDetails.setName(pImpl->mName);
+    pImpl->mConnectionDetails.setSocketDetails(socketDetails);
 /*
     pImpl->mRouter.bind(clientAccessAddress);
     if (!pImpl->mRouter.isBound())
@@ -237,7 +248,7 @@ std::string Service::getName() const
 std::string Service::getRequestAddress() const
 {
     if (!isRunning()){throw std::runtime_error("Service is not running");}
-    return pImpl->mParameters.getClientAccessAddress();
+    return pImpl->mConnectionDetails.getRouterSocketDetails().getAddress();
 }
 
 /// Stop the service
@@ -245,4 +256,12 @@ void Service::stop()
 {
     pImpl->mRouter.stop();
     //pImpl->mCounter.reset();
+}
+
+/// Get connection info
+UMPS::Services::ConnectionInformation::Details
+    Service::getConnectionDetails() const
+{
+    if (!isInitialized()){throw std::runtime_error("Service not initialized");}
+    return pImpl->mConnectionDetails;
 }

@@ -132,6 +132,15 @@ public:
             mLogger->error(errorMsg);
             throw std::runtime_error(errorMsg);
         }
+        // Resolve the backend address
+        if (mHaveBackend)
+        {
+            if (mBackendAddress.find("tcp") != std::string::npos ||
+                mBackendAddress.find("ipc") != std::string::npos)
+            {   
+                mBackendAddress = mBackend->get(zmq::sockopt::last_endpoint);
+            }   
+        } 
     }
     void connectFrontend() //const std::string &frontendAddress)
     {
@@ -152,6 +161,15 @@ public:
                           + std::string(e.what());
             mLogger->error(errorMsg);
             throw std::runtime_error(errorMsg);
+        }
+        // Resolve the frontend address
+        if (mHaveFrontend)
+        {
+            if (mFrontendAddress.find("tcp") != std::string::npos ||
+                mFrontendAddress.find("ipc") != std::string::npos)
+            {
+                mFrontendAddress = mFrontend->get(zmq::sockopt::last_endpoint);
+            }
         }
     }
     void connectControl() //const std::string &topic)

@@ -134,6 +134,9 @@ public:
     /// @result True indicates that the router is bound to an address,
     ///         has a callback, and is ready to receive and process messages.
     [[nodiscard]] bool isInitialized() const noexcept;
+    /// @result Gets the connection string.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::string getConnectionString() const;
     /// @}
 
     /// @brief Sets the callback function.

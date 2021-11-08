@@ -8,13 +8,13 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
-#include "private/authentication/zapOptions.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
 
@@ -173,6 +173,13 @@ void Router::initialize(const RouterOptions &options)
     pImpl->mHaveCallback = true;
     // Bind
     pImpl->mServer->bind(endPoint);
+    // Resolve end point
+    pImpl->mEndPoint = endPoint;
+    if (endPoint.find("tcp") != std::string::npos ||
+        endPoint.find("ipc") != std::string::npos)
+    {
+        pImpl->mEndPoint = pImpl->mServer->get(zmq::sockopt::last_endpoint);
+    }
     pImpl->mBound = true;
     pImpl->mInitialized = true;
 }
@@ -479,4 +486,11 @@ UMPS::Messaging::Authentication::SecurityLevel
 void Router::operator()()
 {
     start();
+}
+
+/// Access address
+std::string Router::getConnectionString() const
+{
+    if (!isInitialized()){throw std::runtime_error("Router not initialized");}
+    return pImpl->mEndPoint;
 }

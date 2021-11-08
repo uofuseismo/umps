@@ -34,6 +34,8 @@ public:
     /// @brief Gets the address to submit requests to this service.
     /// @throws std::runtime_error if the class is not running.
     [[nodiscard]] std::string getRequestAddress() const override final;
+    /// @result The details for connecting to the service.
+    [[nodiscard]] ConnectionInformation::Details getConnectionDetails() const override final;
 
     /// @brief Starts the service.
     /// @note This would be run something like:

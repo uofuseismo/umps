@@ -2,6 +2,7 @@
 #define UMPS_SERVICES_SERVICE_HPP
 #include <memory>
 #include <string>
+#include "umps/services/connectionInformation/details.hpp"
 namespace UMPS::Services
 {
 /// @class IServer "service.hpp" "umps/services/service.hpp"
@@ -19,6 +20,8 @@ public:
     ///         to this service.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] virtual std::string getRequestAddress() const = 0;
+    /// @result The connection details for connecting to the service.
+    [[nodiscard]] virtual ConnectionInformation::Details getConnectionDetails() const = 0;
     /// @brief Starts the service.
     /// @note This would be run like:
     ///       Service thisService;

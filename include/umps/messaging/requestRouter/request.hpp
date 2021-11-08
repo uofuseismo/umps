@@ -121,6 +121,9 @@ public:
     [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates that the requester is connected.
     [[nodiscard]] bool isConnected() const noexcept;
+    /// @result The connection string.
+    /// @throws std::runtime_error if \c isConnected() is false.
+    [[nodiscard]] std::string getConnectionString() const;
     /// @}
 
     /// @brief Performs a blocking request of from the router.

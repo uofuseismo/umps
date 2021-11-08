@@ -18,6 +18,8 @@
 #include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/services/connectionInformation/service.hpp"
+#include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/logging/stdout.hpp"
@@ -197,6 +199,8 @@ int main(int argc, char *argv[])
             {
                 try
                 {
+                    auto details = module.getConnectionDetails();
+                    auto socketInfo = details.getRouterSocketDetails();
                     std::cout << "Service: " << module.getName()
                               << " available at: "
                               << module.getRequestAddress() << std::endl;
