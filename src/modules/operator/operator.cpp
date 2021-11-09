@@ -33,6 +33,8 @@ struct ProgramOptions
     std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
     //std::vector<UMPS::Broadcasts::DataPackets::Parameters> mBroadcastParameters;
     std::vector<std::pair<int, bool>> mAvailablePorts;
+    UMPS::Services::ConnectionInformation::Parameters
+        mConnectionInformationParameters;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
                                  + "/.local/share/UMPS/tables/";
@@ -152,6 +154,8 @@ int main(int argc, char *argv[])
     }
     // Initialize the services
     Modules modules;
+    modules.mConnectionInformation.initialize(
+        options.mConnectionInformationParameters);
     modules.mIncrementers.reserve(options.mIncrementerParameters.size());
     for (const auto &parameters : options.mIncrementerParameters)
     {
@@ -179,9 +183,9 @@ int main(int argc, char *argv[])
     std::cout << "Starting connection information service..." << std::endl;
     try
     {
-//        std::thread t(&UMPS::Services::ConnectionInformation::Service::start,
-//                      &modules.mConnectionInformation); 
-//        threads.push_back(std::move(t));
+        std::thread t(&UMPS::Services::ConnectionInformation::Service::start,
+                      &modules.mConnectionInformation); 
+        threads.push_back(std::move(t));
     }
     catch (const std::exception &e)
     {
@@ -203,7 +207,7 @@ int main(int argc, char *argv[])
             std::cerr << e.what() << std::endl;
             continue;
         }
-        //modules.mConnectionInformation.addConnection(module);
+        modules.mConnectionInformation.addConnection(module);
     }
 
     // Main program loop
@@ -250,10 +254,10 @@ int main(int argc, char *argv[])
     std::cout << "Stopping incrementer services..." << std::endl;
     for (auto &module : modules.mIncrementers)
     {
-        //modules.mConnectionInformation.removeConnection(module.getName());
+        modules.mConnectionInformation.removeConnection(module.getName());
         module.stop();
     }
-    //modules.mConnectionInformation.stop();
+    modules.mConnectionInformation.stop();
     // Join the threads
     for (auto &thread : threads)
     {
@@ -383,9 +387,10 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                              options.mWhiteListTable);
     }
     // First make sure the connection information service is available
-    auto connectionsServiceAddress = "tcp://" + options.mIPAddress
-                    + ":" + std::to_string(options.mAvailablePorts[0].first);
-    options.mAvailablePorts[0].second = false;
+    auto address = "tcp://" + options.mIPAddress
+                 + ":" + std::to_string(options.mAvailablePorts.at(0).first);
+    options.mConnectionInformationParameters.setClientAccessAddress(address);
+    options.mAvailablePorts.at(0).second = false;
     // Next get all the counters
     std::vector<std::string> counters;
     for (const auto &p : propertyTree)

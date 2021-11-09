@@ -25,10 +25,20 @@ void throwOnInvalidDetails(const Details &detail)
     {
         throw std::invalid_argument("Name of connection not set");
     }
+    if (!detail.haveConnectionType())
+    {
+        throw std::invalid_argument("Connection type not set");
+    }
+    if (detail.getSocketType() == SocketType::UNKNOWN)
+    {
+        throw std::invalid_argument("Unknown socket information");
+    }
+/*
     if (!detail.haveConnectionString())
     {
         throw std::invalid_argument("Connection string not set");
     }
+*/
 }
 
 nlohmann::json detailsToJSONObject(const Details &detail)
@@ -43,6 +53,7 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Name"] = nullptr;
     }
 
+/*
     if (detail.haveConnectionString())
     {
         obj["ConnectionString"] = detail.getConnectionString();
@@ -51,6 +62,7 @@ nlohmann::json detailsToJSONObject(const Details &detail)
     {
         obj["ConnectionString"] = nullptr;
     }
+*/
     auto socketType = detail.getSocketType();
     obj["SocketType"] = static_cast<int> (socketType);
     if (socketType == SocketType::PUBLISHER)
@@ -136,7 +148,7 @@ nlohmann::json detailsToJSONObject(const Details &detail)
     }
     else
     {
-        obj["ConnectionString"] = nullptr;
+        obj["ConnectionType"] = nullptr;
     }
 
     auto privileges = static_cast<int> (detail.getUserPrivileges());
@@ -152,10 +164,12 @@ Details objectToDetails(const nlohmann::json &obj)
 {
     Details details;
     if (!obj["Name"].is_null()){details.setName(obj["Name"]);}
+/*
     if (!obj["ConnectionString"].is_null())
     {
         details.setConnectionString(obj["ConnectionString"]);
     }
+*/
     if (!obj["ConnectionType"].is_null())
     {
         auto connectionType = static_cast<ConnectionType>

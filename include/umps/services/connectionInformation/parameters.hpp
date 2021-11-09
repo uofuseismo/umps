@@ -55,7 +55,7 @@ public:
     /// @name Required Parameters
     /// @{
     /// @result The name of the connectionInformation service.
-    [[nodiscard]] std::string getName() const noexcept;
+    [[nodiscard]] static std::string getName() noexcept;
 
     /// @brief Sets the proxy's address to which the clients will connect.
     /// @param[in] address  The address from which clients will connect to this

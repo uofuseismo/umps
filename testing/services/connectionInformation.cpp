@@ -4,6 +4,7 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
+#include "umps/services/connectionInformation/socketDetails/publisher.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -22,8 +23,13 @@ TEST(ConnectionInformation, Details)
 
     Details details;
 
+    SocketDetails::Publisher pubSocket;
+    pubSocket.setAddress(connectionString);
+
     EXPECT_NO_THROW(details.setName(moduleName));
-    EXPECT_NO_THROW(details.setConnectionString(connectionString));
+    //EXPECT_NO_THROW(details.setConnectionString(connectionString));
+    EXPECT_NO_THROW(details.setSocketDetails(pubSocket));
+
     details.setConnectionType(connectionType);
     details.setSecurityLevel(securityLevel);
     details.setUserPrivileges(privileges);
@@ -31,16 +37,20 @@ TEST(ConnectionInformation, Details)
  
     Details detailsCopy(details);
     EXPECT_EQ(detailsCopy.getName(), moduleName);
-    EXPECT_EQ(detailsCopy.getConnectionString(), connectionString);
+    //EXPECT_EQ(detailsCopy.getConnectionString(), connectionString);
     EXPECT_EQ(detailsCopy.getConnectionType(), connectionType);
     EXPECT_EQ(detailsCopy.getSecurityLevel(), securityLevel);
     EXPECT_EQ(detailsCopy.getUserPrivileges(), privileges);
+    EXPECT_EQ(detailsCopy.getSocketType(), SocketType::PUBLISHER);
     
+    auto pubSocketCopy = detailsCopy.getPublisherSocketDetails();
+    EXPECT_EQ(pubSocketCopy.getAddress(), connectionString);
 
     details.clear();
     EXPECT_FALSE(details.haveName());
-    EXPECT_FALSE(details.haveConnectionString());
+    //EXPECT_FALSE(details.haveConnectionString());
     EXPECT_FALSE(details.haveConnectionType());
+    EXPECT_EQ(details.getSocketType(), SocketType::UNKNOWN);
 }
 
 TEST(ConnectionInformation, AvailableConnectionsRequest)
@@ -82,10 +92,13 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
     {
         Details detail;
         detail.setName(names[i]);
-        detail.setConnectionString(connectionStrings[i]);
+        SocketDetails::Publisher pubSocket;
+        pubSocket.setAddress(connectionStrings[i]);
+        //detail.setConnectionString(connectionStrings[i]);
         detail.setConnectionType(connectionTypes[i]);
         detail.setUserPrivileges(privileges[i]);
         detail.setSecurityLevel(securityLevels[i]);
+        detail.setSocketDetails(pubSocket);
         details.push_back(detail);
     }
     EXPECT_NO_THROW(response.setDetails(details));
@@ -104,8 +117,8 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
     for (int i = 0; i < static_cast<int> (details.size()); ++i)
     {
         EXPECT_EQ(detailsCopy[i].getName(), details[i].getName());
-        EXPECT_EQ(detailsCopy[i].getConnectionString(),
-                  details[i].getConnectionString());
+        //EXPECT_EQ(detailsCopy[i].getConnectionString(),
+        //          details[i].getConnectionString());
         EXPECT_EQ(detailsCopy[i].getConnectionType(),
                   details[i].getConnectionType());
         EXPECT_EQ(detailsCopy[i].getUserPrivileges(),

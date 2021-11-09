@@ -96,6 +96,7 @@ bool Details::haveName() const noexcept
 }
 
 /// Connection string
+/*
 void Details::setConnectionString(const std::string &connectionString)
 {
     if (isEmpty(connectionString))
@@ -118,6 +119,7 @@ bool Details::haveConnectionString() const noexcept
 {
     return !pImpl->mConnectionString.empty();
 }
+*/
 
 /// Security level
 void Details::setSecurityLevel(UAuth::SecurityLevel securityLevel) noexcept

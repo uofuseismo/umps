@@ -81,8 +81,9 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr; 
     ConnectionInformation::Details mConnectionDetails;
     std::map<std::string, ConnectionInformation::Details> mConnections;
+    Parameters mParameters;
     UMPS::Messaging::RequestRouter::Router mRouter;
-    const std::string mName = "ConnectionInformation";
+    const std::string mName = Parameters::getName(); //"ConnectionInformation";
     bool mInitialized = false;
 };
 
@@ -98,13 +99,16 @@ Service::~Service() = default;
 /// Initialize
 void Service::initialize(const Parameters &parameters)
 {
+    if (!parameters.haveClientAccessAddress())
+    {
+        throw std::invalid_argument("Client access address not set");
+    }
     stop(); // Ensure the service is stopped
     // Clear out the old services and broadcasts
     pImpl->mConnections.clear();
     // Initialize the socket - Step 1: Initialize options
     Messaging::RequestRouter::RouterOptions routerOptions;
-//    auto clientAccessAddress = parameters.getClientAccessAddress();
-    std::string clientAccessAddress;
+    auto clientAccessAddress = parameters.getClientAccessAddress();
     routerOptions.setEndPoint(clientAccessAddress);
     routerOptions.setCallback(std::bind(&ServiceImpl::callback,
                                         &*this->pImpl,
@@ -200,10 +204,6 @@ void Service::addConnection(const Details &details)
     if (!details.haveName())
     {
         throw std::invalid_argument("Connection details name not set");
-    }
-    if (!details.haveConnectionType())
-    {
-        throw std::invalid_argument("Connection type not set");
     }
     if (details.getSocketType() == SocketType::UNKNOWN)
     {

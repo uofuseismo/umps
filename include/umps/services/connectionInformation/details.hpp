@@ -126,16 +126,16 @@ public:
     SocketType getSocketType() const noexcept;
 
     /// @}
-    
+
     /// @brief Sets the connection string, e.g., "tcp://127.0.0.1:8080".
     /// @param[in] connectionString  The connection string.
     /// @throws std::invalid_argument if connectionString is empty. 
-    void setConnectionString(const std::string &connectionString);    
+    //void setConnectionString(const std::string &connectionString);    
     /// @result The connection string.
     /// @throws std::runtime_error if \c haveConnectionString() is false.
-    [[nodiscard]] std::string getConnectionString() const;
+    //[[nodiscard]] std::string getConnectionString() const;
     /// @result True indicates that the connection string is set. 
-    [[nodiscard]] bool haveConnectionString() const noexcept;
+    //[[nodiscard]] bool haveConnectionString() const noexcept;
 
     /// @brief Sets the connection type - e.g., a broadcast or service.
     /// @param[in] connectionType  The connection type.
