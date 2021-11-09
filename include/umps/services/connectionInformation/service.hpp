@@ -6,6 +6,14 @@ namespace UMPS::Logging
 {
  class ILog;
 }
+namespace UMPS::Services
+{
+ class Service;
+}
+namespace UMPS::Broadcasts
+{
+ class IBroadcast;
+}
 namespace UMPS::Services::ConnectionInformation
 {
 class Parameters;
@@ -27,41 +35,34 @@ public:
     /// @brief Initializes the service.
     void initialize(const Parameters &parameters);
 
-    /// @name Available Services
+    /// @name Available Connections 
     /// @{
-    void addService(std::shared_ptr<const UMPS::Services::IService> &service);
-    /// @brief Adds a service.
-    /// @param[in] serviceDetails  Contains the name of the service and the
-    ///                            connection information.
-    /// @throws std::invalid_argument if the connection information or service
-    ///         name is undefined or the service is already set.
-    /// @sa \c haveService()
-    void addService(const Details &serviceDetails);
-    /// @brief Removes a service.
-    /// @param[in] name  The name of the service.
-    /// @throws std::runtime_error if \c haveService() is false.
-    void removeService(const std::string &name);
-    /// @param[in] name  The name of the service.
-    /// @result True indicates that the service exists.
-    [[nodiscard]] bool haveService(const std::string &name) const noexcept;
-    /// @}
-
-    /// @name Available Broadcasts
-    /// @{
-    /// @brief Adds a broadcast.
-    /// @param[in] broadcastDetails  Contains the name of the broadcast and the
-    ///                              connection information.
+    /// @brief Adds a service connection. 
+    /// @param[in] service  The service whose connection information will
+    ///                     be added to the connections.
+    /// @throws std::invalid_argument if the service's connection information
+    ///         cannot be extracted or if the connection already exists.
+    /// @throws std::runtime_error if the class is not initialized.
+    void addConnection(const UMPS::Services::IService &service);
+    /// @brief Adds a broadcast connection.
+    /// @param[in] broadcast  The broadcast whose connection information will.
+    /// @throws std::runtime_error if the class is not initialized.
+    void addConnection(const UMPS::Broadcasts::IBroadcast &broadcast);
+    /// @brief Adds a connection.
+    /// @param[in] connectionDetails  Contains the name of the connection and the
+    ///                               connection information.
     /// @throws std::invalid_argument if the connection information or
-    ///         broadcast name is undefined or the broadcast is already set.
-    /// @sa \c haveBroadcast()
-    void addBroadcast(const Details &broadcastDetails);
-    /// @brief Removes a broadcast.
-    /// @param[in] name  The name of the broadcast.
-    /// @throws std::runtime_error if \c haveBroadcast() is false.
-    void removeBroadcast(const std::string &name);
-    /// @param[in] name  The name of the broadcast.
-    /// @result True indicates that the broadcast exists.
-    [[nodiscard]] bool haveBroadcast(const std::string &name) const noexcept;
+    ///         name is undefined or the service is already set.
+    /// @sa \c haveConnection()
+    /// @throws std::runtime_error if the class is not initialized.
+    void addConnection(const Details &connectionDetails);
+    /// @brief Removes a connection.
+    /// @param[in] name  The name of the connection.
+    /// @throws std::runtime_error if \c haveConnection() is false.
+    /// @throws std::runtime_error if the class is not initialized.
+    void removeConnection(const std::string &name);
+    /// @result True indicates that the connection exists.
+    [[nodiscard]] bool haveConnection(const std::string &name) const noexcept;
     /// @}
 
     /// @result True indicates that the service is initialized.

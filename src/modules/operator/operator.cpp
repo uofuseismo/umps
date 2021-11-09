@@ -17,6 +17,7 @@
 #include <filesystem>
 #include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
+#include "umps/services/connectionInformation/parameters.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
@@ -46,10 +47,27 @@ struct Modules
 {
     std::vector<UMPS::Services::Incrementer::Service> mIncrementers;
     //std::vector<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcasts;
+    UMPS::Services::ConnectionInformation::Service mConnectionInformation;
 };
 
 ProgramOptions parseIniFile(const std::string &iniFile);
 std::string parseCommandLineOptions(int argc, char *argv[]);
+
+void printService(const UMPS::Services::IService &service)
+{
+    try
+    {
+        auto details = service.getConnectionDetails();
+        auto socketInfo = details.getRouterSocketDetails();
+        std::cout << "Service: " << service.getName()
+                  << " available at: "
+                  << service.getRequestAddress() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+}
 
 /*
 std::string ipResolver(const std::string &serverName)
@@ -105,8 +123,6 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    // Create the connection information
-    UMPS::Services::ConnectionInformation::Service connectionInformation;
     // Create the authenticator
     const int hour = 0;
     const int minute = 0;
@@ -158,9 +174,22 @@ int main(int argc, char *argv[])
         }
         modules.mIncrementers.push_back(std::move(service));
     }
+    // Start the connection information service
+    std::vector<std::thread> threads;
+    std::cout << "Starting connection information service..." << std::endl;
+    try
+    {
+//        std::thread t(&UMPS::Services::ConnectionInformation::Service::start,
+//                      &modules.mConnectionInformation); 
+//        threads.push_back(std::move(t));
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Failed to initialize connection information service"
+                  << std::endl;
+    }
     // Now start the services - a thread per service
     std::cout << "Starting incrementer services..." << std::endl;
-    std::vector<std::thread> threads;
     for (auto &module : modules.mIncrementers)
     {
         try
@@ -174,6 +203,7 @@ int main(int argc, char *argv[])
             std::cerr << e.what() << std::endl;
             continue;
         }
+        //modules.mConnectionInformation.addConnection(module);
     }
 
     // Main program loop
@@ -196,22 +226,17 @@ int main(int argc, char *argv[])
         } 
         else if (command == "list")
         {
+            std::cout << "Connection Information:" << std::endl;
+            printService(modules.mConnectionInformation);
+            std::cout << std::endl;
+
             std::cout << "Incrementers:" << std::endl;
             for (const auto &module : modules.mIncrementers)
             {
-                try
-                {
-                    auto details = module.getConnectionDetails();
-                    auto socketInfo = details.getRouterSocketDetails();
-                    std::cout << "Service: " << module.getName()
-                              << " available at: "
-                              << module.getRequestAddress() << std::endl;
-                }
-                catch (const std::exception &e)
-                {
-                    std::cerr << e.what() << std::endl;
-                }
+                printService(module);
             }
+            std::cout << std::endl;
+
             std::cout << "Broadcasts:" << std::endl;
         }
         else
@@ -225,8 +250,10 @@ int main(int argc, char *argv[])
     std::cout << "Stopping incrementer services..." << std::endl;
     for (auto &module : modules.mIncrementers)
     {
+        //modules.mConnectionInformation.removeConnection(module.getName());
         module.stop();
     }
+    //modules.mConnectionInformation.stop();
     // Join the threads
     for (auto &thread : threads)
     {
@@ -295,11 +322,11 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                             8000);
     auto portEnd   = propertyTree.get<int> ("uOperator.openPortBlockEnd",
                                             8899);
-    if (portStart < 0)
+    if (portStart < 3)
     {
         throw std::runtime_error("uOperator.openPortBlockStart = "
                                + std::to_string(portStart)
-                               + " must be positive");
+                               + " must be at least 3");
     }
     if (portEnd < portStart)
     {
@@ -355,7 +382,11 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             = propertyTree.get<std::string> ("uOperator.whiteListTable",
                                              options.mWhiteListTable);
     }
-    // First get all the counters
+    // First make sure the connection information service is available
+    auto connectionsServiceAddress = "tcp://" + options.mIPAddress
+                    + ":" + std::to_string(options.mAvailablePorts[0].first);
+    options.mAvailablePorts[0].second = false;
+    // Next get all the counters
     std::vector<std::string> counters;
     for (const auto &p : propertyTree)
     {

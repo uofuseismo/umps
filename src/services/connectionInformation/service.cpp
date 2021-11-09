@@ -5,6 +5,7 @@
 #include "umps/services/service.hpp"
 #include "umps/broadcasts/broadcast.hpp"
 #include "umps/services/connectionInformation/service.hpp"
+#include "umps/services/connectionInformation/parameters.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
@@ -178,3 +179,58 @@ void Service::start()
     pImpl->mLogger->debug("Thread exiting service " + pImpl->mName);
 }
 
+/// Add (service) connection
+void Service::addConnection(const UMPS::Services::IService &service)
+{
+    auto details = service.getConnectionDetails();
+    addConnection(details);
+}
+
+/// Add (broadcast) connection
+void Service::addConnection(const UMPS::Broadcasts::IBroadcast &broadcast)
+{
+    auto details = broadcast.getConnectionDetails();
+    addConnection(details);
+}
+
+/// Add connection
+void Service::addConnection(const Details &details)
+{
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
+    if (!details.haveName())
+    {
+        throw std::invalid_argument("Connection details name not set");
+    }
+    if (!details.haveConnectionType())
+    {
+        throw std::invalid_argument("Connection type not set");
+    }
+    if (details.getSocketType() == SocketType::UNKNOWN)
+    {
+        throw std::invalid_argument("Socket type not set");
+    }
+    auto name = details.getName();
+    if (haveConnection(name))
+    {
+        throw std::invalid_argument("Connection already set for " + name);
+    }
+    pImpl->mConnections.insert(std::pair(name, details));
+}
+
+/// Remove connection
+void Service::removeConnection(const std::string &name)
+{
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
+    if (!haveConnection(name))
+    {
+        throw std::runtime_error("Connection " + name + " does not exist");
+    }
+    auto idx = pImpl->mConnections.find(name);
+    pImpl->mConnections.erase(idx);
+}
+
+/// Have service?
+bool Service::haveConnection(const std::string &name) const noexcept
+{
+    return (pImpl->mConnections.find(name) != pImpl->mConnections.end());
+}
