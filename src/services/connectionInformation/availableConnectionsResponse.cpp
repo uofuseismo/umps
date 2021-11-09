@@ -1,6 +1,6 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "umps/services/connectionInformation/availableBroadcastsResponse.hpp"
+#include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
@@ -14,7 +14,7 @@
 using namespace UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Messaging::Authentication;
 
-#define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableBroadcastsResponse"
+#define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableConnectionsResponse"
 
 namespace
 {
@@ -23,7 +23,7 @@ void throwOnInvalidDetails(const Details &detail)
 {
     if (!detail.haveName())
     {
-        throw std::invalid_argument("Name of broadcast not set");
+        throw std::invalid_argument("Name of connection not set");
     }
     if (!detail.haveConnectionString())
     {
@@ -252,7 +252,7 @@ Details objectToDetails(const nlohmann::json &obj)
     return details;
 }
 
-nlohmann::json toJSONObject(const AvailableBroadcastsResponse &response)
+nlohmann::json toJSONObject(const AvailableConnectionsResponse &response)
 {
     nlohmann::json obj;
     auto details = response.getDetails();
@@ -268,10 +268,10 @@ nlohmann::json toJSONObject(const AvailableBroadcastsResponse &response)
     return obj;
 }
 
-AvailableBroadcastsResponse
+AvailableConnectionsResponse
     objectToResponse(const nlohmann::json &obj)
 {
-    AvailableBroadcastsResponse response;
+    AvailableConnectionsResponse response;
     if (obj["MessageType"] != response.getMessageType())
     {   
         throw std::invalid_argument("Message has invalid message type");
@@ -288,15 +288,15 @@ AvailableBroadcastsResponse
     return response;
 }
 
-AvailableBroadcastsResponse
+AvailableConnectionsResponse
     fromJSONMessage(const std::string &message)
 {
     auto obj = nlohmann::json::parse(message);
     return objectToResponse(obj);
 }
 
-AvailableBroadcastsResponse fromCBORMessage(const uint8_t *message,
-                                            const size_t length)
+AvailableConnectionsResponse fromCBORMessage(const uint8_t *message,
+                                             const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
     return objectToResponse(obj);
@@ -308,7 +308,7 @@ AvailableBroadcastsResponse fromCBORMessage(const uint8_t *message,
 ///                                 Implementation                           ///
 ///--------------------------------------------------------------------------///
 
-class AvailableBroadcastsResponse::ResponseImpl
+class AvailableConnectionsResponse::ResponseImpl
 {
 public:
     std::vector<Details> mDetails;
@@ -316,28 +316,28 @@ public:
 };
 
 /// C'tor
-AvailableBroadcastsResponse::AvailableBroadcastsResponse() :
+AvailableConnectionsResponse::AvailableConnectionsResponse() :
     pImpl(std::make_unique<ResponseImpl> ())
 {
 }
 
 /// Copy c'tor
-AvailableBroadcastsResponse::AvailableBroadcastsResponse(
-    const AvailableBroadcastsResponse &response)
+AvailableConnectionsResponse::AvailableConnectionsResponse(
+    const AvailableConnectionsResponse &response)
 {
     *this = response;
 }
 
 /// Move c'tor 
-AvailableBroadcastsResponse::AvailableBroadcastsResponse(
-    AvailableBroadcastsResponse &&response) noexcept
+AvailableConnectionsResponse::AvailableConnectionsResponse(
+    AvailableConnectionsResponse &&response) noexcept
 {
     *this = std::move(response);
 }
 
 /// Copy assignment 
-AvailableBroadcastsResponse& AvailableBroadcastsResponse::operator=(
-    const AvailableBroadcastsResponse &response)
+AvailableConnectionsResponse& AvailableConnectionsResponse::operator=(
+    const AvailableConnectionsResponse &response)
 {
     if (&response == this){return *this;}
     pImpl = std::make_unique<ResponseImpl> (*response.pImpl);
@@ -345,8 +345,8 @@ AvailableBroadcastsResponse& AvailableBroadcastsResponse::operator=(
 }
 
 /// Move assignment
-AvailableBroadcastsResponse& AvailableBroadcastsResponse::operator=(
-    AvailableBroadcastsResponse &&response) noexcept
+AvailableConnectionsResponse& AvailableConnectionsResponse::operator=(
+    AvailableConnectionsResponse &&response) noexcept
 {
     if (&response == this){return *this;}
     pImpl = std::move(response.pImpl);
@@ -354,53 +354,45 @@ AvailableBroadcastsResponse& AvailableBroadcastsResponse::operator=(
 }
 
 /// Destructor
-AvailableBroadcastsResponse::~AvailableBroadcastsResponse() = default;
+AvailableConnectionsResponse::~AvailableConnectionsResponse() = default;
 
 /// Reset class
-void AvailableBroadcastsResponse::clear() noexcept
+void AvailableConnectionsResponse::clear() noexcept
 {
     pImpl = std::make_unique<ResponseImpl> (); 
 }
 
 /// Message type
-std::string AvailableBroadcastsResponse::getMessageType() const noexcept
+std::string AvailableConnectionsResponse::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
 
 /// Clone
 std::unique_ptr<UMPS::MessageFormats::IMessage> 
-    AvailableBroadcastsResponse::clone() const
+    AvailableConnectionsResponse::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<AvailableBroadcastsResponse> (*this);
+        = std::make_unique<AvailableConnectionsResponse> (*this);
     return result;
 }
 
 /// Create instance
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    AvailableBroadcastsResponse::createInstance() const noexcept
+    AvailableConnectionsResponse::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<AvailableBroadcastsResponse> (); 
+        = std::make_unique<AvailableConnectionsResponse> (); 
     return result;
 }
 
 /// Convert message
-std::string AvailableBroadcastsResponse::toMessage() const
+std::string AvailableConnectionsResponse::toMessage() const
 {
     return toCBOR();
 }
 
-/// Details
-void AvailableBroadcastsResponse::setDetail(const Details &detail)
-{
-    throwOnInvalidDetails(detail);
-    pImpl->mDetails.clear();
-    pImpl->mDetails.push_back(detail);
-}
-
-void AvailableBroadcastsResponse::setDetails(
+void AvailableConnectionsResponse::setDetails(
     const std::vector<Details> &details)
 {
     // No details to copy
@@ -414,25 +406,25 @@ void AvailableBroadcastsResponse::setDetails(
     pImpl->mDetails = details;
 }
 
-std::vector<Details> AvailableBroadcastsResponse::getDetails() const noexcept
+std::vector<Details> AvailableConnectionsResponse::getDetails() const noexcept
 {
     return pImpl->mDetails;
 }
 
 /// Return code
-void AvailableBroadcastsResponse::setReturnCode(
+void AvailableConnectionsResponse::setReturnCode(
     const ReturnCode returnCode) noexcept
 {
     pImpl->mReturnCode = returnCode;
 }
 
-ReturnCode AvailableBroadcastsResponse::getReturnCode() const noexcept
+ReturnCode AvailableConnectionsResponse::getReturnCode() const noexcept
 {
     return pImpl->mReturnCode;
 }
 
-void AvailableBroadcastsResponse::fromMessage(const char *messageIn,
-                                              const size_t length)
+void AvailableConnectionsResponse::fromMessage(const char *messageIn,
+                                               const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
     fromCBOR(message, length);
@@ -440,13 +432,13 @@ void AvailableBroadcastsResponse::fromMessage(const char *messageIn,
 
 
 /// From CBOR
-void AvailableBroadcastsResponse::fromCBOR(const std::string &data)
+void AvailableConnectionsResponse::fromCBOR(const std::string &data)
 {
     fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
 }
 
-void AvailableBroadcastsResponse::fromCBOR(const uint8_t *data,
-                                           const size_t length)
+void AvailableConnectionsResponse::fromCBOR(const uint8_t *data,
+                                            const size_t length)
 {
     if (length == 0){throw std::invalid_argument("No data");}
     if (data == nullptr)
@@ -457,20 +449,20 @@ void AvailableBroadcastsResponse::fromCBOR(const uint8_t *data,
 }
 
 /// From JSON
-void AvailableBroadcastsResponse::fromJSON(const std::string &message)
+void AvailableConnectionsResponse::fromJSON(const std::string &message)
 {
     *this = fromJSONMessage(message);
 }
 
 /// Create JSON
-std::string AvailableBroadcastsResponse::toJSON(const int nIndent) const
+std::string AvailableConnectionsResponse::toJSON(const int nIndent) const
 {
     auto obj = toJSONObject(*this);
     return obj.dump(nIndent);
 }
 
 /// Create CBOR
-std::string AvailableBroadcastsResponse::toCBOR() const
+std::string AvailableConnectionsResponse::toCBOR() const
 {
     auto obj = toJSONObject(*this);
     auto v = nlohmann::json::to_cbor(obj);

@@ -92,8 +92,11 @@ set(MESSAGING_SRC
     src/messaging/requestRouter/router.cpp
     src/messaging/requestRouter/routerOptions.cpp)
 set(MODULES_LIBSRC
-    src/services/connectionInformation/availableBroadcastsRequest.cpp
-    src/services/connectionInformation/availableBroadcastsResponse.cpp
+    #src/services/connectionInformation/availableBroadcastsRequest.cpp
+    #src/services/connectionInformation/availableBroadcastsResponse.cpp
+    src/services/connectionInformation/availableConnectionsRequest.cpp
+    src/services/connectionInformation/availableConnectionsResponse.cpp
+    src/services/connectionInformation/service.cpp
     src/services/connectionInformation/socketDetails/proxy.cpp
     src/services/connectionInformation/socketDetails/publisher.cpp
     src/services/connectionInformation/socketDetails/request.cpp

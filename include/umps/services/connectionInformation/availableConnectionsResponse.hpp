@@ -1,38 +1,64 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLEBROADCASTSREQUESTS_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLEBROADCASTSREQUESTS_HPP
+#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLECONNECTIONSRESPONSE_HPP
+#define UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLECONNECTIONSRESPONSE_HPP
 #include <memory>
+#include <vector>
+#include "umps/services/connectionInformation/enums.hpp"
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::ConnectionInformation
 {
-/// @class AvailableBroadcastsRequest "availableBroadcastsRequest.hpp" "umps/services/connectionInformation/availableBroadcastsRequest.hpp"
-/// @brief This class requests the connection information for all avialable
-///        broadcasts.
+ class Details;
+}
+namespace UMPS::Services::ConnectionInformation
+{
+/// @class AvailableConnectionsResponse "availableConnectionsResponse.hpp" "umps/services/connectionInformation/availableConnectionsRepsonse.hpp"
+/// @brief This class provides the connection information to for all
+///        available connections - e.g., broadcasts, services, etc.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class AvailableBroadcastsRequest : public UMPS::MessageFormats::IMessage
+class AvailableConnectionsResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
     /// @brief Constructor.
-    AvailableBroadcastsRequest();
+    AvailableConnectionsResponse();
     /// @brief Copy constructor.
-    /// @param[in] request  Creates this class from the given request.
-    AvailableBroadcastsRequest(const AvailableBroadcastsRequest &request);
+    /// @param[in] response  Creates this class from the given response.
+    AvailableConnectionsResponse(const AvailableConnectionsResponse &response);
     /// @brief Move constructor.
-    /// @param[in,out] request  Creates this class from the given request.
-    ///                         On exit, request's behavior is undefined.
-    AvailableBroadcastsRequest(AvailableBroadcastsRequest &&request) noexcept;
+    /// @param[in,out] response  Creates this class from the given response.
+    ///                          On exit, response's behavior is undefined.
+    AvailableConnectionsResponse(AvailableConnectionsResponse &&response) noexcept;
     /// @}
 
     /// @name Operator
     /// @{
     /// 
     /// @brief Copy assignment operator.
-    /// @result A deep copy of the given request.
-    AvailableBroadcastsRequest& operator=(const AvailableBroadcastsRequest &request);
+    /// @result A deep copy of the given response.
+    AvailableConnectionsResponse& operator=(const AvailableConnectionsResponse &response);
     /// @brief Move asignment operator.
-    /// @result The memory from request moved to this.
-    AvailableBroadcastsRequest& operator=(AvailableBroadcastsRequest &&request) noexcept;
+    /// @result The memory from response moved to this.
+    AvailableConnectionsResponse& operator=(AvailableConnectionsResponse &&response) noexcept;
+    /// @}
+
+    /// @name Properties
+    /// @{
+    /// @brief Sets the connection details for every available broadcast,
+    ///        service, etc.
+    /// @throws std::invalid_argument if any of the details are not properly
+    ///         specified.
+    void setDetails(const std::vector<Details> &details);
+    /// @result The connection details for every available broadcast, 
+    ///         service, etc. 
+    /// @note If the result is empty then there are no available connections.
+    /// @sa \c getReturnCode().
+    [[nodiscard]] std::vector<Details> getDetails() const noexcept;
+    /// @brief Allows the incrementer to set its return code and signal to
+    ///        the requester whether or not the increment was successful.
+    /// @param[in] code   The return code.
+    void setReturnCode(ReturnCode code) noexcept;
+    /// @result The return code from the incrementer.
+    [[nodiscard]] ReturnCode getReturnCode() const noexcept;
     /// @}
 
     /// @name Message Properties
@@ -86,12 +112,15 @@ public:
 
     /// @name Destructors
     /// @{
+    /// @brief Reset class and release all memory.
+    void clear() noexcept;
     /// @brief Destructor.
-    virtual ~AvailableBroadcastsRequest(); 
+    virtual ~AvailableConnectionsResponse(); 
     /// @}
 private:
-    class RequestImpl;
-    std::unique_ptr<RequestImpl> pImpl; 
+    class ResponseImpl;
+    std::unique_ptr<ResponseImpl> pImpl; 
+
 };
 }
 #endif

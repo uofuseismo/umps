@@ -1,23 +1,23 @@
 #include <nlohmann/json.hpp>
-#include "umps/services/connectionInformation/availableBroadcastsRequest.hpp"
+#include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
 
-#define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableBroadcastsRequest"
+#define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableConnectionsRequest"
 
 namespace
 {
 
-nlohmann::json toJSONObject(const AvailableBroadcastsRequest &request)
+nlohmann::json toJSONObject(const AvailableConnectionsRequest &request)
 {
     nlohmann::json obj;
     obj["MessageType"] = request.getMessageType();
     return obj;
 }
 
-AvailableBroadcastsRequest objectToRequest(const nlohmann::json &obj)
+AvailableConnectionsRequest objectToRequest(const nlohmann::json &obj)
 {
-    AvailableBroadcastsRequest request;
+    AvailableConnectionsRequest request;
     if (obj["MessageType"] != request.getMessageType())
     {   
         throw std::invalid_argument("Message has invalid message type");
@@ -25,14 +25,14 @@ AvailableBroadcastsRequest objectToRequest(const nlohmann::json &obj)
     return request;
 }
 
-AvailableBroadcastsRequest fromJSONMessage(const std::string &message)
+AvailableConnectionsRequest fromJSONMessage(const std::string &message)
 {
     auto obj = nlohmann::json::parse(message);
     return objectToRequest(obj);
 }
 
-AvailableBroadcastsRequest fromCBORMessage(const uint8_t *message,
-                                           const size_t length)
+AvailableConnectionsRequest fromCBORMessage(const uint8_t *message,
+                                            const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
     return objectToRequest(obj);
@@ -44,35 +44,35 @@ AvailableBroadcastsRequest fromCBORMessage(const uint8_t *message,
 ///                                 Implementation                           ///
 ///--------------------------------------------------------------------------///
 
-class AvailableBroadcastsRequest::RequestImpl
+class AvailableConnectionsRequest::RequestImpl
 {
 public:
 
 };
 
 /// C'tor
-AvailableBroadcastsRequest::AvailableBroadcastsRequest() :
+AvailableConnectionsRequest::AvailableConnectionsRequest() :
     pImpl(std::make_unique<RequestImpl> ())
 {
 }
 
 /// Copy c'tor
-AvailableBroadcastsRequest::AvailableBroadcastsRequest(
-    const AvailableBroadcastsRequest &request)
+AvailableConnectionsRequest::AvailableConnectionsRequest(
+    const AvailableConnectionsRequest &request)
 {
     *this = request;
 }
 
 /// Move c'tor 
-AvailableBroadcastsRequest::AvailableBroadcastsRequest(
-    AvailableBroadcastsRequest &&request) noexcept
+AvailableConnectionsRequest::AvailableConnectionsRequest(
+    AvailableConnectionsRequest &&request) noexcept
 {
     *this = std::move(request);
 }
 
 /// Copy assignment 
-AvailableBroadcastsRequest& AvailableBroadcastsRequest::operator=(
-    const AvailableBroadcastsRequest &request)
+AvailableConnectionsRequest& AvailableConnectionsRequest::operator=(
+    const AvailableConnectionsRequest &request)
 {
     if (&request == this){return *this;}
     pImpl = std::make_unique<RequestImpl> (*request.pImpl);
@@ -80,8 +80,8 @@ AvailableBroadcastsRequest& AvailableBroadcastsRequest::operator=(
 }
 
 /// Move assignment
-AvailableBroadcastsRequest& AvailableBroadcastsRequest::operator=(
-    AvailableBroadcastsRequest &&request) noexcept
+AvailableConnectionsRequest& AvailableConnectionsRequest::operator=(
+    AvailableConnectionsRequest &&request) noexcept
 {
     if (&request == this){return *this;}
     pImpl = std::move(request.pImpl);
@@ -89,39 +89,39 @@ AvailableBroadcastsRequest& AvailableBroadcastsRequest::operator=(
 }
 
 /// Destructor
-AvailableBroadcastsRequest::~AvailableBroadcastsRequest() = default;
+AvailableConnectionsRequest::~AvailableConnectionsRequest() = default;
 
 /// Message type
-std::string AvailableBroadcastsRequest::getMessageType() const noexcept
+std::string AvailableConnectionsRequest::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
 
 /// Clone
 std::unique_ptr<UMPS::MessageFormats::IMessage> 
-    AvailableBroadcastsRequest::clone() const
+    AvailableConnectionsRequest::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<AvailableBroadcastsRequest> (*this);
+        = std::make_unique<AvailableConnectionsRequest> (*this);
     return result;
 }
 
 /// Create instance
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    AvailableBroadcastsRequest::createInstance() const noexcept
+    AvailableConnectionsRequest::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<AvailableBroadcastsRequest> (); 
+        = std::make_unique<AvailableConnectionsRequest> (); 
     return result;
 }
 
 /// Convert message
-std::string AvailableBroadcastsRequest::toMessage() const
+std::string AvailableConnectionsRequest::toMessage() const
 {
     return toCBOR();
 }
 
-void AvailableBroadcastsRequest::fromMessage(const char *messageIn,
+void AvailableConnectionsRequest::fromMessage(const char *messageIn,
                                              const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -130,12 +130,12 @@ void AvailableBroadcastsRequest::fromMessage(const char *messageIn,
 
 
 /// From CBOR
-void AvailableBroadcastsRequest::fromCBOR(const std::string &data)
+void AvailableConnectionsRequest::fromCBOR(const std::string &data)
 {
     fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
 }
 
-void AvailableBroadcastsRequest::fromCBOR(const uint8_t *data,
+void AvailableConnectionsRequest::fromCBOR(const uint8_t *data,
                                           const size_t length)
 {
     if (length == 0){throw std::invalid_argument("No data");}
@@ -147,20 +147,20 @@ void AvailableBroadcastsRequest::fromCBOR(const uint8_t *data,
 }
 
 /// From JSON
-void AvailableBroadcastsRequest::fromJSON(const std::string &message)
+void AvailableConnectionsRequest::fromJSON(const std::string &message)
 {
     *this = fromJSONMessage(message);
 }
 
 /// Create JSON
-std::string AvailableBroadcastsRequest::toJSON(const int nIndent) const
+std::string AvailableConnectionsRequest::toJSON(const int nIndent) const
 {
     auto obj = toJSONObject(*this);
     return obj.dump(nIndent);
 }
 
 /// Create CBOR
-std::string AvailableBroadcastsRequest::toCBOR() const
+std::string AvailableConnectionsRequest::toCBOR() const
 {
     auto obj = toJSONObject(*this);
     auto v = nlohmann::json::to_cbor(obj);

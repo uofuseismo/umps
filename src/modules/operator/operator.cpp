@@ -105,6 +105,8 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    // Create the connection information
+    UMPS::Services::ConnectionInformation::Service connectionInformation;
     // Create the authenticator
     const int hour = 0;
     const int minute = 0;

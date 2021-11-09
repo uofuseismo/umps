@@ -1,68 +1,38 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLEBROADCASTSRESPONSE_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLEBROADCASTSRESPONSE_HPP
+#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLECONNECTIONSREQUESTS_HPP
+#define UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLECONNECTIONSREQUESTS_HPP
 #include <memory>
-#include <vector>
-#include "umps/services/connectionInformation/enums.hpp"
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::ConnectionInformation
 {
- class Details;
-}
-namespace UMPS::Services::ConnectionInformation
-{
-/// @class AvailableBroadcastsResponse "availableBroadcastsResponse.hpp" "umps/services/connectionInformation/availableBroadcastsRepsonse.hpp"
-/// @brief This class provides the connection information to for all
-///        available broadcasts.
+/// @class AvailableConnectionsRequest "availableConnectionsRequest.hpp" "umps/services/connectionInformation/availableConnectionsRequest.hpp"
+/// @brief This class requests the connection information for all avialable
+///        connections - which includes services, broadcasts, etc.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class AvailableBroadcastsResponse : public UMPS::MessageFormats::IMessage
+class AvailableConnectionsRequest : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
     /// @brief Constructor.
-    AvailableBroadcastsResponse();
+    AvailableConnectionsRequest();
     /// @brief Copy constructor.
-    /// @param[in] response  Creates this class from the given response.
-    AvailableBroadcastsResponse(const AvailableBroadcastsResponse &response);
+    /// @param[in] request  Creates this class from the given request.
+    AvailableConnectionsRequest(const AvailableConnectionsRequest &request);
     /// @brief Move constructor.
-    /// @param[in,out] response  Creates this class from the given response.
-    ///                          On exit, response's behavior is undefined.
-    AvailableBroadcastsResponse(AvailableBroadcastsResponse &&response) noexcept;
+    /// @param[in,out] request  Creates this class from the given request.
+    ///                         On exit, request's behavior is undefined.
+    AvailableConnectionsRequest(AvailableConnectionsRequest &&request) noexcept;
     /// @}
 
     /// @name Operator
     /// @{
     /// 
     /// @brief Copy assignment operator.
-    /// @result A deep copy of the given response.
-    AvailableBroadcastsResponse& operator=(const AvailableBroadcastsResponse &response);
+    /// @result A deep copy of the given request.
+    AvailableConnectionsRequest& operator=(const AvailableConnectionsRequest &request);
     /// @brief Move asignment operator.
-    /// @result The memory from response moved to this.
-    AvailableBroadcastsResponse& operator=(AvailableBroadcastsResponse &&response) noexcept;
-    /// @}
-
-    /// @name Properties
-    /// @{
-    /// @brief Sets the details for a connection to the available broadcast.
-    /// @throws std::invalid_argument if the details are not properly
-    ///         specified.
-    void setDetail(const Details &detail);
-    /// @brief Sets the connection details for each available broadcast.
-    /// @note Use this when there are multiple available broadcasts.
-    /// @throws std::invalid_argument if any of the details are not properly
-    ///         specified.
-    void setDetails(const std::vector<Details> &details);
-    /// @result The connection details for every available broadcast.  
-    /// @note If this is empty then there are no available broadcasts.
-    /// @sa \c getReturnCode().
-    [[nodiscard]] std::vector<Details> getDetails() const noexcept;
-
-    /// @brief Allows the incrementer to set its return code and signal to
-    ///        the requester whether or not the increment was successful.
-    /// @param[in] code   The return code.
-    void setReturnCode(ReturnCode code) noexcept;
-    /// @result The return code from the incrementer.
-    [[nodiscard]] ReturnCode getReturnCode() const noexcept;
+    /// @result The memory from request moved to this.
+    AvailableConnectionsRequest& operator=(AvailableConnectionsRequest &&request) noexcept;
     /// @}
 
     /// @name Message Properties
@@ -116,15 +86,12 @@ public:
 
     /// @name Destructors
     /// @{
-    /// @brief Reset class and release all memory.
-    void clear() noexcept;
     /// @brief Destructor.
-    virtual ~AvailableBroadcastsResponse(); 
+    virtual ~AvailableConnectionsRequest(); 
     /// @}
 private:
-    class ResponseImpl;
-    std::unique_ptr<ResponseImpl> pImpl; 
-
+    class RequestImpl;
+    std::unique_ptr<RequestImpl> pImpl; 
 };
 }
 #endif

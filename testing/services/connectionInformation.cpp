@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 #include "umps/services/connectionInformation/details.hpp"
-#include "umps/services/connectionInformation/availableBroadcastsRequest.hpp"
-#include "umps/services/connectionInformation/availableBroadcastsResponse.hpp"
+#include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
+#include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -43,23 +43,25 @@ TEST(ConnectionInformation, Details)
     EXPECT_FALSE(details.haveConnectionType());
 }
 
-TEST(ConnectionInformation, AvailableBroadcastsRequest)
+TEST(ConnectionInformation, AvailableConnectionsRequest)
 {
-    AvailableBroadcastsRequest request;
+    AvailableConnectionsRequest request;
     EXPECT_EQ(request.getMessageType(), 
-           "UMPS::Services::ConnectionInformation::AvailableBroadcastsRequest");
+           "UMPS::Services::ConnectionInformation::AvailableConnectionsRequest");
 
     auto msg = request.toMessage();
  
-    AvailableBroadcastsRequest requestCopy;
+    AvailableConnectionsRequest requestCopy;
     requestCopy.fromMessage(msg.data(), msg.size());
     EXPECT_EQ(request.getMessageType(), requestCopy.getMessageType());
 }
 
-TEST(ConnectionInformation, AvailableBroadcastsResponse)
+TEST(ConnectionInformation, AvailableConnectionsResponse)
 {
     const ReturnCode returnCode = ReturnCode::ALGORITHM_FAILURE;
-    AvailableBroadcastsResponse response;
+    AvailableConnectionsResponse response;
+    EXPECT_EQ(response.getMessageType(), 
+           "UMPS::Services::ConnectionInformation::AvailableConnectionsResponse");
     response.setReturnCode(returnCode);
     EXPECT_EQ(response.getReturnCode(), returnCode);
 
@@ -92,7 +94,7 @@ TEST(ConnectionInformation, AvailableBroadcastsResponse)
  
     auto message = response.toMessage();
  
-    AvailableBroadcastsResponse responseCopy;
+    AvailableConnectionsResponse responseCopy;
     responseCopy.fromMessage(message.data(), message.size());
  
     EXPECT_EQ(responseCopy.getMessageType(), response.getMessageType());

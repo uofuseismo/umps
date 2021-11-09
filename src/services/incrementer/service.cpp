@@ -1,6 +1,4 @@
 #include <iostream>
-#include <atomic>
-#include <mutex>
 #include <chrono>
 #include <thread>
 #include <cassert>
@@ -83,39 +81,20 @@ public:
         }
         else
         {
-            mLogger->error("Expecting message type: " + messageType
-                         + " but received: " + request.getMessageType());
+            mLogger->error("Expecting message type: " + request.getMessageType()
+                         + " but received: " + messageType);
             response->setReturnCode(ReturnCode::INVALID_MESSAGE);
         }
         return response;
     }
-/*
-    /// Determines if the service was started
-    bool isRunning() const noexcept
-    {
-        //auto running = mRunning.load(std::memory_order_relaxed);
-        std::scoped_lock lock(mMutex);
-        auto running = mRunning;
-        return running;
-    }
-    /// Marks the service as running or not running
-    void setRunning(const bool status)
-    {
-        //mRunning.store(status, std::memory_order_seq_cst);
-        std::scoped_lock lock(mMutex);
-        mRunning = status; 
-    }
-*/
 ///private:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     Counter mCounter; 
     Parameters mParameters;
     UMPS::Messaging::RequestRouter::Router mRouter;
-    //mutable std::mutex mMutex;
     std::string mName;
     // Where clients can access this service
     ConnectionInformation::Details mConnectionDetails;
-    std::string mClientAccessAddress;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{0};
@@ -182,41 +161,15 @@ void Service::initialize(const Parameters &parameters)
         = std::make_unique<Request> (); 
     routerOptions.addMessageFormat(requestType);
     pImpl->mRouter.initialize(routerOptions); 
-    // Copy some last things
-    pImpl->mClientAccessAddress = pImpl->mRouter.getConnectionString();
+    // Save the incrementer service name
     pImpl->mName = name;
-    pImpl->mInitialized = true;
     // Create the connection details
     ConnectionInformation::SocketDetails::Router socketDetails;
     socketDetails.setAddress(pImpl->mRouter.getConnectionString());
     pImpl->mConnectionDetails.setName(pImpl->mName);
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
-/*
-    pImpl->mRouter.bind(clientAccessAddress);
-    if (!pImpl->mRouter.isBound())
-    {
-        throw std::runtime_error("Failed to bind to address: "
-                               + clientAccessAddress);
-    }
-    // This service only handles request types
-    pImpl->mRouter.addMessageType(requestType);
-    // Bind a callback function so that requests can be processed and this
-    // class's counter can be incremented.
-    pImpl->mRouter.setCallback(std::bind(&ServiceImpl::callback,
-                                         &*this->pImpl,
-                                         std::placeholders::_1,
-                                         std::placeholders::_2,
-                                         std::placeholders::_3));
-    // Create the sockets
-    // auto serverAccessAddress = parameters.getServerAccessAddress();
-    // auto clientAccessAddress = parameters.getClientAccessAddress();
-    // setServerAccessAddress(const std::string &address)
-    // Move the counter to this and tag the class as initialized
-    pImpl->mCounter = std::move(counter);
-    pImpl->mParameters = parameters;
-    pImpl->mName = name;
+    // Done
     pImpl->mInitialized = true;
-*/
 }
 
 /// Is the service initialized?
@@ -232,9 +185,9 @@ void Service::start()
     {
         throw std::runtime_error("Service not initialized");
     }
-    pImpl->mLogger->debug("Beginning service...");
+    pImpl->mLogger->debug("Beginning service " + pImpl->mName + "...");
     pImpl->mRouter.start(); // This should hang until the service is stopped
-    pImpl->mLogger->debug("Thread exiting service");
+    pImpl->mLogger->debug("Thread exiting service " + pImpl->mName);
 }
 
 /// Gets the service name
