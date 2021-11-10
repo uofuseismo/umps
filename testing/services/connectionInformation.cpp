@@ -5,6 +5,11 @@
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
+#include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -12,6 +17,56 @@ namespace
 
 using namespace UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Messaging::Authentication;
+
+TEST(ConnectionInformation, SocketDetails)
+{
+    const std::string frontEnd = "tcp://127.0.0.1:8080";
+    const std::string backEnd  = "tcp://127.0.0.1:8081";
+
+    SocketDetails::Publisher publisher;
+    EXPECT_NO_THROW(publisher.setAddress(frontEnd));
+    EXPECT_EQ(publisher.getAddress(), frontEnd);
+    EXPECT_EQ(publisher.getSocketType(), SocketType::PUBLISHER);
+    EXPECT_EQ(publisher.connectOrBind(), ConnectOrBind::CONNECT);
+
+    SocketDetails::Subscriber subscriber;
+    EXPECT_NO_THROW(subscriber.setAddress(frontEnd));
+    EXPECT_EQ(subscriber.getAddress(), frontEnd);
+    EXPECT_EQ(subscriber.getSocketType(), SocketType::SUBSCRIBER);
+    EXPECT_EQ(subscriber.connectOrBind(), ConnectOrBind::BIND);
+
+    SocketDetails::XPublisher xPublisher;
+    EXPECT_NO_THROW(xPublisher.setAddress(backEnd));
+    EXPECT_EQ(xPublisher.getAddress(), backEnd);
+    EXPECT_EQ(xPublisher.getSocketType(), SocketType::XPUBLISHER);
+    EXPECT_EQ(xPublisher.connectOrBind(), ConnectOrBind::CONNECT);
+
+    SocketDetails::XSubscriber xSubscriber;
+    EXPECT_NO_THROW(xSubscriber.setAddress(frontEnd));
+    EXPECT_EQ(xSubscriber.getAddress(), frontEnd);
+    EXPECT_EQ(xSubscriber.getSocketType(), SocketType::XSUBSCRIBER);
+    EXPECT_EQ(xSubscriber.connectOrBind(), ConnectOrBind::BIND);
+
+    SocketDetails::Router router;
+    EXPECT_NO_THROW(router.setAddress(backEnd));
+    EXPECT_EQ(router.getAddress(), backEnd);
+    EXPECT_EQ(router.getSocketType(), SocketType::ROUTER);
+    EXPECT_EQ(router.connectOrBind(), ConnectOrBind::CONNECT);
+
+    SocketDetails::Proxy proxy;
+    EXPECT_NO_THROW(proxy.setSocketPair(std::pair(xSubscriber, xPublisher)));
+    EXPECT_EQ(proxy.getSocketType(), SocketType::PROXY);
+    EXPECT_EQ(proxy.getFrontendSocketType(), SocketType::XSUBSCRIBER);
+    EXPECT_EQ(proxy.getBackendSocketType(),  SocketType::XPUBLISHER);
+    auto xSubCopy = proxy.getXSubscriberFrontend();
+    auto xPubCopy = proxy.getXPublisherBackend(); 
+    EXPECT_EQ(xSubCopy.getAddress(), frontEnd);
+    EXPECT_EQ(xSubCopy.getSocketType(), SocketType::XSUBSCRIBER);
+    EXPECT_EQ(xSubCopy.connectOrBind(), ConnectOrBind::BIND);
+    EXPECT_EQ(xPubCopy.getAddress(), backEnd);
+    EXPECT_EQ(xPubCopy.getSocketType(), SocketType::XPUBLISHER);
+    EXPECT_EQ(xPubCopy.connectOrBind(), ConnectOrBind::CONNECT);
+}
 
 TEST(ConnectionInformation, Details)
 {

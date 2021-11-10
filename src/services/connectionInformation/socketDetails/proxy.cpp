@@ -117,5 +117,5 @@ XPublisher Proxy::getXPublisherBackend() const
 /// Socket type
 UCI::SocketType Proxy::getSocketType() noexcept
 {
-    return UCI::SocketType::PUBLISHER;
+    return UCI::SocketType::PROXY;
 }

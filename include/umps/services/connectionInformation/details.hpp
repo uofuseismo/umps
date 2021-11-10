@@ -124,7 +124,6 @@ public:
     /// @note By default this is unknown and will obtain value from the last
     ///       call to \c setSocketDetails().
     SocketType getSocketType() const noexcept;
-
     /// @}
 
     /// @brief Sets the connection string, e.g., "tcp://127.0.0.1:8080".
