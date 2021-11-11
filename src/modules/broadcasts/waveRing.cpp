@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <chrono>
 #include <thread>
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -60,6 +61,7 @@ int main(int argc, char *argv[])
     }
     // Get the connection details
     std::cout << "Getting available services..." << std::endl;
+auto start = std::chrono::high_resolution_clock::now();
     std::vector<UServices::ConnectionInformation::Details> connectionDetails;
     try
     {
@@ -71,6 +73,9 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+auto stop = std::chrono::high_resolution_clock::now();
+auto duration = std::chrono::duration_cast<std::chrono::microseconds> (stop - start);
+std::cout << duration.count()*1.e-6 << std::endl;
 for (const auto &detail : connectionDetails)
 {
  std::cout << detail.getName() << std::endl;

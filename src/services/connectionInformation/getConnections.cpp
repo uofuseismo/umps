@@ -1,5 +1,7 @@
+#include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 #include <memory>
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
@@ -31,7 +33,6 @@ UMPS::Services::ConnectionInformation::getConnections(
     // Fire up the client
     UMPS::Messaging::RequestRouter::Request client;
     client.initialize(requestOptions);
-
     // Get the response
     AvailableConnectionsRequest requestMessage;
     auto message = client.request(requestMessage);
