@@ -154,8 +154,24 @@ int main(int argc, char *argv[])
     }
     // Initialize the services
     Modules modules;
-    modules.mConnectionInformation.initialize(
-        options.mConnectionInformationParameters);
+    auto connectionInformationLogFileName = options.mLogDirectory + "/"
+                                          + "connectionInformation.log";
+    UMPS::Logging::SpdLog connectionInformationLogger;
+    connectionInformationLogger.initialize("ConnectionInformation",
+                                           connectionInformationLogFileName,
+                                           UMPS::Logging::Level::DEBUG,
+                                           hour, minute);
+    std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
+        = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
+    UMPS::Services::ConnectionInformation::Service
+        connectionInformation(connectionInformationLoggerPtr);
+    connectionInformation.initialize(options.mConnectionInformationParameters);
+    modules.mConnectionInformation = std::move(connectionInformation);
+
+    //modules.mConnectionInformation.initialize(
+     //   options.mConnectionInformationParameters);
+    
+
     modules.mIncrementers.reserve(options.mIncrementerParameters.size());
     for (const auto &parameters : options.mIncrementerParameters)
     {

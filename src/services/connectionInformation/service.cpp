@@ -93,6 +93,26 @@ Service::Service() :
 {
 }
 
+/// C'tor
+Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (logger))
+{
+}
+
+/// Move c'tor
+Service::Service(Service &&service) noexcept
+{
+    *this = std::move(service);
+}
+
+/// Move assignment
+Service& Service::operator=(Service &&service) noexcept
+{
+    if (&service == this){return *this;}
+    pImpl = std::move(service.pImpl);
+    return *this;
+}
+
 /// Destructor
 Service::~Service() = default;
 
