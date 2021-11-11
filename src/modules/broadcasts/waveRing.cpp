@@ -5,6 +5,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
+#include "umps/logging/spdlog.hpp"
+#include "umps/logging/stdout.hpp"
 #include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "umps/broadcasts/earthworm/waveRing.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
@@ -55,7 +57,12 @@ int main(int argc, char *argv[])
     }
     // Get the connection details
     std::cout << "Getting available services..." << std::endl;
-    UMPS::Messaging::RequestRouter::Request req;
+    UMPS::Logging::StdOut connectionInformationLogger;
+    connectionInformationLogger.setLevel(UMPS::Logging::Level::DEBUG);
+    std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (connectionInformationLogger);
+
+    UMPS::Messaging::RequestRouter::Request req(connectionInformationLoggerPtr);
     std::unique_ptr<UMPS::MessageFormats::IMessage> responseMessage
         = std::make_unique<UMPS::Services::ConnectionInformation::AvailableConnectionsRequest> ();
     UMPS::Services::ConnectionInformation::AvailableConnectionsResponse requestMessage;
