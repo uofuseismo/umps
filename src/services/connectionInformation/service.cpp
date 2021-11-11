@@ -61,15 +61,6 @@ public:
             {
                 auto messagePtr = static_cast<const char *> (messageContents);
                 request.fromMessage(messagePtr, length);
-                // Response to the message
-                std::vector<ConnectionInformation::Details> details;
-                details.reserve(mConnections.size());
-                for (const auto &connection : mConnections)
-                {
-                    details.push_back(connection.second);
-                }
-                response->setDetails(details); 
-                response->setReturnCode(ReturnCode::SUCCESS); 
             }
             catch (const std::exception &e) 
             {
@@ -84,7 +75,17 @@ public:
                          + " but received can only process "
                          + request.getMessageType());
             response->setReturnCode(ReturnCode::INVALID_MESSAGE);
+            return response;
         }
+        // Response to the message
+        std::vector<ConnectionInformation::Details> details;
+        details.reserve(mConnections.size());
+        for (const auto &connection : mConnections)
+        {
+            details.push_back(connection.second);
+        }
+        response->setDetails(details);
+        response->setReturnCode(ReturnCode::SUCCESS);
         return response;
     }
 ///private:
@@ -156,6 +157,7 @@ void Service::initialize(const Parameters &parameters)
     socketDetails.setAddress(pImpl->mRouter.getConnectionString());
     pImpl->mConnectionDetails.setName(pImpl->mName);
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
+    pImpl->mConnectionDetails.setConnectionType(ConnectionType::SERVICE);
     // Add myself
     pImpl->mConnections.insert(std::pair(pImpl->mName,
                                          pImpl->mConnectionDetails));
