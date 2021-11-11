@@ -430,13 +430,13 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
             }
 #endif
             std::string messageType = messagesReceived.at(2).to_string();
+/*
             if (!pImpl->mMessageFormats.contains(messageType))
             {
                 auto errorMsg = "Unhandled message type: " + messageType;
                 pImpl->mLogger->error(errorMsg);
                 continue;
             }
-/*
             auto index = pImpl->mSubscriptions.find(messageType);
             if (index == pImpl->mSubscriptions.end())
             {

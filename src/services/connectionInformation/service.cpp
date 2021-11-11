@@ -63,7 +63,7 @@ public:
             }
             catch (const std::exception &e) 
             {
-                mLogger->error("Broadcasts request serialization failed with: "
+                mLogger->error("Request serialization failed with: "
                              + std::string(e.what()));
                 response->setReturnCode(ReturnCode::ALGORITHM_FAILURE);
             }
