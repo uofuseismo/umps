@@ -89,6 +89,7 @@ set(MESSAGING_SRC
     src/messaging/publisherSubscriber/proxy.cpp
     src/messaging/publisherSubscriber/proxyOptions.cpp
     src/messaging/requestRouter/request.cpp
+    src/messaging/requestRouter/requestOptions.cpp
     src/messaging/requestRouter/router.cpp
     src/messaging/requestRouter/routerOptions.cpp)
 set(MODULES_LIBSRC
@@ -96,6 +97,7 @@ set(MODULES_LIBSRC
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
     src/services/connectionInformation/availableConnectionsResponse.cpp
+    src/services/connectionInformation/getConnections.cpp
     src/services/connectionInformation/service.cpp
     src/services/connectionInformation/parameters.cpp
     src/services/connectionInformation/socketDetails/proxy.cpp

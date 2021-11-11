@@ -1,6 +1,5 @@
 #ifndef UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
 #define UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
-#include <map>
 #include <memory>
 #include <functional>
 #include "umps/messaging/authentication/enums.hpp"

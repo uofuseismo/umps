@@ -5,6 +5,7 @@
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/services/incrementer/request.hpp"
 #include "umps/services/incrementer/response.hpp"
 #include "umps/logging/stdout.hpp"
@@ -138,16 +139,23 @@ void client(int base)
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
 
-    UMPS::Messaging::RequestRouter::Request client(loggerPtr);
+    UMPS::Messaging::RequestRouter::RequestOptions requestOptions;
     UMPS::Services::Incrementer::Request request;
     std::unique_ptr<UMPS::MessageFormats::IMessage> responseType
         = std::make_unique<UMPS::Services::Incrementer::Response> (); 
+    requestOptions.setEndPoint(localHost);
+    requestOptions.addMessageFormat(responseType);
+/*
     client.setResponse(responseType);
+*/
 
+ 
+    UMPS::Messaging::RequestRouter::Request client(loggerPtr);
+    client.initialize(requestOptions);
     
     request.setItem("Test");
-    client.connect(localHost);
-    EXPECT_TRUE(client.isConnected());
+    //client.connect(localHost);
+    EXPECT_TRUE(client.isInitialized());
     for (int i = 0; i < nMessages; ++i)
     {
         request.setIdentifier(base + i);

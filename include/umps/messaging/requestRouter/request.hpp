@@ -19,6 +19,10 @@ namespace UMPS
   class Keys;
   class UserNameAndPassword;
  }
+ namespace Messaging::RequestRouter
+ {
+  class RequestOptions;
+ }
 }
 namespace zmq
 {
@@ -50,6 +54,12 @@ public:
     explicit Request(std::shared_ptr<zmq::context_t> &context);
     /// @}
 
+    /// @brief Initializes the request.
+    /// @param[in] options   The request options.
+    /// @throws std::invalid_argument if the endpoint.
+    void initialize(const RequestOptions &options);
+    /// @result True indicates the class is initialized.
+    [[nodiscard]] bool isInitialized() const noexcept; 
     /// @brief Sets the message format for receiving responses.
     void setResponse(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
     //void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -61,7 +71,7 @@ public:
     ///        security model.
     /// @param[in] endpoint  The endpoint to which to connect.
     /// @throws std::runtime_error if the connection fails.
-    void connect(const std::string &endpoint);
+    //void connect(const std::string &endpoint);
     /// @brief Connects to the given address.  This is a strawhouse pattern
     ///        that can validate IP addresses.
     /// @param[in] endpoint  The endpoint to which to connect.
@@ -72,9 +82,9 @@ public:
     /// @throws std::invalid_argument if the endpoint or the zapDomain is empty
     ///         and this is an authenticaiton server.
     /// @throws std::runtime_error if the connection fails.
-    void connect(const std::string &endpoint,
-                 bool isAuthenticationServer,
-                 const std::string &zapDomain = "global");
+    //void connect(const std::string &endpoint,
+    //             bool isAuthenticationServer,
+    //             const std::string &zapDomain = "global");
     /// @brief Connects to the given address.  This is a woodhouse pattern
     ///        that can validate IP addresses and usernames and passwords.
     /// @param[in] endpoint  The endpoint to which to connect.
@@ -87,10 +97,10 @@ public:
     /// @throws std::invalid_argument if the endpoint or the zapDomain is empty
     ///         and this is an authenticaiton server.
     /// @throws std::runtime_error if the connection fails.
-    void connect(const std::string &endpoint,
-                 const Authentication::Certificate::UserNameAndPassword &credentials,
-                 bool isAuthenticationServer,
-                 const std::string &zapDomain = "global"); 
+    //void connect(const std::string &endpoint,
+    //             const Authentication::Certificate::UserNameAndPassword &credentials,
+    //             bool isAuthenticationServer,
+    //             const std::string &zapDomain = "global"); 
     /// @brief Connects to the given address as a CURVE server.  This is a
     ///        stonehouse pattern that can validate IP addresses and public
     ///        keys.
@@ -98,9 +108,9 @@ public:
     /// @param[in] serverKeys  The server's public and private key. 
     /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
     /// @throws std::invalid_argument if the server's private key is not set.
-    void connect(const std::string &endpoint,
-                 const Authentication::Certificate::Keys &serverKeys,
-                 const std::string &zapDomain = "global");
+    //void connect(const std::string &endpoint,
+    //             const Authentication::Certificate::Keys &serverKeys,
+    //             const std::string &zapDomain = "global");
     /// @brief Connects to the given address as a CURVE client.  This is a
     ///        stonehouse pattern that can validate the client's IP address and
     ///        credentials.
@@ -112,15 +122,13 @@ public:
     ///         the client's public and private key are not set, the endpoint
     ///         is empty, or the zapDomain is empty. 
     /// @throws std::runtime_error if the connection cannot be established.
-    void connect(const std::string &endpoint,
-                 const Authentication::Certificate::Keys &serverKeys,
-                 const Authentication::Certificate::Keys &clientKeys,
-                 const std::string &zapDomain = "global");
+    //void connect(const std::string &endpoint,
+    //             const Authentication::Certificate::Keys &serverKeys,
+    //             const Authentication::Certificate::Keys &clientKeys,
+    //             const std::string &zapDomain = "global");
 
     /// @result The security level of the connection.
     [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
-    /// @result True indicates that the requester is connected.
-    [[nodiscard]] bool isConnected() const noexcept;
     /// @result The connection string.
     /// @throws std::runtime_error if \c isConnected() is false.
     [[nodiscard]] std::string getConnectionString() const;

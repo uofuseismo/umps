@@ -6,13 +6,14 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/request.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
-#include "private/authentication/zapOptions.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
 
@@ -42,14 +43,16 @@ public:
 //private:
     //std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
     //    mSubscriptions;
-    UMPS::MessageFormats::Messages mMessages;
+    UMPS::MessageFormats::Messages mMessageFormats;
+    RequestOptions mOptions;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mClient;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
-    std::string mEndpoint;
+    std::string mEndPoint;
     int mHighWaterMark = 200;
     Authentication::SecurityLevel mSecurityLevel
         = Authentication::SecurityLevel::GRASSLANDS;
+    bool mInitialized = false;
     bool mConnected = false;
 };
 
@@ -65,6 +68,47 @@ Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+/// Initializes the router
+void Request::initialize(const RequestOptions &options)
+{
+    if (!options.haveEndPoint())
+    {
+        throw std::invalid_argument("End point not set");
+    }
+    pImpl->mMessageFormats = options.getMessageFormats();
+    if (pImpl->mMessageFormats.empty())
+    {
+        pImpl->mLogger->warn("No message types set in options");
+    }
+    pImpl->mOptions.clear();
+    disconnect();
+    pImpl->mOptions = options;
+    //  
+    auto zapOptions = pImpl->mOptions.getZAPOptions();
+    auto highWaterMark = pImpl->mOptions.getHighWaterMark();
+    auto endPoint = pImpl->mOptions.getEndPoint();
+    // Set the ZAP options
+    zapOptions.setSocketOptions(&*pImpl->mClient);
+    pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    // Set the high water mark
+    pImpl->mClient->set(zmq::sockopt::rcvhwm, highWaterMark);
+    //pImpl->mClient->set(zmq::sockopt::sndhwm, highWaterMark); 
+    // Bind
+    pImpl->mLogger->debug("Attempting to connect to: " + endPoint);
+    pImpl->mClient->connect(endPoint);
+    pImpl->mLogger->debug("Connected to: " + endPoint + "!");
+    // Resolve end point
+    pImpl->mEndPoint = endPoint;
+    if (endPoint.find("tcp") != std::string::npos ||
+        endPoint.find("ipc") != std::string::npos)
+    {
+        pImpl->mEndPoint = pImpl->mClient->get(zmq::sockopt::last_endpoint);
+    }
+    pImpl->mConnected = true;
+    pImpl->mInitialized = true;
+}
+
+/*
 /// Connect grasslands
 void Request::connect(const std::string &endpoint)
 {
@@ -199,11 +243,12 @@ void Request::connect(const std::string &endpoint,
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
     pImpl->mConnected = true;
 }
+*/
 
-/// Connected?
-bool Request::isConnected() const noexcept
+/// Initialized?
+bool Request::isInitialized() const noexcept
 {
-    return pImpl->mConnected;
+    return pImpl->mInitialized;
 }
 
 /// Add a subscription
@@ -216,14 +261,14 @@ void Request::setResponse(
     {
         throw std::invalid_argument("Message type is empty");
     }
-    if (pImpl->mMessages.contains(messageType))
+    if (pImpl->mMessageFormats.contains(messageType))
     {
-        pImpl->mLogger->debug("Messaget type: " + messageType
+        pImpl->mLogger->debug("Message type: " + messageType
                             + " alread exists");
     }
     else
     {
-        pImpl->mMessages.add(message);
+        pImpl->mMessageFormats.add(message);
     }
 }
 
@@ -231,8 +276,7 @@ void Request::setResponse(
 std::unique_ptr<UMPS::MessageFormats::IMessage>
     Request::request(const UMPS::MessageFormats::IMessage &request)
 {
-    if (!isConnected()){throw std::runtime_error("Not connected");}
-   
+    if (!isInitialized()){throw std::runtime_error("Not initialized");}
     auto messageType = request.getMessageType();
     if (messageType.empty())
     {
@@ -267,7 +311,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 #endif
     // Unpack the response
     std::string responseMessageType = responseReceived.at(0).to_string();
-    if (!pImpl->mMessages.contains(responseMessageType))
+    if (!pImpl->mMessageFormats.contains(responseMessageType))
     {
         throw std::runtime_error("Unhandled response type: "
                                + responseMessageType);
@@ -275,7 +319,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     //const auto payload = static_cast<uint8_t *> (responseReceived.at(1).data());
     const auto payload = static_cast<char *> (responseReceived.at(1).data());
     auto responseLength = responseReceived.at(1).size();
-    auto response = pImpl->mMessages.get(responseMessageType);
+    auto response = pImpl->mMessageFormats.get(responseMessageType);
     try
     {
         //response->fromCBOR(payload, responseLength);
@@ -293,11 +337,11 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 /// Disconnect
 void Request::disconnect()
 {
-    if (isConnected())
+    if (pImpl->mConnected)
     {
-        pImpl->mLogger->debug("Disconnecting from " + pImpl->mEndpoint);
-        pImpl->mClient->disconnect(pImpl->mEndpoint);
-        pImpl->mEndpoint.clear();
+        pImpl->mLogger->debug("Disconnecting from " + pImpl->mEndPoint);
+        pImpl->mClient->disconnect(pImpl->mEndPoint);
+        pImpl->mEndPoint.clear();
         pImpl->mConnected = false;
     }
 }

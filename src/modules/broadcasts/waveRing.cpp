@@ -9,10 +9,13 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "umps/broadcasts/earthworm/waveRing.hpp"
-#include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
-#include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
+#include "umps/services/connectionInformation/getConnections.hpp"
+#include "umps/services/connectionInformation/details.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "private/isEmpty.hpp"
+
+namespace UServices = UMPS::Services;
 
 struct ProgramOptions
 {
@@ -57,22 +60,21 @@ int main(int argc, char *argv[])
     }
     // Get the connection details
     std::cout << "Getting available services..." << std::endl;
-    UMPS::Logging::StdOut connectionInformationLogger;
-    connectionInformationLogger.setLevel(UMPS::Logging::Level::DEBUG);
-    std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (connectionInformationLogger);
-
-    UMPS::Messaging::RequestRouter::Request req(connectionInformationLoggerPtr);
-    std::unique_ptr<UMPS::MessageFormats::IMessage> responseMessage
-        = std::make_unique<UMPS::Services::ConnectionInformation::AvailableConnectionsRequest> ();
-    UMPS::Services::ConnectionInformation::AvailableConnectionsResponse requestMessage;
-//    std::unique_ptr<const UMPS::MessageFormats::IMessage> requestMessage 
-        //= std::make_unique<UMPS::Services::ConnectionInformation::AvailableConnectionsResponse> ();
-std::cout << options.operatorAddress << std::endl;
-    req.connect(options.operatorAddress);
-    req.setResponse(responseMessage);
-    auto response = req.request(requestMessage);
-    req.disconnect();
+    std::vector<UServices::ConnectionInformation::Details> connectionDetails;
+    try
+    {
+        connectionDetails = UServices::ConnectionInformation::getConnections(
+                                 options.operatorAddress);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+for (const auto &detail : connectionDetails)
+{
+ std::cout << detail.getName() << std::endl;
+}
     //UMPS::Services::ConnectionInformation::
     UMPS::Broadcasts::Earthworm::WaveRing waveRing;
     //waveRing.connect( 0);

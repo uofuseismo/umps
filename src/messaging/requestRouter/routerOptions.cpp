@@ -105,16 +105,16 @@ UMPS::Messaging::Authentication::ZAPOptions
 /// High water mark
 void RouterOptions::setHighWaterMark(const int highWaterMark)
 {
-   if (highWaterMark < 0)
-   {
-       throw std::invalid_argument("High water mark must be non-negative");
-   }
-   pImpl->mHighWaterMark = highWaterMark;
+    if (highWaterMark < 0)
+    {
+        throw std::invalid_argument("High water mark must be non-negative");
+    }
+    pImpl->mHighWaterMark = highWaterMark;
 }
 
 int RouterOptions::getHighWaterMark() const noexcept
 {
-   return pImpl->mHighWaterMark;
+    return pImpl->mHighWaterMark;
 }
 
 /// Sets the timeout
