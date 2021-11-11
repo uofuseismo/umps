@@ -83,6 +83,7 @@ public:
     std::map<std::string, ConnectionInformation::Details> mConnections;
     Parameters mParameters;
     UMPS::Messaging::RequestRouter::Router mRouter;
+    UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions;
     const std::string mName = Parameters::getName(); //"ConnectionInformation";
     bool mInitialized = false;
 };
@@ -126,20 +127,20 @@ void Service::initialize(const Parameters &parameters)
     stop(); // Ensure the service is stopped
     // Clear out the old services and broadcasts
     pImpl->mConnections.clear();
+    pImpl->mRouterOptions.clear();
     // Initialize the socket - Step 1: Initialize options
-    Messaging::RequestRouter::RouterOptions routerOptions;
     auto clientAccessAddress = parameters.getClientAccessAddress();
-    routerOptions.setEndPoint(clientAccessAddress);
-    routerOptions.setCallback(std::bind(&ServiceImpl::callback,
-                                        &*this->pImpl,
-                                        std::placeholders::_1,
-                                        std::placeholders::_2,
-                                        std::placeholders::_3));
+    pImpl->mRouterOptions.setEndPoint(clientAccessAddress);
+    pImpl->mRouterOptions.setCallback(std::bind(&ServiceImpl::callback,
+                                                &*this->pImpl,
+                                                std::placeholders::_1,
+                                                std::placeholders::_2,
+                                                std::placeholders::_3));
     // Add the message types
     std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
         = std::make_unique<AvailableConnectionsRequest> (); 
-    routerOptions.addMessageFormat(requestType);
-    pImpl->mRouter.initialize(routerOptions); 
+    pImpl->mRouterOptions.addMessageFormat(requestType);
+    pImpl->mRouter.initialize(pImpl->mRouterOptions); 
     // Create the connection details
     ConnectionInformation::SocketDetails::Router socketDetails;
     socketDetails.setAddress(pImpl->mRouter.getConnectionString());

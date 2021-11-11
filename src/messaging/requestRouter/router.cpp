@@ -400,6 +400,7 @@ void Router::start()
         {pImpl->mServer->handle(), 0, ZMQ_POLLIN, 0}
     };
     pImpl->start();
+    auto logLevel = pImpl->mLogger->getLevel();
     while (isRunning()) 
     {
         zmq::poll(&items[0], nPollItems, pImpl->mPollTimeOutMS);
@@ -408,7 +409,10 @@ void Router::start()
             // Get the next message
             zmq::multipart_t messagesReceived(*pImpl->mServer);
             if (messagesReceived.empty()){continue;}
-            pImpl->mLogger->debug("Message received!");
+            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            {
+                pImpl->mLogger->debug("Message received!");
+            }
 /*
 std::cout << messagesReceived.size() << std::endl;
 std::cout << messagesReceived.at(0).to_string() << std::endl;
@@ -451,9 +455,12 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
             auto responseMessage = response->toMessage(); 
             if (responseMessage.empty())
             {
-                pImpl->mLogger->debug("Message is empty");
+                pImpl->mLogger->warn("Router received empty message");
             }
-            pImpl->mLogger->debug("Replying...");
+            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            {
+                pImpl->mLogger->debug("Replying...");
+            }
             zmq::const_buffer zmqHdr1{messagesReceived.at(0).data(),
                                       messagesReceived.at(0).size()};
             pImpl->mServer->send(zmqHdr1, zmq::send_flags::sndmore);
