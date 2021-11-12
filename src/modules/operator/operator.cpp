@@ -23,6 +23,8 @@
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
+#include "umps/broadcasts/dataPacket/broadcast.hpp"
+#include "umps/broadcasts/dataPacket/parameters.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
 
@@ -31,10 +33,10 @@ namespace UAuth = UMPS::Messaging::Authentication;
 struct ProgramOptions
 {
     std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
-    //std::vector<UMPS::Broadcasts::DataPackets::Parameters> mBroadcastParameters;
     std::vector<std::pair<int, bool>> mAvailablePorts;
     UMPS::Services::ConnectionInformation::Parameters
         mConnectionInformationParameters;
+    UMPS::Broadcasts::DataPacket::Parameters mDataPacketParameters;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
                                  + "/.local/share/UMPS/tables/";
@@ -48,7 +50,8 @@ struct ProgramOptions
 struct Modules
 {
     std::vector<UMPS::Services::Incrementer::Service> mIncrementers;
-    //std::vector<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcasts;
+    std::vector<UMPS::Broadcasts::IBroadcast> mBroadcasts;
+    UMPS::Broadcasts::DataPacket::Broadcast mDataPacketBroadcast;
     UMPS::Services::ConnectionInformation::Service mConnectionInformation;
 };
 
@@ -69,6 +72,31 @@ void printService(const UMPS::Services::IService &service)
     {
         std::cerr << e.what() << std::endl;
     }
+}
+
+std::string makeNextAvailableAddress(
+    std::vector<std::pair<int, bool>> &availablePorts,
+    const std::string &ipAddress,
+    const std::string &connectionType = "tcp://")
+{
+    std::string address;
+    for (auto &availablePort : availablePorts)
+    {
+        auto port = availablePort.first;
+        auto isAvailable = availablePort.second;
+        if (isAvailable)
+        {
+            address = connectionType + ipAddress
+                    + ":" + std::to_string(port);
+            availablePort = std::pair(port, false);
+            break;
+        }
+    }
+    if (address.empty())
+    {
+        throw std::runtime_error("All ports are exhausted");
+    }
+    return address;
 }
 
 /*
@@ -214,7 +242,7 @@ int main(int argc, char *argv[])
     {
         try
         {
-            std::thread t(&UMPS::Services::Incrementer::Service::start,
+            std::thread t(&UMPS::Services::IService::start, //Incrementer::Service::start,
                           &module);
             threads.push_back(std::move(t));
         }
@@ -225,7 +253,21 @@ int main(int argc, char *argv[])
         }
         modules.mConnectionInformation.addConnection(module);
     }
-
+    // And start the broadcasts...
+    try
+    {
+        std::cout << "Data packet service..." << std::endl;
+        modules.mDataPacketBroadcast.initialize(options.mDataPacketParameters);
+        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
+                      &modules.mDataPacketBroadcast);
+        threads.push_back(std::move(t));
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+//    std::thread t(&UMPS::Broadcasts::DataPacket::Broadcast::start,
+                  
     // Main program loop
     while (true)
     {
@@ -273,6 +315,7 @@ int main(int argc, char *argv[])
         modules.mConnectionInformation.removeConnection(module.getName());
         module.stop();
     }
+    modules.mDataPacketBroadcast.stop();
     modules.mConnectionInformation.stop();
     // Join the threads
     for (auto &thread : threads)
@@ -445,43 +488,49 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         // Assign an IP address
         if (!counterOptions.haveClientAccessAddress())
         {
-            bool madeAddress = false;
-            for (auto &availablePort : options.mAvailablePorts)
-            {
-                auto port = availablePort.first;
-                auto isAvailable = availablePort.second;
-                if (isAvailable) 
-                {
-                    auto address = "tcp://" + options.mIPAddress
-                                 + ":" + std::to_string(port);
-                    counterOptions.setClientAccessAddress(address);
-                    availablePort = std::pair(port, false);
-                    madeAddress = true;
-                    break;
-                }
-            }
-            if (!madeAddress)
-            {
-                throw std::runtime_error("All ports are exhausted");
-            }
+            auto counterAddress = makeNextAvailableAddress(
+                                      options.mAvailablePorts, 
+                                      options.mIPAddress,
+                                      "tcp://");
+            counterOptions.setClientAccessAddress(counterAddress);
         }
 #ifndef NDEBUG
         assert(counterOptions.haveClientAccessAddress());
 #endif
         options.mIncrementerParameters.push_back(std::move(counterOptions));
     }
-//std::cout << p.first << std::endl;
-/*
-    // EW_PARAMS environment variable
-    options.earthwormParametersDirectory = propertyTree.get<std::string>
-        ("Earthworm.ewParams", options.earthwormParametersDirectory);
-    if (!std::filesystem::exists(options.earthwormParametersDirectory))
-    {   
-        throw std::runtime_error("Earthworm parameters directory: " 
-                               + options.earthwormParametersDirectory
-                               + " does not exist");
-    }   
-    // Create the counters... 
-*/
+    // Parse the datapacket broadcast options 
+    UMPS::Broadcasts::DataPacket::Parameters dataPacketOptions;
+    try
+    {
+        dataPacketOptions.parseInitializationFile(iniFile, "Broadcasts");
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Failed to read datapacket broadcast options."
+                  << "Failed with:\n" << e.what()  << std::endl;
+    }
+    if (!dataPacketOptions.haveFrontendAddress())
+    {
+        auto frontendAddress = makeNextAvailableAddress(
+                                    options.mAvailablePorts,
+                                    options.mIPAddress,
+                                    "tcp://");
+        dataPacketOptions.setFrontendAddress(frontendAddress);
+    } 
+    if (!dataPacketOptions.haveBackendAddress())
+    {
+        auto backendAddress = makeNextAvailableAddress(
+                                    options.mAvailablePorts,
+                                    options.mIPAddress,
+                                    "tcp://");
+        dataPacketOptions.setBackendAddress(backendAddress);
+    }
+    if (dataPacketOptions.haveFrontendAddress() &&
+        dataPacketOptions.haveBackendAddress())
+    {
+        options.mDataPacketParameters = dataPacketOptions;
+    }
+ 
     return options;
 }

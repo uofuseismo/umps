@@ -362,7 +362,6 @@ void Proxy::pause()
 // Stops the proxy
 void Proxy::stop()
 {
-    if (!isInitialized()){throw std::runtime_error("Proxy not initialized");} 
     if (pImpl->isStarted())
     {
         pImpl->mLogger->debug("Terminating proxy...");
