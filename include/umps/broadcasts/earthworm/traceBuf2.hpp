@@ -4,6 +4,10 @@
 #include <vector>
 #include <string>
 #include "umps/messageFormats/message.hpp"
+namespace UMPS::MessageFormats
+{
+ template<class T> class DataPacket;
+}
 namespace UMPS::Broadcasts::Earthworm
 {
 /// @name TraceBuf2 "tracebuf2.hpp" "umps/broadcasts/earthworm/tracebuf2.hpp"
@@ -195,6 +199,12 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or the length is 0.
     void fromCBOR(const uint8_t *data, const size_t length);
+    /// @}
+
+    /// @name Conversions
+    /// @{
+    /// @result This class expressed as a datapacket.
+    UMPS::MessageFormats::DataPacket<T> toDataPacket() const;
     /// @}
 
     /// @name Message Abstract Base Class Properties

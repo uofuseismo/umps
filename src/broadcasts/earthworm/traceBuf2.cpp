@@ -5,9 +5,9 @@
 #include <string>
 #include <cassert>
 #include <bit>
-//#include <boost/json/src.hpp>
 #include <nlohmann/json.hpp>
 #include "umps/broadcasts/earthworm/traceBuf2.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
 #ifdef WITH_EARTHWORM
    #include "trace_buf.h"
    #define MAX_TRACE_SIZE (MAX_TRACEBUF_SIZ - 64)
@@ -522,6 +522,27 @@ TraceBuf2<T> &TraceBuf2<T>::operator=(TraceBuf2<T> &&traceBuf2) noexcept
     if (&traceBuf2 == this){return *this;}
     pImpl = std::move(traceBuf2.pImpl);
     return *this;
+}
+
+/// To datapacket
+template<class T>
+UMPS::MessageFormats::DataPacket<T> TraceBuf2<T>::toDataPacket() const
+{
+    UMPS::MessageFormats::DataPacket<T> dataPacket;
+    dataPacket.setNetwork(getNetwork());
+    dataPacket.setStation(getStation());
+    dataPacket.setChannel(getChannel());
+    dataPacket.setLocationCode(getLocationCode());
+    if (haveSamplingRate())
+    {
+        dataPacket.setSamplingRate(getSamplingRate());
+    }
+    auto startTime = getStartTime();
+    auto startTimeMuS = static_cast<int64_t> (std::round(startTime*1.e6));
+    dataPacket.setStartTime(startTimeMuS);
+    auto nSamples = getNumberOfSamples();
+    if (nSamples > 0){dataPacket.setData(nSamples, getDataPointer());}
+    return dataPacket;
 }
 
 /// Set the network name

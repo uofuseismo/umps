@@ -3,13 +3,6 @@
 #include <vector>
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::Broadcasts
-{
- namespace Earthworm
- {
- template<class T> class TraceBuf2;
- }
-}
 namespace UMPS::MessageFormats
 {
 /// @class Pick "pick.hpp" "umps/messageFormats/dataPacket.hpp"
@@ -26,11 +19,6 @@ public:
     /// @brief Copy constructor.
     /// @param[in] packet  The data packet from which to initialize this class.
     DataPacket(const DataPacket &packet);
-    /// @brief Copy constructor.
-    /// @param[in] tracebuf2  The traceBuf2 packet from which to initialize this
-    ///                       class.
-    template<typename U>
-    DataPacket(const Broadcasts::Earthworm::TraceBuf2<U> &traceBuf2);
     /// @brief Move constructor.
     /// @param[in,out] packet  The data packet from which to initialize this
     ///                        class.  On exit, packet's behavior is undefined.

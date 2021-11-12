@@ -364,7 +364,8 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     // Parse the general properties
     options.mLogDirectory = propertyTree.get<std::string>
         ("uOperator.logFileDirectory", options.mLogDirectory);
-    if (!std::filesystem::exists(options.mLogDirectory))
+    if (!options.mLogDirectory.empty() &&
+        !std::filesystem::exists(options.mLogDirectory))
     {
         std::cout << "Creating log file directory: "
                   << options.mLogDirectory << std::endl;

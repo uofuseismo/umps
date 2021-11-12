@@ -138,6 +138,7 @@ DataPacket<T>::DataPacket(const DataPacket<T> &packet)
 }
 
 /// Copy c'tor
+/*
 template<class T>
 template<typename U>
 DataPacket<T>::DataPacket(const Broadcasts::Earthworm::TraceBuf2<U> &traceBuf2) :
@@ -161,6 +162,7 @@ DataPacket<T>::DataPacket(const Broadcasts::Earthworm::TraceBuf2<U> &traceBuf2) 
     }
     *this = std::move(packet);
 }
+*/
 
 /// Move c'tor
 template<class T>
@@ -493,6 +495,8 @@ std::string DataPacket<T>::toJSON(const int nIndent) const
 ///--------------------------------------------------------------------------///
 template class UMPS::MessageFormats::DataPacket<double>;
 template class UMPS::MessageFormats::DataPacket<float>;
+template class UMPS::MessageFormats::DataPacket<int>;
+template class UMPS::MessageFormats::DataPacket<int16_t>;
 
 template void UMPS::MessageFormats::DataPacket<double>::setData(const std::vector<double> &x);
 template void UMPS::MessageFormats::DataPacket<double>::setData(const std::vector<float> &x);
@@ -512,6 +516,24 @@ template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSample
 template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int *data);
 template void UMPS::MessageFormats::DataPacket<float>::setData(const int nSamples, const int16_t *data);
 
+template void UMPS::MessageFormats::DataPacket<int>::setData(const std::vector<double> &x);
+template void UMPS::MessageFormats::DataPacket<int>::setData(const std::vector<float> &x);
+template void UMPS::MessageFormats::DataPacket<int>::setData(const std::vector<int> &x); 
+template void UMPS::MessageFormats::DataPacket<int>::setData(const std::vector<int16_t> &data);
+template void UMPS::MessageFormats::DataPacket<int>::setData(const int nSamples, const double *data);
+template void UMPS::MessageFormats::DataPacket<int>::setData(const int nSamples, const float *data);
+template void UMPS::MessageFormats::DataPacket<int>::setData(const int nSamples, const int *data);
+template void UMPS::MessageFormats::DataPacket<int>::setData(const int nSamples, const int16_t *data);
+
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const std::vector<double> &x);
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const std::vector<float> &x);
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const std::vector<int> &x);  
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const std::vector<int16_t> &data);
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const int nSamples, const double *data);
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const int nSamples, const float *data);
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const int nSamples, const int *data);
+template void UMPS::MessageFormats::DataPacket<int16_t>::setData(const int nSamples, const int16_t *data);
+/*
 #ifdef WITH_EARTHWORM
 template UMPS::MessageFormats::DataPacket<double>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<double> &traceBuf2);
 template UMPS::MessageFormats::DataPacket<double>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<float> &traceBuf2);
@@ -523,6 +545,7 @@ template UMPS::MessageFormats::DataPacket<float>::DataPacket(const UMPS::Broadca
 template UMPS::MessageFormats::DataPacket<float>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<int> &traceBuf2);
 template UMPS::MessageFormats::DataPacket<float>::DataPacket(const UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t> &traceBuf2);
 #endif
+*/
 /*
 template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<double> &tb);
 template void UMPS::MessageFormats::DataPacket<double>::fromTraceBuf2(const Earthworm::TraceBuf2<float> &tb);

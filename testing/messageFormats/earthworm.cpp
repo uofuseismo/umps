@@ -3,6 +3,7 @@
 #include <vector>
 #include <limits>
 #include "umps/broadcasts/earthworm/traceBuf2.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
 {
@@ -117,6 +118,21 @@ TYPED_TEST(TraceBuf2Test, TraceBuf2)
     EXPECT_EQ(traceBack.size(), timeSeries.size());
     for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)
     {   
+        auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
+        EXPECT_NEAR(res, 0, 1.e-14);
+    }
+
+    auto dataPacket = traceBuf2Copy.toDataPacket();
+    EXPECT_EQ(dataPacket.getNetwork(), network);
+    EXPECT_EQ(dataPacket.getStation(), station);
+    EXPECT_EQ(dataPacket.getChannel(), channel);
+    EXPECT_EQ(dataPacket.getLocationCode(), locationCode);
+    EXPECT_NEAR(dataPacket.getSamplingRate(), samplingRate, tol);
+    EXPECT_NEAR(dataPacket.getStartTime()*1.e-6, startTime, tol);
+    traceBack = dataPacket.getData();
+    EXPECT_EQ(traceBack.size(), timeSeries.size());
+    for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)
+    {
         auto res = static_cast<double> (traceBack[i] - timeSeries[i]);
         EXPECT_NEAR(res, 0, 1.e-14);
     }

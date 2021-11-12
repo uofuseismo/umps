@@ -12,8 +12,8 @@
 #include "umps/broadcasts/earthworm/waveRing.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
-#include "umps/messaging/requestRouter/request.hpp"
 #include "private/isEmpty.hpp"
 
 namespace UServices = UMPS::Services;
@@ -27,6 +27,7 @@ struct ProgramOptions
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPackets";
     std::string heartbeatBroadcastName = "Heartbeat";
+    std::filesystem::path logFileDirectory = "logs";
     int earthwormWait = 0;
 };
 
@@ -59,9 +60,18 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    // Create the application's logger
+    constexpr int hour = 0;
+    constexpr int minute = 0;
+    auto waveRingLogFileName = options.logFileDirectory / "waveRing.log";
+    UMPS::Logging::SpdLog logger;
+    logger.initialize("WaveRing",
+                      waveRingLogFileName,
+                      UMPS::Logging::Level::DEBUG,
+                      hour, minute);
     // Get the connection details
-    std::cout << "Getting available services..." << std::endl;
-auto start = std::chrono::high_resolution_clock::now();
+    logger.info("Getting available services...");
+//auto start = std::chrono::high_resolution_clock::now();
     std::vector<UServices::ConnectionInformation::Details> connectionDetails;
     try
     {
@@ -70,9 +80,10 @@ auto start = std::chrono::high_resolution_clock::now();
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << std::endl;
+        logger.error("Error getting services: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
+/*
 auto stop = std::chrono::high_resolution_clock::now();
 auto duration = std::chrono::duration_cast<std::chrono::microseconds> (stop - start);
 std::cout << duration.count()*1.e-6 << std::endl;
@@ -80,8 +91,35 @@ for (const auto &detail : connectionDetails)
 {
  std::cout << detail.getName() << std::endl;
 }
+*/
     //UMPS::Services::ConnectionInformation::
+    // Attach to the wave ring
+    logger.info("Attaching to earthworm ring: "
+              + options.earthwormWaveRingName);
+    setenv("EW_PARAMS", options.earthwormParametersDirectory.c_str(), true);
+    setenv("EW_INSTALLATION", options.earthwormInstallation.c_str(), true);
     UMPS::Broadcasts::Earthworm::WaveRing waveRing;
+    try
+    {
+        waveRing.connect(options.earthwormWaveRingName, options.earthwormWait);
+    }
+    catch (const std::exception &e)
+    {
+        logger.error("Error attaching to wave ring: " + std::string(e.what()));
+        return EXIT_FAILURE;
+    }
+    for (int i = 0; i < 10; ++i)
+    {
+        std::cout << "okay" << std::endl;
+        waveRing.read();
+        auto nMessages = waveRing.getNumberOfTraceBuf2Messages();
+        auto traceBuf2MessagesPtr = waveRing.getTraceBuf2MessagesPointer();
+        for (int iMessage = 0; iMessage < nMessages; ++iMessage)
+        {
+            auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket(); 
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
     //waveRing.connect( 0);
     return EXIT_SUCCESS;
 }
@@ -129,6 +167,19 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     ProgramOptions options;
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
+    //------------------------------ General ---------------------------------//
+    options.logFileDirectory = propertyTree.get<std::string>
+        ("WaveRing.logFileDirectory", options.logFileDirectory.string());
+    if (!options.logFileDirectory.empty() &&
+        !std::filesystem::exists(options.logFileDirectory))
+    {
+        std::cout << "Creating log file directory: "
+                  << options.logFileDirectory << std::endl;
+        if (!std::filesystem::create_directories(options.logFileDirectory))
+        {
+            throw std::runtime_error("Failed to make log directory");
+        }
+    }
     //------------------------------ Operator --------------------------------//
     options.operatorAddress = propertyTree.get<std::string>
         ("uOperator.ipAddress", options.operatorAddress);

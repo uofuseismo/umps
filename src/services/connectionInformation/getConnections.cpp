@@ -15,6 +15,7 @@
 using namespace UMPS::Services::ConnectionInformation;
 namespace UM = UMPS::Messaging;
 
+/// Get the available connections
 std::vector<Details>
 UMPS::Services::ConnectionInformation::getConnections(
     const std::string &endPoint,
@@ -42,6 +43,7 @@ UMPS::Services::ConnectionInformation::getConnections(
     return detailsMessage->getDetails();
 }
 
+/// Overloaded function to get the available connections 
 std::vector<Details>
 UMPS::Services::ConnectionInformation::getConnections(
     const std::string &endPoint)
