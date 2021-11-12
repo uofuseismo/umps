@@ -16,6 +16,7 @@
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "private/isEmpty.hpp"
@@ -121,8 +122,8 @@ for (const auto &connectionDetail : connectionDetails)
     }
     //UMPS::Messaging::PublisherSubscriber::PublisherOptions publisherOptions;
     //publisherOptions.addAddress(packetAddress);
-    UMPS::Messaging::PublisherSubscriber::Publisher publisher(loggerPtr);
-    publisher.bind(packetAddress);
+    UMPS::Messaging::PublisherSubscriber::Subscriber publisher(loggerPtr);
+    publisher.connect(packetAddress);
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);
@@ -153,7 +154,7 @@ for (const auto &connectionDetail : connectionDetails)
             try
             {
                 auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket();
-                publisher.send(dataPacket);
+        //        publisher.send(dataPacket);
             }
             catch (const std::exception &e)
             {
