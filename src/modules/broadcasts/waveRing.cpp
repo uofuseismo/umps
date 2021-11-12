@@ -12,7 +12,11 @@
 #include "umps/broadcasts/earthworm/waveRing.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/socketDetails/proxy.hpp"
+#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "private/isEmpty.hpp"
 
@@ -25,7 +29,7 @@ struct ProgramOptions
     std::string earthwormInstallation = "INST_UNKNOWN"; 
     std::string earthwormWaveRingName = "WAVE_RING";
     std::string operatorAddress;
-    std::string dataBroadcastName = "DataPackets";
+    std::string dataBroadcastName = "DataPacket";
     std::string heartbeatBroadcastName = "Heartbeat";
     std::filesystem::path logFileDirectory = "logs";
     int earthwormWait = 0;
@@ -70,6 +74,8 @@ int main(int argc, char *argv[])
                       waveRingLogFileName,
                       UMPS::Logging::Level::DEBUG,
                       hour, minute);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::SpdLog> (logger);
     // Get the connection details
     logger.info("Getting available services...");
     std::vector<UServices::ConnectionInformation::Details> connectionDetails;
@@ -83,12 +89,40 @@ int main(int argc, char *argv[])
         logger.error("Error getting services: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
+/*
 for (const auto &connectionDetail : connectionDetails)
 {
  std::cout << connectionDetail.getName() << std::endl;
 }
+*/
     // Connect so that I may publish to appropriate broadcast - e.g., DataPacket
-
+    std::string packetAddress;
+    for (const auto &connectionDetail : connectionDetails)
+    {
+        if (connectionDetail.getName() == options.dataBroadcastName)
+        {
+            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
+            auto frontendSocketDetails
+                = proxySocketDetails.getXSubscriberFrontend();
+            packetAddress = frontendSocketDetails.getAddress();
+            break;
+        }
+    }
+    if (packetAddress.empty())
+    {
+        logger.error("Failed to find " + options.dataBroadcastName 
+                   + " broadcast");
+        return EXIT_FAILURE;
+    }
+    else
+    {
+        logger.info("Will connect to " + options.dataBroadcastName
+                  + " at " + packetAddress); 
+    }
+    //UMPS::Messaging::PublisherSubscriber::PublisherOptions publisherOptions;
+    //publisherOptions.addAddress(packetAddress);
+    UMPS::Messaging::PublisherSubscriber::Publisher publisher(loggerPtr);
+    publisher.bind(packetAddress);
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);
@@ -119,6 +153,7 @@ for (const auto &connectionDetail : connectionDetails)
             try
             {
                 auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket();
+                publisher.send(dataPacket);
             }
             catch (const std::exception &e)
             {

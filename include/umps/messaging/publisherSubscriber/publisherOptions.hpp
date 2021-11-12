@@ -8,7 +8,7 @@ class PublisherOptions
 public:
     PublisherOptions();
     PublisherOptions(const PublisherOptions &options);
-    PublisherOptions(PublisherOptions &&options) const noexcept;
+    PublisherOptions(PublisherOptions &&options) noexcept;
 
     /// @param[in] address  An address for the publisher to bind to.
     void addAddress(const std::string &address);
