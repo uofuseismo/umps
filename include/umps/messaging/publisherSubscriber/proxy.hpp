@@ -91,7 +91,9 @@ public:
     /// @{
     /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    void start();
+    void start(); 
+    /// @result True indicates the proxy was started and is running.
+    [[nodiscard]] bool isRunning() const noexcept;
     /// @brief Pauses the proxy.
     /// @note You can restart the proxy by using \c start().
     /// @throws std::runtime_error if \c isInitialized() is false.

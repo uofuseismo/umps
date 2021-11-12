@@ -165,11 +165,13 @@ void Service::initialize(const Parameters &parameters)
     // Create the connection details
     ConnectionInformation::SocketDetails::Router socketDetails;
     socketDetails.setAddress(pImpl->mRouter.getConnectionString());
-    pImpl->mConnectionDetails.setName(pImpl->mName);
+    pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
     pImpl->mConnectionDetails.setConnectionType(ConnectionType::SERVICE);
+    pImpl->mConnectionDetails.setSecurityLevel(
+        pImpl->mRouter.getSecurityLevel());
     // Add myself
-    pImpl->mConnections.insert(std::pair(pImpl->mName,
+    pImpl->mConnections.insert(std::pair(getName(),
                                          pImpl->mConnectionDetails));
     // Done
     pImpl->mInitialized = true;
@@ -221,9 +223,9 @@ void Service::start()
     {
         throw std::runtime_error("Service not initialized");
     }
-    pImpl->mLogger->debug("Beginning service " + pImpl->mName + "...");
+    pImpl->mLogger->debug("Beginning service " + getName() + "...");
     pImpl->mRouter.start(); // This should hang until the service is stopped
-    pImpl->mLogger->debug("Thread exiting service " + pImpl->mName);
+    pImpl->mLogger->debug("Thread exiting service " + getName());
 }
 
 /// Add (service) connection

@@ -95,6 +95,8 @@ set(MESSAGING_SRC
 set(MODULES_LIBSRC
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
+    src/broadcasts/dataPacket/broadcast.cpp
+    src/broadcasts/dataPacket/parameters.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
     src/services/connectionInformation/availableConnectionsResponse.cpp
     src/services/connectionInformation/getConnections.cpp

@@ -341,6 +341,12 @@ void Proxy::start()
     }
 }
 
+/// Is running?
+bool Proxy::isRunning() const noexcept
+{
+    return pImpl->isStarted();
+}
+
 // Pauses the proxy
 void Proxy::pause()
 {

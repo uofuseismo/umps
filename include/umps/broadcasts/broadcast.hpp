@@ -6,7 +6,10 @@
 namespace UMPS::Broadcasts
 {
 /// @class IBroadcast "broadcast.hpp" "umps/broadcasts/broadcast.hpp"
-/// @brief This is the abstract base class which defines a broadcast.
+/// @brief This is the abstract base class which defines a broadcast.  
+///        Technically, the broadcast is a lightweight intermediary that
+///        forwards messages from producers to a location that is accessible
+///        by clients.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class IBroadcast
 {
@@ -16,12 +19,6 @@ public:
     /// @result The name of the publisher.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] virtual std::string getName() const = 0;
-    /// @result The address on which a publisher would feed the broadcast. 
-    /// @throws std::runtime_error if \c isInitialized() is false.
-//    [[nodiscard]] virtual std::string getPublisherAddress() const = 0;
-    /// @result The address on which a subscriber would listen to the broadcast.
-    /// @throws std::runtime_error if \c isInitialized() is false.
-//    [[nodiscard]] virtual std::string getSubscriberAddress() const = 0;
     /// @result The connection details for connecting to the broadcast.
     [[nodiscard]] virtual Services::ConnectionInformation::Details getConnectionDetails() const = 0;
     /// @brief Starts the broadcast.

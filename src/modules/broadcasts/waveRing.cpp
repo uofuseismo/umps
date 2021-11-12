@@ -29,6 +29,7 @@ struct ProgramOptions
     std::string heartbeatBroadcastName = "Heartbeat";
     std::filesystem::path logFileDirectory = "logs";
     int earthwormWait = 0;
+    std::chrono::seconds heartBeatInterval{30};
 };
 
 std::string parseCommandLineOptions(int argc, char *argv[]);
@@ -71,7 +72,6 @@ int main(int argc, char *argv[])
                       hour, minute);
     // Get the connection details
     logger.info("Getting available services...");
-//auto start = std::chrono::high_resolution_clock::now();
     std::vector<UServices::ConnectionInformation::Details> connectionDetails;
     try
     {
@@ -83,16 +83,8 @@ int main(int argc, char *argv[])
         logger.error("Error getting services: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
-/*
-auto stop = std::chrono::high_resolution_clock::now();
-auto duration = std::chrono::duration_cast<std::chrono::microseconds> (stop - start);
-std::cout << duration.count()*1.e-6 << std::endl;
-for (const auto &detail : connectionDetails)
-{
- std::cout << detail.getName() << std::endl;
-}
-*/
-    //UMPS::Services::ConnectionInformation::
+    // Connect so that I may publish to appropriate broadcast - e.g., DataPacket
+
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);
@@ -108,15 +100,35 @@ for (const auto &detail : connectionDetails)
         logger.error("Error attaching to wave ring: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
+    // Forward messages from earthworm to UMPS indefinitely
+    auto lastHeartBeat = std::chrono::high_resolution_clock::now(); 
     for (int i = 0; i < 10; ++i)
     {
-        std::cout << "okay" << std::endl;
+        // Read from the earthworm ring
         waveRing.read();
         auto nMessages = waveRing.getNumberOfTraceBuf2Messages();
         auto traceBuf2MessagesPtr = waveRing.getTraceBuf2MessagesPointer();
+        // Now broadcast the tracebufs as datapacket messages
         for (int iMessage = 0; iMessage < nMessages; ++iMessage)
         {
-            auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket(); 
+            // Send it
+            try
+            {
+                auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket();
+            }
+            catch (const std::exception &e)
+            {
+                logger.error(e.what());
+            }
+        }
+        // Is it time to send a heartbeat?
+        auto newHeartBeat = std::chrono::high_resolution_clock::now();
+        auto heartBeatDuration
+            = std::chrono::duration_cast<std::chrono::seconds>
+             (newHeartBeat - lastHeartBeat);
+        if (heartBeatDuration > options.heartBeatInterval)
+        {
+            lastHeartBeat = newHeartBeat;
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
