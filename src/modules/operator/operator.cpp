@@ -256,11 +256,21 @@ int main(int argc, char *argv[])
     // And start the broadcasts...
     try
     {
-        std::cout << "Data packet service..." << std::endl;
-        modules.mDataPacketBroadcast.initialize(options.mDataPacketParameters);
+        std::cout << "Starting data packet service..." << std::endl;
+        auto modulesName = "dataPacket";
+        auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
+        UMPS::Logging::SpdLog logger;
+        logger.initialize(modulesName, logFileName,
+                          UMPS::Logging::Level::INFO, hour, minute);
+        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+           = std::make_shared<UMPS::Logging::SpdLog> (logger);
+        UMPS::Broadcasts::DataPacket::Broadcast dataPacketBroadcast(loggerPtr);
+        dataPacketBroadcast.initialize(options.mDataPacketParameters);
+        modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
         std::thread t(&UMPS::Broadcasts::IBroadcast::start,
                       &modules.mDataPacketBroadcast);
         threads.push_back(std::move(t));
+        modules.mConnectionInformation.addConnection(modules.mDataPacketBroadcast);
     }
     catch (const std::exception &e)
     {
@@ -300,6 +310,7 @@ int main(int argc, char *argv[])
             std::cout << std::endl;
 
             std::cout << "Broadcasts:" << std::endl;
+           
         }
         else
         {

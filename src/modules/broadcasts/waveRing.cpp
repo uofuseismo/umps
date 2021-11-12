@@ -83,6 +83,10 @@ int main(int argc, char *argv[])
         logger.error("Error getting services: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
+for (const auto &connectionDetail : connectionDetails)
+{
+ std::cout << connectionDetail.getName() << std::endl;
+}
     // Connect so that I may publish to appropriate broadcast - e.g., DataPacket
 
     // Attach to the wave ring

@@ -34,10 +34,25 @@ class Broadcast : public IBroadcast
 public:
     /// @name Constructors
     /// @{
-    /// @brief Constructs the XPUB/XSUB.
+    /// @brief Constructs the XPUB/XSUB proxy.
     Broadcast();
+    /// @brief Move constructor.
+    /// @param[in,out] broadcast  The broadcast from which to initialize 
+    ///                           this class.  On exit, broadcasts's behavior
+    ///                           is undefined.
+    Broadcast(Broadcast &&broadcast) noexcept;
     /// @brief Constructs the XPUB/XSUB with a given logger.
     explicit Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @}
+
+    /// @name Operators
+    /// @{
+    /// @brief Move assignment operator.
+    /// @param[in,out] broadcast  The broadcast whose memory will be moved
+    ///                           to this.  On exit, broadcast's will be
+    ///                           undefined.
+    /// @result The memory from broadcast moved to this.
+    Broadcast& operator=(Broadcast &&broadcast) noexcept;
     /// @}
 
     /// @brief Initializes the proxy.

@@ -23,6 +23,15 @@ public:
         mProxy(mLogger)
     {   
     }
+    explicit BroadcastImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+       mLogger(logger),
+       mProxy(mLogger)
+    {
+       if (mLogger == nullptr)
+       {
+           mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+       }
+    }
 ///private:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     Parameters mParameters;
@@ -36,6 +45,26 @@ public:
 Broadcast::Broadcast() :
     pImpl(std::make_unique<BroadcastImpl> ())
 {
+}
+
+/// C'tor
+Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<BroadcastImpl> (logger))
+{
+}
+
+/// Move c'tor
+Broadcast::Broadcast(Broadcast &&broadcast) noexcept
+{
+    *this = std::move(broadcast);
+}
+
+/// Move assignment
+Broadcast& Broadcast::operator=(Broadcast &&broadcast) noexcept
+{
+    if (&broadcast == this){return *this;}
+    pImpl = std::move(broadcast.pImpl);
+    return *this;
 }
 
 /// Destructor
