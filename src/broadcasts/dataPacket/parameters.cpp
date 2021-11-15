@@ -167,7 +167,6 @@ void Parameters::parseInitializationFile(const std::string &iniFile,
         parameters.setBackendHighWaterMark(backendHighWaterMark);
     }
 
-
     // Got everything and didn't throw -> copy to this
     *this = std::move(parameters);
 

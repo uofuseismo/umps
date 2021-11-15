@@ -54,6 +54,7 @@ public:
     /// @param[in] name   The name of the module.
     /// @throws std::invalid_argument if name is empty.
     void setModule(const std::string &name);
+    /// @result The module's status.
     [[nodiscard]] std::string getModule() const noexcept;
  
     /// @brief Sets the module's status.

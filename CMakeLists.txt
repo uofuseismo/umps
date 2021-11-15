@@ -99,6 +99,8 @@ set(MODULES_LIBSRC
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/broadcasts/dataPacket/broadcast.cpp
     src/broadcasts/dataPacket/parameters.cpp
+    src/broadcasts/heartbeat/broadcast.cpp
+    src/broadcasts/heartbeat/parameters.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
     src/services/connectionInformation/availableConnectionsResponse.cpp
     src/services/connectionInformation/getConnections.cpp

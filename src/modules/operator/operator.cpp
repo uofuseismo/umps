@@ -26,6 +26,8 @@
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/broadcasts/dataPacket/broadcast.hpp"
 #include "umps/broadcasts/dataPacket/parameters.hpp"
+#include "umps/broadcasts/heartbeat/broadcast.hpp"
+#include "umps/broadcasts/heartbeat/parameters.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
 
@@ -38,6 +40,7 @@ struct ProgramOptions
     UMPS::Services::ConnectionInformation::Parameters
         mConnectionInformationParameters;
     UMPS::Broadcasts::DataPacket::Parameters mDataPacketParameters;
+    UMPS::Broadcasts::Heartbeat::Parameters mHeartbeatParameters;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
                                  + "/.local/share/UMPS/tables/";
@@ -53,6 +56,7 @@ struct Modules
     std::vector<std::unique_ptr<UMPS::Services::IService>> mIncrementers;
     std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
     UMPS::Broadcasts::DataPacket::Broadcast mDataPacketBroadcast;
+    UMPS::Broadcasts::Heartbeat::Broadcast mHeartbeatBroadcast;
     UMPS::Services::ConnectionInformation::Service mConnectionInformation;
 };
 
@@ -215,9 +219,6 @@ int main(int argc, char *argv[])
     connectionInformation.initialize(options.mConnectionInformationParameters);
     modules.mConnectionInformation = std::move(connectionInformation);
 
-    //modules.mConnectionInformation.initialize(
-     //   options.mConnectionInformationParameters);
-    
 
     modules.mIncrementers.reserve(options.mIncrementerParameters.size());
     for (const auto &parameters : options.mIncrementerParameters)
@@ -277,7 +278,7 @@ int main(int argc, char *argv[])
     // And start the broadcasts...
     try
     {
-        std::cout << "Starting data packet service..." << std::endl;
+        std::cout << "Starting data packet broadcast..." << std::endl;
         auto modulesName = "dataPacket";
         auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
         UMPS::Logging::SpdLog logger;
@@ -297,7 +298,30 @@ int main(int argc, char *argv[])
     {
         std::cerr << e.what() << std::endl;
     }
-//    std::thread t(&UMPS::Broadcasts::DataPacket::Broadcast::start,
+
+    try
+    {
+        std::cout << "Starting heartbeat broadcast..." << std::endl;
+        auto modulesName = "heartbeat";
+        auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
+        UMPS::Logging::SpdLog logger;
+        logger.initialize(modulesName, logFileName,
+                          UMPS::Logging::Level::INFO, hour, minute);
+        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+           = std::make_shared<UMPS::Logging::SpdLog> (logger);
+        UMPS::Broadcasts::Heartbeat::Broadcast heartbeatBroadcast(loggerPtr);
+        heartbeatBroadcast.initialize(options.mHeartbeatParameters);
+        modules.mHeartbeatBroadcast = std::move(heartbeatBroadcast);
+        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
+                      &modules.mHeartbeatBroadcast);
+        threads.push_back(std::move(t));
+        modules.mConnectionInformation.addConnection(modules.mHeartbeatBroadcast);
+    }   
+    catch (const std::exception &e) 
+    {   
+        std::cerr << e.what() << std::endl;
+    }
+
                   
     // Main program loop
     while (true)
@@ -332,6 +356,7 @@ int main(int argc, char *argv[])
 
             std::cout << "Broadcasts:" << std::endl;
             printBroadcast(modules.mDataPacketBroadcast);
+            printBroadcast(modules.mHeartbeatBroadcast);
         }
         else
         {
@@ -348,6 +373,7 @@ int main(int argc, char *argv[])
         module->stop();
     }
     modules.mDataPacketBroadcast.stop();
+    modules.mHeartbeatBroadcast.stop();
     modules.mConnectionInformation.stop();
     // Join the threads
     for (auto &thread : threads)
@@ -562,6 +588,38 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         dataPacketOptions.haveBackendAddress())
     {
         options.mDataPacketParameters = dataPacketOptions;
+    }
+    // Parse the heartbeat broadcast options
+    UMPS::Broadcasts::Heartbeat::Parameters heartbeatOptions;
+    try
+    {
+        heartbeatOptions.parseInitializationFile(iniFile, "Broadcasts");
+    }
+    catch (const std::exception &e) 
+    {   
+        std::cerr << "Failed to read heartbeat broadcast options."
+                  << "Failed with:\n" << e.what()  << std::endl;
+    }   
+    if (!heartbeatOptions.haveFrontendAddress())
+    {   
+        auto frontendAddress = makeNextAvailableAddress(
+                                    options.mAvailablePorts,
+                                    options.mIPAddress,
+                                    "tcp://");
+        heartbeatOptions.setFrontendAddress(frontendAddress);
+    }   
+    if (!heartbeatOptions.haveBackendAddress())
+    {   
+        auto backendAddress = makeNextAvailableAddress(
+                                    options.mAvailablePorts,
+                                    options.mIPAddress,
+                                    "tcp://");
+        heartbeatOptions.setBackendAddress(backendAddress);
+    }   
+    if (heartbeatOptions.haveFrontendAddress() &&
+        heartbeatOptions.haveBackendAddress())
+    {   
+        options.mHeartbeatParameters = heartbeatOptions;
     }
  
     return options;
