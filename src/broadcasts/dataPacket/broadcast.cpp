@@ -178,3 +178,12 @@ UCI::Details Broadcast::getConnectionDetails() const
     }
     return pImpl->mConnectionDetails;
 }
+
+/// Create an instance of this clsas
+std::unique_ptr<UMPS::Broadcasts::IBroadcast>
+    Broadcast::createInstance() const noexcept
+{
+    std::unique_ptr<UMPS::Broadcasts::IBroadcast> result
+        = std::make_unique<Broadcast> ();
+    return result;
+}

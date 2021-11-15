@@ -80,6 +80,9 @@ public:
     void stop() override final;
     /// @}
 
+    /// @result An uninitialized instance of this class.
+    [[nodiscard]] std::unique_ptr<IBroadcast> createInstance() const noexcept override final;
+
     /// @name Destructors
     /// @{
     virtual ~Broadcast();

@@ -14,6 +14,10 @@ namespace UMPS::Broadcasts
 class IBroadcast
 {
 public:
+    /// @brief Destructor.
+    virtual ~IBroadcast() = default;
+    /// @result Returns an instance of this broadcast.
+    [[nodiscard]] virtual std::unique_ptr<IBroadcast> createInstance() const noexcept = 0;
     /// @result True indicates that the publisher is initialized.
     [[nodiscard]] virtual bool isInitialized() const noexcept = 0;
     /// @result The name of the publisher.

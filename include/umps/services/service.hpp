@@ -11,6 +11,8 @@ namespace UMPS::Services
 class IService
 {
 public:
+    /// @brief Destructor.
+    virtual ~IService() = default;
     /// @result True indicates that the publisher is initialized.
     [[nodiscard]] virtual bool isInitialized() const noexcept = 0;
     /// @result The name of the publisher.

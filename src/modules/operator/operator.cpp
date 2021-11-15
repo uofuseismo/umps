@@ -49,7 +49,7 @@ struct ProgramOptions
 
 struct Modules
 {
-    std::vector<UMPS::Services::Incrementer::Service> mIncrementers;
+    std::vector<std::unique_ptr<UMPS::Services::IService>> mIncrementers;
     std::vector<UMPS::Broadcasts::IBroadcast> mBroadcasts;
     UMPS::Broadcasts::DataPacket::Broadcast mDataPacketBroadcast;
     UMPS::Services::ConnectionInformation::Service mConnectionInformation;
@@ -210,10 +210,10 @@ int main(int argc, char *argv[])
                           parameters.getVerbosity(), hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        UMPS::Services::Incrementer::Service service(loggerPtr);
+        auto service = std::make_unique<UMPS::Services::Incrementer::Service> (loggerPtr); //std::unique_ptr<UMPS::Services::Incrementer::Service> service(loggerPtr);
         try
         {
-            service.initialize(parameters);
+            service->initialize(parameters);
         }
         catch (const std::exception &e)
         {
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
         try
         {
             std::thread t(&UMPS::Services::IService::start, //Incrementer::Service::start,
-                          &module);
+                          &*module);
             threads.push_back(std::move(t));
         }
         catch (const std::exception &e)
@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
             std::cerr << e.what() << std::endl;
             continue;
         }
-        modules.mConnectionInformation.addConnection(module);
+        modules.mConnectionInformation.addConnection(*module);
     }
     // And start the broadcasts...
     try
@@ -305,7 +305,7 @@ int main(int argc, char *argv[])
             std::cout << "Incrementers:" << std::endl;
             for (const auto &module : modules.mIncrementers)
             {
-                printService(module);
+                printService(*module);
             }
             std::cout << std::endl;
 
@@ -323,8 +323,8 @@ int main(int argc, char *argv[])
     std::cout << "Stopping incrementer services..." << std::endl;
     for (auto &module : modules.mIncrementers)
     {
-        modules.mConnectionInformation.removeConnection(module.getName());
-        module.stop();
+        modules.mConnectionInformation.removeConnection(module->getName());
+        module->stop();
     }
     modules.mDataPacketBroadcast.stop();
     modules.mConnectionInformation.stop();
