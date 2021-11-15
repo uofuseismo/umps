@@ -3,7 +3,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include "umps/broadcasts/dataPacket/parameters.hpp"
-#include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
 
@@ -16,7 +16,7 @@ public:
         mProxyOptions.setBackendHighWaterMark(1000);
         mProxyOptions.setTopic("DataPacket");
     }
-    UMPS::Messaging::PublisherSubscriber::ProxyOptions mProxyOptions;
+    UMPS::Messaging::XPublisherXSubscriber::ProxyOptions mProxyOptions;
 };
 
 /// Constructor

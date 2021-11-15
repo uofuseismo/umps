@@ -15,9 +15,9 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/messaging/publisherSubscriber/publisher.hpp"
-#include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
+//#include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "private/isEmpty.hpp"
 
@@ -120,10 +120,11 @@ for (const auto &connectionDetail : connectionDetails)
         logger.info("Will connect to " + options.dataBroadcastName
                   + " at " + packetAddress); 
     }
-    //UMPS::Messaging::PublisherSubscriber::PublisherOptions publisherOptions;
-    //publisherOptions.addAddress(packetAddress);
-    UMPS::Messaging::PublisherSubscriber::Subscriber publisher(loggerPtr);
-    publisher.connect(packetAddress);
+    // Connect to proxy
+    UMPS::Messaging::XPublisherXSubscriber::PublisherOptions publisherOptions;
+    publisherOptions.setAddress(packetAddress);
+    UMPS::Messaging::XPublisherXSubscriber::Publisher publisher(loggerPtr);
+    publisher.initialize(publisherOptions);
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);

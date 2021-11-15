@@ -7,8 +7,8 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messaging/publisherSubscriber/proxy.hpp"
-#include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -32,11 +32,12 @@ const double time = 5600;
 const uint64_t idBase = 100;
 const UMPS::MessageFormats::Pick::Polarity polarity = UMPS::MessageFormats::Pick::Polarity::UP;
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace XPUBSUB = UMPS::Messaging::XPublisherXSubscriber;
 namespace UAuth = UMPS::Messaging::Authentication;
 
 void proxy()
 {
-    ProxyOptions options;
+    XPUBSUB::ProxyOptions options;
     UAuth::ZAPOptions zapOptions;
     options.setFrontendAddress(frontendAddress);
     options.setFrontendHighWaterMark(100);
@@ -50,10 +51,10 @@ void proxy()
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Initialize the server
-    UMPS::Messaging::PublisherSubscriber::Proxy proxy(loggerPtr);
+    XPUBSUB::Proxy proxy(loggerPtr);
     proxy.initialize(options);
     // A thread runs the proxy
-    std::thread t1(&UMPS::Messaging::PublisherSubscriber::Proxy::start,
+    std::thread t1(&XPUBSUB::Proxy::start,
                    &proxy);
     // Main thread waits...
     std::this_thread::sleep_for(std::chrono::seconds(3));

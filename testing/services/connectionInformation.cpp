@@ -45,7 +45,7 @@ TEST(ConnectionInformation, SocketDetails)
     EXPECT_NO_THROW(xSubscriber.setAddress(frontEnd));
     EXPECT_EQ(xSubscriber.getAddress(), frontEnd);
     EXPECT_EQ(xSubscriber.getSocketType(), SocketType::XSUBSCRIBER);
-    EXPECT_EQ(xSubscriber.connectOrBind(), ConnectOrBind::BIND);
+    EXPECT_EQ(xSubscriber.connectOrBind(), ConnectOrBind::CONNECT);
 
     SocketDetails::Router router;
     EXPECT_NO_THROW(router.setAddress(backEnd));
@@ -62,7 +62,7 @@ TEST(ConnectionInformation, SocketDetails)
     auto xPubCopy = proxy.getXPublisherBackend(); 
     EXPECT_EQ(xSubCopy.getAddress(), frontEnd);
     EXPECT_EQ(xSubCopy.getSocketType(), SocketType::XSUBSCRIBER);
-    EXPECT_EQ(xSubCopy.connectOrBind(), ConnectOrBind::BIND);
+    EXPECT_EQ(xSubCopy.connectOrBind(), ConnectOrBind::CONNECT);
     EXPECT_EQ(xPubCopy.getAddress(), backEnd);
     EXPECT_EQ(xPubCopy.getSocketType(), SocketType::XPUBLISHER);
     EXPECT_EQ(xPubCopy.connectOrBind(), ConnectOrBind::CONNECT);

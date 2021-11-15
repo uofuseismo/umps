@@ -6,8 +6,8 @@
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
-#include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
-#include "umps/messaging/publisherSubscriber/proxy.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
@@ -35,7 +35,7 @@ public:
 ///private:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     Parameters mParameters;
-    UMPS::Messaging::PublisherSubscriber::Proxy mProxy;
+    UMPS::Messaging::XPublisherXSubscriber::Proxy mProxy;
     UCI::Details mConnectionDetails;
     const std::string mName = Parameters::getName();
     bool mInitialized = false;
@@ -83,7 +83,7 @@ void Broadcast::initialize(const Parameters &parameters)
     }
     stop();
     // Set the proxy options
-    UMPS::Messaging::PublisherSubscriber::ProxyOptions options;
+    UMPS::Messaging::XPublisherXSubscriber::ProxyOptions options;
     options.setFrontendAddress(parameters.getFrontendAddress());
     options.setBackendAddress(parameters.getBackendAddress());
     options.setFrontendHighWaterMark(parameters.getFrontendHighWaterMark());

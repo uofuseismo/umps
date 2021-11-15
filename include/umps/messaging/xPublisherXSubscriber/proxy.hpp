@@ -1,5 +1,5 @@
-#ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PROXY_HPP
-#define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PROXY_HPP
+#ifndef UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PROXY_HPP
+#define UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PROXY_HPP
 #include <memory>
 #include <string>
 #include "umps/messaging/authentication/enums.hpp"
@@ -12,7 +12,7 @@ namespace UMPS
  }
  namespace Messaging
  {
-  namespace PublisherSubscriber
+  namespace XPublisherXSubscriber
   {
    class ProxyOptions;
   }
@@ -27,9 +27,9 @@ namespace zmq
 {
  class context_t;
 }
-namespace UMPS::Messaging::PublisherSubscriber
+namespace UMPS::Messaging::XPublisherXSubscriber
 {
-/// @class Proxy "proxy.hpp" "umps/messaging/publisherSubscriber/proxy.hpp"
+/// @class Proxy "proxy.hpp" "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 /// @brief A ZeroMQ proxy to be used in the XPUB/XSUB pattern.
 /// @detail The XPUB/XSUB pattern is an extension of the PUB/SUB pattern.
 ///         The proxy is an intermediary which can forward messages from 

@@ -75,7 +75,7 @@ bool XSubscriber::haveAddress() const noexcept
 
 UCI::ConnectOrBind XSubscriber::connectOrBind() noexcept
 {
-    return UCI::ConnectOrBind::BIND;
+    return UCI::ConnectOrBind::CONNECT;
 }
 
 UCI::SocketType XSubscriber::getSocketType() noexcept

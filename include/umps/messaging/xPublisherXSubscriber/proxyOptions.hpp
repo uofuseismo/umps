@@ -1,14 +1,14 @@
-#ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PROXYOPTIONS_HPP
-#define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PROXYOPTIONS_HPP
+#ifndef UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PROXYOPTIONS_HPP
+#define UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PROXYOPTIONS_HPP
 #include <memory>
 #include <string>
 namespace UMPS::Messaging::Authentication
 {
  class ZAPOptions;
 }
-namespace UMPS::Messaging::PublisherSubscriber
+namespace UMPS::Messaging::XPublisherXSubscriber
 {
-/// @class ProxyOptions "proxyOptions.hpp" "umps/messaging/publisherSubscriber/proxyOptions.hpp"
+/// @class ProxyOptions "proxyOptions.hpp" "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 /// @brief Options for initializing the proxy.
 /// @detail A proxy is an intermediary that allows for an asynchronous pub/sub
 ///         pattern.  In this case, there may be multiple publishers sending

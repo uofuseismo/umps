@@ -86,12 +86,14 @@ set(MESSAGING_SRC
     #src/messaging/authentication/generateKeyPair.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
-    src/messaging/publisherSubscriber/proxy.cpp
-    src/messaging/publisherSubscriber/proxyOptions.cpp
     src/messaging/requestRouter/request.cpp
     src/messaging/requestRouter/requestOptions.cpp
     src/messaging/requestRouter/router.cpp
-    src/messaging/requestRouter/routerOptions.cpp)
+    src/messaging/requestRouter/routerOptions.cpp
+    src/messaging/xPublisherXSubscriber/proxy.cpp
+    src/messaging/xPublisherXSubscriber/proxyOptions.cpp
+    src/messaging/xPublisherXSubscriber/publisher.cpp
+    src/messaging/xPublisherXSubscriber/publisherOptions.cpp)
 set(MODULES_LIBSRC
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp

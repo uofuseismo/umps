@@ -1,9 +1,9 @@
 #include <string>
-#include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Messaging::PublisherSubscriber;
+using namespace UMPS::Messaging::XPublisherXSubscriber;
 
 class ProxyOptions::ProxyOptionsImpl
 {

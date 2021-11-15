@@ -4,8 +4,8 @@
 #include <mutex>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
-#include "umps/messaging/publisherSubscriber/proxy.hpp"
-#include "umps/messaging/publisherSubscriber/proxyOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
+#include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/authentication/enums.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
@@ -13,7 +13,7 @@
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Messaging::PublisherSubscriber;
+using namespace UMPS::Messaging::XPublisherXSubscriber;
 
 namespace 
 {
