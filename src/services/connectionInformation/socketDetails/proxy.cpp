@@ -119,3 +119,29 @@ UCI::SocketType Proxy::getSocketType() noexcept
 {
     return UCI::SocketType::PROXY;
 }
+
+/// Frontend socket address
+std::string Proxy::getFrontendAddress() const
+{
+    if (getFrontendSocketType() == UCI::SocketType::XSUBSCRIBER)
+    {
+        return getXSubscriberFrontend().getAddress();
+    }
+    else
+    {
+        throw std::runtime_error("Unhandled frontend socket type");
+    }
+} 
+
+/// Backend socket address
+std::string Proxy::getBackendAddress() const
+{
+    if (getBackendSocketType() == UCI::SocketType::XPUBLISHER)
+    {
+        return getXPublisherBackend().getAddress();
+    }   
+    else
+    {
+        throw std::runtime_error("Unhandled backend socket type");
+    }
+}

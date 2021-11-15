@@ -21,6 +21,7 @@
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
+#include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/broadcasts/dataPacket/broadcast.hpp"
@@ -50,7 +51,7 @@ struct ProgramOptions
 struct Modules
 {
     std::vector<std::unique_ptr<UMPS::Services::IService>> mIncrementers;
-    std::vector<UMPS::Broadcasts::IBroadcast> mBroadcasts;
+    std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
     UMPS::Broadcasts::DataPacket::Broadcast mDataPacketBroadcast;
     UMPS::Services::ConnectionInformation::Service mConnectionInformation;
 };
@@ -72,6 +73,24 @@ void printService(const UMPS::Services::IService &service)
     {
         std::cerr << e.what() << std::endl;
     }
+}
+
+void printBroadcast(const UMPS::Broadcasts::IBroadcast &broadcast)
+{
+    try
+    {
+        auto details = broadcast.getConnectionDetails();
+        auto socketInfo = details.getProxySocketDetails();
+        std::cout << "Broadcast: " << broadcast.getName()
+                  << " frontend available at: "
+                  << socketInfo.getFrontendAddress()
+                  << " and backend available at: "
+                  << socketInfo.getBackendAddress() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+    } 
 }
 
 std::string makeNextAvailableAddress(
@@ -210,7 +229,9 @@ int main(int argc, char *argv[])
                           parameters.getVerbosity(), hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        auto service = std::make_unique<UMPS::Services::Incrementer::Service> (loggerPtr); //std::unique_ptr<UMPS::Services::Incrementer::Service> service(loggerPtr);
+        auto service
+           = std::make_unique<UMPS::Services::Incrementer::Service> (loggerPtr);
+        //std::unique_ptr<UMPS::Services::Incrementer::Service> service(loggerPtr);
         try
         {
             service->initialize(parameters);
@@ -310,7 +331,7 @@ int main(int argc, char *argv[])
             std::cout << std::endl;
 
             std::cout << "Broadcasts:" << std::endl;
-           
+            printBroadcast(modules.mDataPacketBroadcast);
         }
         else
         {

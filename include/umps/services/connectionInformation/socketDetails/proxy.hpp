@@ -55,15 +55,22 @@ public:
     /// @result True indicates that the socket pair was set.
     [[nodiscard]] bool haveSocketPair() const noexcept;
     /// @result The socket type of the frontend.
-    /// @throws std::invalid_argument if \c haveSocketPair() is false.
+    /// @throws std::runtime_error if \c haveSocketPair() is false.
     [[nodiscard]] SocketType getFrontendSocketType() const;
     /// @result The socket type of the backend.
-    /// @throws std::invalid_argument if \c haveSocketPair() is false.
+    /// @throws std::runtime_error if \c haveSocketPair() is false.
     [[nodiscard]] SocketType getBackendSocketType() const;
     /// @result The socket information for the frontend.
     [[nodiscard]] XSubscriber getXSubscriberFrontend() const;
     /// @result The socket information for the backend.
     [[nodiscard]] XPublisher  getXPublisherBackend() const;
+
+    /// @result The address of the frontend socket.
+    /// @throws std::runtime_error if \c haveSocketPair() is false.
+    [[nodiscard]] std::string getFrontendAddress() const;
+    /// @result The address of the backend socket.
+    /// @throws std::runtime_error if \c haveSocketPair() is false.
+    [[nodiscard]] std::string getBackendAddress() const;
     /// @}
 
     /// @result The socket type.
