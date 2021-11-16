@@ -8,19 +8,14 @@
 #include <filesystem>
 #include "umps/services/packetCache/cappedCollection.hpp"
 #include "umps/services/packetCache/dataRequest.hpp"
-#include "umps/broadcasts/earthworm/waveRing.hpp"
+#include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "umps/logging/spdlog.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/threadSafeQueue.hpp"
 
 struct ProgramOptions
 {
-    std::string earthwormParametersDirectory
-        = "/opt/earthworm/run_working/params/";
-    std::string earthwormInstallation = "INST_UNKNOWN"; 
-    std::string earthwormWaveRingName = "WAVE_RING";
-    int earthwormWait = 0;
     int maxPackets = 100;
 };
 
@@ -61,36 +56,23 @@ int main(int argc, char *argv[])
     logger.setLevel(UMPS::Logging::Level::DEBUG);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
+    // Ask the operator how to subscribe to the datapacket broadcast
+
+    // Now connect to the publisher
+    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
+
     // Create a collection of circular buffers
     UMPS::Services::PacketCache::CappedCollection<double>
         cappedCollection(loggerPtr);
     cappedCollection.initialize(options.maxPackets);
     assert(cappedCollection.isInitialized());
-    // Initialize earthworm connection
-    logger.debug("Setting environment variables...");
-    setenv("EW_PARAMS", options.earthwormParametersDirectory.c_str(), true);
-    setenv("EW_INSTALLATION", options.earthwormInstallation.c_str(), true);
-    logger.debug("Constructing wave ring connection..."); 
-    UMPS::Broadcasts::Earthworm::WaveRing waveRing(loggerPtr);
-    try
-    {
-        waveRing.connect(options.earthwormWaveRingName,
-                         options.earthwormWait);
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-        return EXIT_FAILURE;
-    }
-    assert(waveRing.isConnected());
-    // Flush the ring so we can start from scratch
-    //waveRing.flush();
-    // Try reading...
+    // Continually read from the dataPacket broadcast
     for (int k = 0; k < 10; ++k)
     {
         // Get a good read on time so we wait a predictable amount
         auto startRead = std::chrono::high_resolution_clock::now();
 
+/*
         // Read the ring
         waveRing.read();
         // Get the tracebuf2 messages
@@ -109,13 +91,14 @@ int main(int argc, char *argv[])
                            + "; skipping...");
             } 
         }
+*/
         auto endRead = std::chrono::high_resolution_clock::now();
         auto elapsedTime
             = std::chrono::duration<double> (endRead - startRead).count();
         logger.debug("Read and update took: "
                    + std::to_string(elapsedTime) + " (s)");
-        logger.debug("Throughput (packets/second): "
-                   + std::to_string(traceBuf2Messages.size()/elapsedTime));
+//        logger.debug("Throughput (packets/second): "
+//                   + std::to_string(traceBuf2Messages.size()/elapsedTime));
         //sleep(1);
         auto sleepTime = static_cast<int> (1000 - elapsedTime*1000);
         if (sleepTime > 0)
@@ -172,29 +155,6 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     ProgramOptions options;
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
-    // EW_PARAMS environment variable
-    options.earthwormParametersDirectory = propertyTree.get<std::string>
-        ("Earthworm.ewParams", options.earthwormParametersDirectory);
-    if (!std::filesystem::exists(options.earthwormParametersDirectory))
-    {
-        throw std::runtime_error("Earthworm parameters directory: " 
-                               + options.earthwormParametersDirectory
-                               + " does not exist");
-    }
-    // EW_INST environment variable
-    options.earthwormInstallation = propertyTree.get<std::string>
-        ("Earthworm.ewInstallation", options.earthwormInstallation);
-    // Earthworm wave ring
-    options.earthwormWaveRingName = propertyTree.get<std::string>
-        ("Earthworm.waveRingName", options.earthwormWaveRingName);
-    // Wait after reading
-    options.earthwormWait = propertyTree.get<int> ("Earthworm.wait",
-                                                   options.earthwormWait);
-    if (options.earthwormWait < 0)
-    {
-        std::cerr << "Setting wait time to 0" << std::endl;
-        options.earthwormWait = 0;
-    }
     //------------------------------------------------------------------------//
     options.maxPackets = propertyTree.get<int> ("PacketCache.maxPackets",
                                                 options.maxPackets);

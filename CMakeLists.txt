@@ -177,12 +177,12 @@ if (${BUILD_EW})
                           CXX_EXTENSIONS NO) 
     target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options pthread)
 endif()
-#add_executable(packetCache src/services/packetCache/packetCache.cpp)
-#set_target_properties(packetCache PROPERTIES
-#                      CXX_STANDARD 20
-#                      CXX_STANDARD_REQUIRED YES
-#                      CXX_EXTENSIONS NO) 
-#target_link_libraries(packetCache PRIVATE umps Boost::program_options pthread)
+add_executable(packetCache src/modules/services/packetCache.cpp)
+set_target_properties(packetCache PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_link_libraries(packetCache PRIVATE umps Boost::program_options pthread)
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
 set_target_properties(uKeyPair PROPERTIES
