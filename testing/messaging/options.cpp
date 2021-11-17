@@ -1,12 +1,51 @@
 #include <string>
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
+#include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/pick.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 
 namespace
 {
 
 using namespace UMPS::Messaging;
+
+TEST(Messaging, PubSubSubscriberOptions)
+{
+    UMPS::MessageFormats::Messages messageTypes;
+    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
+        = std::make_unique<UMPS::MessageFormats::Pick> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> packetMessage
+        = std::make_unique<UMPS::MessageFormats::DataPacket<double>> ();
+    EXPECT_NO_THROW(messageTypes.add(pickMessage));
+    EXPECT_NO_THROW(messageTypes.add(packetMessage));
+    const std::string address = "tcp://127.0.0.1:5555";
+    const int highWaterMark = 120;
+    const std::chrono::milliseconds timeOut{10};
+    const int zero = 0;
+    PublisherSubscriber::SubscriberOptions options;
+    options.setAddress(address);
+    options.setHighWaterMark(highWaterMark);
+    options.setMessageTypes(messageTypes);
+    options.setTimeOut(timeOut);
+
+    PublisherSubscriber::SubscriberOptions optionsCopy(options);
+
+    EXPECT_EQ(optionsCopy.getAddress(), address);
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), highWaterMark);
+    EXPECT_EQ(optionsCopy.getTimeOut(), timeOut);
+    EXPECT_TRUE(optionsCopy.haveMessageTypes());
+    auto messagesBack = optionsCopy.getMessageTypes();
+    EXPECT_TRUE(messagesBack.contains(pickMessage));
+    EXPECT_TRUE(messagesBack.contains(packetMessage));
+
+    options.clear();
+    EXPECT_EQ(options.getHighWaterMark(), zero); 
+    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds{0});
+    EXPECT_FALSE(options.haveMessageTypes());
+}
 
 TEST(Messaging, XPubXSubProxyOptions)
 {
