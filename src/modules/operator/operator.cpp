@@ -49,6 +49,7 @@ struct ProgramOptions
     std::string mWhiteListTable = mTablesDirectory + "whitelist.sqlite3";
     std::string mIPAddress;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::INFO;
 };
 
 struct Modules
@@ -184,7 +185,7 @@ int main(int argc, char *argv[])
     UMPS::Logging::SpdLog authenticationLogger;
     authenticationLogger.initialize("Authenticator",
                                     authenticatorLogFileName,
-                                    UMPS::Logging::Level::INFO,
+                                    options.mVerbosity,
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
         = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
@@ -210,7 +211,7 @@ int main(int argc, char *argv[])
     UMPS::Logging::SpdLog connectionInformationLogger;
     connectionInformationLogger.initialize("ConnectionInformation",
                                            connectionInformationLogFileName,
-                                           UMPS::Logging::Level::DEBUG,
+                                           options.mVerbosity,
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
@@ -283,7 +284,7 @@ int main(int argc, char *argv[])
         auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
         UMPS::Logging::SpdLog logger;
         logger.initialize(modulesName, logFileName,
-                          UMPS::Logging::Level::INFO, hour, minute);
+                          options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
         UMPS::Broadcasts::DataPacket::Broadcast dataPacketBroadcast(loggerPtr);
@@ -306,7 +307,7 @@ int main(int argc, char *argv[])
         auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
         UMPS::Logging::SpdLog logger;
         logger.initialize(modulesName, logFileName,
-                          UMPS::Logging::Level::INFO, hour, minute);
+                          options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
         UMPS::Broadcasts::Heartbeat::Broadcast heartbeatBroadcast(loggerPtr);
@@ -433,6 +434,11 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     // Parse the initialization file
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
+    // Verbosity
+    options.mVerbosity
+        = static_cast<UMPS::Logging::Level>
+          (propertyTree.get<int> ("uOperator.verbosity",
+                                  static_cast<int> (options.mVerbosity)));
     // Need an IP address
     options.mIPAddress = propertyTree.get<std::string> ("uOperator.ipAddress");
     if (options.mIPAddress.empty())
