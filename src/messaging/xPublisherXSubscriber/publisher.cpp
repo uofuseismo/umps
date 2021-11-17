@@ -83,7 +83,7 @@ void Publisher::initialize(const PublisherOptions &options)
     // Create zap options
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mPublisher);
-    // Set other optoins
+    // Set other options
     auto address = pImpl->mOptions.getAddress();
     auto hwm = pImpl->mOptions.getHighWaterMark();
     if (hwm > 0){pImpl->mPublisher->set(zmq::sockopt::sndhwm, hwm);}
@@ -105,7 +105,7 @@ void Publisher::initialize(const PublisherOptions &options)
 /// Initialized?
 bool Publisher::isInitialized() const noexcept
 {
-    return pImpl->mInitialized = false;
+    return pImpl->mInitialized;
 }
 
 /// Send a message

@@ -90,12 +90,6 @@ int main(int argc, char *argv[])
         logger.error("Error getting services: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
-/*
-for (const auto &connectionDetail : connectionDetails)
-{
- std::cout << connectionDetail.getName() << std::endl;
-}
-*/
     // Connect so that I may publish to appropriate broadcast - e.g., DataPacket
     std::string packetAddress;
     for (const auto &connectionDetail : connectionDetails)
@@ -125,6 +119,7 @@ for (const auto &connectionDetail : connectionDetails)
     publisherOptions.setAddress(packetAddress);
     UMPS::Messaging::XPublisherXSubscriber::Publisher publisher(loggerPtr);
     publisher.initialize(publisherOptions);
+    assert(publisher.isInitialized());
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);
@@ -149,19 +144,22 @@ for (const auto &connectionDetail : connectionDetails)
         auto nMessages = waveRing.getNumberOfTraceBuf2Messages();
         auto traceBuf2MessagesPtr = waveRing.getTraceBuf2MessagesPointer();
         // Now broadcast the tracebufs as datapacket messages
+        int nSent = 0;
         for (int iMessage = 0; iMessage < nMessages; ++iMessage)
         {
             // Send it
             try
             {
                 auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket();
-        //        publisher.send(dataPacket);
+                publisher.send(dataPacket);
+                nSent = nSent + 1;
             }
             catch (const std::exception &e)
             {
                 logger.error(e.what());
             }
         }
+std::cout << "Sent: " << nSent << std::endl;
         // Is it time to send a heartbeat?
         auto newHeartBeat = std::chrono::high_resolution_clock::now();
         auto heartBeatDuration

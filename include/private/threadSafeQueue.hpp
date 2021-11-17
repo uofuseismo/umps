@@ -60,14 +60,16 @@ public:
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
         mDataQueue.push(value);
-        mConditionVariable.notify_one();
+        mConditionVariable.notify_one(); // Let waiting thread know 
     }
     /// @brief Copies the value from the front of the queue and removes that
     ///        value from the front of the queue.
     /// @param[out] value  A copy of the value at the front of the queue.
     void wait_and_pop(T *value)
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
+        // Waiting thread needs to unlock mutex while waiting and lock again
+        // afterward.  unique_lock does this while lock_guard does not.
+        std::unique_lock<std::mutex> lockGuard(mMutex);
         mConditionVariable.wait(lockGuard, [this]
                                 {
                                     return !mDataQueue.empty();
@@ -80,7 +82,7 @@ public:
     /// @result The value at the front of the queue.
     [[nodiscard]] std::shared_ptr<T> wait_and_pop()
     {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
+        std::unique_lock<std::mutex> lockGuard(mMutex);
         mConditionVariable.wait(lockGuard, [this]
                                 {
                                     return !mDataQueue.empty();

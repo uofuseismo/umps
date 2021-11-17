@@ -9,6 +9,8 @@
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
+#include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -63,6 +65,7 @@ void proxy()
     t1.join();
 }
 
+/*
 void publisher(int id)
 {
     UMPS::Logging::StdOut logger;
@@ -89,7 +92,38 @@ void publisher(int id)
         publisher.send(pick);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
+}
+*/
 
+void publisher(int id)
+{
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::INFO);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (logger);
+    XPUBSUB::PublisherOptions options;
+    options.setAddress(frontendAddress); 
+    XPUBSUB::Publisher publisher;
+    EXPECT_NO_THROW(publisher.initialize(options));
+    EXPECT_TRUE(publisher.isInitialized());
+    // Deal with the slow joiner problem
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    // Define message to send
+    UMPS::MessageFormats::Pick pick;
+    pick.setTime(time);
+    pick.setNetwork(network);
+    pick.setStation(station);
+    pick.setChannel(channel);
+    pick.setLocationCode(locationCode);
+    pick.setPhaseHint(phaseHint);
+    pick.setPolarity(polarity);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        pick.setIdentifier(idBase + i);
+        publisher.send(pick);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 }
 
 void subscriber()
@@ -107,7 +141,6 @@ void subscriber()
     for (int i = 0; i < 10; ++i)
     {
         auto message = subscriber.receive();
-        //std::cout << "Got message" << std::endl;
         auto pickMessage
             = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
               (std::move(message));

@@ -142,21 +142,21 @@ public:
             }   
         } 
     }
-    void connectFrontend() //const std::string &frontendAddress)
+    void bindFrontend() //const std::string &frontendAddress)
     {
         mFrontendAddress = mOptions.getFrontendAddress(); //frontendAddress;
         try 
         {
-            mLogger->debug("Attempting to connect to frontend: "
+            mLogger->debug("Attempting to bind to frontend: "
                          + mFrontendAddress);
-            mFrontend->connect(mFrontendAddress);
+            mFrontend->bind(mFrontendAddress);
             int hwm = mOptions.getFrontendHighWaterMark();
             if (hwm > 0){mFrontend->set(zmq::sockopt::rcvhwm, hwm);}
             mHaveFrontend = true;
         }
         catch (const std::exception &e)
         {
-            auto errorMsg = "Proxy failed to connect to frontend: "
+            auto errorMsg = "Proxy failed to bind to frontend: "
                           + mFrontendAddress + ".\nZeroMQ failed with:\n"
                           + std::string(e.what());
             mLogger->error(errorMsg);
@@ -269,8 +269,8 @@ void Proxy::initialize(const ProxyOptions &options)
     zapOptions.setSocketOptions(&*pImpl->mFrontend);
     zapOptions.setSocketOptions(&*pImpl->mBackend);
     // (Re)Establish connections
-    pImpl->connectFrontend();
     pImpl->bindBackend();
+    pImpl->bindFrontend();
     pImpl->connectControl();
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
     pImpl->mInitialized = true;
