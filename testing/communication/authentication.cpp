@@ -3,11 +3,14 @@
 #include <sodium/crypto_pwhash.h>
 #include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messaging/authentication/user.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -320,18 +323,29 @@ void sub(const Certificate::Keys serverCertificate)
     plainText.setUserName("client");
     plainText.setPassword("letMeIn");
 
+    ZAPOptions zapOptions;
+    zapOptions.setStonehouseClient(serverCertificate, clientCertificate);
+   
+    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
+        = std::make_unique<UMPS::MessageFormats::Pick> (); 
+    UMPS::MessageFormats::Messages messageTypes;
+    messageTypes.add(pickMessageType);
+
+    UMPS::Messaging::PublisherSubscriber::SubscriberOptions options;
+    options.setAddress("tcp://127.0.0.1:5555");
+    options.setMessageTypes(messageTypes);
+    options.setZAPOptions(zapOptions);
+
     bool isAuthenticationServer = false;
     UMPS::Messaging::PublisherSubscriber::Subscriber subscriber;
     //subscriber.connect("tcp://127.0.0.1:5555", isAuthenticationServer); // Grasslands/Strawhouse
     //subscriber.connect("tcp://127.0.0.1:5555", plainText, isAuthenticationServer); // Woodhouse
-    subscriber.connect("tcp://127.0.0.1:5555", serverCertificate, clientCertificate); // Stonehouse
-    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
-        = std::make_unique<UMPS::MessageFormats::Pick> ();
-    subscriber.addSubscription(pickMessageType);
-//    std::this_thread::sleep_for(std::chrono::seconds(1));
-//std::cout << "getting" << std::endl;
+    //subscriber.connect("tcp://127.0.0.1:5555", serverCertificate, clientCertificate); // Stonehouse
+    subscriber.initialize(options);
+    //std::this_thread::sleep_for(std::chrono::seconds(1));
+    //std::cout << "getting" << std::endl;
     auto message = subscriber.receive();
-//std::cout << "done" << std::endl;
+    //std::cout << "done" << std::endl;
 
     //std::this_thread::sleep_for(std::chrono::seconds(3));
     auto pickMessage

@@ -7,6 +7,8 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
@@ -93,12 +95,21 @@ TEST(Messaging, PubSub)
 //    Publisher publisher(loggerPtr);
 //    publisher.bind(serverHost);
 
-    // Create a subscriber and subscribe to all messages
-    Subscriber subscriber(loggerPtr);
-    subscriber.connect(localHost);
+    // Create a subscriber and subscribe to pick messages
+    UMPS::MessageFormats::Messages messageTypes;
     std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
         = std::make_unique<UMPS::MessageFormats::Pick> ();
-    subscriber.addSubscription(pickMessageType);
+    messageTypes.add(pickMessageType);
+
+    SubscriberOptions subscriberOptions;
+    subscriberOptions.setAddress(localHost);
+    subscriberOptions.setMessageTypes(messageTypes);
+
+    Subscriber subscriber(loggerPtr);
+    subscriber.initialize(subscriberOptions);
+    EXPECT_TRUE(subscriber.isInitialized());
+    //subscriber.connect(localHost);
+    //subscriber.addSubscription(pickMessageType);
     //sleep(1);
     // Create publisher and bind
     Publisher publisher(loggerPtr);

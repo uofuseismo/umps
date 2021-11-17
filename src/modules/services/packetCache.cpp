@@ -10,7 +10,9 @@
 #include "umps/services/packetCache/dataRequest.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
@@ -25,7 +27,9 @@ struct ProgramOptions
 {
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
+    std::chrono::milliseconds dataPacketTimeOut{10};
     int maxPackets = 100;
+    int dataPacketHighWaterMark = 2*1024;
 };
 
 struct DataPacketSubscriber
@@ -180,9 +184,20 @@ int main(int argc, char *argv[])
     // Now connect to the publisher
     std::unique_ptr<UMPS::MessageFormats::IMessage> messageType
         = std::make_unique<UMPS::MessageFormats::DataPacket<double>> ();
+    UMPS::Messaging::PublisherSubscriber::SubscriberOptions subscriberOptions;
+    UMPS::MessageFormats::Messages messageTypes;
+    messageTypes.add(messageType);
+
+    subscriberOptions.setAddress(dataPacketAddress);
+    subscriberOptions.setHighWaterMark(options.dataPacketHighWaterMark);
+    subscriberOptions.setTimeOut(options.dataPacketTimeOut);
+    subscriberOptions.setMessageTypes(messageTypes);
+
     UMPS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
-    subscriber.connect(dataPacketAddress);
-    subscriber.addSubscription(messageType);
+    subscriber.initialize(subscriberOptions);
+    assert(subscriber.isInitialized());
+    //subscriber.connect(dataPacketAddress);
+    //subscriber.addSubscription(messageType);
 
     // Create a collection of circular buffers
     UMPS::Services::PacketCache::CappedCollection<double>
@@ -195,7 +210,17 @@ int main(int argc, char *argv[])
         // Get a good read on time so we wait a predictable amount
         auto startRead = std::chrono::high_resolution_clock::now();
 std::cout << "waiting" << std::endl;
+int nRecv = 0;
+while (true)
+{
+ startRead = std::chrono::high_resolution_clock::now();
         auto message = subscriber.receive();
+        auto endRead = std::chrono::high_resolution_clock::now();
+        auto elapsedTime
+            = std::chrono::duration<double> (endRead - startRead).count();
+ nRecv = nRecv + 1;
+ std::cout << nRecv << " " << elapsedTime << std::endl;
+}
 std::cout << "received" << std::endl;
 /*
         // Read the ring

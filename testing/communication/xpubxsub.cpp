@@ -7,11 +7,13 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
@@ -132,11 +134,18 @@ void subscriber()
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
-    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
-    subscriber.connect(backendAddress);
     std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
         = std::make_unique<UMPS::MessageFormats::Pick> ();
-    subscriber.addSubscription(pickMessageType);
+    UMPS::MessageFormats::Messages messageTypes;
+    messageTypes.add(pickMessageType);
+
+    UMPS::Messaging::PublisherSubscriber::SubscriberOptions options;
+    options.setAddress(backendAddress);
+    options.setMessageTypes(messageTypes);
+    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
+    subscriber.initialize(options);
+    //subscriber.connect(backendAddress);
+    //subscriber.addSubscription(pickMessageType);
 
     for (int i = 0; i < 10; ++i)
     {

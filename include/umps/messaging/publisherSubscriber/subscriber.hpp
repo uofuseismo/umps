@@ -22,6 +22,10 @@ namespace UMPS
    class UserNameAndPassword;
   }
  }
+ namespace Messaging::PublisherSubscriber
+ {
+  class SubscriberOptions;
+ }
 }
 namespace zmq
 {
@@ -60,104 +64,33 @@ public:
     Subscriber& operator=(Subscriber &&subscriber) noexcept;
     /// @}
 
-    /// @name Step 1: Connect to the Subscriber
-    /// @{
-    /// @brief Connects to the endpoint.
-    /// @param[in] endPoint  The endpoint to which to connect.
-    ///                      For example, "tcp://127.0.0.1:5555".
-    /// @note For more see: http://api.zeromq.org/3-2:zmq-connect
-    /// @throws std::runtime_error if zeromq failed to connect to given
-    ///         endpoint.
-    void connect(const std::string &endPoint);
-    /// @brief Connects the endpoint as an IP validating server or client.  This is
-    ///        the strawhouse pattern that will authenticate IP addresses.
-    /// @param[in] endPoint   The endpoint for accepting connections.
-    /// @param[in] isAuthenticationServer  True indicates this connection is a
-    ///                                    ZAP server which means this machine
-    ///                                    will validate users.
-    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if plainText.haveUserName() or
-    ///         plainText.havePassword() are false.
-    /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
-    void connect(const std::string &endPoint,
-                 bool isAuthenticationServer,
-                 const std::string &zapDomain = "global");
-    /// @brief Connects the endpoint as a plain text server or client.  This is
-    ///        the woodhouse pattern.
-    /// @param[in] endPoint   The endpoint for accepting connections.
-    /// @param[in] plainText  The plain text credentials.
-    /// @param[in] isAuthenticationServer  True indicates this connection is a
-    ///                                    ZAP server which means this machine
-    ///                                    will validate users.
-    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if plainText.haveUserName() or
-    ///         plainText.havePassword() are false.
-    /// @throws std::runtime_error if zeromq failed to connect to given
-    ///         endpoint.
-    void connect(const std::string &endPoint,
-                 const UMPS::Messaging::Authentication::Certificate::UserNameAndPassword &plainText,
-                 bool isAuthenticationServer,
-                 const std::string &zapDomain = "global");
-    /// @brief Connects the endpoint as a CURVE server.  This is the stonehouse
-    ///        pattern.
-    /// @param[in] endPoint   The endpoint for accepting connections.
-    /// @param[in] serverKeys The public and private keys for the server.
-    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if serverKeys.havePublicKey() or
-    ///         serverKeys.havePrivateKey() is false.
-    /// @throws std::runtime_error if zeromq failed to connect to given
-    ///         endpoint.
-    void connect(const std::string &endPoint,
-                 const UMPS::Messaging::Authentication::Certificate::Keys &serverKeys,
-                 const std::string &zapDomain = "global");
-    /// @brief Connects the endpoint as a CURVE client.  This is the stonehouse
-    ///        pattern.
-    /// @param[in] endPoint   The endpoint for accepting connections.
-    /// @param[in] serverKeys The public and private keys for the server.
-    /// @param[in] clientKeys The public and private keys for the client.
-    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if serverKeys.havePublicKey() is false
-    ///         or \c clientKeys.havePublicKey() or
-    ///         \c clientKeys.havePrivateKey() is false.
-    /// @throws std::runtime_error if zeromq failed to connect to given
-    ///         endpoint.
-    void connect(const std::string &endPoint,
-                 const UMPS::Messaging::Authentication::Certificate::Keys &serverKeys,
-                 const UMPS::Messaging::Authentication::Certificate::Keys &clientKeys, 
-                 const std::string &zapDomain = "global");
+    /// @brief Initializes the subscriber.
+    /// @param[in] options  The subscriber options.  This must have an address
+    ///                     and message types.
+    /// @throws std::invalid_argument if \c options.haveAddress() or 
+    ///         options.haveMessageTypes() is false.
+    void initialize(const SubscriberOptions &options);
+    /// @result True indicates that the subscriber is initialized.
+    [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The security level of the connection.
     [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    /// @result The socket endpoint.
+    /// @throws std::runtime_error if \c isInitialized() is true.
+    [[nodiscard]] std::string getEndPoint() const;
 
+    /// @brief Receives a message.
+    /// @throws std::invalid_argument if the message cannot be serialized.
+    [[nodiscard]] std::unique_ptr<MessageFormats::IMessage> receive() const;
 
-    /// @result True indicates that the class is connected.
-    [[nodiscard]] bool isConnected() const noexcept;
+    /// @brief Disconnects the subscriber.
+    /// @note The class will have to be reinitialized to connect.
+    void disconnect();
 
-    /// @name Step 2: Add Subscription
-    /// @{
-    /// @param[in] message  The message format to which to subscribe.
-    ///                     The message type is given by
-    ///                     message.getMessageType().
-    /// @throws std::invalid_argument if message is NULL.
-    /// @throws std::runtime_error if \c isConnected() is false. 
-    void addSubscription(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
-    /// @result True indicates that there are subscriptions. 
-    [[nodiscard]] bool haveSubscriptions() const noexcept;
-    /// @}
-  
     /// @name Destructors
     /// @{
     /// @brief Destructor.
     ~Subscriber();
     /// @}
- 
-    /// @brief Receives a message.
-    /// @throws std::invalid_argument if the message cannot be serialized.
-    [[nodiscard]] std::unique_ptr<MessageFormats::IMessage> receive() const;
-
-    /// @brief Disconnects from an endpoint.
-    /// @param[in] endpoint   The endpoint from which to disconnect.
-    void disconnect(const std::string &endpoint);
-
     /// Delete some functions
     Subscriber(const Subscriber &subscriber) = delete;
     Subscriber& operator=(const Subscriber &subscriber) = delete;

@@ -43,7 +43,7 @@ TEST(Messaging, PubSubSubscriberOptions)
 
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), zero); 
-    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds{0});
+    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds{-1});
     EXPECT_FALSE(options.haveMessageTypes());
 }
 

@@ -1,18 +1,18 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include <unistd.h>
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
-#include "private/authentication/zapOptions.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
 
@@ -72,16 +72,27 @@ public:
                                                          zmq::socket_type::sub);
         }
     }
+    /// Disconnect
+    void disconnect()
+    {
+        if (mConnected)
+        {
+            mSubscriber->disconnect(mAddress);
+            mConnected = false; 
+        }
+    }
  
     UMPS::MessageFormats::Messages mMessageTypes;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mSubscriber;
-    std::map<std::string, bool> mEndPoints;
+    ///std::map<std::string, bool> mEndPoints;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
-    int mHighWaterMark = 4*1024;
+    SubscriberOptions mOptions;
+    std::string mAddress;
     Authentication::SecurityLevel mSecurityLevel
         = Authentication::SecurityLevel::GRASSLANDS;
     bool mMadeContext = true;
+    bool mInitialized = false;
     bool mConnected = false;
 };
 
@@ -127,6 +138,79 @@ Subscriber& Subscriber::operator=(Subscriber &&subscriber) noexcept
     return *this;
 }
 
+/// Initialize
+void Subscriber::initialize(const SubscriberOptions &options)
+{
+    if (!options.haveAddress())
+    {
+        throw std::invalid_argument("Address not set on options");
+    }
+    if (!options.haveMessageTypes())
+    {
+        throw std::invalid_argument("Message types not set on options");
+    }
+    pImpl->mOptions = options;
+    pImpl->mInitialized = false;
+    // Disconnnect from old connections
+    pImpl->disconnect(); 
+    // Create zap options
+    auto zapOptions = pImpl->mOptions.getZAPOptions();
+    zapOptions.setSocketOptions(&*pImpl->mSubscriber);
+    // Set other options
+    auto timeOut = static_cast<int> (options.getTimeOut().count());
+    auto hwm = pImpl->mOptions.getHighWaterMark();
+    if (hwm > 0){pImpl->mSubscriber->set(zmq::sockopt::rcvhwm, hwm);}
+    if (timeOut >= 0)
+    {
+        pImpl->mSubscriber->set(zmq::sockopt::rcvtimeo, timeOut);
+    }
+    // (Re)establish connections
+    auto address = options.getAddress();
+    try
+    {
+        pImpl->mSubscriber->connect(address);
+    }
+    catch (const std::exception &e)
+    {
+        auto errmsg = "Subscriber failed to connect with error: "
+                    + std::string(e.what());
+        pImpl->mLogger->error(errmsg);
+        throw std::runtime_error(errmsg);
+    }
+    // Resolve the end point
+    pImpl->mAddress = address;
+    if (address.find("tcp") != std::string::npos ||
+        address.find("ipc") != std::string::npos)
+    {
+        pImpl->mAddress = pImpl->mSubscriber->get(zmq::sockopt::last_endpoint);
+    }
+    pImpl->mConnected = true;
+    // Add the subscriptions
+    pImpl->mMessageTypes = pImpl->mOptions.getMessageTypes();
+    auto messageTypeMap = pImpl->mMessageTypes.get();
+    for (const auto &messageType : messageTypeMap)
+    {
+        pImpl->mSubscriber->set(zmq::sockopt::subscribe, messageType.first);
+    }
+    // Set some final details
+    pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    pImpl->mInitialized = true;
+}
+
+/// Initialized?
+bool Subscriber::isInitialized() const noexcept
+{
+    return pImpl->mInitialized;
+}
+
+/// Endpoint
+std::string Subscriber::getEndPoint() const
+{
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
+    return pImpl->mAddress;
+}
+
+/*
 /// Connected?
 bool Subscriber::isConnected() const noexcept
 {
@@ -264,6 +348,7 @@ void Subscriber::connect(
     pImpl->mEndPoints.insert(std::pair(endPoint, true));
     pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
 }
+*/
 
 // 
 /*
@@ -291,25 +376,13 @@ void Subscriber::connect(
 */
 
 /// Disconnect from endpoint
-void Subscriber::disconnect(const std::string &endpoint)
+void Subscriber::disconnect()
 {
-    auto idx = pImpl->mEndPoints.find(endpoint);
-    if (idx == pImpl->mEndPoints.end())
-    {
-        pImpl->mLogger->debug("Endpoint: " + endpoint + " does not exist");
-        return;
-    }
-    if (!idx->second)
-    {
-        pImpl->mLogger->debug("Not connected to: " + endpoint);
-    }
-    else
-    {
-        pImpl->mSubscriber->disconnect(endpoint);
-    }
-    pImpl->mEndPoints.erase(idx);
+    pImpl->disconnect();
+    pImpl->mInitialized = false;
 }
 
+/*
 /// Add a subscription
 void Subscriber::addSubscription(
     std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
@@ -345,12 +418,12 @@ void Subscriber::addSubscription(
         throw std::runtime_error(errorMsg);
     }
 }
+*/
 
 /// Receive messages
 std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
 {
-    if (!isConnected()){throw std::runtime_error("Not connected");}
-    if (!haveSubscriptions()){throw std::runtime_error("No subscriptions");}
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     // Receive all parts of the message
     std::vector<zmq::message_t> messagesReceived;
     zmq::recv_result_t receivedResult =

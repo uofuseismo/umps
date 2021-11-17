@@ -12,7 +12,7 @@ public:
     UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     UMPS::MessageFormats::Messages mMessageTypes;
     std::string mAddress;
-    std::chrono::milliseconds mTimeOut{0};
+    std::chrono::milliseconds mTimeOut{-1};
     int mHighWaterMark = 0;
 };
 
@@ -111,7 +111,8 @@ UMPS::Messaging::Authentication::ZAPOptions
 }
 
 /// Timeout
-void SubscriberOptions::setTimeOut(const std::chrono::milliseconds timeOut)
+void SubscriberOptions::setTimeOut(
+    const std::chrono::milliseconds timeOut) noexcept
 {
     constexpr std::chrono::milliseconds zero{0};
     if (timeOut >= zero)
@@ -120,7 +121,7 @@ void SubscriberOptions::setTimeOut(const std::chrono::milliseconds timeOut)
     }
     else
     {
-        throw std::invalid_argument("Timeout must be non-negative");
+        pImpl->mTimeOut = std::chrono::milliseconds{-1};
     }
 }
 

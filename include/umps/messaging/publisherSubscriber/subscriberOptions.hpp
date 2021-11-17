@@ -83,9 +83,10 @@ public:
     ///        This is useful when the subscriber thread has other
     ///        responsibilities.
     /// @param[in] timeOut   The time out duration in milliseconds.  If this is
-    ///                      zero then subscriber will block indefinitely until
-    ///                      a message is received.
-    void setTimeOut(const std::chrono::milliseconds timeOut);
+    ///                      zero then the subscriber will immediately return.
+    ///                      If this is negative then the subscriber will wait
+    ///                      indefinitely until a message is received.
+    void setTimeOut(const std::chrono::milliseconds timeOut) noexcept;
     /// @result The time out duration in milliseconds.
     std::chrono::milliseconds getTimeOut() const noexcept;
     /// @}
