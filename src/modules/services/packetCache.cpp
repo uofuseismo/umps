@@ -29,7 +29,7 @@ struct ProgramOptions
     std::string dataBroadcastName = "DataPacket";
     std::chrono::milliseconds dataPacketTimeOut{10};
     int maxPackets = 100;
-    int dataPacketHighWaterMark = 2*1024;
+    int dataPacketHighWaterMark = 4*1024;
 };
 
 struct DataPacketSubscriber
@@ -205,23 +205,19 @@ int main(int argc, char *argv[])
     cappedCollection.initialize(options.maxPackets);
     assert(cappedCollection.isInitialized());
     // Continually read from the dataPacket broadcast
-    for (int k = 0; k < 10; ++k)
+    for (int k = 0; k < 20; ++k)
     {
         // Get a good read on time so we wait a predictable amount
         auto startRead = std::chrono::high_resolution_clock::now();
-std::cout << "waiting" << std::endl;
 int nRecv = 0;
 while (true)
 {
- startRead = std::chrono::high_resolution_clock::now();
         auto message = subscriber.receive();
-        auto endRead = std::chrono::high_resolution_clock::now();
-        auto elapsedTime
-            = std::chrono::duration<double> (endRead - startRead).count();
+        if (message == nullptr){break;}
  nRecv = nRecv + 1;
- std::cout << nRecv << " " << elapsedTime << std::endl;
+ //std::cout << nRecv << " " << elapsedTime << std::endl;
 }
-std::cout << "received" << std::endl;
+std::cout << "received: " << nRecv << std::endl;
 /*
         // Read the ring
         waveRing.read();

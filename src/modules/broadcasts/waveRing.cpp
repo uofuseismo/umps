@@ -2,6 +2,9 @@
 #include <memory>
 #include <chrono>
 #include <thread>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -119,7 +122,9 @@ int main(int argc, char *argv[])
     publisherOptions.setAddress(packetAddress);
     UMPS::Messaging::XPublisherXSubscriber::Publisher publisher(loggerPtr);
     publisher.initialize(publisherOptions);
+#ifndef NDEBUG
     assert(publisher.isInitialized());
+#endif
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);
@@ -135,6 +140,7 @@ int main(int argc, char *argv[])
         logger.error("Error attaching to wave ring: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
+    waveRing.flush();
     // Forward messages from earthworm to UMPS indefinitely
     auto lastHeartBeat = std::chrono::high_resolution_clock::now(); 
     for (int i = 0; i < 10; ++i)

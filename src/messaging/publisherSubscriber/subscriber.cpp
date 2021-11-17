@@ -425,15 +425,12 @@ std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     // Receive all parts of the message
-    std::vector<zmq::message_t> messagesReceived;
-    zmq::recv_result_t receivedResult =
-        zmq::recv_multipart(*pImpl->mSubscriber,
-                            std::back_inserter(messagesReceived));
-//  assert(receivedResult && "recv failed");
+    zmq::multipart_t messagesReceived(*pImpl->mSubscriber);
+    if (messagesReceived.empty()){return nullptr;}
 #ifndef NDEBUG
-    assert(*receivedResult == 2);
+    assert(static_cast<int> (messagesReceived.size()) == 2);
 #else
-    if (*receivedResult != 2)
+    if (static_cast<int> (messagesReceived.size()) != 2)
     {
         pImpl->mLogger->error("Only 2-part messages handled");
         throw std::runtime_error("Only 2-part messages handled");
@@ -446,7 +443,6 @@ std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
         pImpl->mLogger->error(errorMsg); 
         throw std::runtime_error(errorMsg);
     }
-    //const auto payload = static_cast<uint8_t *> (messagesReceived.at(1).data());
     const auto payload = static_cast<char *> (messagesReceived.at(1).data());
     auto messageLength = messagesReceived.at(1).size();
     auto result = pImpl->mMessageTypes.get(messageType);
