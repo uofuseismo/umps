@@ -78,6 +78,9 @@ public:
 
     /// @}
 
+    /// @result The total number of packets in all of the circular buffers.
+    [[nodiscard]] int getTotalNumberOfPackets() const noexcept;
+
     /// @name Destructors
     /// @{
     /// @brief Resets the class and releases all memory.

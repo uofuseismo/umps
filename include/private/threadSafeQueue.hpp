@@ -114,22 +114,28 @@ public:
     ///         was empty. 
     [[nodiscard]] std::shared_ptr<T> try_pop()
     {
-         std::lock_guard<std::mutex> lockGuard(mMutex);
-         std::shared_ptr<T> result;
-         if (mDataQueue.empty())
-         {
-             result = nullptr;
-             return result;
-         }
-         result = std::make_shared<T> (mDataQueue.front());
-         mDataQueue.pop();
-         return result;
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        std::shared_ptr<T> result;
+        if (mDataQueue.empty())
+        {
+            result = nullptr;
+            return result;
+        }
+        result = std::make_shared<T> (mDataQueue.front());
+        mDataQueue.pop();
+        return result;
     }
     /// @result True indicates that the queue is empty.
     [[nodiscard]] bool empty() const
     {
-         std::lock_guard<std::mutex> lockGuard(mMutex);
-         return mDataQueue.empty();
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        return mDataQueue.empty();
+    }
+    /// @result The number of elements in the queue.
+    [[nodiscard]] size_t size() const
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        return mDataQueue.size();
     }
     /// @name Constructors
     /// @{

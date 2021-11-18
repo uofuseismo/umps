@@ -23,6 +23,9 @@
 #include "private/staticUniquePointerCast.hpp"
 #include "private/isEmpty.hpp"
 
+namespace UPacketCache = UMPS::Services::PacketCache;
+namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
+
 struct ProgramOptions
 {
     std::string operatorAddress;
@@ -32,11 +35,18 @@ struct ProgramOptions
     int dataPacketHighWaterMark = 4*1024;
 };
 
-struct DataPacketSubscriber
+template<class T = double>
+class DataPacketSubscriber
 {
+public:
     /// C'tor
-    DataPacketSubscriber(std::shared_ptr<UMPS::Messaging::PublisherSubscriber::Subscriber> &subscriber) :
-        mSubscriber(subscriber)
+    DataPacketSubscriber(
+        std::shared_ptr<UMPS::Logging::ILog> &logger,
+        std::shared_ptr<UPubSub::Subscriber> &subscriber,
+        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection) :
+        mLogger(logger),
+        mSubscriber(subscriber),
+        mCappedCollection(cappedCollection)
     {
     }
     /// @brief Starts the service that reads from the data packet feed and
@@ -44,37 +54,41 @@ struct DataPacketSubscriber
     void startSubscriber()
     {
         namespace UMF = UMPS::MessageFormats;
+        mLogger->debug("Subscriber thread starting...");
         while (keepRunning())
         {
             // Read latest message
-            auto dataPacket
-                = static_unique_pointer_cast<UMF::DataPacket<double>>
-                  (mSubscriber->receive());
+            //std::unique_ptr<UMPS::MessageFormats::IMessage> message = mSubscriber->receive();
+            //if (message == nullptr){continue;} // Possible to timeout
+            //auto dataPacket
+            //    = static_unique_pointer_cast<UMF::DataPacket<T>> (std::move(message));
+            auto dataPacket = static_unique_pointer_cast<UMF::DataPacket<T>>
+                              (mSubscriber->receive());
+            if (dataPacket == nullptr){continue;}
             // Push it onto the queue
             mDataPacketQueue.push(std::move(*dataPacket));
         }
+        // Put one last message in the queue so the other thread can unlock
+        // and quit its for loop 
+        mLogger->debug("Subscriber thread has exited");
+        UMF::DataPacket<T> lastPacket;
+        mDataPacketQueue.push(lastPacket);
     }
     /// @brief Starts the service that takes a packet from the queue
     ///        and into the packedCollection.
     void startQueueToCircularBuffer()
     {
         namespace UMF = UMPS::MessageFormats;
+        mLogger->debug("Queue to circular buffer thread starting...");
         while (keepRunning())
         {
-            while (true)
-            {
-                auto dataPacketPtr = mDataPacketQueue.try_pop();
-                if (dataPacketPtr != nullptr)
-                {
-                    // Add the packet to the queue
-                    mCappedCollection->addPacket(*dataPacketPtr);
-                }
-                else
-                {
-                    break;
-                }
-            }
+            UMF::DataPacket<T> dataPacket;
+            mDataPacketQueue.wait_and_pop(&dataPacket);
+            if (!keepRunning()){break;}
+            // Add the packet to the queue
+            mCappedCollection->addPacket(std::move(dataPacket));
         }
+        mLogger->debug("Queue to circular buffer thread has exited");
     }
     /// @brief Starts the service that receives and fulfills requests for
     ///        data packets from time t0 to time t1.
@@ -94,16 +108,18 @@ struct DataPacketSubscriber
     /// @brief Stops the publisher threads.
     void stop()
     {
+        mLogger->debug("Notifying threads to stop...");
         std::lock_guard<std::mutex> lockGuard(mMutex);
         mKeepRunning = false;
     }
 ///private:
     mutable std::mutex mMutex;
-    std::shared_ptr<UMPS::Messaging::PublisherSubscriber::Subscriber> mSubscriber;
-    ThreadSafeQueue<UMPS::MessageFormats::DataPacket<double>> mDataPacketQueue;
-    std::shared_ptr<UMPS::Services::PacketCache::CappedCollection<double>> mCappedCollection;
-    bool mKeepRunning = false;
-    bool mRunning = false;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger;
+    std::shared_ptr<UPubSub::Subscriber> mSubscriber;
+    std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
+    ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
+    bool mKeepRunning = true;
+    //bool mRunning = false;
 }; 
 
 /// Parses the command line options
@@ -193,31 +209,42 @@ int main(int argc, char *argv[])
     subscriberOptions.setTimeOut(options.dataPacketTimeOut);
     subscriberOptions.setMessageTypes(messageTypes);
 
-    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
-    subscriber.initialize(subscriberOptions);
-    assert(subscriber.isInitialized());
+    auto subscriber = std::make_shared<UPubSub::Subscriber> (loggerPtr);
+    subscriber->initialize(subscriberOptions);
+    assert(subscriber->isInitialized());
     //subscriber.connect(dataPacketAddress);
     //subscriber.addSubscription(messageType);
 
     // Create a collection of circular buffers
-    UMPS::Services::PacketCache::CappedCollection<double>
-        cappedCollection(loggerPtr);
-    cappedCollection.initialize(options.maxPackets);
-    assert(cappedCollection.isInitialized());
+    auto cappedCollection
+        = std::make_shared<UPacketCache::CappedCollection<double>> (loggerPtr);
+    cappedCollection->initialize(options.maxPackets);
+#ifndef NDEBUG
+    assert(cappedCollection->isInitialized());
+#endif
+    // Create the struct
+    DataPacketSubscriber<double> dps(loggerPtr, subscriber, cappedCollection);
+    std::thread subscriberToQueueThread(
+        &DataPacketSubscriber<double>::startSubscriber, &dps);
+    std::thread queueToCircularBufferThread(
+        &DataPacketSubscriber<double>::startQueueToCircularBuffer,
+        &dps);
     // Continually read from the dataPacket broadcast
     for (int k = 0; k < 20; ++k)
     {
         // Get a good read on time so we wait a predictable amount
         auto startRead = std::chrono::high_resolution_clock::now();
+/*
 int nRecv = 0;
 while (true)
 {
-        auto message = subscriber.receive();
+        auto message = subscriber->receive();
         if (message == nullptr){break;}
  nRecv = nRecv + 1;
  //std::cout << nRecv << " " << elapsedTime << std::endl;
 }
 std::cout << "received: " << nRecv << std::endl;
+*/
 /*
         // Read the ring
         waveRing.read();
@@ -254,6 +281,12 @@ std::cout << "received: " << nRecv << std::endl;
 //std::cout << packet.toJSON(4) << std::endl;
 //break;
     }
+
+    loggerPtr->info("Stopping services...");
+std::cout << dps.mDataPacketQueue.size() << " " << dps.mCappedCollection->getTotalNumberOfPackets() << std::endl;
+    dps.stop();
+    subscriberToQueueThread.join();
+    queueToCircularBufferThread.join();
 
 //std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }

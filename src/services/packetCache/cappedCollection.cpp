@@ -86,6 +86,17 @@ public:
             it->second.addPacket(std::move(packet));
         } 
     }
+    /// Get total number of packets
+    [[nodiscard]] int getTotalNumberOfPackets() const noexcept
+    {
+        int nPackets = 0;
+        std::scoped_lock lock(mMutex);
+        for (const auto &cb : mCircularBufferMap)
+        {
+            nPackets = nPackets + cb.second.getNumberOfPackets();
+        }
+        return nPackets;
+    }
 ///private:
     mutable std::mutex mMutex;
     std::map<std::string, CircularBuffer<T>> mCircularBufferMap;
@@ -180,6 +191,13 @@ template<class T>
 std::vector<std::string> CappedCollection<T>::getSensorNames() const noexcept
 {
     return pImpl->getSensors();
+}
+
+/// Get total number of packets
+template<class T>
+int CappedCollection<T>::getTotalNumberOfPackets() const noexcept
+{
+    return pImpl->getTotalNumberOfPackets();
 }
 
 ///--------------------------------------------------------------------------///
