@@ -75,8 +75,10 @@ public:
             throw std::runtime_error("Publisher not yet initialized");
         }
         mWaveRing->flush();
+        constexpr std::chrono::seconds oneSecond{1}; 
         while (keepRunning())
         {
+            auto startClock = std::chrono::high_resolution_clock::now();
             // Read from the earthworm ring
             mWaveRing->read();
             auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
@@ -98,6 +100,14 @@ public:
                 {
                     mLogger->error(e.what());
                 }
+            }
+            auto endClock = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>
+                            (endClock - startClock);
+            if (duration < oneSecond)
+            {
+                auto wait = oneSecond - duration;
+                std::this_thread::sleep_for(wait);
             }
             //std::cout << "Sent: " << nSent << std::endl;
         }

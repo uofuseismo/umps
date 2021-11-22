@@ -481,7 +481,7 @@ void WaveRing::read()
 void WaveRing::flush()
 {
     if (!haveEarthworm()){throw std::runtime_error("Recompile with earthworm");}
-#ifndef WITH_EARTHWORM
+#ifdef WITH_EARTHWORM
     if (!isConnected()){throw std::runtime_error("Not to connected to a ring");}
     pImpl->mLogger->debug("Flushing ring...");
     MSG_LOGO gotLogo;
@@ -505,6 +505,7 @@ void WaveRing::flush()
                          + " messages");
     if (pImpl->mMilliSecondsWait > 0){sleep_ew(pImpl->mMilliSecondsWait);}
 #endif
+    pImpl->mTraceBuf2Messages.clear();
 }
 
 /// Have earthworm?
