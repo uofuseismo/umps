@@ -143,7 +143,7 @@ target_link_libraries(umps
 target_include_directories(umps
                            PRIVATE spdlog::spdlog
                            PRIVATE ${cppzmq_INCLUDE_DIR}
-                           PIRVATE ${SQLite3_INCLUDE_DIRS}
+                           PRIVATE ${SQLite3_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
                            PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
 if (${BUILD_TBB})

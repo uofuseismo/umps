@@ -2,6 +2,7 @@
 #include <memory>
 #include <chrono>
 #include <thread>
+#include <mutex>
 #ifndef NDEBUG
 #include <cassert>
 #endif
@@ -24,6 +25,7 @@
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "private/isEmpty.hpp"
 
+namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UServices = UMPS::Services;
 
 struct ProgramOptions
@@ -38,6 +40,74 @@ struct ProgramOptions
     std::filesystem::path logFileDirectory = "logs";
     int earthwormWait = 0;
     std::chrono::seconds heartBeatInterval{30};
+};
+
+class BroadcastPackets
+{
+public:
+    BroadcastPackets(
+        std::shared_ptr<UXPubXSub::Publisher> &publisher,
+        std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> &waveRing,
+        std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mPublisher(publisher),
+        mWaveRing(waveRing),
+        mLogger(logger)
+    {
+    }
+    [[nodiscard]] bool keepRunning() const
+    {
+        std::scoped_lock lock(mMutex);
+        return mKeepRunning; 
+    }
+    void stop()
+    {
+        std::scoped_lock lock(mMutex);
+        mKeepRunning = false;
+    }
+    void run()
+    {
+        if (!mWaveRing->isConnected())
+        {
+            throw std::runtime_error("Wave ring not yet connected");
+        }
+        if (!mPublisher->isInitialized())
+        { 
+            throw std::runtime_error("Publisher not yet initialized");
+        }
+        mWaveRing->flush();
+        while (keepRunning())
+        {
+            // Read from the earthworm ring
+            mWaveRing->read();
+            auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
+            auto traceBuf2MessagesPtr
+                = mWaveRing->getTraceBuf2MessagesPointer();
+            // Now broadcast the tracebufs as datapacket messages
+            int nSent = 0;
+            for (int iMessage = 0; iMessage < nMessages; ++iMessage)
+            {
+                // Send it
+                try
+                {
+                    auto dataPacket
+                        = traceBuf2MessagesPtr[iMessage].toDataPacket();
+                    mPublisher->send(dataPacket);
+                    nSent = nSent + 1;
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error(e.what());
+                }
+            }
+            //std::cout << "Sent: " << nSent << std::endl;
+        }
+        mLogger->info("Broadcast thread is terminating");
+    }
+    mutable std::mutex mMutex;
+    std::shared_ptr<UXPubXSub::Publisher> mPublisher;
+    std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> mWaveRing;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger;
+    bool mKeepRunning = true;
 };
 
 std::string parseCommandLineOptions(int argc, char *argv[]);
@@ -118,37 +188,65 @@ int main(int argc, char *argv[])
                   + " at " + packetAddress); 
     }
     // Connect to proxy
-    UMPS::Messaging::XPublisherXSubscriber::PublisherOptions publisherOptions;
+    UXPubXSub::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
-    UMPS::Messaging::XPublisherXSubscriber::Publisher publisher(loggerPtr);
-    publisher.initialize(publisherOptions);
+    auto publisher = std::make_shared<UXPubXSub::Publisher> (loggerPtr);
+    publisher->initialize(publisherOptions);
 #ifndef NDEBUG
-    assert(publisher.isInitialized());
+    assert(publisher->isInitialized());
 #endif
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);
     setenv("EW_PARAMS", options.earthwormParametersDirectory.c_str(), true);
     setenv("EW_INSTALLATION", options.earthwormInstallation.c_str(), true);
-    UMPS::Broadcasts::Earthworm::WaveRing waveRing;
+    auto waveRing
+        = std::make_shared<UMPS::Broadcasts::Earthworm::WaveRing> (loggerPtr);
     try
     {
-        waveRing.connect(options.earthwormWaveRingName, options.earthwormWait);
+        waveRing->connect(options.earthwormWaveRingName, options.earthwormWait);
     }
     catch (const std::exception &e)
     {
         logger.error("Error attaching to wave ring: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
-    waveRing.flush();
+    waveRing->flush();
+    BroadcastPackets broadcastPackets(publisher, waveRing, loggerPtr);
+    std::thread broadcastThread(&BroadcastPackets::run, &broadcastPackets);
+
+    while (true)
+    {
+        std::string command;
+        std::cout << "broadcastWaveRing$";
+        std::cin >> command;
+        if (command == "quit")
+        {
+            broadcastPackets.stop();
+            break;
+        }
+        else
+        {
+            std::cout << std::endl;
+            if (command != "help")
+            {
+                std::cout << "Unknown command: " << command << std::endl;
+                std::cout << std::endl;
+            }
+            std::cout << "Commands: " << std::endl;
+            std::cout << "  quit  Exits the program" << std::endl;
+            std::cout << "  help  Prints this message" << std::endl;
+        }
+    }
+/*
     // Forward messages from earthworm to UMPS indefinitely
     auto lastHeartBeat = std::chrono::high_resolution_clock::now(); 
     for (int i = 0; i < 10; ++i)
     {
         // Read from the earthworm ring
-        waveRing.read();
-        auto nMessages = waveRing.getNumberOfTraceBuf2Messages();
-        auto traceBuf2MessagesPtr = waveRing.getTraceBuf2MessagesPointer();
+        waveRing->read();
+        auto nMessages = waveRing->getNumberOfTraceBuf2Messages();
+        auto traceBuf2MessagesPtr = waveRing->getTraceBuf2MessagesPointer();
         // Now broadcast the tracebufs as datapacket messages
         int nSent = 0;
         for (int iMessage = 0; iMessage < nMessages; ++iMessage)
@@ -157,7 +255,7 @@ int main(int argc, char *argv[])
             try
             {
                 auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket();
-                publisher.send(dataPacket);
+                publisher->send(dataPacket);
                 nSent = nSent + 1;
             }
             catch (const std::exception &e)
@@ -165,7 +263,7 @@ int main(int argc, char *argv[])
                 logger.error(e.what());
             }
         }
-std::cout << "Sent: " << nSent << std::endl;
+        //std::cout << "Sent: " << nSent << std::endl;
         // Is it time to send a heartbeat?
         auto newHeartBeat = std::chrono::high_resolution_clock::now();
         auto heartBeatDuration
@@ -177,7 +275,8 @@ std::cout << "Sent: " << nSent << std::endl;
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-    //waveRing.connect( 0);
+*/
+    broadcastThread.join(); 
     return EXIT_SUCCESS;
 }
 
