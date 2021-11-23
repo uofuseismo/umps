@@ -1,6 +1,10 @@
 # About 
 
-[Utah Message Passing System](https://uofuseismo.github.io/umps/) is a developmental system for complementing the traditional the Earthworm/AQMS system with machine learning tools.  UMPS is extremely experimental and not recommended for general use. 
+[Utah Message Passing System](https://uofuseismo.github.io/umps/) is a message passing library that
+
+   1. Allows for multiple communication patterns.
+   2. Allows for sending messages of arbitrary formats.
+   3. Addresses the network exploration problem with a hub and spoke model.
 
 # Compiling
 
