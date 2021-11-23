@@ -1,6 +1,7 @@
 #ifndef UMPS_MESSAGEFORMATS_DATAPACKET_HPP
 #define UMPS_MESSAGEFORMATS_DATAPACKET_HPP
 #include <vector>
+#include <chrono>
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::MessageFormats
@@ -94,15 +95,20 @@ public:
 
     /// @name Optional Information
     /// @{
-    /// @param[in] startTimeInMicroSeconds  The UTC start time in microseconds
-    ///                                     from the epoch (Jan 1, 1970). 
-    void setStartTime(int64_t startTimeInMicroSeconds) noexcept;
+    /// @param[in] startTime  The UTC start time in seconds from the epoch
+    ///                       (Jan 1, 1970).
+    void setStartTime(double startTime) noexcept;
+    /// @param[in] startTime  The UTC start time in microseconds
+    ///                       from the epoch (Jan 1, 1970). 
+    void setStartTime(const std::chrono::microseconds &startTime) noexcept;
     /// @result The UTC start time in microseconds from the epoch.
-    [[nodiscard]] int64_t getStartTime() const noexcept;
+    [[nodiscard]] std::chrono::microseconds getStartTime() const noexcept;
+    //[[nodiscard]] int64_t getStartTime() const noexcept;
     /// @result The UTC time in microseconds from the epoch of the last sample.
     /// @throws std::runtime_error if \c haveSamplingRate() is false or
     ///         \c getNumberOfSamples() is 0.
-    [[nodiscard]] int64_t getEndTime() const;
+    [[nodiscard]] std::chrono::microseconds getEndTime() const;
+    //[[nodiscard]] int64_t getEndTime() const;
 
     /// @name Data
     /// @{

@@ -538,8 +538,7 @@ UMPS::MessageFormats::DataPacket<T> TraceBuf2<T>::toDataPacket() const
         dataPacket.setSamplingRate(getSamplingRate());
     }
     auto startTime = getStartTime();
-    auto startTimeMuS = static_cast<int64_t> (std::round(startTime*1.e6));
-    dataPacket.setStartTime(startTimeMuS);
+    dataPacket.setStartTime(startTime);
     auto nSamples = getNumberOfSamples();
     if (nSamples > 0){dataPacket.setData(nSamples, getDataPointer());}
     return dataPacket;

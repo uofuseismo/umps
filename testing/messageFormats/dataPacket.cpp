@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstring>
 #include <vector>
+#include <chrono>
 #include <limits>
 #include "umps/messageFormats/dataPacket.hpp"
 //#include "umps/broadcasts/earthworm/traceBuf2.hpp"
@@ -20,8 +21,9 @@ class DataPacketTest : public testing::Test
 {
 public:
     std::vector<double> timeSeries{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    int64_t startTimeMuS = 1628803598000000;
-    int64_t endTimeMuS = 1628803598000000 + 225000; // 225000 = std::round(9./40*1000000); 
+    double startTime = 1628803598; 
+    std::chrono::microseconds startTimeMuS{1628803598000000};
+    std::chrono::microseconds endTimeMuS{1628803598000000 + 225000}; // 225000 = std::round(9./40*1000000); 
     double samplingRate = 40;
     double tol = std::numeric_limits<double>::epsilon();
 protected:
@@ -44,10 +46,11 @@ TYPED_TEST(DataPacketTest, DataPacket)
     std::string locationCode = "01";
 
     auto timeSeries = this->timeSeries;
-    auto startTime = this->startTimeMuS;
+    auto startTime = this->startTime;
+    auto startTimeMuS = this->startTimeMuS;
     auto samplingRate = this->samplingRate;
     auto tol = this->tol;
-    auto endTime = this->endTimeMuS;
+    auto endTimeMuS = this->endTimeMuS;
     this->dataPacket->setNetwork(network);
     this->dataPacket->setStation(station);
     this->dataPacket->setChannel(channel);
@@ -60,7 +63,7 @@ TYPED_TEST(DataPacketTest, DataPacket)
     auto packetCopy = *this->dataPacket;
     // Verify 
     EXPECT_EQ(packetCopy.getMessageType(), MESSAGE_TYPE);
-    EXPECT_EQ(packetCopy.getStartTime(), startTime);
+    EXPECT_EQ(packetCopy.getStartTime(), startTimeMuS);
     EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);
     EXPECT_EQ(packetCopy.getNetwork(), network);
     EXPECT_EQ(packetCopy.getStation(), station);
@@ -68,7 +71,7 @@ TYPED_TEST(DataPacketTest, DataPacket)
     EXPECT_EQ(packetCopy.getLocationCode(), locationCode);
     EXPECT_EQ(packetCopy.getNumberOfSamples(),
               static_cast<int> (timeSeries.size()));
-    EXPECT_EQ(packetCopy.getEndTime(), endTime);
+    EXPECT_EQ(packetCopy.getEndTime(), endTimeMuS);
     auto traceBack = packetCopy.getData();
     EXPECT_EQ(traceBack.size(), timeSeries.size());
     for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)
@@ -83,7 +86,7 @@ TYPED_TEST(DataPacketTest, DataPacket)
     EXPECT_EQ(packetCopy.getNumberOfSamples(), 0);
     packetCopy.fromCBOR(traceCBOR);
     EXPECT_EQ(packetCopy.getMessageType(), MESSAGE_TYPE);
-    EXPECT_EQ(packetCopy.getStartTime(), startTime);
+    EXPECT_EQ(packetCopy.getStartTime(), startTimeMuS);
     EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);
     EXPECT_EQ(packetCopy.getNetwork(), network);
     EXPECT_EQ(packetCopy.getStation(), station);
@@ -91,7 +94,7 @@ TYPED_TEST(DataPacketTest, DataPacket)
     EXPECT_EQ(packetCopy.getLocationCode(), locationCode);
     EXPECT_EQ(packetCopy.getNumberOfSamples(),
               static_cast<int> (timeSeries.size()));
-    EXPECT_EQ(packetCopy.getEndTime(), endTime);
+    EXPECT_EQ(packetCopy.getEndTime(), endTimeMuS);
     traceBack = packetCopy.getData();
     EXPECT_EQ(traceBack.size(), timeSeries.size());
     for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)

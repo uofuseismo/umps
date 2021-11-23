@@ -1,6 +1,7 @@
 #ifndef UMPS_SERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
 #define UMPS_SERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
 #include <memory>
+#include <chrono>
 #include <vector>
 namespace UMPS
 {
@@ -114,7 +115,7 @@ public:
     /// @brief Returns the start time of the earliest packet in the buffer.
     /// @throws std::runtime_error \c isInitialized() is false or the 
     ///         \c getNumberOfPackets() is zero. 
-    [[nodiscard]] int64_t getEarliestStartTime() const;
+    [[nodiscard]] std::chrono::microseconds getEarliestStartTime() const;
     /// @brief Gets all packets beginning at time t0.
     /// @param[in] t0  The UTC start time of the query in seconds since
     ///                the epoch.
@@ -122,12 +123,17 @@ public:
     /// @note If data older than t0 has expired then the oldest sample in 
     ///       the buffer will be the first element of the result.
     [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets(double t0) const;
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::chrono::microseconds &t0) const;
     /// @param[in] t0  The UTC start time of the query in seconds since
     ///                the epoch.
     /// @param[in] t1  The UTC end time of the query in seconds since
     ///                the epoch.
     /// @throws std::invalid_argument if t0 >= t1.
     [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets(double t0, double t1) const;
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::chrono::microseconds &t0,
+                   const std::chrono::microseconds &t1) const;
     /// @result All the datapackets in the buffer.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets() const;

@@ -2,6 +2,7 @@
 #include "messageFormats/dataPacket.hpp"
 #include "messaging/publisherSubscriber/publisher.hpp"
 #include "messaging/publisherSubscriber/subscriber.hpp"
+#include "messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/version.hpp"
 #include <pybind11/pybind11.h>
 
@@ -20,6 +21,8 @@ PYBIND11_MODULE(pyumps, m)
 
     pybind11::module messagingModule = m.def_submodule("Messaging");
     messagingModule.attr("__doc__") = "Message passing patterns used in UMPS.";
+
+    //PUMPS::Messaging::XPublisherXSubscriber::initializePublisherOptions(messagingModule);
     
     pybind11::module pubsubModule = messagingModule.def_submodule("PublisherSubscriber");
     PUMPS::Messaging::PublisherSubscriber::initializeSubscriber(pubsubModule);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 #include <cmath>
 #include <nlohmann/json.hpp>
 #include "umps/messageFormats/dataPacket.hpp"
@@ -23,11 +24,11 @@ nlohmann::json toJSONObject(const DataPacket<T> &packet)
     obj["Station"] = packet.getStation();
     obj["Channel"] = packet.getChannel();
     obj["LocationCode"] = packet.getLocationCode();
-    obj["StartTime"] = packet.getStartTime();
+    obj["StartTime"] = packet.getStartTime().count();
     obj["SamplingRate"] = packet.getSamplingRate();
     if (packet.haveSamplingRate() && packet.getNumberOfSamples() > 0)
     {
-        obj["EndTime"] = packet.getEndTime();
+        obj["EndTime"] = packet.getEndTime().count();
     }
     else
     {
@@ -58,7 +59,9 @@ void objectToDataPacket(const nlohmann::json &obj, DataPacket<T> *packet)
     packet->setChannel(obj["Channel"].get<std::string> ());
     packet->setLocationCode(obj["LocationCode"].get<std::string> ());
     packet->setSamplingRate(obj["SamplingRate"].get<double> ());
-    packet->setStartTime(obj["StartTime"].get<int64_t> ());
+    auto startTime = obj["StartTime"].get<int64_t> ();
+    std::chrono::microseconds startTimeMuS{startTime};
+    packet->setStartTime(startTimeMuS);
     std::vector<T> data = obj["Data"]; //.get<std::vector<T>> ());   
     if (!data.empty()){packet->setData(std::move(data));}
 }
@@ -94,8 +97,10 @@ public:
             auto nSamples = static_cast<int> (mData.size());
             auto traceDuration
                 = std::round( ((nSamples - 1)/mSamplingRate)*1000000 );
-            mEndTimeMicroSeconds = mStartTimeMicroSeconds
-                                 + static_cast<int64_t> (traceDuration);
+            auto iTraceDuration = static_cast<int64_t> (traceDuration);
+            std::chrono::microseconds traceDurationMuS{iTraceDuration};
+            mEndTimeMicroSeconds = mStartTimeMicroSeconds + traceDurationMuS;
+//                                 + static_cast<int64_t> (traceDuration);
         }
     }
     std::vector<T> mData;
@@ -105,9 +110,11 @@ public:
     std::string mLocationCode;
     double mSamplingRate = 0;
     /// Start time in microseconds (10e-6)
-    int64_t mStartTimeMicroSeconds = 0;
+    //int64_t mStartTimeMicroSeconds = 0;
+    std::chrono::microseconds mStartTimeMicroSeconds{0};
     /// End time in microseconds (10e-6)
-    int64_t mEndTimeMicroSeconds = 0;
+    //int64_t mEndTimeMicroSeconds = 0;
+    std::chrono::microseconds mEndTimeMicroSeconds{0};
 };
 
 /// Clear class
@@ -119,8 +126,10 @@ void DataPacket<T>::clear() noexcept
     pImpl->mStation.clear();
     pImpl->mChannel.clear();
     pImpl->mLocationCode.clear();
+    constexpr std::chrono::microseconds zeroMuS{0};
     pImpl->mSamplingRate = 0;
-    pImpl->mStartTimeMicroSeconds = 0;
+    pImpl->mStartTimeMicroSeconds = zeroMuS;
+    pImpl->mEndTimeMicroSeconds = zeroMuS;
 }
 
 /// C'tor
@@ -338,20 +347,29 @@ int DataPacket<T>::getNumberOfSamples() const noexcept
 
 /// Start time
 template<class T>
-void DataPacket<T>::setStartTime(const int64_t startTime) noexcept
+void DataPacket<T>::setStartTime(const double startTime) noexcept
+{
+    auto iStartTimeMuS = static_cast<int64_t> (std::round(startTime*1.e6));
+    std::chrono::microseconds startTimeMuS{iStartTimeMuS};
+    setStartTime(startTimeMuS);
+}
+
+template<class T>
+void DataPacket<T>::setStartTime(
+    const std::chrono::microseconds &startTime) noexcept
 {
     pImpl->mStartTimeMicroSeconds = startTime;
     pImpl->updateEndTime();
 }
 
 template<class T>
-int64_t DataPacket<T>::getStartTime() const noexcept
+std::chrono::microseconds DataPacket<T>::getStartTime() const noexcept
 {
     return pImpl->mStartTimeMicroSeconds;
 }
 
 template<class T>
-int64_t DataPacket<T>::getEndTime() const
+std::chrono::microseconds DataPacket<T>::getEndTime() const
 {
     if (!haveSamplingRate())
     {   

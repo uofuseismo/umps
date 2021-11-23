@@ -128,7 +128,9 @@ TYPED_TEST(TraceBuf2Test, TraceBuf2)
     EXPECT_EQ(dataPacket.getChannel(), channel);
     EXPECT_EQ(dataPacket.getLocationCode(), locationCode);
     EXPECT_NEAR(dataPacket.getSamplingRate(), samplingRate, tol);
-    EXPECT_NEAR(dataPacket.getStartTime()*1.e-6, startTime, tol);
+    std::chrono::microseconds
+        startTimeMuS{static_cast<int64_t> (startTime*1.e6)};
+    EXPECT_EQ(dataPacket.getStartTime(), startTimeMuS);
     traceBack = dataPacket.getData();
     EXPECT_EQ(traceBack.size(), timeSeries.size());
     for (int i = 0; i < static_cast<int> (traceBack.size()); ++i)

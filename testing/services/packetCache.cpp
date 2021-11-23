@@ -158,7 +158,7 @@ TEST(PacketCache, CircularBuffer)
     // Make a bunch of data samples in order to track our progress
     std::vector<MF::DataPacket<double>> packets(nPacketsInVector);
     int index = 0;
-    int64_t startTime = 0;
+    double startTime = 0;
     for (int ip = 0; ip < static_cast<int> (packets.size()); ++ip)
     {
         packets[ip].setNetwork(network);
@@ -173,8 +173,8 @@ TEST(PacketCache, CircularBuffer)
         packets[ip].setData(data);
 
         index = index + packetSize;
-        startTime = startTime
-                  + static_cast<int64_t> (data.size()*(1000000/samplingRate));
+        startTime = startTime + data.size()/samplingRate;
+//                  + static_cast<int64_t> (data.size()*(1000000/samplingRate));
         //std::cout << packets[ip].getEndTime() << " " << startTime << std::endl;
     }
     // Add a packet
@@ -209,8 +209,8 @@ TEST(PacketCache, CircularBuffer)
         EXPECT_TRUE(allPackets[k] == packets[firstPacket + k]);
     }
     // Do a query from before the first packet to somewhere before the end
-    auto t0 = packets[firstPacket-5].getStartTime()*1e-6;
-    auto t1 = packets[firstPacket+5].getStartTime()*1e-6;
+    auto t0 = packets[firstPacket-5].getStartTime().count()*1e-6;
+    auto t1 = packets[firstPacket+5].getStartTime().count()*1e-6;
     auto queryPackets = cb.getPackets(t0, t1);
     EXPECT_EQ(queryPackets.size(), 6L); // 0, 1, 2, 3, 4, 5 
     for (int k = 0; k < static_cast<int> (queryPackets.size()); ++k)
@@ -225,7 +225,7 @@ TEST(PacketCache, CircularBuffer)
         EXPECT_TRUE(queryPackets[k] == packets[firstPacket + k]);
     }
     // Do a query from the first packet to now to check equality
-    t0 = packets[firstPacket].getStartTime()*1e-6;
+    t0 = packets[firstPacket].getStartTime().count()*1e-6;
     queryPackets = cb.getPackets(t0, t1);
 //std::cout << packets[firstPacket].getStartTime() << " " << t0 << " " << queryPackets[0].getStartTime() << std::endl;
     EXPECT_EQ(queryPackets.size(), 6L); 
@@ -235,8 +235,8 @@ TEST(PacketCache, CircularBuffer)
     }
     // Do a query from just after the first packet to just before the
     // last packet 
-    t0 = packets[firstPacket].getStartTime()*1e-6 + 1.e-6;
-    t1 = packets.back().getStartTime()*1.e-6 - 1.e-6;
+    t0 = packets[firstPacket].getStartTime().count()*1e-6 + 1.e-6;
+    t1 = packets.back().getStartTime().count()*1.e-6 - 1.e-6;
     queryPackets = cb.getPackets(t0, t1);
     EXPECT_EQ(queryPackets.size(), packets.size() - firstPacket - 2);     
     for (int k = 0; k < static_cast<int> (queryPackets.size()); ++k)

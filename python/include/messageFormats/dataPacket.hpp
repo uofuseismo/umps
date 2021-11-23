@@ -39,8 +39,8 @@ public:
     [[nodiscard]] double getSamplingRate() const;
 
     void setStartTimeInMicroSeconds(int64_t startTime) noexcept;
-    [[nodiscard]] uint64_t getStartTimeInMicroSeconds() const noexcept;
-    [[nodiscard]] uint64_t getEndTimeInMicroSeconds() const;
+    [[nodiscard]] int64_t getStartTimeInMicroSeconds() const noexcept;
+    [[nodiscard]] int64_t getEndTimeInMicroSeconds() const;
 
     void setData(pybind11::array_t<double, pybind11::array::c_style | pybind11::array::forcecast> &x);
     void setDataFromVector(const std::vector<double> &x);

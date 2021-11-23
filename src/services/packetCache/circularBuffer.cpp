@@ -14,6 +14,7 @@
 using namespace UMPS::Services::PacketCache;
 namespace UMF = UMPS::MessageFormats;
 
+#define NAN_TIME std::chrono::microseconds{std::numeric_limits<int64_t>::lowest()}
 
 template<class T>
 class CircularBuffer<T>::CircularBufferImpl
@@ -101,12 +102,12 @@ public:
             //          });
         }
     }
-    [[nodiscard]] int64_t getEarliestStartTime() const
+    [[nodiscard]] std::chrono::microseconds getEarliestStartTime() const
     {
         std::scoped_lock lock(mMutex);
         if (mCircularBuffer.empty())
         {
-            return std::numeric_limits<int64_t>::lowest();
+            return NAN_TIME;
         }
         const auto &packet = mCircularBuffer.front(); 
         return packet.getStartTime();
@@ -126,7 +127,8 @@ public:
     }
     // Perform query from now until whenever
     [[nodiscard]] std::vector<UMF::DataPacket<T>>
-        getPackets(const int64_t t0, const int64_t t1) const
+        getPackets(const std::chrono::microseconds t0MuS,
+                   const std::chrono::microseconds t1MuS) const
     {
         std::vector<UMF::DataPacket<T>> result;
         std::scoped_lock lock(mMutex);
@@ -137,25 +139,25 @@ public:
 // std::cout << packet.getStartTime() << std::endl;;
 //}
         auto it0 = std::upper_bound(mCircularBuffer.begin(),
-                                    mCircularBuffer.end(), t0,
-                                    [](const int64_t t0,
+                                    mCircularBuffer.end(), t0MuS,
+                                    [](const std::chrono::microseconds t0MuS,
                                        const UMF::DataPacket<T> &rhs)
                                     {
-                                       return t0 <= rhs.getStartTime();
+                                       return t0MuS <= rhs.getStartTime();
                                     });
         if (it0 == mCircularBuffer.end()){return result;}
 //auto index1 = std::distance(mCircularBuffer.begin(), it0);
 //std::cout << index1 << " " << t0 << " " << mCircularBuffer[index1].getStartTime() << std::endl;
         // For efficiency's sake when we query with
         auto it1 = mCircularBuffer.end();
-        if (t1 < mCircularBuffer.back().getStartTime())
+        if (t1MuS < mCircularBuffer.back().getStartTime())
         {
             it1 = std::upper_bound(mCircularBuffer.begin(),
-                                   mCircularBuffer.end(), t1,
-                                   [](const int64_t t1,
+                                   mCircularBuffer.end(), t1MuS,
+                                   [](const std::chrono::microseconds t1MuS,
                                       const UMF::DataPacket<T> &rhs)
                                    {
-                                      return t1 < rhs.getStartTime();
+                                      return t1MuS < rhs.getStartTime();
                                    });
         }
         // Just one packet
@@ -411,11 +413,11 @@ void CircularBuffer<T>::addPacket(const UMF::DataPacket<T> &packet)
 
 /// Get earliest start time
 template<class T>
-int64_t CircularBuffer<T>::getEarliestStartTime() const
+std::chrono::microseconds CircularBuffer<T>::getEarliestStartTime() const
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     auto startTime = pImpl->getEarliestStartTime();
-    if (startTime == std::numeric_limits<int64_t>::lowest())
+    if (startTime == NAN_TIME)
     {
         throw std::runtime_error("No packets in buffer");
     }
@@ -445,12 +447,12 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets() const
 /// Get all packets from given time to now
 template<class T>
 std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
-    const double t0) const
+    const std::chrono::microseconds &t0) const
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    auto t0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
-    auto packets = pImpl->getPackets(t0MicroSeconds,
-                                     std::numeric_limits<int64_t>::max());
+    constexpr std::chrono::microseconds
+        t1{std::numeric_limits<int64_t>::max()};
+    auto packets = pImpl->getPackets(t0, t1);
 #ifndef NDEBUG
     assert(std::is_sorted(packets.begin(), packets.end(),
            [](const UMF::DataPacket<T> &lhs, const UMF::DataPacket<T> &rhs)
@@ -460,6 +462,16 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
 #endif
     return packets;
 }
+
+template<class T>
+std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
+    const double t0) const
+{
+    auto it0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
+    std::chrono::microseconds t0MicroSeconds{it0MicroSeconds};
+    return getPackets(t0MicroSeconds);
+}
+
 
 /// Get all packets from given time t0 to given time t1
 template<class T>
@@ -473,9 +485,26 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
                                   + " must be less than t1 = "
                                   + std::to_string(t1));
     }
-    auto t0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
-    auto t1MicroSeconds = static_cast<int64_t> (std::round(t1*1000000));
-    auto packets = pImpl->getPackets(t0MicroSeconds, t1MicroSeconds);
+    auto it0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
+    auto it1MicroSeconds = static_cast<int64_t> (std::round(t1*1000000));
+    std::chrono::microseconds t0MicroSeconds{it0MicroSeconds};
+    std::chrono::microseconds t1MicroSeconds{it1MicroSeconds};
+    return getPackets(t0MicroSeconds, t1MicroSeconds);
+}
+
+template<class T>
+std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
+    const std::chrono::microseconds &t0,
+    const std::chrono::microseconds &t1) const
+{
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
+    if (t1 <= t0) 
+    {
+        throw std::invalid_argument("t0 = " + std::to_string(t0.count())
+                                  + " must be less than t1 = "
+                                  + std::to_string(t1.count()));
+    }
+    auto packets = pImpl->getPackets(t0, t1);
 #ifndef NDEBUG
     assert(std::is_sorted(packets.begin(), packets.end(),
            [](const UMF::DataPacket<T> &lhs, const UMF::DataPacket<T> &rhs)

@@ -40,15 +40,15 @@ def test_messages_data_packet():
     packet.channel = channel
     packet.location_code = location_code
     packet.sampling_rate = sampling_rate
-    packet.starttime_in_microseconds = starttime_mus
+    packet.start_time_in_microseconds = starttime_mus
     packet.data = x
  
     assert packet.network == network, 'network failed'
     assert packet.station == station, 'station failed'
     assert packet.channel == channel, 'channel failed'
     assert packet.location_code == location_code, 'location failed'
-    assert packet.starttime_in_microseconds == starttime_mus, 'start time failed'
-    assert packet.endtime_in_microseconds == endtime_mus, 'end time failed'
+    assert packet.start_time_in_microseconds == starttime_mus, 'start time failed'
+    assert packet.end_time_in_microseconds == endtime_mus, 'end time failed'
     assert abs(packet.sampling_rate - sampling_rate) < 1.e-13, 'sampling rate failed'
     x_back = packet.data
     assert len(x) == len(x_back), 'inconsistent sizes'

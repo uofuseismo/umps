@@ -113,18 +113,19 @@ double DataPacket::getSamplingRate() const
 /// Start time
 void DataPacket::setStartTimeInMicroSeconds(const int64_t startTime) noexcept
 {
-    pImpl->setStartTime(startTime);
+    std::chrono::microseconds startTimeMuS{startTime};
+    pImpl->setStartTime(startTimeMuS);
 }
 
-uint64_t DataPacket::getStartTimeInMicroSeconds() const noexcept
+int64_t DataPacket::getStartTimeInMicroSeconds() const noexcept
 {
-    return pImpl->getStartTime();
+    return pImpl->getStartTime().count();
 }
 
 /// End time
-uint64_t DataPacket::getEndTimeInMicroSeconds() const
+int64_t DataPacket::getEndTimeInMicroSeconds() const
 {
-    return pImpl->getEndTime();
+    return pImpl->getEndTime().count();
 }
 
 /// Data
@@ -202,7 +203,7 @@ void PUMPS::MessageFormats::initializeDataPacket(pybind11::module &m)
     o.def_property("location_code",
                    &DataPacket::getLocationCode,
                    &DataPacket::setLocationCode);
-    o.def_property("starttime_in_microseconds",
+    o.def_property("start_time_in_microseconds",
                    &DataPacket::getStartTimeInMicroSeconds,
                    &DataPacket::setStartTimeInMicroSeconds);
     o.def_property("sampling_rate",
@@ -211,7 +212,7 @@ void PUMPS::MessageFormats::initializeDataPacket(pybind11::module &m)
     o.def_property("data",
                    &DataPacket::getData,
                    &DataPacket::setData);
-    o.def_property_readonly("endtime_in_microseconds",
+    o.def_property_readonly("end_time_in_microseconds",
                             &DataPacket::getEndTimeInMicroSeconds);
     o.def("clear",
           &DataPacket::clear,
