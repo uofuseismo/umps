@@ -588,7 +588,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
 #ifndef NDEBUG
         assert(counterOptions.haveClientAccessAddress());
 #endif
-        //counterOptions.setZAPOptions(options.mZAPOptions);
+        counterOptions.setZAPOptions(options.mZAPOptions);
         options.mIncrementerParameters.push_back(std::move(counterOptions));
     }
     // Parse the datapacket broadcast options 
@@ -618,6 +618,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                     "tcp://");
         dataPacketOptions.setBackendAddress(backendAddress);
     }
+    dataPacketOptions.setZAPOptions(options.mZAPOptions);
     if (dataPacketOptions.haveFrontendAddress() &&
         dataPacketOptions.haveBackendAddress())
     {
