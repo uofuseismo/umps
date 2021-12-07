@@ -650,7 +650,8 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                     options.mIPAddress,
                                     "tcp://");
         heartbeatOptions.setBackendAddress(backendAddress);
-    }   
+    }
+    heartbeatOptions.setZAPOptions(options.mZAPOptions);
     if (heartbeatOptions.haveFrontendAddress() &&
         heartbeatOptions.haveBackendAddress())
     {   

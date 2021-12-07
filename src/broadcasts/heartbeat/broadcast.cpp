@@ -8,6 +8,7 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Broadcasts::Heartbeat;
@@ -89,6 +90,7 @@ void Broadcast::initialize(const Parameters &parameters)
     options.setFrontendHighWaterMark(parameters.getFrontendHighWaterMark());
     options.setBackendHighWaterMark(parameters.getBackendHighWaterMark());
     options.setTopic(getName());
+    options.setZAPOptions(parameters.getZAPOptions());
     pImpl->mProxy.initialize(options);
     // Figure out the connection details
     UCI::SocketDetails::XSubscriber xSub;
