@@ -293,6 +293,10 @@ R"""(#   ZeroMQ CURVE Public Certificate
     outfl << "    public-key = " << '"'
           << std::string(getPublicTextKey().data()) << '"' << std::endl;
     outfl.close();
+    // Update the permissions
+    std::filesystem::permissions(fileName,
+                                 std::filesystem::perms::owner_read  |
+                                 std::filesystem::perms::owner_write);
 }
 
 /// Write private key
@@ -325,6 +329,10 @@ R"""(#   ZeroMQ CURVE **Secret** Certificate
               << std::string(getPrivateTextKey().data()) << '"' << std::endl;
     }
     outfl.close();
+    // Update the permissions
+    std::filesystem::permissions(fileName,
+                                 std::filesystem::perms::owner_read  |
+                                 std::filesystem::perms::owner_write);
 }
 
 /// Read a public key
