@@ -2,6 +2,10 @@
 #define UMPS_SERVICES_CONNECTIONINFORMATION_PARAMETERS_HPP
 #include <memory>
 #include "umps/logging/level.hpp"
+namespace UMPS::Messaging::Authentication
+{
+ class ZAPOptions;
+}
 namespace UMPS::Services::ConnectionInformation
 {
 /// @class Parameters "parameters.hpp" "umps/services/connectionInformation/parameters.hpp"
@@ -70,6 +74,13 @@ public:
 
     /// @name Optional Parameters
     /// @{
+    /// @brief Sets the ZeroMQ Authentication Protocol options.
+    /// @param[in] zapOptions  The ZAP options.
+    void setZAPOptions(
+        const UMPS::Messaging::Authentication::ZAPOptions &zapOptions) noexcept; 
+    /// @result The ZAP options.
+    [[nodiscard]] 
+    UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @param[in] verbosity   The verbosity.
     void setVerbosity(UMPS::Logging::Level level) noexcept;
     /// @result The verbosity of the conter.

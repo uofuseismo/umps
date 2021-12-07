@@ -17,6 +17,7 @@
 #include <filesystem>
 #include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/services/connectionInformation/parameters.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -510,6 +511,8 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             = propertyTree.get<std::string> ("uOperator.whiteListTable",
                                              options.mWhiteListTable);
     }
+    UMPS::Messaging::Authentication::ZAPOptions zapOptions;
+    options.mConnectionInformationParameters.setZAPOptions(zapOptions);
     // First make sure the connection information service is available
     auto address = "tcp://" + options.mIPAddress
                  + ":" + std::to_string(options.mAvailablePorts.at(0).first);

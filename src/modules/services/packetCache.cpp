@@ -11,6 +11,7 @@
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -28,6 +29,7 @@ namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 
 struct ProgramOptions
 {
+    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
     std::chrono::milliseconds dataPacketTimeOut{10};
@@ -154,6 +156,7 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    auto zapOptions = options.mZAPOptions;
     // Create logger
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
@@ -208,6 +211,7 @@ int main(int argc, char *argv[])
     subscriberOptions.setHighWaterMark(options.dataPacketHighWaterMark);
     subscriberOptions.setTimeOut(options.dataPacketTimeOut);
     subscriberOptions.setMessageTypes(messageTypes);
+    subscriberOptions.setZAPOptions(zapOptions);
 
     auto subscriber = std::make_shared<UPubSub::Subscriber> (loggerPtr);
     subscriber->initialize(subscriberOptions);

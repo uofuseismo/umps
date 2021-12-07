@@ -13,6 +13,7 @@
 //#include "umps/services/connectionInformation/response.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
 
 class Parameters
@@ -157,6 +158,7 @@ void Service::initialize(const Parameters &parameters)
                                                 std::placeholders::_1,
                                                 std::placeholders::_2,
                                                 std::placeholders::_3));
+    pImpl->mRouterOptions.setZAPOptions(parameters.getZAPOptions());
     // Add the message types
     std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
         = std::make_unique<AvailableConnectionsRequest> (); 
