@@ -505,18 +505,18 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             throw std::runtime_error("Failed to make log directory");
         }
     }
-    auto securityLevel
-        = propertyTree.get<int> ("uOperator.securityLevel",
-                     static_cast<int> (options.mZAPOptions.getSecurityLevel()));
-    if (securityLevel < 0 || securityLevel > 4)
+    auto securityLevel = static_cast<UAuth::SecurityLevel>
+       (propertyTree.get<int> ("uOperator.securityLevel",
+                    static_cast<int> (options.mZAPOptions.getSecurityLevel())));
+    if (static_cast<int> (securityLevel) < 0 ||
+        static_cast<int> (securityLevel) > 4)
     {
         throw std::invalid_argument("Security level must be in range [0,4]");
     }
     //mZAPOptions.mSecurityLevel = static_cast<UAuth::SecurityLevel> (securityLevel);
     // Get sqlite3 authentication tables
     options.mZAPOptions.setGrasslandsServer();
-    if (options.mZAPOptions.getSecurityLevel() !=
-        UAuth::SecurityLevel::GRASSLANDS)
+    if (securityLevel != UAuth::SecurityLevel::GRASSLANDS)
     {
         options.mTablesDirectory
             = propertyTree.get<std::string> ("uOperator.tablesTableDirectory",
@@ -524,7 +524,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         options.mUserTable
             = propertyTree.get<std::string> ("uOperator.userTable",
                                              options.mUserTable);
-        if (!std::filesystem::exists(options.mUserTable))
+        if (!std::filesystem::exists(options.mUserTable) &&
+            (securityLevel == UAuth::SecurityLevel::WOODHOUSE ||
+            securityLevel == UAuth::SecurityLevel::STONEHOUSE))
         {
             throw std::invalid_argument("User table: "
                                       + options.mUserTable + " does not exist");
@@ -535,6 +537,27 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         options.mWhiteListTable
             = propertyTree.get<std::string> ("uOperator.whiteListTable",
                                              options.mWhiteListTable);
+    }
+    if (securityLevel == UAuth::SecurityLevel::GRASSLANDS)
+    {
+        options.mZAPOptions.setGrasslandsServer();
+    }
+    else if (securityLevel == UAuth::SecurityLevel::STRAWHOUSE)
+    {
+        options.mZAPOptions.setStrawhouseServer();
+    }
+    else if (securityLevel == UAuth::SecurityLevel::WOODHOUSE)
+    {
+        options.mZAPOptions.setWoodhouseServer();
+    }
+    else if (securityLevel == UAuth::SecurityLevel::STONEHOUSE)
+    {
+        throw std::runtime_error("Need to read this servers keys");
+        //options.mZAPOptions.setStonehouseServer();
+    } 
+    else
+    {
+        throw std::runtime_error("Unhandled security level");
     }
     options.mConnectionInformationParameters.setZAPOptions(options.mZAPOptions);
     // First make sure the connection information service is available
