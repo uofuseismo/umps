@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
     UMPS::Logging::SpdLog authenticationLogger;
     authenticationLogger.initialize("Authenticator",
                                     authenticatorLogFileName,
-                                    options.mVerbosity,
+                                    UMPS::Logging::Level::DEBUG, //options.mVerbosity,
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
         = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
