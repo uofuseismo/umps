@@ -55,16 +55,16 @@ def test_messages_data_packet():
     for i in range(len(x)):
         assert abs(x_back[i] - x[i]) < 1.e-14, 'x[%d] is wrong'%i
 
-def test_messaging_pubsub_subscriber():
-    subscriber = pyumps.Messaging.PublisherSubscriber.Subscriber()
-    pick = pyumps.MessageFormats.Pick()
-    subscriber.add_subscription(pick)
-    #a = pyumps.MessageFormats.pick_base_class()
-    #print(type(pick))
-    #print(type(subscriber))
-    #print(type(pick))
+#def test_messaging_pubsub_subscriber():
+#    subscriber = pyumps.Messaging.PublisherSubscriber.Subscriber()
+#    pick = pyumps.MessageFormats.Pick()
+#    subscriber.add_subscription(pick)
+#    #a = pyumps.MessageFormats.pick_base_class()
+#    #print(type(pick))
+#    #print(type(subscriber))
+#    #print(type(pick))
 
 if __name__ == "__main__":
     test_messages_pick()
     test_messages_data_packet()
-    test_messaging_pubsub_subscriber()
+    #test_messaging_pubsub_subscriber()

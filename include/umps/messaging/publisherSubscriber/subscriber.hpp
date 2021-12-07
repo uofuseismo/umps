@@ -13,15 +13,6 @@ namespace UMPS
  {
   class IMessage;
  }
- namespace Messaging::Authentication
- {
-  class ZAPOptions;
-  namespace Certificate
-  {
-   class Keys;
-   class UserNameAndPassword;
-  }
- }
  namespace Messaging::PublisherSubscriber
  {
   class SubscriberOptions;

@@ -208,9 +208,12 @@ if (WRAP_PYTHON)
    add_library(pyumps MODULE
                python/pyumps.cpp
                python/messageFormats/message.cpp
+               python/messageFormats/messages.cpp
                python/messageFormats/dataPacket.cpp
                python/messageFormats/pick.cpp
+               python/messaging/authentication/zapOptions.cpp
                python/messaging/publisherSubscriber/publisher.cpp
+               python/messaging/publisherSubscriber/subscriberOptions.cpp
                python/messaging/publisherSubscriber/subscriber.cpp)
    target_link_libraries(pyumps PRIVATE pybind11::module umps)
    target_include_directories(pyumps
