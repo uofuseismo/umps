@@ -385,8 +385,6 @@ void Service::start()
                         pImpl->mLogger->error("Failed to set username/pwd");
                     }
                     // Check the username and password
-statusCode = IAuthenticator::okayStatus();
-statusText = IAuthenticator::okayMessage();
                    std::tie(statusCode, statusText) 
                         = pImpl->mAuthenticator->isValid(plainText);
                 }
@@ -418,8 +416,6 @@ statusText = IAuthenticator::okayMessage();
                         }
                         if (key.havePublicKey())
                         {
-statusCode = IAuthenticator::okayStatus();
-statusText = IAuthenticator::okayMessage();
                             std::tie(statusCode, statusText)
                                 = pImpl->mAuthenticator->isValid(key);
                         }
@@ -432,6 +428,7 @@ statusText = IAuthenticator::okayMessage();
                                 + " not supported"; 
                 } // End check on mechanism
             } // End check on not blacklisted
+            /*
             if (true)
             {
                 for (auto &m : messageReceived)
@@ -439,6 +436,15 @@ statusText = IAuthenticator::okayMessage();
                     std::cout << m << std::endl;
                 }
             }
+            */
+            if (statusCode == IAuthenticator::okayStatus())
+            {
+                pImpl->mLogger->info("Allowing connection from: " + ipAddress);
+            }
+            else
+            {
+                pImpl->mLogger->debug("Blocking connection from: " + ipAddress);
+            } 
             // Format result.  The order is defined in:
             // https://rfc.zeromq.org/spec/27/
             zmq::multipart_t reply;
@@ -446,7 +452,7 @@ statusText = IAuthenticator::okayMessage();
             reply.addstr(messageReceived[1].to_string()); // Sequence Number 
             reply.addstr(statusCode);
             reply.addstr(statusText);
-            reply.addstr("Joe");
+            reply.addstr("UAuth");
             reply.addstr(""); // Always end with this
             reply.send(zap);
  
