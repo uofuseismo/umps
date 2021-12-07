@@ -5,6 +5,7 @@
 #include "umps/services/incrementer/service.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/services/incrementer/counter.hpp"
 #include "umps/services/incrementer/response.hpp"
@@ -150,6 +151,7 @@ void Service::initialize(const Parameters &parameters)
     // Initialize the socket - Step 1: Initialize options
     Messaging::RequestRouter::RouterOptions routerOptions;
     auto clientAccessAddress = parameters.getClientAccessAddress();
+    routerOptions.setZAPOptions(parameters.getZAPOptions());
     routerOptions.setEndPoint(clientAccessAddress);
     routerOptions.setCallback(std::bind(&ServiceImpl::callback,
                                         &*this->pImpl,

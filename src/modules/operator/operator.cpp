@@ -514,7 +514,6 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     }
     //mZAPOptions.mSecurityLevel = static_cast<UAuth::SecurityLevel> (securityLevel);
     // Get sqlite3 authentication tables
-    options.mConnectionInformationParameters.setZAPOptions(options.mZAPOptions);
     options.mZAPOptions.setGrasslandsServer();
     if (options.mZAPOptions.getSecurityLevel() !=
         UAuth::SecurityLevel::GRASSLANDS)
@@ -537,6 +536,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             = propertyTree.get<std::string> ("uOperator.whiteListTable",
                                              options.mWhiteListTable);
     }
+    options.mConnectionInformationParameters.setZAPOptions(options.mZAPOptions);
     // First make sure the connection information service is available
     auto address = "tcp://" + options.mIPAddress
                  + ":" + std::to_string(options.mAvailablePorts.at(0).first);
@@ -588,6 +588,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
 #ifndef NDEBUG
         assert(counterOptions.haveClientAccessAddress());
 #endif
+        //counterOptions.setZAPOptions(options.mZAPOptions);
         options.mIncrementerParameters.push_back(std::move(counterOptions));
     }
     // Parse the datapacket broadcast options 
