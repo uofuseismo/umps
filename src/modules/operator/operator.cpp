@@ -44,6 +44,7 @@ struct ProgramOptions
         mConnectionInformationParameters;
     UMPS::Broadcasts::DataPacket::Parameters mDataPacketParameters;
     UMPS::Broadcasts::Heartbeat::Parameters mHeartbeatParameters;
+    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
                                  + "/.local/share/UMPS/tables/";
@@ -51,7 +52,6 @@ struct ProgramOptions
     std::string mBlacklistTable = mTablesDirectory + "blacklist.sqlite3";
     std::string mWhiteListTable = mTablesDirectory + "whitelist.sqlite3";
     std::string mIPAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::INFO;
 };
 
@@ -193,7 +193,8 @@ int main(int argc, char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
         = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
     std::shared_ptr<UAuth::IAuthenticator> authenticator;
-    if (options.mSecurityLevel == UAuth::SecurityLevel::GRASSLANDS)
+    if (options.mZAPOptions.getSecurityLevel() ==
+        UAuth::SecurityLevel::GRASSLANDS)
     {
         std::cout << "Creating grasslands authenticator..." << std::endl;
         authenticator
@@ -506,14 +507,17 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     }
     auto securityLevel
         = propertyTree.get<int> ("uOperator.securityLevel",
-                                 static_cast<int> (options.mSecurityLevel));
+                     static_cast<int> (options.mZAPOptions.getSecurityLevel()));
     if (securityLevel < 0 || securityLevel > 4)
     {
         throw std::invalid_argument("Security level must be in range [0,4]");
     }
-    options.mSecurityLevel = static_cast<UAuth::SecurityLevel> (securityLevel);
+    //mZAPOptions.mSecurityLevel = static_cast<UAuth::SecurityLevel> (securityLevel);
     // Get sqlite3 authentication tables
-    if (options.mSecurityLevel != UAuth::SecurityLevel::GRASSLANDS)
+    options.mConnectionInformationParameters.setZAPOptions(options.mZAPOptions);
+    options.mZAPOptions.setGrasslandsServer();
+    if (options.mZAPOptions.getSecurityLevel() !=
+        UAuth::SecurityLevel::GRASSLANDS)
     {
         options.mTablesDirectory
             = propertyTree.get<std::string> ("uOperator.tablesTableDirectory",
@@ -533,8 +537,6 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             = propertyTree.get<std::string> ("uOperator.whiteListTable",
                                              options.mWhiteListTable);
     }
-    UMPS::Messaging::Authentication::ZAPOptions zapOptions;
-    options.mConnectionInformationParameters.setZAPOptions(zapOptions);
     // First make sure the connection information service is available
     auto address = "tcp://" + options.mIPAddress
                  + ":" + std::to_string(options.mAvailablePorts.at(0).first);
