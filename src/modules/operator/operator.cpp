@@ -7,6 +7,7 @@
 #include <cassert>
 #endif
 #include <map>
+#include <zmq.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ip/host_name.hpp>
@@ -17,6 +18,7 @@
 #include <filesystem>
 #include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
+#include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/services/connectionInformation/parameters.hpp"
 #include "umps/services/connectionInformation/service.hpp"
@@ -178,7 +180,7 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    // Create the authenticator
+    // Create the authenticator (on a different context)
     const int hour = 0;
     const int minute = 0;
     auto authenticatorLogFileName = options.mLogDirectory
@@ -205,6 +207,10 @@ int main(int argc, char *argv[])
 //        //sqlite3->initialize( );
 //        authenticator = sqlite3; 
     }
+    auto authenticatorContext = std::make_shared<zmq::context_t> (1);
+    UAuth::Service authenticatorService(authenticatorContext,
+                                        authenticationLoggerPtr,
+                                        authenticator);
     // Initialize the services
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
@@ -248,6 +254,19 @@ int main(int argc, char *argv[])
     }
     // Start the connection information service
     std::vector<std::thread> threads;
+    std::cout << "Starting the authenticator..." << std::endl;
+    try
+    {
+        std::thread t(&UMPS::Messaging::Authentication::Service::start,
+                      &authenticatorService);
+        threads.push_back(std::move(t));
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Failed to initialize authenticator service" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     std::cout << "Starting connection information service..." << std::endl;
     try
     {
@@ -259,6 +278,7 @@ int main(int argc, char *argv[])
     {
         std::cerr << "Failed to initialize connection information service"
                   << std::endl;
+        return EXIT_FAILURE;
     }
     // Now start the services - a thread per service
     std::cout << "Starting incrementer services..." << std::endl;
@@ -368,6 +388,8 @@ int main(int argc, char *argv[])
     }
 
     // Shut down the services
+    std::cout << "Stopping the authenticator..." << std::endl;
+    authenticatorService.stop();
     std::cout << "Stopping incrementer services..." << std::endl;
     for (auto &module : modules.mIncrementers)
     {

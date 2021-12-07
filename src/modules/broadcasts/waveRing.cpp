@@ -23,6 +23,7 @@
 //#include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
@@ -30,6 +31,7 @@ namespace UServices = UMPS::Services;
 
 struct ProgramOptions
 {
+    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string earthwormParametersDirectory
         = "/opt/earthworm/run_working/params/";
     std::string earthwormInstallation = "INST_UNKNOWN"; 
@@ -149,6 +151,7 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    auto zapOptions = options.mZAPOptions;
     // Create the application's logger
     constexpr int hour = 0;
     constexpr int minute = 0;
@@ -200,6 +203,7 @@ int main(int argc, char *argv[])
     // Connect to proxy
     UXPubXSub::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
+    publisherOptions.setZAPOptions(zapOptions);
     auto publisher = std::make_shared<UXPubXSub::Publisher> (loggerPtr);
     publisher->initialize(publisherOptions);
 #ifndef NDEBUG
