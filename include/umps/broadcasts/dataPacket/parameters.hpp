@@ -1,6 +1,10 @@
 #ifndef UMPS_BROADCASTS_DATAPACKET_PARAMETERS_HPP
 #define UMPS_BROADCASTS_DATAPACKET_PARAMETERS_HPP
 #include <memory>
+namespace UMPS::Messaging::Authentication
+{
+ class ZAPOptions;
+}
 namespace UMPS::Broadcasts::DataPacket
 {
 /// @class Parameters "parameters.hpp" "umps/broadcasts/dataPacket/parameters.hpp"
@@ -83,6 +87,17 @@ public:
     void setBackendHighWaterMark(const int highWaterMark);
     /// @result The high-water mark for the backend.
     [[nodiscard]] int getBackendHighWaterMark() const noexcept;
+    /// @}
+
+    /// @name ZAP Options
+    /// @{
+    /// @brief Sets the ZeroMQ Authentication Protocol options.
+    /// @param[in] zapOptions  The ZAP options.
+    void setZAPOptions(
+        const UMPS::Messaging::Authentication::ZAPOptions &zapOptions) noexcept; 
+    /// @result The ZAP options.
+    [[nodiscard]] 
+    UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
     /// @result The name of the broadcast.

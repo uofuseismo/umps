@@ -4,6 +4,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include "umps/broadcasts/dataPacket/parameters.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
+#include "umps/messaging/authentication/zapOptions.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
 
@@ -120,6 +121,19 @@ std::string Parameters::getBackendAddress() const
 bool Parameters::haveBackendAddress() const noexcept
 {
     return pImpl->mProxyOptions.haveBackendAddress();
+}
+
+/// ZAP Options
+void Parameters::setZAPOptions(
+        const UMPS::Messaging::Authentication::ZAPOptions &zapOptions) noexcept
+{
+    pImpl->mProxyOptions.setZAPOptions(zapOptions);
+}
+
+UMPS::Messaging::Authentication::ZAPOptions
+    Parameters::getZAPOptions() const noexcept
+{
+    return pImpl->mProxyOptions.getZAPOptions();
 }
 
 /// Read parameters from an ini file
