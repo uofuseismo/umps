@@ -205,8 +205,18 @@ int main(int argc, char *argv[])
         std::cout << "Creating SQLite3 authenticator..." << std::endl;
         auto sqlite3 = std::make_shared<UAuth::SQLite3Authenticator>
                        (authenticationLoggerPtr);
-//        //sqlite3->initialize( );
-        authenticator = sqlite3;
+        try
+        {
+            constexpr bool createIfDoesNotExist = false;
+            sqlite3->openUsersTable(options.mUserTable, createIfDoesNotExist);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Failed to open users table.  Failed with: "
+                      << e.what() << std::endl;
+            return EXIT_FAILURE;
+        }
+        authenticator = sqlite3; 
     }
     auto authenticatorContext = std::make_shared<zmq::context_t> (1);
     UAuth::Service authenticatorService(authenticatorContext,
