@@ -20,6 +20,7 @@
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
 #include "umps/services/connectionInformation/parameters.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -563,7 +564,14 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     else if (securityLevel == UAuth::SecurityLevel::STONEHOUSE)
     {
         throw std::runtime_error("Need to read this servers keys");
-        //options.mZAPOptions.setStonehouseServer();
+        auto publicKeyFile 
+            = propertyTree.get<std::string> ("uOperator.serverPublicKeyFile");
+        auto privateKeyFile
+            = propertyTree.get<std::string> ("uOperator.serverPrivateKeyFile");
+        UAuth::Certificate::Keys serverKeys;
+        serverKeys.loadFromTextFile(publicKeyFile);
+        serverKeys.loadFromTextFile(privateKeyFile);
+        options.mZAPOptions.setStonehouseServer(serverKeys);
     } 
     else
     {
