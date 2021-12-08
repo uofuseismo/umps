@@ -52,6 +52,9 @@ public:
     ///       can be made with:
     ///       auto context = std::shared_ptr<zmq::context_t> (0).
     explicit Router(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Constructs a router socket with the given context and logger.
+    Router(std::shared_ptr<zmq::context_t> &context,
+           std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @brief Initializes the router.

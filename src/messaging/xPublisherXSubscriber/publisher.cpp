@@ -12,6 +12,7 @@ using namespace UMPS::Messaging::XPublisherXSubscriber;
 class Publisher::PublisherImpl
 {
 public:
+/*
     /// C'tor
     PublisherImpl() :
         mContext(std::make_shared<zmq::context_t> (1)),
@@ -32,7 +33,32 @@ public:
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
-
+*/
+    PublisherImpl(std::shared_ptr<zmq::context_t> context,
+                  std::shared_ptr<UMPS::Logging::ILog> logger)
+    {
+        // Ensure the context gets made
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Now make the socket
+        mPublisher = std::make_unique<zmq::socket_t> (*mContext,
+                                                      zmq::socket_type::xpub);
+    }
     void disconnect()
     {
         if (mConnected)
@@ -55,13 +81,13 @@ public:
 
 /// C'tor
 Publisher::Publisher() :
-    pImpl(std::make_unique<PublisherImpl> ())
+    pImpl(std::make_unique<PublisherImpl> (nullptr, nullptr))
 {
 }
 
 /// C'tor
 Publisher::Publisher(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<PublisherImpl> (logger))
+    pImpl(std::make_unique<PublisherImpl> (nullptr, logger))
 {
 }
 

@@ -42,16 +42,19 @@ public:
     /// @name Constructors
     /// @{
     Request();
-    /// @brief Constructs a request with the given logger.
+    /// @brief Constructs a request socket with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
     explicit Request(std::shared_ptr<UMPS::Logging::ILog> &logger);
-    /// @brief Constructs a request with a given ZeroMQ context.
+    /// @brief Constructs a request socket with a given ZeroMQ context.
     /// @param[in] context  The context from which to initialize.
     /// @note This can be useful for inproc communication where a separate
     ///       thread IO thread is not required.  In this case, the context
     ///       can be made with:
     ///       auto context = std::shared_ptr<zmq::context_t> (0).
     explicit Request(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Constructs a request socket with the given context and logger.
+    Request(std::shared_ptr<zmq::context_t> &context,
+            std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @brief Initializes the request.

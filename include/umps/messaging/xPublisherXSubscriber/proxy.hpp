@@ -4,6 +4,10 @@
 #include <string>
 #include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
+namespace zmq
+{
+ class context_t;
+}
 namespace UMPS
 {
  namespace Logging
@@ -45,9 +49,16 @@ public:
     /// @{
     /// @brief Constructor.
     Proxy();
-    /// @brief Constructs a publisher with the given logger.
+    /// @brief Constructs a proxy with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
     explicit Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructs a proxy with the given context.
+    /// @param[in] context  A pointer to the application's context.
+    explicit Proxy(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Constructs a proxy with the given context and logger.
+    Proxy(std::shared_ptr<zmq::context_t> &context,
+          std::shared_ptr<UMPS::Logging::ILog> &logger);
+
     /// @brief Move constructor.
     /// @param[in,out] proxy  The proxy from which to initialize this class.
     ///                       On exit, proxy's behavior is undefined.

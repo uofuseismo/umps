@@ -20,6 +20,7 @@ using namespace UMPS::Messaging::RequestRouter;
 class Request::RequestImpl
 {
 public:
+/*
     /// C'tor
     RequestImpl() :
         mContext(std::make_shared<zmq::context_t> (1)),
@@ -40,6 +41,33 @@ public:
             mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
         }
     }
+*/
+    /// C'tor
+    RequestImpl(std::shared_ptr<zmq::context_t> context,
+                std::shared_ptr<UMPS::Logging::ILog> logger)
+    {   
+        // Ensure the context gets made
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Now make the socket
+        mClient = std::make_unique<zmq::socket_t> (*mContext,
+                                                   zmq::socket_type::req);
+    }
 //private:
     //std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
     //    mSubscriptions;
@@ -58,13 +86,23 @@ public:
 
 /// C'tor
 Request::Request() :
-    pImpl(std::make_unique<RequestImpl> ())
+    pImpl(std::make_unique<RequestImpl> (nullptr, nullptr))
 {
 }
 
-/// C'tor
 Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RequestImpl> (logger))
+    pImpl(std::make_unique<RequestImpl> (nullptr, logger))
+{
+}
+
+Request::Request(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<RequestImpl> (context, nullptr))
+{
+}
+
+Request::Request(std::shared_ptr<zmq::context_t> &context,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RequestImpl> (context, logger))
 {
 }
 

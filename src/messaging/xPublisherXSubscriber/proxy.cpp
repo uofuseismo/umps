@@ -39,6 +39,7 @@ void checkOptions(const ProxyOptions &options)
 class Proxy::ProxyImpl
 {
 public:
+/*
     ProxyImpl() :
         mContext(std::make_shared<zmq::context_t> (1)),
         mControlContext(std::make_unique<zmq::context_t> (0)),
@@ -70,6 +71,39 @@ public:
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
+    }
+*/
+    ProxyImpl(std::shared_ptr<zmq::context_t> context,
+              std::shared_ptr<UMPS::Logging::ILog> logger) :
+        mControlContext(std::make_unique<zmq::context_t> (0)),
+        mControl( std::make_unique<zmq::socket_t> (*mControlContext,
+                                                   zmq::socket_type::sub)),
+        mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
+                                                   zmq::socket_type::pub))
+    {
+        // Ensure the context gets made
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Now make the sockets
+        mFrontend = std::make_unique<zmq::socket_t> (*mContext,
+                                                     zmq::socket_type::xsub);
+        mBackend = std::make_unique<zmq::socket_t> (*mContext,
+                                                    zmq::socket_type::xpub);
     }
     void setStarted(const bool status)
     {
@@ -198,19 +232,19 @@ public:
     }
 ///private:
     mutable std::mutex mMutex;
-    // This context handles external communication with other servers
-    std::shared_ptr<zmq::context_t> mContext = nullptr;
     // This context handles terminate/pause/start messages from the API
     std::unique_ptr<zmq::context_t> mControlContext = nullptr;
-    // The front is an xsub that faces the internal servers
-    std::unique_ptr<zmq::socket_t> mFrontend = nullptr;
-    // The backend is an xpub that faces the external clients
-    std::unique_ptr<zmq::socket_t> mBackend = nullptr;
     // The control socket binds to the proxy and receives terminate/pause/start
     // messages from the command.
     std::unique_ptr<zmq::socket_t> mControl = nullptr;
     // The command socket issues terminate/pause/start messages to the control.
     std::unique_ptr<zmq::socket_t> mCommand = nullptr;
+    // This context handles external communication with other servers
+    std::shared_ptr<zmq::context_t> mContext = nullptr;
+    // The front is an xsub that faces the internal servers
+    std::unique_ptr<zmq::socket_t> mFrontend = nullptr;
+    // The backend is an xpub that faces the external clients
+    std::unique_ptr<zmq::socket_t> mBackend = nullptr;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     // Options
     ProxyOptions mOptions;
@@ -230,12 +264,23 @@ public:
 
 /// C'tor
 Proxy::Proxy() :
-    pImpl(std::make_unique<ProxyImpl> ())
+    pImpl(std::make_unique<ProxyImpl> (nullptr, nullptr))
 {
 }
 
 Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ProxyImpl> (logger))
+    pImpl(std::make_unique<ProxyImpl> (nullptr, logger))
+{
+}
+
+Proxy::Proxy(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<ProxyImpl> (context, nullptr))
+{
+}
+
+Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
+             std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ProxyImpl> (context, logger))
 {
 }
 

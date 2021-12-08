@@ -23,6 +23,7 @@ namespace UAuth = UMPS::Messaging::Authentication;
 class Router::RouterImpl
 {
 public:
+    /*
     /// C'tor
     RouterImpl() :
         mContext(std::make_shared<zmq::context_t> (1)),
@@ -42,6 +43,33 @@ public:
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
+    }
+    */
+    /// C'tor
+    RouterImpl(std::shared_ptr<zmq::context_t> context,
+               std::shared_ptr<UMPS::Logging::ILog> logger)
+    {
+        // Ensure the context gets made
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Now make the socket
+        mServer = std::make_unique<zmq::socket_t> (*mContext,
+                                                   zmq::socket_type::router);
     }
     /// Start the service
     void start()
@@ -103,12 +131,25 @@ public:
 
 /// C'tor
 Router::Router() :
-    pImpl(std::make_unique<RouterImpl> ())
+    pImpl(std::make_unique<RouterImpl> (nullptr, nullptr))
 {
 }
 
+
 Router::Router(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RouterImpl> (logger))
+    pImpl(std::make_unique<RouterImpl> (nullptr, logger))
+{
+}
+
+Router::Router(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<RouterImpl> (context, nullptr))
+{
+}
+
+
+Router::Router(std::shared_ptr<zmq::context_t> &context,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RouterImpl> (context, logger))
 {
 }
 
