@@ -16,9 +16,19 @@
 
 namespace UAuth = UMPS::Messaging::Authentication;
 
+enum class Job
+{
+    NONE = 0,
+    ADD = 1,
+    UPDATE = 2,
+    DELETE = 3
+};
+
 struct ProgramOptions
 {
     std::string mUserTable;
+    std::string mJSONFile;
+    Job mJob = Job::NONE;
     int mError = 0;
 };
 
@@ -30,18 +40,48 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[]);
     std::ifstream inFile(fileName);
     nlohmann::json obj;
     inFile >> obj;
-    std::string name = obj["Name"].get<std::string> (); 
+    std::string name = obj["name"].get<std::string> (); 
     user.setName(name); // Throws
-    std::string email = obj["Email"].get<std::string> (); 
+    std::string email = obj["email"].get<std::string> (); 
     user.setEmail(email); // Throws
-    std::string password = obj["Password"].get<std::string> (); 
-    if (password.empty())
+    if (!obj["password"].is_null())
     {
-    }
-    //if (!password.empty()){user.setHashedPassword(password);}
-    //std::string publicKey = obj["PublicKey"].get<std::string> (); 
-    //if (static_cast<int> (publicKey.length()) == 40) 
+        auto password = obj["password"].get<std::string> (); 
+        if (!password.empty())
+        {
 
+        }
+    }
+    if (!obj["publickey_file"].is_null())
+    {
+        auto publicKeyFileName = obj["publickey_file"].get<std::string> ();
+        UAuth::Certificate::Keys key; 
+        key.loadFromTextFile(publicKeyFileName);
+        user.setPublicKey( std::string{key.getPublicTextKey().data()} );
+    }
+    auto privileges = UAuth::UserPrivileges::READ_ONLY;
+    if (!obj["privileges"].is_null())
+    {
+        auto textPrivileges = obj["privileges"].get<std::string> ();
+        if (textPrivileges.find("admin") != std::string::npos)
+        {
+            privileges = UAuth::UserPrivileges::ADMINISTRATOR;
+        }
+        else if (textPrivileges.find("read_write") != std::string::npos)
+        {
+            privileges = UAuth::UserPrivileges::READ_WRITE;
+        }
+        else if (textPrivileges.find("read_only") != std::string::npos)
+        {
+            privileges = UAuth::UserPrivileges::READ_ONLY; 
+        }
+        else
+        {
+            std::cout << "Unknown privileges: " << textPrivileges << std::endl; 
+            std::cout << "Use: read_only, read_write, admin" << std::endl;
+        }
+    }
+    user.setPrivileges(privileges);
     return user;
 }
 
@@ -58,6 +98,7 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[]);
     return loadUserFromJSONFile(fileName);
 }
 
+/*
 std::string generalHelpMessage = R"""(
 Available commands:
 
@@ -67,6 +108,7 @@ Available commands:
    (q)uit    Exits the program.
    (h)elp    Displays this message.
 )""";
+*/
 
 int main(int argc, char *argv[])
 {
@@ -100,8 +142,38 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     } 
-
-
+    UAuth::User user;
+    try
+    {
+        user = loadUserFromJSONFile(options.mJSONFile);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+    // 
+    if (options.mJob == Job::ADD)
+    {
+        std::cout << "Attempting to add: " << std::endl << user << std::endl;
+        authenticator.addUser(user);
+    }
+    else if (options.mJob == Job::UPDATE)
+    {
+        std::cout << "Attempting to update: " << std::endl << user << std::endl;
+        authenticator.updateUser(user);
+    }
+    else if (options.mJob == Job::DELETE)
+    {
+        std::cout << "Attempting to delete: " << std::endl << user << std::endl;
+        authenticator.deleteUser(user);
+    }
+    else
+    {
+        std::cerr << "Unhandled job" << std::endl;
+        return EXIT_FAILURE;
+    }
+/*
     std::cout << "Welcome to the User Table Manager!" << std::endl;
     std::cout << generalHelpMessage << std::endl;
     while (true)
@@ -165,6 +237,7 @@ int main(int argc, char *argv[])
         }
         std::cout << generalHelpMessage << std::endl;
     }
+*/
     return EXIT_SUCCESS;
 }
 
@@ -175,10 +248,39 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[])
                                      + "/.local/share/UMPS/tables/user.sqlite3";
     ProgramOptions options;
     boost::program_options::options_description desc(
-        "uUserTable is a utility for managing users in the user sqlite3 table. Example usage is as follows:\n\n  uUserTable --table user.sqlite3\n\n");
+R""""(
+uUserTable is a utility for managing users in the user sqlite3 table. Example usage is as follows:
+
+   uUserTable --add user.json --table user.sqlite3
+
+A valid JSON table looks like:
+
+{
+    "name" : "user",
+    "email" : "user@domain.com",
+    "password" : null,
+    "publickey_file" : "/path/to/publicKey.txt",
+    "privileges" : "read_write"
+}
+
+Here privileges could also be read_only or admin.  The password is null otherwise, it would be a
+character string, say, password : "password".  To delete a user you really only need to provide
+the user name and email address.
+
+Command options are as follows)"""");
     desc.add_options()
-        ("help",       "Produces this help message")
-        ("table",
+        ("help,h",
+         "Produces this help message")
+        ("add,a",
+         boost::program_options::value<std::string> (),
+         "Adds a user in the whose information is specified in the given JSON file to the user table")
+        ("update,u",
+         boost::program_options::value<std::string> (),
+         "Updates a user whose new information is specified in the given JSON file in the user table")
+        ("delete,d",
+         boost::program_options::value<std::string> (),
+        "Deletes a user whose information is specified in the given JSON file from the user table")
+        ("table,t",
          boost::program_options::value<std::string> ()->default_value(tableDirectory),
          "The filename of the user table");
     boost::program_options::variables_map vm; 
@@ -191,6 +293,40 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[])
         options.mError =-1;
         return options;
     }
+    if (vm.count("add"))
+    {
+        options.mJSONFile = vm["add"].as<std::string> ();
+        options.mJob = Job::ADD; 
+    }
+    else if (vm.count("update"))
+    {
+        options.mJSONFile = vm["update"].as<std::string> ();
+        options.mJob = Job::UPDATE;
+    }
+    else if (vm.count("delete"))
+    {
+        options.mJSONFile = vm["delete"].as<std::string> ();
+        options.mJob = Job::DELETE;
+    }
+    else
+    {
+        std::cerr << "No action specified" << std::endl;
+        options.mJob = Job::NONE;
+        options.mError = 1;
+        return options;
+    }
+    // Ensure the user's JSON file exists
+    if (options.mJob != Job::NONE)
+    {
+        if (!std::filesystem::exists(options.mJSONFile))
+        {
+            std::cerr << "Failed to open user JSON file: "
+                      << options.mJSONFile << std::endl;
+            options.mError = 1;
+            return options;
+        }
+    }
+    // The sqlite3 table
     if (vm.count("table"))
     {
         options.mUserTable = vm["table"].as<std::string>();

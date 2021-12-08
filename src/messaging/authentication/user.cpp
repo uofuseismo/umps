@@ -413,16 +413,29 @@ UMPS::Messaging::Authentication::operator<<(
     if (user.haveHashedPassword())
     {
         result = result
-               + "   Hashed Password: " + user.getHashedPassword() + "\n";
+               + "   Hashed Password: \"" + user.getHashedPassword() + "\"\n";
     }
     if (user.havePublicKey())
     {
-        result = result + "   Public Key: " + user.getPublicKey() + "\n";
+        result = result + "   Public Key: \"" + user.getPublicKey() + "\"\n";
     }
     if (user.haveIdentifier())
     {
         result = result + "   Identifier: "
                         + std::to_string(user.getIdentifier()) + "\n";
+    }
+    auto privileges = user.getPrivileges();
+    if (privileges == UserPrivileges::READ_ONLY)
+    {
+        result = result + "   Privileges: read_only\n";
+    }
+    else if (privileges == UserPrivileges::READ_WRITE)
+    {
+        result = result + "   Privileges: read_write\n"; 
+    }
+    else if (privileges == UserPrivileges::ADMINISTRATOR)
+    {
+        result = result + "   Privileges: admin\n";
     }
     return os << result;
 }

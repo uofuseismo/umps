@@ -78,6 +78,8 @@ public:
     void deleteUser(const User &user);
     /// @result Gets the user information currently stored in the database.
     [[nodiscard]] std::vector<User> getUsers() const;
+    /// @result True Indicates that the given user exists.
+    [[nodiscard]] bool haveUser(const User &user) const noexcept;
 
     /// @brief Opens the blacklist table.
     /// @param[in] fileName   The name of the SQLite3 blacklist table file.

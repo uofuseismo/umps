@@ -46,18 +46,23 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[])
 {
     ProgramOptions options;
     boost::program_options::options_description desc(
-        "uKeyPair is a utility for generating a public/private keypair for use in UMPS.  Example usage is as follows:\n\n  uKeyPair --publickey publickey.txt --privatekey privatekey.txt --keyname test_key\n\nAllowed options");
+R""""(uKeyPair is a utility for generating a public/private keypair for use in UMPS.
+Example usage is as follows:
+
+    uKeyPair --publickey publickey.txt --privatekey privatekey.txt --keyname test_key
+
+Allowed options)"""");
     desc.add_options()
-        ("help",       "Produces this help message")
+        ("help",       "Produces this help message.")
         ("publickey",  
          boost::program_options::value<std::string> (),
-         "The name of the public key file")
+         "The name of the public key file.")
         ("privatekey",
          boost::program_options::value<std::string> (),
-         "The name of the private key file")
+         "The name of the private key file.")
         ("keyname",
          boost::program_options::value<std::string> (),
-         "Text descriptor for you key");
+         "Text descriptor for you key.  This will be embedded in the file itself.");
     boost::program_options::variables_map vm; 
     boost::program_options::store(
         boost::program_options::parse_command_line(argc, argv, desc), vm);

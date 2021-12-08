@@ -151,7 +151,6 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    auto zapOptions = options.mZAPOptions;
     // Create the application's logger
     constexpr int hour = 0;
     constexpr int minute = 0;
@@ -203,7 +202,7 @@ int main(int argc, char *argv[])
     // Connect to proxy
     UXPubXSub::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
-    publisherOptions.setZAPOptions(zapOptions);
+    publisherOptions.setZAPOptions(options.mZAPOptions);
     auto publisher = std::make_shared<UXPubXSub::Publisher> (loggerPtr);
     publisher->initialize(publisherOptions);
 #ifndef NDEBUG
@@ -350,6 +349,7 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
             throw std::runtime_error("Failed to make log directory");
         }
     }
+//options.mZAPOptions.setWoodhouseClient();
     //------------------------------ Operator --------------------------------//
     options.operatorAddress = propertyTree.get<std::string>
         ("uOperator.ipAddress", options.operatorAddress);

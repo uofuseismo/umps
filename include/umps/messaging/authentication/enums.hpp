@@ -21,9 +21,9 @@ enum class SecurityLevel
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class UserPrivileges
 {
-    READ_ONLY,     /*!< The user has read-only permissions. */
-    READ_WRITE,    /*!< The user has read-write permissions.  */
-    ADMINISTRATOR  /*!< The user has administrative permissions. */
+    READ_ONLY = 0,     /*!< The user has read-only permissions. */
+    READ_WRITE = 1,    /*!< The user has read-write permissions.  */
+    ADMINISTRATOR = 2  /*!< The user has administrative permissions. */
 };
 }
 #endif

@@ -296,7 +296,9 @@ R"""(#   ZeroMQ CURVE Public Certificate
     // Update the permissions
     std::filesystem::permissions(fileName,
                                  std::filesystem::perms::owner_read  |
-                                 std::filesystem::perms::owner_write);
+                                 std::filesystem::perms::owner_write |
+                                 std::filesystem::perms::group_read  |
+                                 std::filesystem::perms::others_read);
 }
 
 /// Write private key

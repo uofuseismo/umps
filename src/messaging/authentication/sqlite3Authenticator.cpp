@@ -92,7 +92,7 @@ std::string addUserToRow(const User &user)
     }
     else
     {
-        values = values + "NULL, ";
+        throw std::invalid_argument("User name not set"); //values = values + "NULL, ";
     }
     if (user.haveEmail())
     {
@@ -100,7 +100,8 @@ std::string addUserToRow(const User &user)
     }
     else
     {
-        values = values + "NULL, ";
+        //values = values + "NULL, ";
+        throw std::invalid_argument("User email not set");
     }
     if (user.haveHashedPassword())
     {
@@ -135,7 +136,8 @@ std::string updateUserToRow(const User &user)
     }   
     else
     {
-        sql = sql + "name = NULL, ";
+        //sql = sql + "name = NULL, ";
+        throw std::invalid_argument("User name not set");
     }   
     if (user.haveEmail())
     {
@@ -143,7 +145,8 @@ std::string updateUserToRow(const User &user)
     }
     else
     {
-        sql = sql + "email = NULL, ";
+        //sql = sql + "email = NULL, ";
+        throw std::invalid_argument("User email not set");
     }
     if (user.haveHashedPassword())
     {
@@ -165,6 +168,14 @@ std::string updateUserToRow(const User &user)
     sql = sql + "privileges = " + std::to_string(privileges);
     sql = sql + " WHERE id = " + std::to_string(id) + ";";
     //std::cout << sql << std::endl;
+    return sql;
+}
+
+std::string deleteUserFromRow(const User &user)
+{
+    std::string sql = "DELETE FROM user ";
+    auto id = user.getIdentifier();
+    sql = sql + " WHERE id = " + std::to_string(id) + ";";
     return sql;
 }
 
@@ -358,6 +369,20 @@ void updateUserToDatabase(sqlite3 *db, const User &user)
         throw std::runtime_error(error);
     }   
 }
+/// Delete user
+void deleteUserFromDatabase(sqlite3 *db, const User &user)
+{
+    auto sql = deleteUserFromRow(user);
+    char *errorMessage = nullptr;
+    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    if (rc != SQLITE_OK)
+    {    
+        std::string error = "Failed to delete : " + sql + "to table user\n"
+                          + "SQLite3 failed with: " + errorMessage;
+        throw std::runtime_error(error);
+    }
+}
+
 }
 
 ///--------------------------------------------------------------------------///
@@ -640,7 +665,7 @@ public:
         auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
         if (users.empty())
         {
-            mLogger->info("Adding user: " + userName);
+            mLogger->info("User does not yet exist.  Adding user: " + userName);
             addUserToDatabase(mUsersTable, user);
         }
         else
@@ -652,6 +677,31 @@ public:
             mLogger->info("Updating user: " + userName);
             userWork.setIdentifier(users[0].getIdentifier());
             updateUserToDatabase(mUsersTable, userWork);
+        }
+    }
+    /// Delete user
+    void deleteUser(const User &user)
+    {
+        if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
+        auto userName = user.getName();
+        constexpr bool queryUser = true;
+        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
+        if (!users.empty())
+        {
+#ifndef NDEBUG
+            assert(static_cast<int> (users.size()) == 1);
+#endif
+            mLogger->info("Deleting user: " + userName);
+            deleteUserFromDatabase(mUsersTable, users.at(0));
+#ifndef NDEBUG
+            users = queryFromUsersTable(mUsersTable, userName, queryUser);
+            assert(users.empty());
+#endif
+        }
+        else
+        {
+            throw std::invalid_argument("User: " + user.getName()
+                                      + " does not exist");
         }
     }
     /// Load the users
@@ -933,6 +983,16 @@ void SQLite3Authenticator::updateUser(const User &user)
     if (!user.haveEmail()){throw std::invalid_argument("User email not set");}
     // Attempt to add to database
     pImpl->updateUser(user);
+}
+
+/// Delete a user
+void SQLite3Authenticator::deleteUser(const User &user)
+{
+    // Check input
+    if (!user.haveName()){throw std::invalid_argument("User name not set");} 
+    if (!user.haveEmail()){throw std::invalid_argument("User email not set");}
+    // Attempt to delete user from database
+    pImpl->deleteUser(user);
 }
 
 /// Get all user info
