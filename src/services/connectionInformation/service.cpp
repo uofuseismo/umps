@@ -14,6 +14,7 @@
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/messaging/authentication/authenticator.hpp"
 #include "umps/logging/stdout.hpp"
 
 class Parameters
@@ -41,6 +42,13 @@ public:
             mLogger = std::make_shared< UMPS::Logging::StdOut> ();
         }
     }
+    ServiceImpl(std::shared_ptr<zmq::context_t> &context,
+                std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mLogger(logger)
+        //mRouter(logger, context)//, logger)
+    {
+    }
+    
     /// The callback to handle connection requests
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
@@ -100,7 +108,7 @@ public:
         return response;
     }
 ///private:
-    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr; 
+    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     ConnectionInformation::Details mConnectionDetails;
     std::map<std::string, ConnectionInformation::Details> mConnections;
     Parameters mParameters;

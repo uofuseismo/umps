@@ -2,6 +2,7 @@
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -11,6 +12,25 @@ namespace
 {
 
 using namespace UMPS::Messaging;
+
+TEST(Messaging, PubSubPublisherOptions)
+{
+    const std::string address = "tcp://127.0.0.1:5556";
+    const int highWaterMark = 120;
+    const int zero = 0;
+    PublisherSubscriber::PublisherOptions options;
+    options.setAddress(address);
+    options.setHighWaterMark(highWaterMark);
+    //options.setTimeOut(timeOut);
+
+    PublisherSubscriber::PublisherOptions optionsCopy(options);
+
+    EXPECT_EQ(optionsCopy.getAddress(), address);
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), highWaterMark);
+
+    options.clear();
+    EXPECT_EQ(options.getHighWaterMark(), zero); 
+}
 
 TEST(Messaging, PubSubSubscriberOptions)
 {

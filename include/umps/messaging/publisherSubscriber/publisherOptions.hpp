@@ -1,23 +1,73 @@
 #ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHEROPTIONS_HPP
 #define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHEROPTIONS_HPP
+#include <memory>
+#include <string>
+#include <chrono>
+namespace UMPS::MessageFormats
+{
+ class IMessage;
+ class Messages;
+}
+namespace UMPS::Messaging::Authentication
+{
+ class ZAPOptions;
+}
 namespace UMPS::Messaging::PublisherSubscriber
 {
-/// @brief Options for initializing the publisher.
+/// @class PublisherOptions "publisherOptions.hpp" "umps/messaging/publisherSubscriber/publisherOptions.hpp"
+/// @brief Options for initializing the publisher in the PUB/SUB pattern.
+/// @detail The publisher sends content and it is up to the subscriber to be listening.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class PublisherOptions
 {
 public:
+    /// @name Constructors
+    /// @{
+    /// @brief Constructor.
     PublisherOptions();
+    /// @brief Copy constructor.
+    /// @param[in] options 
     PublisherOptions(const PublisherOptions &options);
+    /// @brief Move constructor.
+    /// @param[in,out] options  The class from which to initialize this class.
+    ///                         On exit, options's behavior is undefined.  
     PublisherOptions(PublisherOptions &&options) noexcept;
+    /// @}
 
-    /// @param[in] address  An address for the publisher to bind to.
-    void addAddress(const std::string &address);
-    /// @result The addresses to which to bind. 
-    /// @throws std::runtime_error if \c haveAddresses is false.
-    [[nodiscard]] std::vector<std::string> getAddresses() const;
-    /// @result True indicates that address(es) for the publisher to bind to
-    ///         have been set.
-    [[nodiscard]] bool haveAddresses() const noexcept;
+    /// @name Operators
+    /// @{
+    /// @brief Copy assignment operator.
+    /// @param[in] options  The options to copy to this.
+    /// @result A deep copy of the input options.
+    PublisherOptions& operator=(const PublisherOptions &options);
+    /// @brief Move assignment operators.
+    /// @param[in,out] options  The options whose memory will be moved to this.
+    ///                         On exit, options's behavior is undefined.
+    /// @result The memory moved from options to this.
+    PublisherOptions& operator=(PublisherOptions &&options) noexcept;
+    /// @}
+
+    /// @name Publisher Options
+    /// @{
+    /// @brief Sets the address to which the proxy will bind.
+    /// @throws std::invalid_argument if the address is empty.
+    void setAddress(const std::string &address);
+    /// @result The socket's address.
+    /// @throws std::invalid_argument if \c haveAddress is false. 
+    [[nodiscard]] std::string getAddress() const;
+    /// @result True indicates the address was set.
+    [[nodiscard]] bool haveAddress() const noexcept;
+
+    /// @brief This sets a hard limit on the maximum number of messages that
+    ///        can be queued.
+    /// @param[in] highWaterMark  The high limit on the maximum number of
+    ///                           messages that this socket can queue.
+    ///                           0 sets this to "infinite."  
+    /// @throws std::invalid_argument if the high water mark is negative. 
+    void setHighWaterMark(int highWaterMark);
+    /// @result The high water mark.  The default is 0 (infinite).
+    [[nodiscard]] int getHighWaterMark() const noexcept;
+    /// @}
 
     /// @name ZeroMQ Authentication Protocol Options
     /// @{
@@ -28,14 +78,17 @@ public:
     ///         the grasslands (no security) pattern.
     Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
-
+ 
     /// @name Destructors
     /// @{
+    /// @brief Resets class and releases all memory.
     void clear() noexcept;
+    /// @brief Destructor.
     ~PublisherOptions();
-    /// @}  
+    /// @}
 private:
-
+    class PublisherOptionsImpl;
+    std::unique_ptr<PublisherOptionsImpl> pImpl;
 };
 }
 #endif

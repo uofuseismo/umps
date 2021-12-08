@@ -8,6 +8,7 @@
 #include "umps/messaging/authentication/sqlite3Authenticator.hpp"
 #include "umps/messaging/authentication/service.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -296,15 +297,21 @@ UMPS::MessageFormats::Pick makePickMessage() noexcept
 void pub(std::shared_ptr<zmq::context_t> context,
          const Certificate::Keys serverCertificate)
 {
-    bool isAuthenticationServer = true;
+    //bool isAuthenticationServer = true;
     Certificate::UserNameAndPassword plainText; 
     plainText.setUserName("server");
     plainText.setPassword("password");
 
+    UMPS::Messaging::PublisherSubscriber::PublisherOptions options;
+    UMPS::Messaging::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStonehouseServer(serverCertificate);
+    options.setAddress("tcp://*:5555");
+    options.setZAPOptions(zapOptions);
     UMPS::Messaging::PublisherSubscriber::Publisher publisher(context);
-    //publisher.bind("tcp:// *:5555", isAuthenticationServer); // Strawhouse
-    //publisher.bind("tcp:// *:5555", plainText, isAuthenticationServer); // Woodhouse
-    publisher.bind("tcp://*:5555", serverCertificate); //  Stonehouse
+    publisher.initialize(options);
+    ////publisher.bind("tcp:// *:5555", isAuthenticationServer); // Strawhouse
+    ////publisher.bind("tcp:// *:5555", plainText, isAuthenticationServer); // Woodhouse
+    //publisher.bind("tcp://*:5555", serverCertificate); //  Stonehouse
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // Define message to send
     auto pick = makePickMessage();
@@ -336,7 +343,7 @@ void sub(const Certificate::Keys serverCertificate)
     options.setMessageTypes(messageTypes);
     options.setZAPOptions(zapOptions);
 
-    bool isAuthenticationServer = false;
+    //bool isAuthenticationServer = false;
     UMPS::Messaging::PublisherSubscriber::Subscriber subscriber;
     //subscriber.connect("tcp://127.0.0.1:5555", isAuthenticationServer); // Grasslands/Strawhouse
     //subscriber.connect("tcp://127.0.0.1:5555", plainText, isAuthenticationServer); // Woodhouse

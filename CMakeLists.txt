@@ -85,6 +85,7 @@ set(MESSAGING_SRC
     src/messaging/authentication/certificate/userNameAndPassword.cpp
     #src/messaging/authentication/generateKeyPair.cpp
     src/messaging/publisherSubscriber/publisher.cpp
+    src/messaging/publisherSubscriber/publisherOptions.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
     src/messaging/publisherSubscriber/subscriberOptions.cpp
     src/messaging/requestRouter/request.cpp

@@ -6,6 +6,7 @@
 #include <zmq.hpp>
 #include "umps/logging/stdout.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -112,8 +113,12 @@ TEST(Messaging, PubSub)
     //subscriber.addSubscription(pickMessageType);
     //sleep(1);
     // Create publisher and bind
+    PublisherOptions publisherOptions;
+    publisherOptions.setAddress(serverHost);
     Publisher publisher(loggerPtr);
-    publisher.bind(serverHost);//localHost);
+    publisher.initialize(publisherOptions);
+    EXPECT_TRUE(publisher.isInitialized());
+    //publisher.bind(serverHost);//localHost);
     // Give the publisher a chance to bind to the port
     std::this_thread::sleep_for(std::chrono::seconds(1)); //sleep(1);
     // Define message to send

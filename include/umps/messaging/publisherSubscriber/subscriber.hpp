@@ -38,7 +38,9 @@ public:
     /// @brief Constructor with a specified context.
     /// @param[i] context  The ZeroMQ context.
     explicit Subscriber(std::shared_ptr<zmq::context_t> &context);
-    //explicit Subscriber(std::shared_ptr<void *> &context);
+    /// @brief Construtcs a publisher with a given ZeroMQ context and logger.
+    Subscriber(std::shared_ptr<zmq::context_t> &context,
+               std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] subscriber  The subscriber class from which to initialize
     ///                            this class.  On exit, subscriber's behavior

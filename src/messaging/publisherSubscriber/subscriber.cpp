@@ -19,6 +19,7 @@ using namespace UMPS::Messaging::PublisherSubscriber;
 class Subscriber::SubscriberImpl
 {
 public:
+/*
     /// C'tor
     SubscriberImpl() :
         mContext(std::make_shared<zmq::context_t> (1)),
@@ -53,24 +54,32 @@ public:
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
+*/
     /// C'tor
-    SubscriberImpl(std::shared_ptr<zmq::context_t> &context,
-                   std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mContext(context),
-        mSubscriber(std::make_unique<zmq::socket_t> (*mContext,
-                                                     zmq::socket_type::sub)),
-        mLogger(logger)
+    SubscriberImpl(std::shared_ptr<zmq::context_t> context,
+                   std::shared_ptr<UMPS::Logging::ILog> logger)
     {
+        // Ensure the context gets made
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
         if (logger == nullptr)
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
         }
-        if (context == nullptr)
+        else
         {
-            mContext = std::make_shared<zmq::context_t> (1);
-            mSubscriber = std::make_unique<zmq::socket_t> (*mContext,
-                                                         zmq::socket_type::sub);
+            mLogger = logger;
         }
+        // Now make the socket
+        mSubscriber = std::make_unique<zmq::socket_t> (*mContext,
+                                                       zmq::socket_type::sub);
     }
     /// Disconnect
     void disconnect()
@@ -98,28 +107,25 @@ public:
 
 /// C'tor
 Subscriber::Subscriber() :
-    pImpl(std::make_unique<SubscriberImpl> ())
+    pImpl(std::make_unique<SubscriberImpl> (nullptr, nullptr))
 {
 }
 
 Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context) :
-   pImpl(std::make_unique<SubscriberImpl> (context))
+   pImpl(std::make_unique<SubscriberImpl> (context, nullptr))
 {
 }
 
-/// C'tor
 Subscriber::Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<SubscriberImpl> (logger))
+    pImpl(std::make_unique<SubscriberImpl> (nullptr, logger))
 {
 }
 
-/*
 Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context,
                        std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<SubscriberImpl> (context, logger))
 {
 }
-*/
 
 /// Move c'tor
 Subscriber::Subscriber(Subscriber &&subscriber) noexcept
