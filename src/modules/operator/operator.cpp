@@ -563,7 +563,6 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     }
     else if (securityLevel == UAuth::SecurityLevel::STONEHOUSE)
     {
-        throw std::runtime_error("Need to read this servers keys");
         auto publicKeyFile 
             = propertyTree.get<std::string> ("uOperator.serverPublicKeyFile");
         auto privateKeyFile
