@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
         auto sqlite3 = std::make_shared<UAuth::SQLite3Authenticator>
                        (authenticationLoggerPtr);
 //        //sqlite3->initialize( );
-//        authenticator = sqlite3; 
+        authenticator = sqlite3;
     }
     auto authenticatorContext = std::make_shared<zmq::context_t> (1);
     UAuth::Service authenticatorService(authenticatorContext,
