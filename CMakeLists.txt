@@ -123,7 +123,8 @@ set(MODULES_LIBSRC
     src/services/incrementer/service.cpp
     src/services/packetCache/circularBuffer.cpp
     src/services/packetCache/cappedCollection.cpp
-    src/services/packetCache/dataRequest.cpp)
+    src/services/packetCache/dataRequest.cpp
+    src/modules/operator/readZAPOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
        src/broadcasts/earthworm/traceBuf2.cpp

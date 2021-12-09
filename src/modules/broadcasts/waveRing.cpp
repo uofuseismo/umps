@@ -18,20 +18,24 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
 //#include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 #include "private/isEmpty.hpp"
 
+namespace UAuth = UMPS::Messaging::Authentication;
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UServices = UMPS::Services;
 
 struct ProgramOptions
 {
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     std::string earthwormParametersDirectory
         = "/opt/earthworm/run_working/params/";
     std::string earthwormInstallation = "INST_UNKNOWN"; 
@@ -349,7 +353,6 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
             throw std::runtime_error("Failed to make log directory");
         }
     }
-//options.mZAPOptions.setWoodhouseClient();
     //------------------------------ Operator --------------------------------//
     options.operatorAddress = propertyTree.get<std::string>
         ("uOperator.ipAddress", options.operatorAddress);
@@ -357,6 +360,52 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     {
         throw std::runtime_error("Operator address not set");
     } 
+    options.mZAPOptions
+        = UMPS::Modules::Operator::readZAPClientOptions(propertyTree);
+/*
+    // Security level
+    auto securityLevel = static_cast<UAuth::SecurityLevel>
+       (propertyTree.get<int> ("uOperator.securityLevel",
+                    static_cast<int> (options.mZAPOptions.getSecurityLevel())));
+    if (static_cast<int> (securityLevel) < 0 ||
+        static_cast<int> (securityLevel) > 4)
+    {
+        throw std::invalid_argument("Security level must be in range [0,4]");
+    }
+    // Define ZAP options
+    options.mZAPOptions.setGrasslandsClient();
+    if (securityLevel == UAuth::SecurityLevel::GRASSLANDS)
+    {
+        options.mZAPOptions.setGrasslandsClient();
+    }
+    else if (securityLevel == UAuth::SecurityLevel::STRAWHOUSE)
+    {
+        options.mZAPOptions.setStrawhouseClient();
+    }
+    else if (securityLevel == UAuth::SecurityLevel::WOODHOUSE)
+    {
+        UAuth::Certificate::UserNameAndPassword credentials;
+        //options.mZAPOptions.setWoodhouseClient();
+    }
+    else if (securityLevel == UAuth::SecurityLevel::STONEHOUSE)
+    {
+        auto serverPublicKeyFile
+            = propertyTree.get<std::string> ("uOperator.serverPublicKeyFile");
+        auto clientPublicKeyFile
+            = propertyTree.get<std::string> ("uOperator.clientPublicKeyFile");
+        auto clientPrivateKeyFile
+            = propertyTree.get<std::string> ("uOperator.clientPrivateKeyFile");
+        UAuth::Certificate::Keys serverKeys, clientKeys;
+        serverKeys.loadFromTextFile(serverPublicKeyFile);
+        clientKeys.loadFromTextFile(clientPublicKeyFile);
+        clientKeys.loadFromTextFile(clientPrivateKeyFile);
+        options.mZAPOptions.setStonehouseClient(serverKeys, clientKeys);
+    }
+    else
+    {
+        throw std::runtime_error("Unhandled security level");
+    }
+*/
     //------------------------------ Earthworm -------------------------------//
     // EW_PARAMS environment variable
     options.earthwormParametersDirectory = propertyTree.get<std::string>

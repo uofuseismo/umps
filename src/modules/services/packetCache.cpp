@@ -14,6 +14,7 @@
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
+#include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
@@ -348,5 +349,7 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     {
         throw std::runtime_error("Operator address not set");
     }
+    options.mZAPOptions
+        = UMPS::Modules::Operator::readZAPClientOptions(propertyTree);
     return options;
 }

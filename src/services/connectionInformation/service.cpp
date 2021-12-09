@@ -44,8 +44,8 @@ public:
     }
     ServiceImpl(std::shared_ptr<zmq::context_t> &context,
                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mLogger(logger)
-        //mRouter(logger, context)//, logger)
+        mLogger(logger),
+        mRouter(context, logger)
     {
     }
     

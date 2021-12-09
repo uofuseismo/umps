@@ -28,6 +28,7 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
+#include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/broadcasts/dataPacket/broadcast.hpp"
 #include "umps/broadcasts/dataPacket/parameters.hpp"
 #include "umps/broadcasts/heartbeat/broadcast.hpp"
@@ -516,17 +517,12 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             throw std::runtime_error("Failed to make log directory");
         }
     }
-    auto securityLevel = static_cast<UAuth::SecurityLevel>
-       (propertyTree.get<int> ("uOperator.securityLevel",
-                    static_cast<int> (options.mZAPOptions.getSecurityLevel())));
-    if (static_cast<int> (securityLevel) < 0 ||
-        static_cast<int> (securityLevel) > 4)
-    {
-        throw std::invalid_argument("Security level must be in range [0,4]");
-    }
+    // Define ZAP options
+    options.mZAPOptions
+        = UMPS::Modules::Operator::readZAPServerOptions(propertyTree);
+    auto securityLevel = options.mZAPOptions.getSecurityLevel();
     //mZAPOptions.mSecurityLevel = static_cast<UAuth::SecurityLevel> (securityLevel);
     // Get sqlite3 authentication tables
-    options.mZAPOptions.setGrasslandsServer();
     if (securityLevel != UAuth::SecurityLevel::GRASSLANDS)
     {
         options.mTablesDirectory
@@ -549,6 +545,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             = propertyTree.get<std::string> ("uOperator.whiteListTable",
                                              options.mWhiteListTable);
     }
+/*
+    // Define ZAP options
+    options.mZAPOptions.setGrasslandsServer();
     if (securityLevel == UAuth::SecurityLevel::GRASSLANDS)
     {
         options.mZAPOptions.setGrasslandsServer();
@@ -576,6 +575,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     {
         throw std::runtime_error("Unhandled security level");
     }
+*/
     options.mConnectionInformationParameters.setZAPOptions(options.mZAPOptions);
     // First make sure the connection information service is available
     auto address = "tcp://" + options.mIPAddress
