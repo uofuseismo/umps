@@ -76,7 +76,7 @@ public:
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
-    Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
     /// @name Destructors

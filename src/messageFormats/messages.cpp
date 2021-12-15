@@ -80,11 +80,19 @@ void Messages::add(const std::unique_ptr<IMessage> &message)
 }
 
 /// Does this message type exist
+bool Messages::contains(const IMessage &message) const noexcept
+{
+    auto messageType = message.getMessageType();
+    return contains(messageType);
+}
+
+/// Does this message type exist
 bool Messages::contains(const std::unique_ptr<IMessage> &message) const
 {
     if (message == nullptr){throw std::invalid_argument("Message is NULL");}
-    auto messageType = message->getMessageType();
-    return contains(messageType);
+    return contains(*message); 
+    //auto messageType = message->getMessageType();
+    //return contains(messageType);
 }
 
 bool Messages::contains(const std::string &messageType) const noexcept

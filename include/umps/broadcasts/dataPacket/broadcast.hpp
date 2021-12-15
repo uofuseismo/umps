@@ -94,5 +94,5 @@ private:
     class BroadcastImpl;
     std::unique_ptr<BroadcastImpl> pImpl;
 };
-};
+}
 #endif

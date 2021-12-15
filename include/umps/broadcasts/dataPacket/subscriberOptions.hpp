@@ -1,22 +1,22 @@
-#ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBEROPTIONS_HPP
-#define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBEROPTIONS_HPP
+#ifndef UMPS_BROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
+#define UMPS_BROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
 #include <memory>
-#include <string>
 #include <chrono>
-namespace UMPS::MessageFormats
+namespace UMPS::Messaging
 {
- class IMessage;
- class Messages;
+ namespace PublisherSubscriber
+ {
+  class SubscriberOptions;
+ }
+ namespace Authentication
+ {
+  class ZAPOptions;
+ }
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Broadcasts::DataPacket
 {
- class ZAPOptions;
-}
-namespace UMPS::Messaging::PublisherSubscriber
-{
-/// @class SubscriberOptions "publisherOptions.hpp" "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-/// @brief Options for initializing the subscriber in the PUB/SUB pattern.
-/// @detail The subscriber receives content from a publisher.
+/// @class SubscriberOptions "subscriberOptions.hpp" "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+/// @brief Defines the parameters for connecting to the data packet backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class SubscriberOptions
 {
@@ -26,11 +26,13 @@ public:
     /// @brief Constructor.
     SubscriberOptions();
     /// @brief Copy constructor.
-    /// @param[in] options 
+    /// @param[in] options  The options class from which to initialize
+    ///                     this class.
     SubscriberOptions(const SubscriberOptions &options);
     /// @brief Move constructor.
-    /// @param[in,out] options  The class from which to initialize this class.
-    ///                         On exit, options's behavior is undefined.  
+    /// @param[in,out] options  The options class from which to initialize this
+    ///                         class.  On exit, options's behavior is
+    ///                         undefined.
     SubscriberOptions(SubscriberOptions &&options) noexcept;
     /// @}
 
@@ -47,7 +49,7 @@ public:
     SubscriberOptions& operator=(SubscriberOptions &&options) noexcept;
     /// @}
 
-    /// @name Subscriber Options
+    /// @name Required Parameters
     /// @{
     /// @brief Sets the address to which the proxy will bind.
     /// @throws std::invalid_argument if the address is empty.
@@ -57,16 +59,16 @@ public:
     [[nodiscard]] std::string getAddress() const;
     /// @result True indicates the address was set.
     [[nodiscard]] bool haveAddress() const noexcept;
+    /// @}
 
-    /// @brief Sets the message types to which to subscriber.
-    /// @param[in] messageTypes   The message types that the subscriber will
-    ///                           be able to read and deserialize.
-    void setMessageTypes(const UMPS::MessageFormats::Messages &messageTypes);
-    /// @result The message types to which to subscriber.
-    /// @throws std::runtime_error if \c haveMessageTypes() is false.
-    UMPS::MessageFormats::Messages getMessageTypes() const;
-    /// @result True indicates the message types have been set.
-    [[nodiscard]] bool haveMessageTypes() const noexcept;
+    /// @name Options Parameters
+    /// @{
+    /// @brief Defines the ZAP options to be used when configuring the socket.
+    /// @param[in] options  The ZAP options.
+    void setZAPOptions(const UMPS::Messaging::Authentication::ZAPOptions &options);
+    /// @result The ZAP options.  By default this will configure sockets with
+    ///         the grasslands (no security) pattern.
+    [[nodiscard]] UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
 
     /// @brief This sets a hard limit on the maximum number of messages that
     ///        can be queued.
@@ -91,16 +93,10 @@ public:
     [[nodiscard]] std::chrono::milliseconds getTimeOut() const noexcept;
     /// @}
 
-    /// @name ZeroMQ Authentication Protocol Options
-    /// @{
-    /// @brief Defines the ZAP options to be used when configuring the socket.
-    /// @param[in] options  The ZAP options.
-    void setZAPOptions(const Authentication::ZAPOptions &options);
-    /// @result The ZAP options.  By default this will configure sockets with
-    ///         the grasslands (no security) pattern.
-    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
-    /// @}
- 
+    /// @result The subscriber options.
+    [[nodiscard]] UMPS::Messaging::PublisherSubscriber::SubscriberOptions
+        getSubscriberOptions() const noexcept;
+
     /// @name Destructors
     /// @{
     /// @brief Resets class and releases all memory.

@@ -46,7 +46,12 @@ public:
     /// @throws std::invalid_argument if the message type already exists.
     void add(const std::unique_ptr<IMessage> &message);
 
-    /// @param[in] message  Determines if the message is set b calling
+  
+    /// @param[in] message  Determines if the message is set by calling
+    ///                     \c contains(getMessageType()).
+    /// @result True indicates the message type exists.
+    [[nodiscard]] bool contains(const IMessage &message) const noexcept;
+    /// @param[in] message  Determines if the message is set by calling
     ///                     \c contains(getMessageType()).
     /// @result True indicates the message type exists.
     /// @throws std::invalid_argument if the message is NULL.
