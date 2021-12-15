@@ -439,7 +439,8 @@ void Service::start()
             */
             if (statusCode == IAuthenticator::okayStatus())
             {
-                pImpl->mLogger->info("Allowing connection from: " + ipAddress);
+                pImpl->mLogger->info("Allowing " + mechanism
+                                   + " connection from: " + ipAddress);
             }
             else
             {
