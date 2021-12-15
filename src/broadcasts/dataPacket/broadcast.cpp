@@ -84,13 +84,16 @@ void Broadcast::initialize(const Parameters &parameters)
     }
     stop();
     // Set the proxy options
+    pImpl->mParameters = parameters;
     UMPS::Messaging::XPublisherXSubscriber::ProxyOptions options;
-    options.setFrontendAddress(parameters.getFrontendAddress());
-    options.setBackendAddress(parameters.getBackendAddress());
-    options.setFrontendHighWaterMark(parameters.getFrontendHighWaterMark());
-    options.setBackendHighWaterMark(parameters.getBackendHighWaterMark());
+    options.setFrontendAddress(pImpl->mParameters.getFrontendAddress());
+    options.setBackendAddress(pImpl->mParameters.getBackendAddress());
+    options.setFrontendHighWaterMark(
+        pImpl->mParameters.getFrontendHighWaterMark());
+    options.setBackendHighWaterMark(
+        pImpl->mParameters.getBackendHighWaterMark());
     options.setTopic(getName());
-    options.setZAPOptions(parameters.getZAPOptions());
+    options.setZAPOptions(pImpl->mParameters.getZAPOptions());
     pImpl->mProxy.initialize(options);
     // Figure out the connection details
     UCI::SocketDetails::XSubscriber xSub;
@@ -104,8 +107,6 @@ void Broadcast::initialize(const Parameters &parameters)
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::BROADCAST);
     pImpl->mConnectionDetails.setSecurityLevel(
         pImpl->mProxy.getSecurityLevel());
-    // Save
-    pImpl->mParameters = parameters;
     pImpl->mInitialized = true;
 }
 /*
@@ -148,6 +149,7 @@ void Broadcast::start()
 }
 
 /// Is the proxy running?
+[[maybe_unused]]
 bool Broadcast::isRunning() const noexcept
 {
     return pImpl->mProxy.isRunning();

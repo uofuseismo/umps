@@ -14,6 +14,8 @@
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
+#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/broadcasts/dataPacket/subscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
@@ -27,25 +29,98 @@
 
 namespace UPacketCache = UMPS::Services::PacketCache;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
+namespace UAuth = UMPS::Messaging::Authentication;
+
+#define DEFAULT_HWM 4096
+#define DEFAULT_TIMEOUT std::chrono::milliseconds{10}
+#define DEFAULT_MAXPACKETS 100
 
 struct ProgramOptions
 {
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
     std::chrono::milliseconds dataPacketTimeOut{10};
     int maxPackets = 100;
-    int dataPacketHighWaterMark = 4*1024;
+    int dataPacketHighWaterMark = static_cast<int> (DEFAULT_HWM);
 };
 
 template<class T = double>
 class DataPacketSubscriber
 {
 public:
+/*
+    /// C'tor
+    DataPacketSubscriber(
+        std::shared_ptr<zmq::context_t> context,
+        std::shared_ptr<UMPS::Logging::ILog> logger,
+        std::shared_ptr<UPacketCache::CappedCollection<T>> cappedCollection) :
+        mLogger(logger),
+        mCappedCollection(cappedCollection)
+    {
+        mSubscriber = std::make_shared<UPubSub::Subscriber> (context, logger); 
+
+        std::unique_ptr<UMPS::MessageFormats::IMessage> messageType
+            = std::make_unique<UMPS::MessageFormats::DataPacket<T>> (); 
+        UMPS::MessageFormats::Messages messageTypes;
+        messageTypes.add(messageType);
+        mSubscriberOptions.setMessageTypes(messageTypes);
+        mSubscriberOptions.setHighWaterMark(mHighWaterMark);
+        mSubscriberOptions.setTimeOut(mTimeOut);
+    }
+    DataPacketSubscriber(
+        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection)
+    {
+        DataPacketSubscriber(nullptr, nullptr, cappedCollection);
+    }
+    DataPacketSubscriber(
+        std::shared_ptr<zmq::context_t> &context,
+        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection)
+    {
+        DataPacketSubscriber(context, nullptr, cappedCollection);
+    }
+    DataPacketSubscriber(
+        std::shared_ptr<UMPS::Logging::ILog> &logger,
+        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection)
+    {
+        DataPacketSubscriber(nullptr, logger, cappedCollection);
+    }
+    void setDataPacketFeedAddress(const std::string &address)
+    {
+        mSubscriberOptions.setAddress(address);
+    }
+    void setZAPOptions(const UAuth::ZAPOptions &options)
+    {
+        mSubscriberOptions.setZAPOptions(options);
+    }
+    void setTimeOut(const std::chrono::milliseconds &timeOut)
+    {
+        mSubscriberOptions.setTimeOut(timeOut);
+    }
+    void setHighWaterMark(const int hwm)
+    {
+        mSubscriberOptions.setHighWaterMark(hwm);
+    }
+    void setMaximumNumberOfPackets(const int maxPackets)
+    {
+    }
+    void initialize()
+    {
+        if (mSubscriber->isInitialized())
+        {
+            mLogger->warn("Subscriber already initialized");
+        }
+        mSubscriber->initialize(mSubscriberOptions);
+#ifndef NDEBUG
+        assert(mSubscriber->isInitialized());
+#endif
+    }
+*/
     /// C'tor
     DataPacketSubscriber(
         std::shared_ptr<UMPS::Logging::ILog> &logger,
-        std::shared_ptr<UPubSub::Subscriber> &subscriber,
+        //std::shared_ptr<UPubSub::Subscriber> &subscriber,
+        std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>> &subscriber,
         std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection) :
         mLogger(logger),
         mSubscriber(subscriber),
@@ -65,8 +140,9 @@ public:
             //if (message == nullptr){continue;} // Possible to timeout
             //auto dataPacket
             //    = static_unique_pointer_cast<UMF::DataPacket<T>> (std::move(message));
-            auto dataPacket = static_unique_pointer_cast<UMF::DataPacket<T>>
-                              (mSubscriber->receive());
+            //auto dataPacket = static_unique_pointer_cast<UMF::DataPacket<T>>
+            //                  (mSubscriber->receive());
+            auto dataPacket = mSubscriber->receive();
             if (dataPacket == nullptr){continue;}
             // Push it onto the queue
             mDataPacketQueue.push(std::move(*dataPacket));
@@ -118,9 +194,14 @@ public:
 ///private:
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    std::shared_ptr<UPubSub::Subscriber> mSubscriber;
+    //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
+    std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>> mSubscriber;
     std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
+    UPubSub::SubscriberOptions mSubscriberOptions;
+    std::chrono::milliseconds mTimeOut{DEFAULT_TIMEOUT};
+    int mMaxPackets = DEFAULT_MAXPACKETS;
+    int mHighWaterMark = DEFAULT_HWM; 
     bool mKeepRunning = true;
     //bool mRunning = false;
 }; 
@@ -201,6 +282,7 @@ int main(int argc, char *argv[])
                   + " at " + dataPacketAddress); 
     }
 
+/*
     // Now connect to the publisher
     std::unique_ptr<UMPS::MessageFormats::IMessage> messageType
         = std::make_unique<UMPS::MessageFormats::DataPacket<double>> ();
@@ -216,9 +298,21 @@ int main(int argc, char *argv[])
 
     auto subscriber = std::make_shared<UPubSub::Subscriber> (loggerPtr);
     subscriber->initialize(subscriberOptions);
+#ifndef NDEBUG
     assert(subscriber->isInitialized());
-    //subscriber.connect(dataPacketAddress);
-    //subscriber.addSubscription(messageType);
+#endif
+*/
+
+    UMPS::Broadcasts::DataPacket::SubscriberOptions<double>
+        dataPacketSubscriberOptions;
+    dataPacketSubscriberOptions.setAddress(dataPacketAddress);
+    dataPacketSubscriberOptions.setHighWaterMark(
+        options.dataPacketHighWaterMark);
+    dataPacketSubscriberOptions.setTimeOut(options.dataPacketTimeOut);
+    dataPacketSubscriberOptions.setZAPOptions(zapOptions);
+    auto dataPacketSubscriber
+        = std::make_shared<UMPS::Broadcasts::DataPacket::Subscriber<double>> ();
+    dataPacketSubscriber->initialize(dataPacketSubscriberOptions);
 
     // Create a collection of circular buffers
     auto cappedCollection
@@ -228,7 +322,26 @@ int main(int argc, char *argv[])
     assert(cappedCollection->isInitialized());
 #endif
     // Create the struct
-    DataPacketSubscriber<double> dps(loggerPtr, subscriber, cappedCollection);
+    DataPacketSubscriber<double> dps(loggerPtr, dataPacketSubscriber, cappedCollection);
+
+/*
+DataPacketSubscriber<double> dps(loggerPtr, cappedCollection);
+dps.setDataPacketFeedAddress(dataPacketAddress);
+dps.setZAPOptions(zapOptions);
+dps.setHighWaterMark(options.dataPacketHighWaterMark);
+dps.setTimeOut(options.dataPacketTimeOut);
+dps.initialize();
+*/
+/*
+subscriberOptions.setAddress(dataPacketAddress);
+subscriberOptions.setHighWaterMark(options.dataPacketHighWaterMark);
+subscriberOptions.setTimeOut(options.dataPacketTimeOut);
+subscriberOptions.setMessageTypes(messageTypes);
+subscriberOptions.setZAPOptions(zapOptions);
+*/
+
+//DataPacketSubscriber<double> dps(nullptr, loggerPtr, subscriberOptions, cappedCollection);
+
     std::thread subscriberToQueueThread(
         &DataPacketSubscriber<double>::startSubscriber, &dps);
     std::thread queueToCircularBufferThread(
@@ -239,42 +352,11 @@ int main(int argc, char *argv[])
     {
         // Get a good read on time so we wait a predictable amount
         auto startRead = std::chrono::high_resolution_clock::now();
-/*
-int nRecv = 0;
-while (true)
-{
-        auto message = subscriber->receive();
-        if (message == nullptr){break;}
- nRecv = nRecv + 1;
- //std::cout << nRecv << " " << elapsedTime << std::endl;
-}
-std::cout << "received: " << nRecv << std::endl;
-*/
-/*
-        // Read the ring
-        waveRing.read();
-        // Get the tracebuf2 messages
-        auto traceBuf2Messages = waveRing.getTraceBuf2Messages();
-        if (k == 0){logger.info("Setting first batch of messages");}
-        for (const auto &traceBuf2Message : traceBuf2Messages)
-        {
-            UMPS::MessageFormats::DataPacket<double> packet(traceBuf2Message);
-            try
-            {
-                cappedCollection.addPacket(std::move(packet));
-            }
-            catch (const std::exception &e)
-            {
-                logger.error("Error detected: " + std::string(e.what())
-                           + "; skipping...");
-            } 
-        }
-*/
         auto endRead = std::chrono::high_resolution_clock::now();
         auto elapsedTime
             = std::chrono::duration<double> (endRead - startRead).count();
-        logger.debug("Read and update took: "
-                   + std::to_string(elapsedTime) + " (s)");
+        //logger.debug("Read and update took: "
+        //           + std::to_string(elapsedTime) + " (s)");
 //        logger.debug("Throughput (packets/second): "
 //                   + std::to_string(traceBuf2Messages.size()/elapsedTime));
         //sleep(1);

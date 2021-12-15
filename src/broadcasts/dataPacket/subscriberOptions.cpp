@@ -8,7 +8,8 @@
 using namespace UMPS::Broadcasts::DataPacket; 
 namespace UAuth = UMPS::Messaging::Authentication;
 
-class SubscriberOptions::SubscriberOptionsImpl
+template<class T>
+class SubscriberOptions<T>::SubscriberOptionsImpl
 {
 public:
     SubscriberOptionsImpl()
@@ -17,7 +18,7 @@ public:
         mOptions.setTimeOut(std::chrono::milliseconds{10});
         UMPS::MessageFormats::Messages messageTypes;
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataPacketMessageType
-            = std::make_unique<UMPS::MessageFormats::DataPacket<double>> (); 
+            = std::make_unique<UMPS::MessageFormats::DataPacket<T>> (); 
         messageTypes.add(dataPacketMessageType);
         mOptions.setMessageTypes(messageTypes);
     }
@@ -25,35 +26,41 @@ public:
 };
 
 /// C'tor
-SubscriberOptions::SubscriberOptions() :
+template<class T>
+SubscriberOptions<T>::SubscriberOptions() :
     pImpl(std::make_unique<SubscriberOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-SubscriberOptions::SubscriberOptions(const SubscriberOptions &options)
+template<class T>
+SubscriberOptions<T>::SubscriberOptions(const SubscriberOptions &options)
 {
     *this = options;
 }
 
 /// Move c'tor
-SubscriberOptions::SubscriberOptions(SubscriberOptions &&options) noexcept
+template<class T>
+SubscriberOptions<T>::SubscriberOptions(SubscriberOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Destructor
-SubscriberOptions::~SubscriberOptions() = default;
+template<class T>
+SubscriberOptions<T>::~SubscriberOptions() = default;
 
 /// Reset class
-void SubscriberOptions::clear() noexcept
+template<class T>
+void SubscriberOptions<T>::clear() noexcept
 {
     pImpl = std::make_unique<SubscriberOptionsImpl> ();
 }
 
 /// Copy assignment
-SubscriberOptions&
-    SubscriberOptions::operator=(const SubscriberOptions &options)
+template<class T>
+SubscriberOptions<T>&
+    SubscriberOptions<T>::operator=(const SubscriberOptions<T> &options)
 {
     if (&options == this){return *this;}
     pImpl = std::make_unique<SubscriberOptionsImpl> (*options.pImpl);
@@ -61,8 +68,9 @@ SubscriberOptions&
 }
 
 /// Move assignment
-SubscriberOptions&
-    SubscriberOptions::operator=(SubscriberOptions &&options) noexcept
+template<class T>
+SubscriberOptions<T>&
+    SubscriberOptions<T>::operator=(SubscriberOptions<T> &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -70,59 +78,76 @@ SubscriberOptions&
 }
 
 /// Address
-void SubscriberOptions::setAddress(const std::string &address)
+template<class T>
+void SubscriberOptions<T>::setAddress(const std::string &address)
 {
     pImpl->mOptions.setAddress(address);
 }
 
-std::string SubscriberOptions::getAddress() const
+template<class T>
+std::string SubscriberOptions<T>::getAddress() const
 {
     return pImpl->mOptions.getAddress();
 }
 
-bool SubscriberOptions::haveAddress() const noexcept
+template<class T>
+bool SubscriberOptions<T>::haveAddress() const noexcept
 {
-    return !pImpl->mOptions.haveAddress();
+    return pImpl->mOptions.haveAddress();
 }
 
 /// High water mark
-void SubscriberOptions::setHighWaterMark(const int hwm)
+template<class T>
+void SubscriberOptions<T>::setHighWaterMark(const int hwm)
 {
     pImpl->mOptions.setHighWaterMark(hwm);
 }
 
-int SubscriberOptions::getHighWaterMark() const noexcept
+template<class T>
+int SubscriberOptions<T>::getHighWaterMark() const noexcept
 {
     return pImpl->mOptions.getHighWaterMark();
 }
 
 /// ZAP options
-void SubscriberOptions::setZAPOptions(
+template<class T>
+void SubscriberOptions<T>::setZAPOptions(
     const UMPS::Messaging::Authentication::ZAPOptions &options)
 {
     pImpl->mOptions.setZAPOptions(options);
 } 
 
-UAuth::ZAPOptions  SubscriberOptions::getZAPOptions() const noexcept
+template<class T>
+UAuth::ZAPOptions SubscriberOptions<T>::getZAPOptions() const noexcept
 {
     return pImpl->mOptions.getZAPOptions();
 }
 
 /// Timeout
-void SubscriberOptions::setTimeOut(
+template<class T>
+void SubscriberOptions<T>::setTimeOut(
     const std::chrono::milliseconds timeOut) noexcept
 {
     pImpl->mOptions.setTimeOut(timeOut);
 }
 
-std::chrono::milliseconds SubscriberOptions::getTimeOut() const noexcept
+template<class T>
+std::chrono::milliseconds SubscriberOptions<T>::getTimeOut() const noexcept
 {
     return pImpl->mOptions.getTimeOut();
 }
 
 /// Gets the options
+template<class T>
 UMPS::Messaging::PublisherSubscriber::SubscriberOptions
-    SubscriberOptions::getSubscriberOptions() const noexcept
+    SubscriberOptions<T>::getSubscriberOptions() const noexcept
 {
     return pImpl->mOptions;
 }
+
+///--------------------------------------------------------------------------///
+///                           Template Instantiation                         ///
+///--------------------------------------------------------------------------///
+template class UMPS::Broadcasts::DataPacket::SubscriberOptions<double>;
+template class UMPS::Broadcasts::DataPacket::SubscriberOptions<float>;
+template class UMPS::Broadcasts::DataPacket::SubscriberOptions<int>;

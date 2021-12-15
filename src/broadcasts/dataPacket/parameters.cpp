@@ -27,12 +27,14 @@ Parameters::Parameters() :
 }
 
 /// Copy c'tor
+[[maybe_unused]]
 Parameters::Parameters(const Parameters &parameters)
 {
     *this = parameters;
 }
 
 /// Move c'tor
+[[maybe_unused]]
 Parameters::Parameters(Parameters &&parameters) noexcept
 {
     *this = std::move(parameters);
