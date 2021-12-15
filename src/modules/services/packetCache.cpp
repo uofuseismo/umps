@@ -250,7 +250,8 @@ int main(int argc, char *argv[])
     std::vector<UCI::Details> connectionDetails;
     try
     {
-        connectionDetails = UCI::getConnections(options.operatorAddress);
+        connectionDetails = UCI::getConnections(options.operatorAddress,
+                                                options.mZAPOptions);
     }
     catch (const std::exception &e)
     {

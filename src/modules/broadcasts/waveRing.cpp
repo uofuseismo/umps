@@ -172,7 +172,8 @@ int main(int argc, char *argv[])
     try
     {
         connectionDetails = UServices::ConnectionInformation::getConnections(
-                                 options.operatorAddress);
+                                 options.operatorAddress,
+                                 options.mZAPOptions);
     }
     catch (const std::exception &e)
     {
