@@ -2,7 +2,9 @@
 #include <map>
 #include <string>
 #include <chrono>
+#include <thread>
 #include <functional>
+#include <zmq.hpp>
 #include "umps/services/service.hpp"
 #include "umps/broadcasts/broadcast.hpp"
 #include "umps/services/connectionInformation/service.hpp"
@@ -15,40 +17,69 @@
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/messaging/authentication/grasslands.hpp"
+#include "umps/messaging/authentication/service.hpp"
 #include "umps/logging/stdout.hpp"
 
-class Parameters
-{
-std::string getClientAccessAddress();
-};
-
 using namespace UMPS::Services::ConnectionInformation;
+namespace UAuth = UMPS::Messaging::Authentication;
 
 class Service::ServiceImpl
 {
 public:
     /// Constructors
+    ServiceImpl() = delete;
+/*
     ServiceImpl() :
         mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
         mRouter(mLogger)
     {
     }
-    explicit ServiceImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mLogger(logger),
-        mRouter(logger)
+*/
+    ServiceImpl(std::shared_ptr<zmq::context_t> context,
+                std::shared_ptr<UMPS::Logging::ILog> logger,
+                std::shared_ptr<UAuth::IAuthenticator> authenticator)
+        //mLogger(logger),
+        //mRouter(context, logger)
     {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
         if (logger == nullptr)
         {
-            mLogger = std::make_shared< UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
+        else
+        {
+            mLogger = logger;
+        }
+        if (authenticator == nullptr)
+        {
+            mAuthenticator = std::make_shared<UAuth::Grasslands> (mLogger);
+        } 
+        else
+        {
+            mAuthenticator = authenticator;
+        }
+        mRouter = std::make_unique<UMPS::Messaging::RequestRouter::Router>
+                  (mContext, mLogger);
+        mAuthenticatorService
+            = std::make_unique<UMPS::Messaging::Authentication::Service>
+              (mContext, mLogger, mAuthenticator);
     }
+/*
     ServiceImpl(std::shared_ptr<zmq::context_t> &context,
                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mLogger(logger),
         mRouter(context, logger)
     {
     }
-    
+*/
     /// The callback to handle connection requests
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
@@ -108,11 +139,15 @@ public:
         return response;
     }
 ///private:
-    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<zmq::context_t> mContext{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::unique_ptr<UMPS::Messaging::RequestRouter::Router> mRouter{nullptr};
+    std::unique_ptr<UMPS::Messaging::Authentication::Service>
+        mAuthenticatorService{nullptr};
+    std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator>
+        mAuthenticator{nullptr};
     ConnectionInformation::Details mConnectionDetails;
     std::map<std::string, ConnectionInformation::Details> mConnections;
-    Parameters mParameters;
-    UMPS::Messaging::RequestRouter::Router mRouter;
     UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions;
     const std::string mName = Parameters::getName(); //"ConnectionInformation";
     bool mInitialized = false;
@@ -120,15 +155,39 @@ public:
 
 /// C'tor
 Service::Service() :
-    pImpl(std::make_unique<ServiceImpl> ())
+    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr, nullptr))
 {
 }
 
-/// C'tor
 Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ServiceImpl> (logger))
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger, nullptr))
 {
 }
+
+Service::Service(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<ServiceImpl> (context, nullptr, nullptr))
+{
+}
+
+Service::Service(std::shared_ptr<zmq::context_t> &context,
+                std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (context, logger, nullptr))
+{
+}
+
+Service::Service(std::shared_ptr<zmq::context_t> &context,
+                 std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ServiceImpl> (context, nullptr, authenticator))
+{
+}
+
+Service::Service(std::shared_ptr<zmq::context_t> &context,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger,
+                 std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ServiceImpl> (context, logger, authenticator))
+{
+}
+
 
 /// Move c'tor
 Service::Service(Service &&service) noexcept
@@ -171,15 +230,15 @@ void Service::initialize(const Parameters &parameters)
     std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
         = std::make_unique<AvailableConnectionsRequest> (); 
     pImpl->mRouterOptions.addMessageFormat(requestType);
-    pImpl->mRouter.initialize(pImpl->mRouterOptions); 
+    pImpl->mRouter->initialize(pImpl->mRouterOptions); 
     // Create the connection details
     ConnectionInformation::SocketDetails::Router socketDetails;
-    socketDetails.setAddress(pImpl->mRouter.getConnectionString());
+    socketDetails.setAddress(pImpl->mRouter->getConnectionString());
     pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
     pImpl->mConnectionDetails.setConnectionType(ConnectionType::SERVICE);
     pImpl->mConnectionDetails.setSecurityLevel(
-        pImpl->mRouter.getSecurityLevel());
+        pImpl->mRouter->getSecurityLevel());
     // Add myself
     pImpl->mConnections.insert(std::pair(getName(),
                                          pImpl->mConnectionDetails));
@@ -202,7 +261,7 @@ std::string Service::getName() const
 /// Is the service running?
 bool Service::isRunning() const noexcept
 {
-    return pImpl->mRouter.isRunning();
+    return pImpl->mRouter->isRunning();
 }
 
 /// Connection details
@@ -223,7 +282,7 @@ std::string Service::getRequestAddress() const
 /// Stop the service
 void Service::stop()
 {
-    pImpl->mRouter.stop();
+    pImpl->mRouter->stop();
 }
 
 /// Runs the service
@@ -233,8 +292,16 @@ void Service::start()
     {
         throw std::runtime_error("Service not initialized");
     }
+    pImpl->mLogger->debug("Beginning authenticator for service "
+                        + getName() + "...");
+    std::thread authThread(&UAuth::Service::start,
+                           &*pImpl->mAuthenticatorService);
     pImpl->mLogger->debug("Beginning service " + getName() + "...");
-    pImpl->mRouter.start(); // This should hang until the service is stopped
+    pImpl->mRouter->start(); // This should hang until the service is stopped
+    pImpl->mLogger->debug("Thread stopping authenticator service on "
+                        + getName());
+    pImpl->mAuthenticatorService->stop();
+    authThread.join();
     pImpl->mLogger->debug("Thread exiting service " + getName());
 }
 

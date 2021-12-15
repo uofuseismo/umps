@@ -26,9 +26,17 @@ public:
         {
             mContext = std::make_shared<zmq::context_t> (1);
         }
+        else
+        {
+            mContext = context;
+        }
         if (logger == nullptr)
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
+        else
+        {
+            mLogger = logger;
         }
         //if (authenticator == nullptr)
         //{

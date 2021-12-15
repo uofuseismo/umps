@@ -2,17 +2,28 @@
 #define UMPS_SERVICES_CONNECTIONINFORMATION_SERVICE_HPP
 #include <memory>
 #include "umps/services/service.hpp"
-namespace UMPS::Logging
+namespace zmq
 {
- class ILog;
+ class context_t;
 }
-namespace UMPS::Services
+namespace UMPS
 {
- class Service;
-}
-namespace UMPS::Broadcasts
-{
- class IBroadcast;
+ namespace Logging
+ {
+  class ILog;
+ }
+ namespace Services
+ {
+  class IService;
+ }
+ namespace Broadcasts
+ {
+  class IBroadcast;
+ }
+ namespace Messaging::Authentication
+ {
+  class IAuthenticator;
+ }
 }
 namespace UMPS::Services::ConnectionInformation
 {
@@ -27,6 +38,22 @@ public:
     Service();
     /// @brief Constructor with a given logger.
     explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given context.
+    explicit Service(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Constructor with a given context and logger.
+    Service(std::shared_ptr<zmq::context_t> &context,
+            std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given context and authenticator.
+    Service(std::shared_ptr<zmq::context_t> &context,
+            std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator> &authenticator);
+    /// @brief Constructor with a given logger and authenticator.
+    Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
+            std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator> &authenticator);
+    /// @brief Constructor with a given context, logger, and authenticator.
+    Service(std::shared_ptr<zmq::context_t> &context,
+            std::shared_ptr<UMPS::Logging::ILog> &logger,
+            std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator> &authenticator);
+
     /// @brief Move constructor.
     Service(Service &&service) noexcept;
     /// @brief Move assignment operator.
