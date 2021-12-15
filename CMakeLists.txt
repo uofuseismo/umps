@@ -101,6 +101,8 @@ set(MODULES_LIBSRC
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/broadcasts/dataPacket/broadcast.cpp
     src/broadcasts/dataPacket/parameters.cpp
+    src/broadcasts/dataPacket/subscriber.cpp
+    src/broadcasts/dataPacket/subscriberOptions.cpp
     src/broadcasts/heartbeat/broadcast.cpp
     src/broadcasts/heartbeat/parameters.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
@@ -140,7 +142,7 @@ set_target_properties(umps PROPERTIES
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(umps
-                      PUBLIC cppzmq  ${SQLite3_LIBRARIES}#${ZeroMQ_LIBRARY}
+                      PUBLIC cppzmq ${SQLite3_LIBRARIES} #${ZeroMQ_LIBRARY}
                       PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
 target_include_directories(umps
                            PRIVATE spdlog::spdlog
@@ -237,6 +239,7 @@ set(TEST_SRC
     testing/messageFormats/heartbeat.cpp
     testing/messageFormats/pick.cpp
     testing/messageFormats/dataPacket.cpp
+    testing/broadcasts/dataPacket.cpp
     testing/services/packetCache.cpp
     testing/services/incrementer.cpp
     testing/services/connectionInformation.cpp

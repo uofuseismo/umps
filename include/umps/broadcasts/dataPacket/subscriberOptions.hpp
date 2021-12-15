@@ -18,6 +18,7 @@ namespace UMPS::Broadcasts::DataPacket
 /// @class SubscriberOptions "subscriberOptions.hpp" "umps/broadcasts/dataPacket/subscriberOptions.hpp"
 /// @brief Defines the parameters for connecting to the data packet backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+template<class T = double>
 class SubscriberOptions
 {
 public:

@@ -62,6 +62,7 @@ public:
     ///                     and message types.
     /// @throws std::invalid_argument if \c options.haveAddress() or 
     ///         options.haveMessageTypes() is false.
+    /// @throws std::runtime_error if the connection cannot be established.
     void initialize(const SubscriberOptions &options);
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
