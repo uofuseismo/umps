@@ -181,6 +181,12 @@ Service::Service(std::shared_ptr<zmq::context_t> &context,
 {
 }
 
+Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
+                 std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger, authenticator))
+{
+}
+
 Service::Service(std::shared_ptr<zmq::context_t> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger,
                  std::shared_ptr<UAuth::IAuthenticator> &authenticator) :

@@ -231,12 +231,13 @@ int main(int argc, char *argv[])
     UMPS::Logging::SpdLog connectionInformationLogger;
     connectionInformationLogger.initialize("ConnectionInformation",
                                            connectionInformationLogFileName,
-                                           options.mVerbosity,
+                                           UMPS::Logging::Level::DEBUG, //options.mVerbosity,
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
     UMPS::Services::ConnectionInformation::Service
-        connectionInformation(connectionInformationLoggerPtr);
+        connectionInformation(connectionInformationLoggerPtr,
+                              authenticator);
     connectionInformation.initialize(options.mConnectionInformationParameters);
     modules.mConnectionInformation = std::move(connectionInformation);
 
