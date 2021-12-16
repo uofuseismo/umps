@@ -27,6 +27,7 @@ std::vector<Details> getConnections(const std::string &endPoint);
 ///                        and for the stonehouse you would have to set your
 ///                        public and private key as well as the server
 ///                        private key.
+/// @throws std::runtime_error if the connection fails.
 std::vector<Details> getConnections(
     const std::string &endPoint,
     const UMPS::Messaging::Authentication::ZAPOptions &zapOptions);

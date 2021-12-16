@@ -150,8 +150,8 @@ public:
         // Put one last message in the queue so the other thread can unlock
         // and quit its for loop 
         mLogger->debug("Subscriber thread has exited");
-        UMF::DataPacket<T> lastPacket;
-        mDataPacketQueue.push(lastPacket);
+        //UMF::DataPacket<T> lastPacket;
+        //mDataPacketQueue.push(lastPacket);
     }
     /// @brief Starts the service that takes a packet from the queue
     ///        and into the packedCollection.
@@ -161,11 +161,24 @@ public:
         mLogger->debug("Queue to circular buffer thread starting...");
         while (keepRunning())
         {
+            /*
             UMF::DataPacket<T> dataPacket;
             mDataPacketQueue.wait_and_pop(&dataPacket);
             if (!keepRunning()){break;}
             // Add the packet to the queue
-            mCappedCollection->addPacket(std::move(dataPacket));
+            if (dataPacket.getNumberOfSamples() > 0)
+            {
+                mCappedCollection->addPacket(std::move(dataPacket));
+            }
+            */
+            UMF::DataPacket<T> dataPacket;
+            if (mDataPacketQueue.wait_until_and_pop(&dataPacket))
+            {
+                if (dataPacket.getNumberOfSamples() > 0)
+                {
+                    mCappedCollection->addPacket(std::move(dataPacket)); 
+                }
+            }
         }
         mLogger->debug("Queue to circular buffer thread has exited");
     }

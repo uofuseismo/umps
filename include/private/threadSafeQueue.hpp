@@ -77,6 +77,31 @@ public:
         *value = mDataQueue.front();
         mDataQueue.pop();
     }
+    /// @brief Copies the value from the front of the queue and removes that
+    ///        value from the front of the queue.
+    /// @param[out] value  The value from the front of the queue.  Or, if the
+    ///                    function times out, then a NULL pointer.
+    /// @result True indicates that the value was set whereas false indicate.
+    ///         the class timed out.
+    /// @note This variant can time out and return NULL.
+    [[nodiscard]]
+    bool wait_until_and_pop(T *value,
+                            const std::chrono::milliseconds &waitFor
+                               = static_cast<std::chrono::milliseconds> (10))
+    {
+        auto now = std::chrono::system_clock::now();
+        std::unique_lock<std::mutex> lockGuard(mMutex);
+        if (mConditionVariable.wait_until(lockGuard, now + waitFor, [this] 
+                                         {
+                                             return !mDataQueue.empty();
+                                         }))
+        {
+            *value = mDataQueue.front();
+            mDataQueue.pop();
+            return true;
+        }
+        return false;
+    }
     /// @result A container with the value from the front of the queue.  The
     ///         value at front of the queue is removed.
     /// @result The value at the front of the queue.
