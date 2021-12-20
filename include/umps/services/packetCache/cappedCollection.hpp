@@ -88,6 +88,11 @@ public:
     /// @brief Destructor.
     ~CappedCollection();
     /// @}
+
+    CappedCollection(const CappedCollection &) = delete;
+    CappedCollection& operator=(const CappedCollection &) = delete;
+    CappedCollection(CappedCollection &&) = delete;
+    CappedCollection& operator=(CappedCollection &&) noexcept = delete;
 private:
     class CappedCollectionImpl;
     std::unique_ptr<CappedCollectionImpl> pImpl;

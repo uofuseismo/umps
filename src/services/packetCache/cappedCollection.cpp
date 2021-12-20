@@ -127,7 +127,7 @@ public:
 /// C'tor
 template<class T>
 CappedCollection<T>::CappedCollection() :
-    pImpl(std::unique_ptr<CappedCollectionImpl> ())
+    pImpl(std::make_unique<CappedCollectionImpl> ())
 {
 }
 
