@@ -106,6 +106,8 @@ set(MODULES_LIBSRC
     src/broadcasts/dataPacket/subscriberOptions.cpp
     src/broadcasts/heartbeat/broadcast.cpp
     src/broadcasts/heartbeat/parameters.cpp
+    src/broadcasts/heartbeat/subscriber.cpp
+    src/broadcasts/heartbeat/subscriberOptions.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
     src/services/connectionInformation/availableConnectionsResponse.cpp
     src/services/connectionInformation/getConnections.cpp
@@ -242,7 +244,9 @@ set(TEST_SRC
     testing/messageFormats/heartbeat.cpp
     testing/messageFormats/pick.cpp
     testing/messageFormats/dataPacket.cpp
+    testing/messageFormats/heartbeat.cpp
     testing/broadcasts/dataPacket.cpp
+    testing/broadcasts/heartbeat.cpp
     testing/services/packetCache.cpp
     testing/services/incrementer.cpp
     testing/services/connectionInformation.cpp

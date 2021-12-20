@@ -8,6 +8,8 @@
 #include <filesystem>
 #include "umps/services/packetCache/cappedCollection.hpp"
 #include "umps/services/packetCache/dataRequest.hpp"
+#include "umps/services/packetCache/sensorRequest.hpp"
+#include "umps/services/packetCache/sensorResponse.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
@@ -211,37 +213,70 @@ public:
         processDataRequest(const std::string &messageType,
                            const void *messageContents, const size_t length)
     {
-        UMPS::Services::PacketCache::DataRequest dataRequest;
+        UPacketCache::DataRequest dataRequest;
         if (messageType == dataRequest.getMessageType())
         {
             // Deserialize the message
-            auto cborMessageContents
-                = reinterpret_cast<const uint8_t *> (messageContents);
             try
             {
-                dataRequest.fromCBOR(cborMessageContents, length);
+                dataRequest.fromMessage(
+                    static_cast<const char *> (messageContents), length);
             }
             catch (...)
             {
-                //response->setreturnCode(UMPS::Services::PacketCache::INVALID_MESSAGE);
+                //response->setReturnCode(UMPS::Services::PacketCache::INVALID_MESSAGE);
                 //return std::move(response);
             }
+            auto id = dataRequest.getIdentifier();
             // Does this SNCL exist in the cache?
-            auto haveSensor
-                = mCappedCollection.haveSensor(dataRequest.getNetwork(),
-                                               dataRequest.getStation(),
-                                               dataRequest.getChannel(),
-                                               dataRequest.getLocationCode());
+            auto network = dataRequest.getNetwork();
+            auto station = dataRequest.getStation();
+            auto channel = dataRequest.getChannel();
+            auto locationCode = dataRequest.getLocationCode();
+            auto haveSensor = mCappedCollection.haveSensor(network,
+                                                           station,
+                                                           channel,
+                                                           locationCode);
             if (haveSensor)
             {
 
             }
             else
             {
-               //response->setReturnCode(UMPS::Services::PacketCache::NO_SENSOR);
-               //return std::move(response);
+               //response.setReturnCode(UMPS::Services::PacketCache::NO_SENSOR);
+               //return response.clone();
             }
           
+        }
+        UMPS::Services::PacketCache::SensorRequest sensorRequest;
+        if (messageType == sensorRequest.getMessageType())
+        {
+            UPacketCache::SensorResponse response;
+            uint64_t id = 0;
+            try
+            {
+                sensorRequest.fromMessage(
+                    static_cast<const char *> (messageContents), length);
+                id = sensorRequest.getIdentifier();
+            }
+            catch (...)
+            {
+                response.setReturnCode(
+                    UPacketCache::ReturnCode::INVALID_MESSAGE);
+                return response.clone();
+            }
+            // Now get the result
+            response.setIdentifier(id);
+            try
+            {
+                response.setNames(mCappedCollection->getSensors());
+            }
+            catch (...)
+            {
+                response.setReturnCode(
+                    UPacketCache::ReturnCode::ALGORITHM_FAILURE);
+            }
+            return response.clone();
         }
         else
         {

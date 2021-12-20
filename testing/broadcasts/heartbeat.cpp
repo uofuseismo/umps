@@ -1,37 +1,31 @@
 #include <iostream>
 #include <string>
 #include <chrono>
-#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/broadcasts/heartbeat/subscriberOptions.hpp"
+#include "umps/broadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 
 namespace
 {
 
-using namespace UMPS::Broadcasts::DataPacket;
+using namespace UMPS::Broadcasts::Heartbeat;
 namespace UAuth = UMPS::Messaging::Authentication;
 
-TEST(BroadcastsDataPacket, ProxyOptions)
+TEST(BroadcastsHeartbeat, SubscriberOptions)
 {
-    const std::string frontEnd = "tcp://127.0.0.1:8080";
-    const std::string backEnd  = "tcp://127.0.0.1:8081";
-}
-
-TEST(BroadcastsDataPacket, SubscriberOptions)
-{
-    UMPS::MessageFormats::DataPacket<double> dataPacket;
+    Status status;
     // Test defaults
     SubscriberOptions options;
     EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds{10});
-    EXPECT_EQ(options.getHighWaterMark(), 8192);
+    EXPECT_EQ(options.getHighWaterMark(), 1024);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::GRASSLANDS);
     auto messageTypes = options.getSubscriberOptions().getMessageTypes();
     EXPECT_EQ(messageTypes.size(), 1);
-    EXPECT_TRUE(messageTypes.contains(dataPacket));
+    EXPECT_TRUE(messageTypes.contains(status));
     // Test fascade
     const std::string backEnd = "tcp://127.0.0.1:8081";
     UAuth::ZAPOptions zapOptions;
@@ -51,7 +45,7 @@ TEST(BroadcastsDataPacket, SubscriberOptions)
               zapOptions.getSecurityLevel());
     messageTypes = optionsCopy.getSubscriberOptions().getMessageTypes();
     EXPECT_EQ(messageTypes.size(), 1); 
-    EXPECT_TRUE(messageTypes.contains(dataPacket));
+    EXPECT_TRUE(messageTypes.contains(status));
 }
 
 }

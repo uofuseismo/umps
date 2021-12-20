@@ -139,6 +139,7 @@ public:
                                          (const std::string &messageType, const void *data, size_t length)> &callback);
     /// @result The callback function.
     /// @throws std::invalid_argument if \c haveCallback() is false.
+    [[nodiscard]] 
     std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
         (const std::string &messageType, const void *data, size_t length)> getCallback() const;
     /// @result True indicates the callback was set.
@@ -154,7 +155,7 @@ public:
     /// @result The types of messages that the router can receive via
     ///         ZeroMQ and process.
     /// @note If this is empty then the router will listen for all messages.
-    UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
+    [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
     /// @}
 private:
     class RouterOptionsImpl;

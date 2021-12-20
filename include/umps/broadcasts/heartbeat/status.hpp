@@ -141,7 +141,7 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~Status();
+    ~Status() override;
     /// @}
 private:
     class StatusImpl;

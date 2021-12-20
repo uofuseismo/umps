@@ -103,7 +103,7 @@ public:
     /// @result The types of messages that the router can receive via
     ///         ZeroMQ.
     /// @note If this is empty then the request will listen for all messages.
-    UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
+    [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
     /// @}
 private:
     class RequestOptionsImpl;
