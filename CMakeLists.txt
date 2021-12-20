@@ -147,7 +147,7 @@ set_target_properties(umps PROPERTIES
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(umps
-                      PUBLIC cppzmq ${SQLite3_LIBRARIES} #${ZeroMQ_LIBRARY}
+                      PUBLIC cppzmq ${SQLite3_LIBRARIES} Threads::Threads
                       PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
 target_include_directories(umps
                            PRIVATE spdlog::spdlog
@@ -178,21 +178,21 @@ set_target_properties(uOperator PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(uOperator PRIVATE umps Boost::program_options Threads::Threads) 
+target_link_libraries(uOperator PRIVATE umps Boost::program_options)
 if (${BUILD_EW})
     add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
     set_target_properties(broadcastWaveRing PROPERTIES
                           CXX_STANDARD 20
                           CXX_STANDARD_REQUIRED YES 
                           CXX_EXTENSIONS NO) 
-    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options Threads::Threads)
+    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options)
 endif()
 add_executable(packetCache src/modules/services/packetCache.cpp)
 set_target_properties(packetCache PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
+target_link_libraries(packetCache PRIVATE umps Boost::program_options)
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
 set_target_properties(uKeyPair PROPERTIES
@@ -261,7 +261,7 @@ set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO) 
-target_link_libraries(unitTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} Threads::Threads)
+target_link_libraries(unitTests PRIVATE umps ${GTEST_BOTH_LIBRARIES})
 target_include_directories(unitTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
@@ -278,7 +278,7 @@ set_target_properties(commTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(commTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} Threads::Threads)
+target_link_libraries(commTests PRIVATE umps ${GTEST_BOTH_LIBRARIES})
 target_include_directories(commTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
