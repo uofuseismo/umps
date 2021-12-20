@@ -197,7 +197,7 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~DataPacket();
+    ~DataPacket() override;
     /// @}
 private:
     class DataPacketImpl;

@@ -7,6 +7,8 @@
 #include "umps/services/packetCache/circularBuffer.hpp"
 #include "umps/services/packetCache/cappedCollection.hpp"
 #include "umps/services/packetCache/dataRequest.hpp"
+#include "umps/services/packetCache/sensorRequest.hpp"
+#include "umps/services/packetCache/sensorResponse.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -98,6 +100,58 @@ bool operator==(const MF::DataPacket<T> &lhs, const MF::DataPacket<T> &rhs)
     return true; 
 }
 
+TEST(PacketCache, SensorRequest)
+{
+    PC::SensorRequest request;
+    const uint64_t id = 600238; 
+    request.setIdentifier(id);
+    EXPECT_EQ(request.getMessageType(),
+              "UMPS::Services::PacketCache::SensorRequest");
+ 
+    auto message = request.toMessage();
+    PC::SensorRequest requestCopy;
+    requestCopy.fromMessage(message.data(), message.size());
+    EXPECT_EQ(requestCopy.getIdentifier(), id);
+}
+
+TEST(PacketCache, SensorResponse)
+{
+    const std::unordered_set<std::string> names{"UU.FORK.HHN.01",
+                                                "UU.FORK.HHE.01",
+                                                "UU.FORK.HHZ.01",
+                                                "WY.YFT.EHZ.01"};
+    PC::SensorResponse response;
+    PC::ReturnCode rc = PC::ReturnCode::INVALID_MESSAGE;
+    const uint64_t id = 600238; 
+    response.setIdentifier(id);
+    response.setReturnCode(rc);
+    EXPECT_NO_THROW(response.setNames(names));
+    EXPECT_EQ(response.getMessageType(),
+              "UMPS::Services::PacketCache::SensorResponse");
+ 
+    auto message = response.toMessage();
+    PC::SensorResponse responseCopy;
+    responseCopy.fromMessage(message.data(), message.size());
+    EXPECT_EQ(responseCopy.getIdentifier(), id); 
+    EXPECT_EQ(responseCopy.getReturnCode(), rc);
+    // There's really no guarantee how the names come back
+    auto namesBack = responseCopy.getNames();
+    EXPECT_EQ(namesBack.size(), names.size());
+    for (const auto &n : namesBack)
+    {
+        EXPECT_TRUE(names.contains(n));
+    }
+
+    // Make sure I can deal with no names
+    response.clear();
+    message = response.toMessage();
+    responseCopy.fromMessage(message.data(), message.size());
+    EXPECT_EQ(response.getIdentifier(), 0);
+    EXPECT_EQ(response.getReturnCode(), PC::ReturnCode::SUCCESS);
+    namesBack = responseCopy.getNames();
+    EXPECT_TRUE(namesBack.empty());
+}
+
 TEST(PacketCache, DataRequest)
 {
     PC::DataRequest request;
@@ -121,9 +175,9 @@ TEST(PacketCache, DataRequest)
     EXPECT_EQ(qTimeEnd, std::numeric_limits<double>::max());
     EXPECT_NO_THROW(request.setQueryTimes(std::pair(t0, t1)));
 
-    auto cbor = request.toCBOR();
+    auto message = request.toMessage();
     PC::DataRequest requestCopy;
-    requestCopy.fromCBOR(cbor);
+    requestCopy.fromMessage(message.data(), message.size());
     EXPECT_EQ(requestCopy.getNetwork(), network);
     EXPECT_EQ(requestCopy.getStation(), station);
     EXPECT_EQ(requestCopy.getChannel(), channel);

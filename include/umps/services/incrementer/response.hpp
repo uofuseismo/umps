@@ -121,7 +121,7 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~Response();
+    ~Response() override;
     /// @}
 private:
     class ResponseImpl;

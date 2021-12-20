@@ -189,7 +189,7 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~Pick();
+    ~Pick() override;
     /// @}
 private:
     class PickImpl;

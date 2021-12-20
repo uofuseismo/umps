@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <unordered_set>
 #include <vector>
 #include <mutex>
 #include "umps/services/packetCache/cappedCollection.hpp"
@@ -21,7 +22,7 @@ public:
     {
     }
     /// C'tor
-    CappedCollectionImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    explicit CappedCollectionImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mLogger(logger)
     {
         if (logger == nullptr)
@@ -51,15 +52,23 @@ public:
         return (it != mCircularBufferMap.end());
     }
     /// Get all sensor names
-    [[nodiscard]] std::vector<std::string> getSensors() const noexcept
+    //[[nodiscard]] std::vector<std::string> getSensors() const noexcept
+    [[nodiscard]] std::unordered_set<std::string> getSensors() const noexcept
     {
-        std::vector<std::string> result;
+        std::unordered_set<std::string> result;
         std::scoped_lock lock(mMutex);
         result.reserve(mCircularBufferMap.size());
+        for (auto it = mCircularBufferMap.begin();
+             it != mCircularBufferMap.end(); ++it)
+        {
+            result.insert(it->first);
+        }
+        /*
         for (const auto &cb : mCircularBufferMap)
         {
             result.push_back(cb.first);
         }
+        */
         return result;
     }
     /// Update (with move semantics for speed - i.e., no copies)
@@ -82,7 +91,10 @@ public:
         }
         else
         {
-            //mLogger->debug("Updating: " + name);
+            if (mLogger->getLevel() >= UMPS::Logging::Level::DEBUG)
+            {
+                mLogger->debug("Updating: " + name);
+            }
             it->second.addPacket(std::move(packet));
         } 
     }
@@ -91,10 +103,17 @@ public:
     {
         int nPackets = 0;
         std::scoped_lock lock(mMutex);
+        for (auto it = mCircularBufferMap.begin();
+             it != mCircularBufferMap.end(); ++it)
+        {
+            nPackets = nPackets + it->second.getNumberOfPackets();
+        }
+        /*
         for (const auto &cb : mCircularBufferMap)
         {
             nPackets = nPackets + cb.second.getNumberOfPackets();
         }
+        */
         return nPackets;
     }
 ///private:
@@ -188,7 +207,8 @@ bool CappedCollection<T>::haveSensor(
 
 /// Get all the sensor names
 template<class T>
-std::vector<std::string> CappedCollection<T>::getSensorNames() const noexcept
+std::unordered_set<std::string>
+    CappedCollection<T>::getSensorNames() const noexcept
 {
     return pImpl->getSensors();
 }

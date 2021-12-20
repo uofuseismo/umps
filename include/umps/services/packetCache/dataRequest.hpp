@@ -23,7 +23,9 @@ public:
     /// @brief Copy constructor.
     /// @param[in] request  The request from which to initialize this class.
     DataRequest(const DataRequest &request);
-    /// @brief 
+    /// @brief Move constructor.
+    /// @param[in,out] request  The request from which to initialize this class.
+    ///                         On exit, requests's behavior is undefined.
     DataRequest(DataRequest &&request) noexcept;
     /// @}
     
@@ -176,7 +178,7 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~DataRequest();
+    ~DataRequest() override;
     /// @}
 private:
     class DataRequestImpl;

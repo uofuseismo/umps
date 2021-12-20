@@ -87,7 +87,7 @@ public:
     /// @name Destructors
     /// @{
     /// @brief Destructor.
-    virtual ~AvailableConnectionsRequest(); 
+    ~AvailableConnectionsRequest() override;
     /// @}
 private:
     class RequestImpl;

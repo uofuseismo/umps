@@ -172,7 +172,7 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~TraceBuf2();
+    ~TraceBuf2() override;
     /// @}
 
     /// @name (De)serialization

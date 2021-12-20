@@ -129,7 +129,7 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~Request();
+    ~Request() override;
     /// @}
 private:
     class RequestImpl;

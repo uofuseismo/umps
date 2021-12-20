@@ -115,7 +115,7 @@ public:
     /// @brief Reset class and release all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~AvailableConnectionsResponse(); 
+    ~AvailableConnectionsResponse() override;
     /// @}
 private:
     class ResponseImpl;

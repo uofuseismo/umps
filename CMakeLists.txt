@@ -12,6 +12,7 @@ find_package(spdlog REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(cppzmq REQUIRED)
 find_package(SQLite3 REQUIRED)
+find_package(Threads REQUIRED)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
 #set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
@@ -126,6 +127,8 @@ set(MODULES_LIBSRC
     src/services/packetCache/circularBuffer.cpp
     src/services/packetCache/cappedCollection.cpp
     src/services/packetCache/dataRequest.cpp
+    src/services/packetCache/sensorRequest.cpp
+    src/services/packetCache/sensorResponse.cpp
     src/modules/operator/readZAPOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
@@ -173,21 +176,21 @@ set_target_properties(uOperator PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(uOperator PRIVATE umps Boost::program_options pthread) 
+target_link_libraries(uOperator PRIVATE umps Boost::program_options Threads::Threads) 
 if (${BUILD_EW})
     add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
     set_target_properties(broadcastWaveRing PROPERTIES
                           CXX_STANDARD 20
                           CXX_STANDARD_REQUIRED YES 
                           CXX_EXTENSIONS NO) 
-    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options pthread)
+    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options Threads::Threads)
 endif()
 add_executable(packetCache src/modules/services/packetCache.cpp)
 set_target_properties(packetCache PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(packetCache PRIVATE umps Boost::program_options pthread)
+target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
 set_target_properties(uKeyPair PROPERTIES
@@ -254,7 +257,7 @@ set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO) 
-target_link_libraries(unitTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} pthread)
+target_link_libraries(unitTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} Threads::Threads)
 target_include_directories(unitTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
@@ -271,7 +274,7 @@ set_target_properties(commTests PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(commTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} pthread)
+target_link_libraries(commTests PRIVATE umps ${GTEST_BOTH_LIBRARIES} Threads::Threads)
 target_include_directories(commTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)

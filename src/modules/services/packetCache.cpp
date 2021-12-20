@@ -176,7 +176,15 @@ public:
             {
                 if (dataPacket.getNumberOfSamples() > 0)
                 {
-                    mCappedCollection->addPacket(std::move(dataPacket)); 
+                    try
+                    {
+                        mCappedCollection->addPacket(std::move(dataPacket)); 
+                    }
+                    catch (const std::exception &e)
+                    {
+                        mLogger->error("Failed to add packet:\n"
+                                     + std::string{e.what()});
+                    }
                 }
             }
         }
@@ -188,6 +196,7 @@ public:
     {
         while (keepRunning())
         {
+            
         }
     }
     /// @result True indicates the data packet subscriber should keep receiving
@@ -196,6 +205,50 @@ public:
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
         return mKeepRunning;
+    }
+    /// @brief Processes data requests
+    std::unique_ptr<UMPS::MessageFormats::IMessage>
+        processDataRequest(const std::string &messageType,
+                           const void *messageContents, const size_t length)
+    {
+        UMPS::Services::PacketCache::DataRequest dataRequest;
+        if (messageType == dataRequest.getMessageType())
+        {
+            // Deserialize the message
+            auto cborMessageContents
+                = reinterpret_cast<const uint8_t *> (messageContents);
+            try
+            {
+                dataRequest.fromCBOR(cborMessageContents, length);
+            }
+            catch (...)
+            {
+                //response->setreturnCode(UMPS::Services::PacketCache::INVALID_MESSAGE);
+                //return std::move(response);
+            }
+            // Does this SNCL exist in the cache?
+            auto haveSensor
+                = mCappedCollection.haveSensor(dataRequest.getNetwork(),
+                                               dataRequest.getStation(),
+                                               dataRequest.getChannel(),
+                                               dataRequest.getLocationCode());
+            if (haveSensor)
+            {
+
+            }
+            else
+            {
+               //response->setReturnCode(UMPS::Services::PacketCache::NO_SENSOR);
+               //return std::move(response);
+            }
+          
+        }
+        else
+        {
+            //response->setReturnCode(UMPS::Services::PacketCache::INVALID_MESSAGE);
+            //return std::move(response);
+        }
+        
     }
     /// @brief Stops the publisher threads.
     void stop()
@@ -208,6 +261,7 @@ public:
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
+    std::shared_ptr<UMPS::Messaging::RequestRouter::Router> mRequestRouter;
     std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>> mSubscriber;
     std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
@@ -254,7 +308,7 @@ int main(int argc, char *argv[])
     auto zapOptions = options.mZAPOptions;
     // Create logger
     UMPS::Logging::StdOut logger;
-    logger.setLevel(UMPS::Logging::Level::DEBUG);
+    logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
@@ -271,7 +325,8 @@ int main(int argc, char *argv[])
         logger.error("Error getting services: " + std::string(e.what()));
         return EXIT_FAILURE;
     }
-    // Connect so that I may read from the appropriate broadcast - e.g., DataPacket
+    // Connect so that I may read from the appropriate broadcast
+    // - e.g., DataPacket
     std::string dataPacketAddress;
     for (const auto &connectionDetail : connectionDetails)
     {
@@ -283,7 +338,7 @@ int main(int argc, char *argv[])
             dataPacketAddress = backendSocketDetails.getAddress();
             break;
         }
-    }   
+    }
     if (dataPacketAddress.empty())
     {
         logger.error("Failed to find " + options.dataBroadcastName 
@@ -336,23 +391,10 @@ int main(int argc, char *argv[])
     assert(cappedCollection->isInitialized());
 #endif
     // Create the struct
-    DataPacketSubscriber<double> dps(loggerPtr, dataPacketSubscriber, cappedCollection);
+    DataPacketSubscriber<double> dps(loggerPtr,
+                                     dataPacketSubscriber,
+                                     cappedCollection);
 
-/*
-DataPacketSubscriber<double> dps(loggerPtr, cappedCollection);
-dps.setDataPacketFeedAddress(dataPacketAddress);
-dps.setZAPOptions(zapOptions);
-dps.setHighWaterMark(options.dataPacketHighWaterMark);
-dps.setTimeOut(options.dataPacketTimeOut);
-dps.initialize();
-*/
-/*
-subscriberOptions.setAddress(dataPacketAddress);
-subscriberOptions.setHighWaterMark(options.dataPacketHighWaterMark);
-subscriberOptions.setTimeOut(options.dataPacketTimeOut);
-subscriberOptions.setMessageTypes(messageTypes);
-subscriberOptions.setZAPOptions(zapOptions);
-*/
 
 //DataPacketSubscriber<double> dps(nullptr, loggerPtr, subscriberOptions, cappedCollection);
 
@@ -382,9 +424,12 @@ subscriberOptions.setZAPOptions(zapOptions);
 //std::cout << packet.toJSON(4) << std::endl;
 //break;
     }
-
+    loggerPtr->info("Number of packets in capped collection: "
+                  + std::to_string(
+                        dps.mCappedCollection->getTotalNumberOfPackets()));
+    loggerPtr->info("Final packet queue size is: "
+                  + std::to_string(dps.mDataPacketQueue.size()));
     loggerPtr->info("Stopping services...");
-std::cout << dps.mDataPacketQueue.size() << " " << dps.mCappedCollection->getTotalNumberOfPackets() << std::endl;
     dps.stop();
     subscriberToQueueThread.join();
     queueToCircularBufferThread.join();

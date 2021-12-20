@@ -1,7 +1,7 @@
 #ifndef UMPS_SERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
 #define UMPS_SERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
 #include <memory>
-#include <vector>
+#include <unordered_set>
 namespace UMPS
 {
  namespace Logging
@@ -68,9 +68,9 @@ public:
                                   const std::string &channel,
                                   const std::string &locationCode) const noexcept;
     /// @result All the sensors currently in the capped collection.
-    /// @note The sensors names are formatted as:
+    /// @note The names of each sensor are formatted as:
     ///       NETWORK.STATION.CHANNEL.LOCATION_CODE.
-    [[nodiscard]] std::vector<std::string> getSensorNames() const noexcept;
+    [[nodiscard]] std::unordered_set<std::string> getSensorNames() const noexcept;
     /// @}
 
     /// @name Querying Data
