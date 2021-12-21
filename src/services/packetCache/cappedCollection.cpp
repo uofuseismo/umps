@@ -48,8 +48,9 @@ public:
     [[nodiscard]] bool haveSensor(const std::string &name) const noexcept
     {
         std::scoped_lock lock(mMutex);
-        auto it = mCircularBufferMap.find(name);
-        return (it != mCircularBufferMap.end());
+        return mCircularBufferMap.contains(name);
+        //auto it = mCircularBufferMap.find(name);
+        //return (it != mCircularBufferMap.end());
     }
     /// Get all sensor names
     //[[nodiscard]] std::vector<std::string> getSensors() const noexcept
@@ -116,6 +117,62 @@ public:
         */
         return nPackets;
     }
+    /// Query
+    std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::string &name, const std::chrono::microseconds &t0)
+    {
+        std::vector<UMPS::MessageFormats::DataPacket<T>> result;
+        std::scoped_lock lock(mMutex);
+        auto it = mCircularBufferMap.find(name);
+        if (it != mCircularBufferMap.end())
+        {
+            return std::move(it->second.getPackets(t0));
+        }
+        throw std::invalid_argument("Sensor: " + name
+                                  + " not in collection");
+    }
+    /// Query
+    std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::string &name,
+                   const std::chrono::microseconds &t0,
+                   const std::chrono::microseconds &t1) 
+    {   
+        std::vector<UMPS::MessageFormats::DataPacket<T>> result;
+        std::scoped_lock lock(mMutex);
+        auto it = mCircularBufferMap.find(name);
+        if (it != mCircularBufferMap.end())
+        {
+            return std::move(it->second.getPackets(t0, t1));
+        }
+        throw std::invalid_argument("Sensor: " + name
+                                  + " not in collection");
+    }
+    /// Get earliest start time
+    std::chrono::microseconds
+        getEarliestStartTime(const std::string &name) const
+    {
+        std::scoped_lock lock(mMutex);
+        auto it = mCircularBufferMap.find(name);
+        if (it != mCircularBufferMap.end())
+        {   
+            return it->second.getEarliestStartTime();
+        }
+        return std::chrono::microseconds{std::numeric_limits<int>::lowest()};
+    }
+    /*
+    /// Get earliest start time
+    std::chrono::microseconds getEarliestStartTime() const
+    {
+        std::chrono::microseconds earliestTime{std::numeric_limits<int>::max()};
+        for (auto it = mCircularBufferMap.begin();
+             it != mCircularBufferMap.end(); ++it)
+        {
+            earliestTime = std::min(earliestTime,
+                                    it->second.getEarliestStartTime());
+        }
+        return earliestTime;
+    }       
+    */
 ///private:
     mutable std::mutex mMutex;
     std::map<std::string, CircularBuffer<T>> mCircularBufferMap;
@@ -202,6 +259,13 @@ bool CappedCollection<T>::haveSensor(
 {
     if (!isInitialized()){return false;}
     auto name = makeName(network, station, channel, locationCode);
+    return haveSensor(name);
+}
+
+template<class T>
+bool CappedCollection<T>::haveSensor(const std::string &name) const noexcept
+{
+    if (!isInitialized()){return false;}
     return pImpl->haveSensor(name);
 }
 
@@ -218,6 +282,71 @@ template<class T>
 int CappedCollection<T>::getTotalNumberOfPackets() const noexcept
 {
     return pImpl->getTotalNumberOfPackets();
+}
+
+/// Earliest time
+template<class T>
+std::chrono::microseconds
+    CappedCollection<T>::getEarliestStartTime(const std::string &name) const
+{
+    auto t = pImpl->getEarliestStartTime(name);
+    if (t == std::chrono::microseconds{std::numeric_limits<int>::lowest()})
+    {
+        throw std::runtime_error("Sensor " + name
+                               + " does not exist in collection");
+    }
+    return t;
+}
+
+
+/// Get packets from t0 to now
+template<class T>
+std::vector<UMPS::MessageFormats::DataPacket<T>>
+    CappedCollection<T>::getPackets(const std::string &name,
+                                    const std::chrono::microseconds &t0) const
+{
+    if (!haveSensor(name))
+    {
+        throw std::runtime_error("Sensor " + name + " not in collection");
+    }
+    return pImpl->getPackets(name, t0); 
+}
+
+template<class T>
+std::vector<UMPS::MessageFormats::DataPacket<T>>
+    CappedCollection<T>::getPackets(const std::string &name,
+                                    const double t0) const
+{
+    return getPackets(name, secondsToMicroSeconds(t0));
+}
+
+/// Get packets from t0 to t1 
+template<class T>
+std::vector<UMPS::MessageFormats::DataPacket<T>>
+    CappedCollection<T>::getPackets(const std::string &name,
+                                    const std::chrono::microseconds &t0,
+                                    const std::chrono::microseconds &t1) const
+{
+    if (!haveSensor(name))
+    {   
+        throw std::runtime_error("Sensor " + name + " not in collection");
+    }
+    if (t1 <= t0)
+    {
+        throw std::invalid_argument("t0 must be less than t1");
+    }
+    return pImpl->getPackets(name, t0, t1);
+}
+
+template<class T>
+std::vector<UMPS::MessageFormats::DataPacket<T>>
+    CappedCollection<T>::getPackets(const std::string &name,
+                                    const double t0,
+                                    const double t1) const
+{
+    return getPackets(name,
+                      secondsToMicroSeconds(t0),
+                      secondsToMicroSeconds(t1));
 }
 
 ///--------------------------------------------------------------------------///

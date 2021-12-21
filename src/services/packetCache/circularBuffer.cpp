@@ -467,8 +467,9 @@ template<class T>
 std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
     const double t0) const
 {
-    auto it0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
-    std::chrono::microseconds t0MicroSeconds{it0MicroSeconds};
+    //auto it0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
+    //std::chrono::microseconds t0MicroSeconds{it0MicroSeconds};
+    auto t0MicroSeconds = secondsToMicroSeconds(t0);
     return getPackets(t0MicroSeconds);
 }
 
@@ -485,10 +486,12 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
                                   + " must be less than t1 = "
                                   + std::to_string(t1));
     }
-    auto it0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
-    auto it1MicroSeconds = static_cast<int64_t> (std::round(t1*1000000));
-    std::chrono::microseconds t0MicroSeconds{it0MicroSeconds};
-    std::chrono::microseconds t1MicroSeconds{it1MicroSeconds};
+    //auto it0MicroSeconds = static_cast<int64_t> (std::round(t0*1000000));
+    //auto it1MicroSeconds = static_cast<int64_t> (std::round(t1*1000000));
+    //std::chrono::microseconds t0MicroSeconds{it0MicroSeconds};
+    //std::chrono::microseconds t1MicroSeconds{it1MicroSeconds};
+    auto t0MicroSeconds = secondsToMicroSeconds(t0);
+    auto t1MicroSeconds = secondsToMicroSeconds(t1);
     return getPackets(t0MicroSeconds, t1MicroSeconds);
 }
 

@@ -2,10 +2,21 @@
 #define PRIVATE_APPLICATIONS_PACKETCACHE_HPP
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <cmath>
 #include "private/isEmpty.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 namespace
 {
+/// @result An epochal time in UTC seconds since the epoch to microseconds
+///         since the epoch.
+[[maybe_unused]] [[nodiscard]]
+std::chrono::microseconds secondsToMicroSeconds(const double t)
+{
+    auto itMicroSeconds = static_cast<int64_t> (std::round(t*1000000));
+    std::chrono::microseconds tMicroSeconds{itMicroSeconds};
+    return tMicroSeconds;
+}
 /// @result The name network, station, channel, and location code combined into
 ///         a single name - e.g., UU.FORK.HHZ.01.
 [[maybe_unused]] [[nodiscard]] 

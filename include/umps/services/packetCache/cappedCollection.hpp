@@ -42,7 +42,7 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}
 
-    /// @name Adding Data
+    /// @name Adding Packets 
     /// @{
     /// @brief Adds a packet to the collection.
     /// @param[in] packet  The datapacket to add to the collection.
@@ -67,15 +67,63 @@ public:
                                   const std::string &station,
                                   const std::string &channel,
                                   const std::string &locationCode) const noexcept;
+    /// @param[in] name  The name of the station in 
+    ///                  NETWORK.STATION.CHANNEL.LOCATION_CODE format.
+    /// @result True indicates that the sensor exists in the collection.
+    [[nodiscard]] bool haveSensor(const std::string &name) const noexcept;
     /// @result All the sensors currently in the capped collection.
     /// @note The names of each sensor are formatted as:
     ///       NETWORK.STATION.CHANNEL.LOCATION_CODE.
     [[nodiscard]] std::unordered_set<std::string> getSensorNames() const noexcept;
     /// @}
 
-    /// @name Querying Data
+    /// @name Querying Packets 
     /// @{
-
+    /// @brief Returns the start time of the earliest packet in the buffer.
+    /// @throws std::runtime_error \c isInitialized() is false or the 
+    ///         \c getNumberOfPackets() is zero. 
+    [[nodiscard]] std::chrono::microseconds getEarliestStartTime(const std::string &name) const;
+    /// @brief Gets all packets beginning at time t0.
+    /// @param[in] name  The name of the channel.
+    /// @param[in] t0    The UTC start time of the query in seconds since
+    ///                  the epoch.
+    /// @result All packets from time t0 to the most recent packet.
+    /// @note If data younger than t0 has expired then the oldest sample in 
+    ///       the buffer will be the first element of the result.
+    /// @throws std::invalid_argument if \c haveSensor(name) is false.
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets(const std::string &name, double t0) const;
+    /// @param[in] name  The name of the channel.
+    /// @param[in] t0    The UTC start time of the query in microseconds since
+    ///                  the epoch.
+    /// @result All packets from time t0 to the most recent packet for the
+    ///         given station.
+    /// @throws std::invalid_argument if \c haveSensor(name) is false.
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::string &name, const std::chrono::microseconds &t0) const;
+    /// @brief Gets all packets between time t0 and t1.
+    /// @param[in] name  The name of the channel.
+    /// @param[in] t0    The UTC start time of the query in seconds since
+    ///                  the epoch.
+    /// @param[in] t1    The UTC end time of the query in seconds since
+    ///                  the epoch.
+    /// @result All packets from t0 to t1.
+    /// @throws std::invalid_argument if t0 >= t1.
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::string &name, double t0, double t1) const;
+    /// @param[in] name  The name of the channel.
+    /// @param[in] t0    The UTC start time of the query in microseconds
+    ///                  since the epoch.
+    /// @param[in] t1    The UTC end time of the query in micrsoseconds
+    ///                  since the epoch.
+    /// @result All packets from t0 to t1.
+    /// @throws std::invalid_argument if t0 >= t1.
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::string &name,
+                   const std::chrono::microseconds &t0,
+                   const std::chrono::microseconds &t1) const;
+    /// @result All the datapackets in the buffer.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets(const std::string &name) const;
     /// @}
 
     /// @result The total number of packets in all of the circular buffers.
