@@ -123,7 +123,8 @@ public:
                    const std::chrono::microseconds &t1) const;
     /// @result All the datapackets in the buffer.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets(const std::string &name) const;
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>>
+        getPackets(const std::string &name) const;
     /// @}
 
     /// @result The total number of packets in all of the circular buffers.
