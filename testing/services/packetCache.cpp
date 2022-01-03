@@ -288,14 +288,14 @@ TEST(PacketCache, CircularBuffer)
         EXPECT_TRUE(queryPackets[k] == packets[firstPacket + k]);
     }
     // Do a query from just after the first packet to just before the
-    // last packet 
+    // last packet .  If we can, we want to get the first.
     t0 = packets[firstPacket].getStartTime().count()*1e-6 + 1.e-6;
     t1 = packets.back().getStartTime().count()*1.e-6 - 1.e-6;
     queryPackets = cb.getPackets(t0, t1);
-    EXPECT_EQ(queryPackets.size(), packets.size() - firstPacket - 2);     
+    EXPECT_EQ(queryPackets.size(), packets.size() - firstPacket - 1);//2);
     for (int k = 0; k < static_cast<int> (queryPackets.size()); ++k)
     {
-        EXPECT_TRUE(queryPackets[k] == packets[firstPacket + k + 1]); 
+        EXPECT_TRUE(queryPackets[k] == packets[firstPacket + k]);// + 1*0]); 
     }
 }
 
