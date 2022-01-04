@@ -22,31 +22,9 @@ public:
                    std::shared_ptr<UMPS::Logging::ILog> logger)
     //               std::shared_ptr<UAuth::IAuthenticator> authenticator)
     {
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        //if (authenticator == nullptr)
-        //{
-        //    mAuthenticator = std::make_shared<UAuth::Grasslands> (logger);
-        //}
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
     }
-    std::shared_ptr<zmq::context_t> mContext;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    std::shared_ptr<UAuth::IAuthenticator> mAuthenticator;
+    //std::shared_ptr<UAuth::IAuthenticator> mAuthenticator;
     std::unique_ptr<UPubSub::Subscriber> mSubscriber;
     SubscriberOptions<T> mOptions;
 };
@@ -55,6 +33,28 @@ public:
 template<class T>
 Subscriber<T>::Subscriber() :
     pImpl(std::make_unique<SubscriberImpl> (nullptr, nullptr))
+{
+}
+
+/// C'tor
+template<class T>
+Subscriber<T>::Subscriber(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<SubscriberImpl> (context, nullptr))
+{
+}
+
+/// C'tor
+template<class T>
+Subscriber<T>::Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<SubscriberImpl> (nullptr, logger))
+{
+}
+
+/// C'tor
+template<class T>
+Subscriber<T>::Subscriber(std::shared_ptr<zmq::context_t> &context,
+                          std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<SubscriberImpl> (context, logger))
 {
 }
 

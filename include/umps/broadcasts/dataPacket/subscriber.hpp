@@ -4,6 +4,10 @@
 #include "umps/messaging/authentication/enums.hpp"
 namespace UMPS
 {
+ namespace Logging
+ {
+  class ILog;
+ }
  namespace MessageFormats
  {
   class IMessage;
@@ -14,6 +18,10 @@ namespace UMPS
   template<class T> class SubscriberOptions;
  }
 }
+namespace zmq
+{
+ class context_t;
+} 
 namespace UMPS::Broadcasts::DataPacket
 {
 /// @class Subscriber "subscriber.hpp" "umps/broadcasts/dataPacket/subscriber.hpp"
@@ -27,6 +35,19 @@ public:
     /// @{
     /// @brief Constructor.
     Subscriber();
+    /// @brief Constructs a subscriber with the given logger.
+    /// @param[in] logger  A pointer to the application's logger.
+    explicit Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructs a subscriber with a given ZeroMQ context.
+    /// @param[in] context  The context from which to initialize.
+    /// @note This can be useful for inproc communication where a separate
+    ///       thread IO thread is not required.  In this case, the context
+    ///       can be made with:
+    ///       auto context = std::shared_ptr<zmq::context_t> (0).
+    explicit Subscriber(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Construtcs a subscriber with a given ZeroMQ context and logger.
+    Subscriber(std::shared_ptr<zmq::context_t> &context,
+               std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] subscriber  The subscriber from which to initialize this
     ///                            class.  On exit, subscriber's behavior is

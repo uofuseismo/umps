@@ -14,15 +14,14 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "umps/broadcasts/earthworm/waveRing.hpp"
+#include "umps/broadcasts/dataPacket/publisher.hpp"
+#include "umps/broadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
-//#include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messaging/authentication/certificate/keys.hpp"
@@ -30,7 +29,6 @@
 #include "private/isEmpty.hpp"
 
 namespace UAuth = UMPS::Messaging::Authentication;
-namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UServices = UMPS::Services;
 
 struct ProgramOptions
@@ -52,7 +50,7 @@ class BroadcastPackets
 {
 public:
     BroadcastPackets(
-        std::shared_ptr<UXPubXSub::Publisher> &publisher,
+        std::shared_ptr<UMPS::Broadcasts::DataPacket::Publisher> &publisher,
         std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> &waveRing,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mPublisher(publisher),
@@ -120,7 +118,7 @@ public:
         mLogger->info("Broadcast thread is terminating");
     }
     mutable std::mutex mMutex;
-    std::shared_ptr<UXPubXSub::Publisher> mPublisher;
+    std::shared_ptr<UMPS::Broadcasts::DataPacket::Publisher> mPublisher;
     std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> mWaveRing;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     bool mKeepRunning = true;
@@ -205,10 +203,12 @@ int main(int argc, char *argv[])
                   + " at " + packetAddress); 
     }
     // Connect to proxy
-    UXPubXSub::PublisherOptions publisherOptions;
+    //UXPubXSub::PublisherOptions publisherOptions;
+    UMPS::Broadcasts::DataPacket::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
     publisherOptions.setZAPOptions(options.mZAPOptions);
-    auto publisher = std::make_shared<UXPubXSub::Publisher> (loggerPtr);
+    //auto publisher = std::make_shared<UXPubXSub::Publisher> (loggerPtr);
+    auto publisher = std::make_shared<UMPS::Broadcasts::DataPacket::Publisher> (loggerPtr);
     publisher->initialize(publisherOptions);
 #ifndef NDEBUG
     assert(publisher->isInitialized());
