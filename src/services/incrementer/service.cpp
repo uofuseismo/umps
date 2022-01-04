@@ -167,7 +167,7 @@ void Service::initialize(const Parameters &parameters)
     pImpl->mName = name;
     // Create the connection details
     ConnectionInformation::SocketDetails::Router socketDetails;
-    socketDetails.setAddress(pImpl->mRouter.getConnectionString());
+    socketDetails.setAddress(pImpl->mRouter.getEndPoint());
     pImpl->mConnectionDetails.setConnectionType(
         ConnectionInformation::ConnectionType::SERVICE);
     pImpl->mConnectionDetails.setName(pImpl->mName);

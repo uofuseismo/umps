@@ -131,6 +131,7 @@ set(MODULES_LIBSRC
     src/services/packetCache/circularBuffer.cpp
     src/services/packetCache/cappedCollection.cpp
     src/services/packetCache/dataRequest.cpp
+    src/services/packetCache/dataResponse.cpp
     src/services/packetCache/sensorRequest.cpp
     src/services/packetCache/sensorResponse.cpp
     src/modules/operator/readZAPOptions.cpp)

@@ -8,6 +8,7 @@
 #include <filesystem>
 #include "umps/services/packetCache/cappedCollection.hpp"
 #include "umps/services/packetCache/dataRequest.hpp"
+#include "umps/services/packetCache/dataResponse.hpp"
 #include "umps/services/packetCache/sensorRequest.hpp"
 #include "umps/services/packetCache/sensorResponse.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
@@ -60,7 +61,7 @@ public:
         mLogger(logger),
         mCappedCollection(cappedCollection)
     {
-        mSubscriber = std::make_shared<UPubSub::Subscriber> (context, logger); 
+        mDataPacketSubscriber = std::make_shared<UPubSub::Subscriber> (context, logger); 
 
         std::unique_ptr<UMPS::MessageFormats::IMessage> messageType
             = std::make_unique<UMPS::MessageFormats::DataPacket<T>> (); 
@@ -121,11 +122,10 @@ public:
     /// C'tor
     DataPacketSubscriber(
         std::shared_ptr<UMPS::Logging::ILog> &logger,
-        //std::shared_ptr<UPubSub::Subscriber> &subscriber,
         std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>> &subscriber,
         std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection) :
         mLogger(logger),
-        mSubscriber(subscriber),
+        mDataPacketSubscriber(subscriber),
         mCappedCollection(cappedCollection)
     {
     }
@@ -144,7 +144,7 @@ public:
             //    = static_unique_pointer_cast<UMF::DataPacket<T>> (std::move(message));
             //auto dataPacket = static_unique_pointer_cast<UMF::DataPacket<T>>
             //                  (mSubscriber->receive());
-            auto dataPacket = mSubscriber->receive();
+            auto dataPacket = mDataPacketSubscriber->receive();
             if (dataPacket == nullptr){continue;}
             // Push it onto the queue
             mDataPacketQueue.push(std::move(*dataPacket));
@@ -196,10 +196,12 @@ public:
     ///        data packets from time t0 to time t1.
     void startRequestReceive()
     {
+        mLogger->debug("Request/response thread starting...");
         while (keepRunning())
         {
-            
+           // auto request =  
         }
+        mLogger->debug("Request/response thread has exited");
     }
     /// @result True indicates the data packet subscriber should keep receiving
     ///         messages and putting the results in the circular buffer.
@@ -297,7 +299,8 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
     std::shared_ptr<UMPS::Messaging::RequestRouter::Router> mRequestRouter;
-    std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>> mSubscriber;
+    std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>>
+        mDataPacketSubscriber;
     std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
     UPubSub::SubscriberOptions mSubscriberOptions;

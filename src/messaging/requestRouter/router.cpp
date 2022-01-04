@@ -135,23 +135,40 @@ Router::Router() :
 {
 }
 
-
+/// C'tor
 Router::Router(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RouterImpl> (nullptr, logger))
 {
 }
 
+/// C'tor
 Router::Router(std::shared_ptr<zmq::context_t> &context) :
     pImpl(std::make_unique<RouterImpl> (context, nullptr))
 {
 }
 
-
+/// C'tor
 Router::Router(std::shared_ptr<zmq::context_t> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RouterImpl> (context, logger))
 {
 }
+
+/*
+/// Move c'tor
+Router::Router(Router &&router) noexcept
+{
+    *this = std::move(router);
+}
+
+/// Move assignment
+Router& Router::operator=(Router &&router) noexcept
+{
+    if (&router == this){return *this;}
+    pImpl = std::move(router.pImpl);
+    return *this;
+}    
+*/
 
 /// Destructor
 Router::~Router() = default;
@@ -225,190 +242,6 @@ void Router::initialize(const RouterOptions &options)
     pImpl->mInitialized = true;
 }
 
-/*
-/// Bind to an address if not already done so
-void Router::bind(const std::string &endPoint)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
-    pImpl->unbind();
-    try
-    {
-        pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
-        pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
-        pImpl->mServer->bind(endPoint);
-    }
-    catch (const std::exception &e) 
-    {
-        auto errorMsg = "Failed to connect to endpoint: " + endPoint
-                      + ".  ZeroMQ failed with:\n" + std::string(e.what());
-        pImpl->mLogger->error(errorMsg);
-        throw std::runtime_error(errorMsg);
-    }
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
-    pImpl->mEndPoint = endPoint;
-    pImpl->mBound = true;
-}
-
-/// Bind to an address - strawhouse 
-void Router::bind(const std::string &endPoint,
-                  const bool isAuthenticationServer,
-                  const std::string &zapDomain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
-    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
-    pImpl->unbind(); // Hangup
-    // ZAP 
-    setStrawhouse(pImpl->mServer.get(), isAuthenticationServer, zapDomain);
-    // Options
-    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
-    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
-    // Bind
-    pImpl->mServer->bind(endPoint);
-  
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
-    pImpl->mEndPoint = endPoint;
-    pImpl->mBound = true;
-}
-
-/// Bind to an address - woodhouse
-void Router::bind(
-    const std::string &endPoint,
-    const Authentication::Certificate::UserNameAndPassword &credentials,
-    const bool isAuthenticationServer,
-    const std::string &zapDomain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
-    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
-    if (!isAuthenticationServer)
-    {   
-        if (!credentials.haveUserName())
-        {
-            throw std::invalid_argument("Username must be set for ZAP client");
-        }
-        if (!credentials.havePassword())
-        {
-            throw std::invalid_argument("Password must be set for ZAP client");
-        }
-    }
-    pImpl->unbind(); // Hangup
-    // ZAP 
-    setWoodhouse(pImpl->mServer.get(), credentials,
-                 isAuthenticationServer, zapDomain);
-    // Options
-    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
-    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
-    // Bind
-    pImpl->mServer->bind(endPoint);
-
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
-    pImpl->mEndPoint = endPoint;
-    pImpl->mBound = true;
-}
-
-/// Bind to an address
-void Router::bind(
-    const std::string &endPoint,
-    const Authentication::Certificate::Keys &serverKeys,
-    const std::string &zapDomain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
-    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
-    if (!serverKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Server public key not set");
-    }
-    if (!serverKeys.havePrivateKey())
-    {
-        throw std::invalid_argument("Server private key not set");
-    }
-    pImpl->unbind(); // Hangup
-    // Set ZAP
-    setStonehouseServer(pImpl->mServer.get(), serverKeys, zapDomain);
-    // Options
-    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
-    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
-    // Bind
-    pImpl->mServer->bind(endPoint);
-
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
-    pImpl->mEndPoint = endPoint;
-    pImpl->mBound = true;
-}
-
-/// Bind to an address
-void Router::bind(
-    const std::string &endPoint,
-    const Authentication::Certificate::Keys &serverKeys,
-    const Authentication::Certificate::Keys &clientKeys,
-    const std::string &zapDomain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("Endpoint is empty");}
-    if (isEmpty(zapDomain)){throw std::invalid_argument("ZAP domain is empty");}
-    if (!serverKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Server public key not set");
-    }
-    if (!clientKeys.havePublicKey())
-    {
-        throw std::invalid_argument("Client public key not set");
-    }
-    if (!clientKeys.havePrivateKey())
-    {
-        throw std::invalid_argument("Client private key not set");
-    }
-    pImpl->unbind(); // Hangup
-    // Set ZAP protocol
-    setStonehouseClient(pImpl->mServer.get(), serverKeys,
-                       clientKeys, zapDomain);
-    // Options
-    pImpl->mServer->set(zmq::sockopt::rcvhwm, pImpl->mHighWaterMark);
-    pImpl->mServer->set(zmq::sockopt::sndhwm, pImpl->mHighWaterMark);
-    // Bind
-    pImpl->mServer->bind(endPoint);
-
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
-    pImpl->mEndPoint = endPoint;
-    pImpl->mBound = true;
-}
-
-/// Add a subscription
-void Router::addMessageType(
-    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
-{
-    if (message == nullptr){throw std::invalid_argument("Message is NULL");}
-    if (!isBound())
-    {
-        throw std::runtime_error("Router not yet bound to socket");
-    }
-    auto messageType = message->getMessageType();
-    if (messageType.empty())
-    {
-        throw std::invalid_argument("Message type is empty");
-    }
-    if (!pImpl->mMessageFormats.contains(messageType))
-    {
-        pImpl->mLogger->debug("Adding subscription: " + messageType);
-        pImpl->mMessageFormats.add(message);
-    }
-    else
-    {
-        pImpl->mLogger->debug(messageType + " already exists");
-    }
-    auto idx = pImpl->mSubscriptions.find(messageType);
-    if (idx == pImpl->mSubscriptions.end())
-    {
-        pImpl->mLogger->debug("Adding subscription: " + messageType);
-        pImpl->mSubscriptions.insert(std::pair(messageType,
-                                               std::move(message)));
-    }
-    else
-    {
-        pImpl->mLogger->debug("Overwriting subscription: " + messageType);
-        idx->second = std::move(message);
-    }
-}
-*/
-
 /// Stop
 void Router::stop()
 {
@@ -418,17 +251,6 @@ void Router::stop()
 /// Starts the service
 void Router::start()
 {
-/*
-    if (!isBound())
-    {
-        throw std::runtime_error("Router not yet bound to a socket");
-    }
-    
-    if (!haveCallback())
-    {
-        throw std::runtime_error("Router does not have a callback");
-    }
-*/
     if (!isInitialized())
     {
          throw std::runtime_error("Router not initialized");
@@ -538,7 +360,7 @@ void Router::operator()()
 }
 
 /// Access address
-std::string Router::getConnectionString() const
+std::string Router::getEndPoint() const
 {
     if (!isInitialized()){throw std::runtime_error("Router not initialized");}
     return pImpl->mEndPoint;

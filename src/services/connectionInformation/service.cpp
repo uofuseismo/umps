@@ -239,7 +239,7 @@ void Service::initialize(const Parameters &parameters)
     pImpl->mRouter->initialize(pImpl->mRouterOptions); 
     // Create the connection details
     ConnectionInformation::SocketDetails::Router socketDetails;
-    socketDetails.setAddress(pImpl->mRouter->getConnectionString());
+    socketDetails.setAddress(pImpl->mRouter->getEndPoint());
     pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
     pImpl->mConnectionDetails.setConnectionType(ConnectionType::SERVICE);

@@ -119,6 +119,7 @@ void server()
     // Launch the server
     std::thread t1(&UMPS::Messaging::RequestRouter::Router::start,
                    &server);
+
     // Have the main thread kill the server
     while (pStruct.getNumberOfResponses() < nMessages*nThreads)
     {

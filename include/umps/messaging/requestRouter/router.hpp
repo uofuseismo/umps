@@ -56,82 +56,12 @@ public:
     Router(std::shared_ptr<zmq::context_t> &context,
            std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
-
+ 
+    /// @name Step 1: Initialization
     /// @brief Initializes the router.
     /// @param[in] options   The router options.
     /// @throws std::invalid_argument if the endpoint or callback is not set. 
     void initialize(const RouterOptions &options);
-    /// @param[in] endPoint  The endpoint for accepting connections.
-    ///                      For example, "tcp://127.0.0.1:5555".
-    /// @param[in] callBack  The callback function.  This creates a response
-    ///                      message for the requested message.
-//    void initialize(const std::string &endPoint,
-//                    const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-//                                        (const UMPS::MessageFormats::IMessage *)> &callback);
- 
-    /// @name Bind
-    /// @{
-    /// @brief Binds to an endpoint.  This is the grasslands security pattern.
-    /// @param[in] endpoint  The endpoint for accepting connections.
-    ///                      For example, "tcp://127.0.0.1:5555".
-    /// @note For more see: http://api.zeromq.org/2-1:zmq-bind. 
-    /// @throws std::runtime_error if zeromq failed to bind to given endpoint.
-//    void bind(const std::string &endpoint);
-    /// @brief Binds to the given address.  This is a strawhouse pattern
-    ///        that can validate IP addresses.
-    /// @param[in] endpoint  The endpoint to which to bind.
-    /// @param[in] isAuthenticationServer  True indicates this connection is a
-    ///                                    ZAP server which means this machine
-    ///                                    will validate users.
-    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if the endpoint or the zapDomain is empty
-    ///         and this is an authenticaiton server.
-    /// @throws std::runtime_error if the connection fails.
-//    void bind(const std::string &endpoint,
-//              bool isAuthenticationServer,
-//              const std::string &zapDomain = "global");
-    /// @brief Binds to the given address.  This is a woodhouse pattern
-    ///        that can validate IP addresses and usernames and passwords.
-    /// @param[in] endpoint  The endpoint to which to bind.
-    /// @param[in] isAuthenticationServer  True indicates this connection is a
-    ///                                    ZAP server which means this machine
-    ///                                    will validate users.
-    /// @param[in] zapDomain  The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if the username and password are not set
-    ///         and this is an authentciation server.
-    /// @throws std::invalid_argument if the endpoint or the zapDomain is empty
-    ///         and this is an authenticaiton server.
-    /// @throws std::runtime_error if the connection fails.
-//    void bind(const std::string &endpoint,
-              //const Authentication::Certificate::UserNameAndPassword &credentials,
-//              bool isAuthenticationServer,
-              //const std::string &zapDomain = "global"); 
-    /// @brief Binds to the given address as a CURVE server.  This is a
-    ///        stonehouse pattern that can validate IP addresses and public
-    ///        keys.
-    /// @param[in] endpoint    The endpoint to which to bind.
-    /// @param[in] serverKeys  The server's public and private key. 
-    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if the server's private key is not set.
-    /// @throws std::runtime_error if the connection fails.
-//    void bind(const std::string &endpoint,
-//              const Authentication::Certificate::Keys &serverKeys,
-//              const std::string &zapDomain = "global");
-    /// @brief Binds to the given address as a CURVE client.  This is a
-    ///        stonehouse pattern that can validate the client's IP address and
-    ///        credentials.
-    /// @param[in] endpoint    The endpoint to which to bind.
-    /// @param[in] serverKeys  The server's public key.
-    /// @param[in] serverKeys  The clients's public and private key.
-    /// @param[in] zapDomain   The ZeroMQ Authentication Protocol domain.
-    /// @throws std::invalid_argument if the server's public key is not set,
-    ///         the client's public and private key are not set, the endpoint
-    ///         is empty, or the zapDomain is empty. 
-    /// @throws std::runtime_error if the connection cannot be established.
-//    void bind(const std::string &endpoint,
-//              const Authentication::Certificate::Keys &serverKeys,
-//              const Authentication::Certificate::Keys &clientKeys,
-//              const std::string &zapDomain = "global");
     /// @result The security level of the connection.
     [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates that the router is bound to an address,
@@ -139,37 +69,25 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result Gets the connection string.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::string getConnectionString() const;
+    [[nodiscard]] std::string getEndPoint() const;
     /// @}
 
-    /// @brief Sets the callback function.
-    /// @param[in] callback  The callback function.  This creates a response
-    ///                      message for the requested message.
-    /// @note This function should not throw an exception and should always
-    ///       return something.
-//    void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-//                                        (const UMPS::MessageFormats::IMessage *)> &callback);
-//    void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-                                         //(const std::string &, const void *, size_t)> &callback);
-    /// @result True indicates that the callback was set.
-//    [[nodiscard]] bool haveCallback() const noexcept;
-    /// @result True indicates that the class is initialized.
-//    [[nodiscard]] bool isInitialized() const noexcept;
-
-    /// @result True the router is connected.
-//    [[nodiscard]] bool isConnected() const noexcept;
-
-    /// @brief Adds a subscription to message of type message.getMessagetype();
-    /// @param[in] message  The message type to which the router will subscribe.
-    /// @throws std::runtime_error \c isConnected() is false.
-//    void addMessageType(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
-
+    /// @name Step 2: Start the Router
+    /// @{
+    /// @brief Starts the router.  The router will receive requests,
+    ///        process the reqeusts, and return an answer.  The processing
+    ///        is defined by the callback.
     /// @throws std::runtime_error() if \c isInitialized() is false.
     void start();
     /// @result True indicates that the service is running.
     [[nodiscard]] bool isRunning() const noexcept;
-    /// @brief Interrupts the thread.
+    /// @}
+
+    /// @name Step 3: Stop the Router
+    /// @{
+    /// @brief Interrupts the thread running the router.
     void stop();
+    /// @}
 
     /// @name Destructors
     /// @{
@@ -178,8 +96,10 @@ public:
 
     void operator()();
 
+    Router(const Router &router) = delete;
+    Router(Router &&router) noexcept = delete; // Bad stuff happens to move and threads
     Router& operator=(const Router &router) = delete;
-    Router& operator=(Router &&router) = delete;
+    Router& operator=(Router &&router) noexcept = delete;
 private:
     class RouterImpl;
     std::unique_ptr<RouterImpl> pImpl;
