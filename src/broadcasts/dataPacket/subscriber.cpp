@@ -58,6 +58,22 @@ Subscriber<T>::Subscriber() :
 {
 }
 
+/// Move c'tor
+template<class T>
+Subscriber<T>::Subscriber(Subscriber &&subscriber) noexcept
+{
+    *this = std::move(subscriber);
+}
+
+/// Move assignment
+template<class T>
+Subscriber<T>& Subscriber<T>::operator=(Subscriber &&subscriber) noexcept
+{
+    if (&subscriber == this){return *this;}
+    pImpl = std::move(subscriber.pImpl);
+    return *this;
+}
+
 /// Initialize
 template<class T>
 void Subscriber<T>::initialize(const SubscriberOptions<T> &options)
@@ -65,6 +81,7 @@ void Subscriber<T>::initialize(const SubscriberOptions<T> &options)
     if (!options.haveAddress()){throw std::runtime_error("Address not set");}
     auto subscriberOptions = options.getSubscriberOptions();
     pImpl->mSubscriber->initialize(subscriberOptions);
+    pImpl->mOptions = options;
 }
 
 /// Initialized?

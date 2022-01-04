@@ -102,6 +102,8 @@ set(MODULES_LIBSRC
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/broadcasts/dataPacket/broadcast.cpp
     src/broadcasts/dataPacket/parameters.cpp
+    src/broadcasts/dataPacket/publisher.cpp
+    src/broadcasts/dataPacket/publisherOptions.cpp
     src/broadcasts/dataPacket/subscriber.cpp
     src/broadcasts/dataPacket/subscriberOptions.cpp
     src/broadcasts/heartbeat/broadcast.cpp

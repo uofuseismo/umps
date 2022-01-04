@@ -124,13 +124,13 @@ void Publisher::initialize(const PublisherOptions &options)
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mPublisher);
     // Set other options
-    //auto timeOut = static_cast<int> (options.getTimeOut().count());
+    auto timeOut = static_cast<int> (options.getTimeOut().count());
     auto hwm = pImpl->mOptions.getHighWaterMark();
     if (hwm > 0){pImpl->mPublisher->set(zmq::sockopt::sndhwm, hwm);}
-    //if (timeOut >= 0)
-    //{   
-    //    pImpl->mPublisher->set(zmq::sockopt::sndtimeo, timeOut);
-    //}   
+    if (timeOut >= 0)
+    {   
+        pImpl->mPublisher->set(zmq::sockopt::sndtimeo, timeOut);
+    }   
     // (Re)establish connections
     auto address = options.getAddress();
     try

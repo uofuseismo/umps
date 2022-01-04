@@ -41,6 +41,8 @@ namespace UMPS::Messaging::PublisherSubscriber
 class Publisher
 {
 public:
+    /// @name Constructors
+    /// @{
     /// @brief Default constructor.
     Publisher();
     /// @brief Constructs a publisher with the given logger.
@@ -61,6 +63,7 @@ public:
     ///                           this class.  On exit, publisher's behavior is
     ///                           undefined.
     Publisher(Publisher &&publisher) noexcept;
+    /// @}
 
     /// @name Operators
     /// @{

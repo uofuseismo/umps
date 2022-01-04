@@ -56,6 +56,20 @@ Subscriber::Subscriber() :
 {
 }
 
+/// Move c'tor
+Subscriber::Subscriber(Subscriber &&subscriber) noexcept
+{
+    *this = std::move(subscriber);
+}
+
+/// Move assignment
+Subscriber& Subscriber::operator=(Subscriber &&subscriber) noexcept
+{
+    if (&subscriber == this){return *this;}
+    pImpl = std::move(subscriber.pImpl);
+    return *this;
+}
+
 /// Initialize
 void Subscriber::initialize(const SubscriberOptions &options)
 {

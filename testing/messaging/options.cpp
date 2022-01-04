@@ -18,15 +18,17 @@ TEST(Messaging, PubSubPublisherOptions)
     const std::string address = "tcp://127.0.0.1:5556";
     const int highWaterMark = 120;
     const int zero = 0;
+    const std::chrono::milliseconds timeOut{10};
     PublisherSubscriber::PublisherOptions options;
     options.setAddress(address);
     options.setHighWaterMark(highWaterMark);
-    //options.setTimeOut(timeOut);
+    options.setTimeOut(timeOut);
 
     PublisherSubscriber::PublisherOptions optionsCopy(options);
 
     EXPECT_EQ(optionsCopy.getAddress(), address);
     EXPECT_EQ(optionsCopy.getHighWaterMark(), highWaterMark);
+    EXPECT_EQ(optionsCopy.getTimeOut(), timeOut);
 
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), zero); 
@@ -100,17 +102,22 @@ TEST(Messaging, XPubXSubPublisherOptions)
     const std::string address = "tcp://127.0.0.1:5555";
     const int highWaterMark = 120;
     const int zero = 0;
+    const std::chrono::milliseconds timeOut{10};
+    const std::chrono::milliseconds negativeOne{-1};
     XPublisherXSubscriber::PublisherOptions options;
     options.setAddress(address);
     options.setHighWaterMark(highWaterMark);
+    options.setTimeOut(timeOut);
   
     XPublisherXSubscriber::PublisherOptions optionsCopy(options);
 
     EXPECT_EQ(optionsCopy.getAddress(), address);
     EXPECT_EQ(optionsCopy.getHighWaterMark(), highWaterMark);
+    EXPECT_EQ(optionsCopy.getTimeOut(), timeOut);
    
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), zero);
+    EXPECT_EQ(options.getTimeOut(), negativeOne);
 }
 
 }

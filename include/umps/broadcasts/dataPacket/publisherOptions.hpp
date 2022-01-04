@@ -1,37 +1,40 @@
-#ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBEROPTIONS_HPP
-#define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBEROPTIONS_HPP
+#ifndef UMPS_BROADCASTS_DATAPACKET_PUBLISHEROPTIONS_HPP
+#define UMPS_BROADCASTS_DATAPACKET_PUBLISHEROPTIONS_HPP
 #include <memory>
 #include <string>
 #include <chrono>
-namespace UMPS::MessageFormats
+namespace UMPS::Messaging
 {
- class IMessage;
- class Messages;
+ namespace Authentication
+ {
+  class ZAPOptions;
+ }
+ namespace XPublisherXSubscriber
+ {
+  class PublisherOptions;
+ }
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Broadcasts::DataPacket
 {
- class ZAPOptions;
-}
-namespace UMPS::Messaging::PublisherSubscriber
-{
-/// @class SubscriberOptions "publisherOptions.hpp" "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-/// @brief Options for initializing the subscriber in the PUB/SUB pattern.
-/// @detail The subscriber receives content from a publisher.
+/// @class PublisherOptions "publisherOptions.hpp" "umps/broadcasts/dataPacket/publisherOptions.hpp"
+/// @brief Options for initializing the publisher in the datapacket broadcast.
+/// @detail The publisher sends datapackets and it is up to the subscribers to
+///         be listening.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class SubscriberOptions
+class PublisherOptions
 {
 public:
     /// @name Constructors
     /// @{
     /// @brief Constructor.
-    SubscriberOptions();
+    PublisherOptions();
     /// @brief Copy constructor.
     /// @param[in] options 
-    SubscriberOptions(const SubscriberOptions &options);
+    PublisherOptions(const PublisherOptions &options);
     /// @brief Move constructor.
     /// @param[in,out] options  The class from which to initialize this class.
     ///                         On exit, options's behavior is undefined.  
-    SubscriberOptions(SubscriberOptions &&options) noexcept;
+    PublisherOptions(PublisherOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -39,17 +42,17 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] options  The options to copy to this.
     /// @result A deep copy of the input options.
-    SubscriberOptions& operator=(const SubscriberOptions &options);
+    PublisherOptions& operator=(const PublisherOptions &options);
     /// @brief Move assignment operators.
     /// @param[in,out] options  The options whose memory will be moved to this.
     ///                         On exit, options's behavior is undefined.
     /// @result The memory moved from options to this.
-    SubscriberOptions& operator=(SubscriberOptions &&options) noexcept;
+    PublisherOptions& operator=(PublisherOptions &&options) noexcept;
     /// @}
 
-    /// @name Subscriber Options
+    /// @name Publisher Options
     /// @{
-    /// @brief Sets the address to which the subscriber will bind.
+    /// @brief Sets the address to which the publisher will connect.
     /// @throws std::invalid_argument if the address is empty.
     void setAddress(const std::string &address);
     /// @result The socket's address.
@@ -57,16 +60,6 @@ public:
     [[nodiscard]] std::string getAddress() const;
     /// @result True indicates the address was set.
     [[nodiscard]] bool haveAddress() const noexcept;
-
-    /// @brief Sets the message types to which to subscriber.
-    /// @param[in] messageTypes   The message types that the subscriber will
-    ///                           be able to read and deserialize.
-    void setMessageTypes(const UMPS::MessageFormats::Messages &messageTypes);
-    /// @result The message types to which to subscriber.
-    /// @throws std::runtime_error if \c haveMessageTypes() is false.
-    UMPS::MessageFormats::Messages getMessageTypes() const;
-    /// @result True indicates the message types have been set.
-    [[nodiscard]] bool haveMessageTypes() const noexcept;
 
     /// @brief This sets a hard limit on the maximum number of messages that
     ///        can be queued.
@@ -78,9 +71,9 @@ public:
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getHighWaterMark() const noexcept;
 
-    /// @brief If the subscriber waits the timeOut length of time before
-    ///        receiving a message then it will return without a message.
-    ///        This is useful when the subscriber thread has other
+    /// @brief If the publisher waits the timeOut length of time before
+    ///        sending a message then it will without having sent the message.
+    ///        This is useful when the publisher thread has other
     ///        responsibilities.
     /// @param[in] timeOut   The time out duration in milliseconds.  If this is
     ///                      zero then the subscriber will immediately return.
@@ -95,22 +88,26 @@ public:
     /// @{
     /// @brief Defines the ZAP options to be used when configuring the socket.
     /// @param[in] options  The ZAP options.
-    void setZAPOptions(const Authentication::ZAPOptions &options);
+    void setZAPOptions(const UMPS::Messaging::Authentication::ZAPOptions &options);
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
-    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
+
+    /// @result The publisher options.
+    [[nodiscard]] UMPS::Messaging::XPublisherXSubscriber::PublisherOptions
+        getPublisherOptions() const noexcept;
  
     /// @name Destructors
     /// @{
     /// @brief Resets class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~SubscriberOptions();
+    ~PublisherOptions();
     /// @}
 private:
-    class SubscriberOptionsImpl;
-    std::unique_ptr<SubscriberOptionsImpl> pImpl;
+    class PublisherOptionsImpl;
+    std::unique_ptr<PublisherOptionsImpl> pImpl;
 };
 }
 #endif

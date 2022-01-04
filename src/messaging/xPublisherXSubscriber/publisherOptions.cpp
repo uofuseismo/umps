@@ -10,6 +10,7 @@ class PublisherOptions::PublisherOptionsImpl
 public:
     UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string mAddress;
+    std::chrono::milliseconds mTimeOut{-1}; // Wait forever
     int mHighWaterMark = 0;
 };
 
@@ -91,6 +92,26 @@ std::string PublisherOptions::getAddress() const
 bool PublisherOptions::haveAddress() const noexcept
 {
     return !pImpl->mAddress.empty();
+}
+
+/// Timeout
+void PublisherOptions::setTimeOut(
+    const std::chrono::milliseconds timeOut) noexcept
+{
+    constexpr std::chrono::milliseconds zero{0};
+    if (timeOut >= zero)
+    {
+        pImpl->mTimeOut = timeOut;
+    }
+    else
+    {
+        pImpl->mTimeOut = std::chrono::milliseconds{-1};
+    }
+}
+
+std::chrono::milliseconds PublisherOptions::getTimeOut() const noexcept
+{
+    return pImpl->mTimeOut;
 }
 
 /// ZAP options

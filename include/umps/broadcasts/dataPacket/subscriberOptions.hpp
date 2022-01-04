@@ -4,13 +4,13 @@
 #include <chrono>
 namespace UMPS::Messaging
 {
- namespace PublisherSubscriber
- {
-  class SubscriberOptions;
- }
  namespace Authentication
  {
   class ZAPOptions;
+ }
+ namespace PublisherSubscriber
+ {
+  class SubscriberOptions;
  }
 }
 namespace UMPS::Broadcasts::DataPacket

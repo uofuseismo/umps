@@ -30,6 +30,8 @@ namespace UMPS::Messaging::PublisherSubscriber
 class Subscriber
 {
 public:
+    /// @name Constructors
+    /// @{
     /// @brief Default constructor.
     Subscriber();
     /// @brief Constructor with specified logger.
@@ -46,6 +48,7 @@ public:
     ///                            this class.  On exit, subscriber's behavior
     ///                            is undefined.
     Subscriber(Subscriber &&subscriber) noexcept;
+    /// @}
 
     /// @name Operators
     /// @{

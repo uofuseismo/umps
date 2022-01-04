@@ -26,6 +26,20 @@ public:
     /// @{
     /// @brief Constructor.
     Subscriber();
+    /// @brief Move constructor.
+    /// @param[in,out] subscriber  The subscriber from which to initialize this
+    ///                            class.  On exit, subscriber's behavior is
+    ///                            undefined. 
+    Subscriber(Subscriber &&subscriber) noexcept;
+    /// @}
+
+    /// @name Operators
+    /// @{
+    /// @brief Move assignment.
+    /// @param[in,out] subscriber  The subscriber whose memory will be moved to
+    ///                            this.  On exit, subscriber's behavior is
+    ///                            undefined.
+    Subscriber& operator=(Subscriber &&subscriber) noexcept;
     /// @}
 
     /// @brief Sets the subscriber options.

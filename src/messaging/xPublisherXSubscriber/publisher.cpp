@@ -91,6 +91,19 @@ Publisher::Publisher(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+/// C'tor
+Publisher::Publisher(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<PublisherImpl> (context, nullptr))
+{
+}
+
+/// C'tor
+Publisher::Publisher(std::shared_ptr<zmq::context_t> &context,
+                     std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<PublisherImpl> (context, logger))
+{
+}
+
 /// Destructor
 Publisher::~Publisher() = default;
 
@@ -110,10 +123,15 @@ void Publisher::initialize(const PublisherOptions &options)
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mPublisher);
     // Set other options
-    auto address = pImpl->mOptions.getAddress();
+    auto timeOut = static_cast<int> (options.getTimeOut().count());
     auto hwm = pImpl->mOptions.getHighWaterMark();
     if (hwm > 0){pImpl->mPublisher->set(zmq::sockopt::sndhwm, hwm);}
+    if (timeOut >= 0)
+    {
+        pImpl->mPublisher->set(zmq::sockopt::sndtimeo, timeOut);
+    }
     // (Re)establish connection
+    auto address = pImpl->mOptions.getAddress();
     pImpl->mPublisher->connect(address);
     // Resolve the end point
     pImpl->mAddress = address;
@@ -171,3 +189,10 @@ void Publisher::disconnect()
     pImpl->disconnect();
     pImpl->mInitialized = false;
 } 
+
+/// Endpoint
+std::string Publisher::getEndPoint() const
+{
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
+    return pImpl->mAddress;
+}

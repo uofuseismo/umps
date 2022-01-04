@@ -152,7 +152,7 @@ public:
             it0 = std::prev(it0, 1);
             // If the end time of the previous packet is before t0MuS
             // then restore the iterator as this packet is too old.
-            if (it0->getEndTime() < t0MuS){it0 = std::prev(it0, -1);}
+            if (it0->getEndTime() < t0MuS){it0 = std::next(it0);}
         }
 //auto index1 = std::distance(mCircularBuffer.begin(), it0);
 //std::cout << index1 << " " << t0 << " " << mCircularBuffer[index1].getStartTime() << std::endl;

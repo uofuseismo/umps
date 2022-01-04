@@ -1,5 +1,5 @@
-#ifndef UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PUBLISHER_HPP
-#define UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PUBLISHER_HPP
+#ifndef UMPS_BROADCASTS_DATAPACKET_PUBLISHER_HPP
+#define UMPS_BROADCASTS_DATAPACKET_PUBLISHER_HPP
 #include <memory>
 #include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
@@ -11,38 +11,21 @@ namespace UMPS
  }
  namespace MessageFormats
  {
-  class IMessage;
+  template<class T> class DataPacket;
  }
- namespace Messaging
+ namespace Broadcasts::DataPacket
  {
-  namespace Authentication
-  {
-   class ZAPOptions;
-   namespace Certificate
-   {
-    class Keys;
-    class UserNameAndPassword;
-   }
-  }
-  namespace XPublisherXSubscriber
-  {
-   class PublisherOptions;
-  }
+  class PublisherOptions;
  }
 }
 namespace zmq
 {
  class context_t;
 }
-namespace UMPS::Messaging::XPublisherXSubscriber
+namespace UMPS::Broadcasts::DataPacket
 {
-/// @class Publisher "publisher.hpp" "umps/messaging/publisherSubscriber/publisher.hpp"
-/// @brief A ZeroMQ publisher.
-/// @detail This is the publisher in a XPUB/XSUB socket.  Here, we assume the
-///         proxy socket is the stable point of our network so with this
-///         publisher you connect to a socket whereas with the publisher in 
-///         the traditional pub/sub you bind to a socke and allow subscribers
-///         to connect to you.
+/// @class Publisher "publisher.hpp" "umps/broadcasts/dataPacket/publisher.hpp"
+/// @brief A ZeroMQ publisher specialized for sending data packets.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Publisher
 {
@@ -69,7 +52,7 @@ public:
     ///                           this class.  On exit, publisher's behavior is
     ///                           undefined.
     Publisher(Publisher &&publisher) noexcept;
-     /// @}
+    /// @}
 
     /// @name Operators
     /// @{
@@ -81,36 +64,24 @@ public:
     Publisher& operator=(Publisher &&publisher) noexcept;
     /// @}
 
-    /// @name Initialization
-    /// @{
     /// @brief Initializes the publisher.
-    /// @param[in] options   The options must contain the socket's address.
-    ///                      Additionally, options will contain the security
-    ///                      protocol.
-    /// @throws std::invalid_argument the socket addres is not specified.
-    /// @throws std::runtime_error if the creation of the publisher fails.
+    /// @param[in] options  The publisher options.  This must have an address.
+    /// @throws std::invalid_argument if \c options.haveAddress().
     void initialize(const PublisherOptions &options);
-    /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
-
-    /// @result True indicates the class is initialized.
+    /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
+    /// @result The security level of the connection.
+    [[nodiscard]] Messaging::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The socket endpoint.
     /// @throws std::runtime_error if \c isInitialized() is true.
     [[nodiscard]] std::string getEndPoint() const;
-    /// @}
 
-    /// @brief Sends a message.
+    /// @brief Sends a message.  This will serialize the message.
     /// @param[in] message  The message to send.
+    /// @throws std::runtime_error if the class is not initialized.
     /// @throws std::invalid_argument if the message cannot be serialized.
-    /// @throws std::runtime_error if \c isInitialized() is false.
-    /// @note This will serialize the message prior to sending it.
-    void send(const MessageFormats::IMessage &message);
-
-    /// @brief Closes the connection.
-    /// @note The class will need to be initialized again to restore the
-    ///       connection.
-    void disconnect(); 
+    template<typename U>
+    void send(const MessageFormats::DataPacket<U> &message);
 
     /// @name Destructors
     /// @{
