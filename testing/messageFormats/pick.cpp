@@ -48,14 +48,14 @@ TEST(PickTest, Pick)
     EXPECT_EQ(pickCopy.getPhaseHint(), phaseHint);
     EXPECT_EQ(pickCopy.getAlgorithm(), algorithm);
 
-    auto message = pickCopy.toJSON(4);
+    auto messageJSON = pickCopy.toJSON(4);
 
     pick.clear();
     EXPECT_EQ(pick.getPolarity(), Pick::Polarity::UNKNOWN);
     EXPECT_TRUE(pick.getPhaseHint().empty());
     EXPECT_EQ(pick.getAlgorithm(), "unspecified");
 
-    pick.fromJSON(message);
+    pick.fromJSON(messageJSON);
     EXPECT_EQ(pick.getIdentifier(), pickID);
     EXPECT_NEAR(pick.getTime(), time, 1.e-10);
     EXPECT_EQ(pick.getNetwork(), network);
@@ -69,6 +69,19 @@ TEST(PickTest, Pick)
     pick.clear();
     auto cbor = pickCopy.toCBOR();
     EXPECT_NO_THROW(pick.fromCBOR(cbor));
+    EXPECT_EQ(pick.getIdentifier(), pickID);
+    EXPECT_NEAR(pick.getTime(), time, 1.e-10);
+    EXPECT_EQ(pick.getNetwork(), network);
+    EXPECT_EQ(pick.getStation(), station);
+    EXPECT_EQ(pick.getChannel(), channel);
+    EXPECT_EQ(pick.getLocationCode(), locationCode);
+    EXPECT_EQ(pick.getPolarity(), polarity);
+    EXPECT_EQ(pick.getPhaseHint(), phaseHint);
+    EXPECT_EQ(pick.getAlgorithm(), algorithm);
+
+    pick.clear();
+    auto message = pickCopy.toMessage();
+    EXPECT_NO_THROW(pick.fromMessage(message.data(), message.size()));
     EXPECT_EQ(pick.getIdentifier(), pickID);
     EXPECT_NEAR(pick.getTime(), time, 1.e-10);
     EXPECT_EQ(pick.getNetwork(), network);

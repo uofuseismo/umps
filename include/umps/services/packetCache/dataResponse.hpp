@@ -14,7 +14,7 @@ namespace UMPS::Services::PacketCache
 /// @brief This represents the packet data for a sensor.
 /// @sa DataRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-template<class T>
+template<class T = double>
 class DataResponse : public MessageFormats::IMessage
 {
 public:

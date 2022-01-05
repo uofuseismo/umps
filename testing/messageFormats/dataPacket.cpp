@@ -81,10 +81,10 @@ TYPED_TEST(DataPacketTest, DataPacket)
     }
 
     //std::cout << packetCopy.toJSON(4) << std::endl;
-    auto traceCBOR = packetCopy.toCBOR();
+    auto traceMessage = packetCopy.toMessage();
     packetCopy.clear();
     EXPECT_EQ(packetCopy.getNumberOfSamples(), 0);
-    packetCopy.fromCBOR(traceCBOR);
+    packetCopy.fromMessage(traceMessage.data(), traceMessage.size());
     EXPECT_EQ(packetCopy.getMessageType(), MESSAGE_TYPE);
     EXPECT_EQ(packetCopy.getStartTime(), startTimeMuS);
     EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);

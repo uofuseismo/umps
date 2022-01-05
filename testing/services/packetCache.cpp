@@ -1,12 +1,14 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <cmath>
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include "umps/services/packetCache/circularBuffer.hpp"
 #include "umps/services/packetCache/cappedCollection.hpp"
 #include "umps/services/packetCache/dataRequest.hpp"
+#include "umps/services/packetCache/dataResponse.hpp"
 #include "umps/services/packetCache/sensorRequest.hpp"
 #include "umps/services/packetCache/sensorResponse.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
@@ -187,6 +189,80 @@ TEST(PacketCache, DataRequest)
     EXPECT_NEAR(timeStart, t0, 1.e-5);
     EXPECT_NEAR(timeEnd,   t1, 1.e-5);
 
+}
+
+TEST(PacketCache, DataResponse)
+{
+    const std::string network{"UU"};
+    const std::string station{"VRUT"};
+    const std::string channel{"EHZ"};
+    const std::string locationCode{"01"};
+    const double samplingRate = 100;
+    const uint64_t id = 594382;
+    std::vector<UMPS::MessageFormats::DataPacket<double>> dataPackets;
+    const double t0 = 0;
+    std::vector<double> startTimes;
+    const std::vector<int> samplesPerPacket{100, 200, 100, 200};
+    auto t1 = t0;
+    for (const auto &nSamples : samplesPerPacket )
+    {
+        startTimes.push_back(t1);
+        UMPS::MessageFormats::DataPacket<double> dataPacket;
+        dataPacket.setNetwork(network);
+        dataPacket.setStation(station);
+        dataPacket.setChannel(channel);
+        dataPacket.setLocationCode(locationCode);
+        dataPacket.setSamplingRate(samplingRate);
+        dataPacket.setStartTime(t1);
+        std::vector<double> data(nSamples);
+        std::fill(data.begin(), data.end(), static_cast<double> (nSamples));
+        dataPacket.setData(data);
+        dataPackets.push_back(dataPacket);
+        // Update start time
+        t1 = t1 + std::round( (nSamples - 1)/samplingRate );
+    }
+    PC::DataResponse<double> response;
+    PC::ReturnCode rc = PC::ReturnCode::INVALID_MESSAGE;
+    EXPECT_NO_THROW(response.setPackets(dataPackets));
+    EXPECT_NO_THROW(response.setIdentifier(id));
+    EXPECT_NO_THROW(response.setReturnCode(rc));
+   
+    // Reconstitute the class from a message 
+    auto message = response.toMessage(); 
+    PC::DataResponse<double> responseCopy;
+    EXPECT_NO_THROW(responseCopy.fromMessage(message.data(), message.size()));
+    EXPECT_EQ(responseCopy.getIdentifier(), id);
+    EXPECT_EQ(responseCopy.getReturnCode(), rc);
+    EXPECT_EQ(responseCopy.getMessageType(), 
+              "UMPS::Services::PacketCache::DataResponse");
+    auto packetsBack = responseCopy.getPackets();
+    EXPECT_EQ(packetsBack.size(), dataPackets.size());
+    for (size_t i = 0; i < packetsBack.size(); ++i)
+    {
+        EXPECT_TRUE(packetsBack.at(i) == dataPackets.at(i));
+    }
+
+    // Set reversed packets
+    std::reverse(packetsBack.begin(), packetsBack.end());
+    response.setPackets(packetsBack);
+    message = response.toMessage();
+    responseCopy.fromMessage(message.data(), message.size());
+    packetsBack = responseCopy.getPackets();
+    for (size_t i = 0; i < packetsBack.size(); ++i)
+    {
+        EXPECT_TRUE(packetsBack.at(i) == dataPackets.at(i));
+    }
+   
+    // See what happens when multiple packets start at same time.
+    // This shouldn't result in a sort.
+    dataPackets[0].setStartTime(0);
+    dataPackets[1].setStartTime(0);
+    EXPECT_NO_THROW(responseCopy.setPackets(dataPackets));
+    packetsBack = responseCopy.getPackets();
+    for (size_t i = 0; i < packetsBack.size(); ++i)
+    {   
+        EXPECT_TRUE(packetsBack.at(i) == dataPackets.at(i));
+    }
 }
 
 TEST(PacketCache, CircularBuffer)
