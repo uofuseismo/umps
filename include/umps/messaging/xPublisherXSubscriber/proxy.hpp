@@ -4,10 +4,6 @@
 #include <string>
 #include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
-namespace zmq
-{
- class context_t;
-}
 namespace UMPS
 {
  namespace Logging
@@ -19,11 +15,6 @@ namespace UMPS
   namespace XPublisherXSubscriber
   {
    class ProxyOptions;
-  }
-  namespace Authentication::Certificate
-  {
-   class Keys;
-   class UserNameAndPassword;
   }
  }
 }
@@ -58,20 +49,6 @@ public:
     /// @brief Constructs a proxy with the given context and logger.
     Proxy(std::shared_ptr<zmq::context_t> &context,
           std::shared_ptr<UMPS::Logging::ILog> &logger);
-
-    /// @brief Move constructor.
-    /// @param[in,out] proxy  The proxy from which to initialize this class.
-    ///                       On exit, proxy's behavior is undefined.
-    Proxy(Proxy &&proxy) noexcept;
-    /// @}
-
-    /// @name Operators
-    /// @{
-    /// @brief Move assignment.
-    /// @param[in,out] proxy  The proxy whose memory will be moved to this.
-    ///                       On exit, proxy's behavior is undefined.
-    /// @result The memory from proxy moved to this.
-    Proxy& operator=(Proxy &&proxy) noexcept;
     /// @}
 
     /// @name Initialization
@@ -121,7 +98,9 @@ public:
     /// @}
 
     Proxy(const Proxy &proxy) = delete;
+    Proxy(Proxy &&proxy) noexcept = delete;
     Proxy& operator=(const Proxy &proxy) = delete;
+    Proxy& operator=(Proxy &&proxy) noexcept = delete;
 private:
     class ProxyImpl;
     std::unique_ptr<ProxyImpl> pImpl;

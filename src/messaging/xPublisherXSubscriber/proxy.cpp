@@ -284,6 +284,7 @@ Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
 {
 }
 
+/*
 /// Move c'tor
 Proxy::Proxy(Proxy &&proxy) noexcept
 {
@@ -297,6 +298,7 @@ Proxy& Proxy::operator=(Proxy &&proxy) noexcept
     pImpl = std::move(proxy.pImpl);
     return *this;
 }
+*/
 
 /// Setup the socket
 void Proxy::initialize(const ProxyOptions &options)

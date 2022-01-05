@@ -215,51 +215,63 @@ public:
         processDataRequest(const std::string &messageType,
                            const void *messageContents, const size_t length)
     {
+        // Get data
         UPacketCache::DataRequest dataRequest;
         if (messageType == dataRequest.getMessageType())
         {
             // Deserialize the message
+            UPacketCache::DataResponse<T> response;
             try
             {
                 dataRequest.fromMessage(
                     static_cast<const char *> (messageContents), length);
+                response.setIdentifier(dataRequest.getIdentifier());
             }
             catch (...)
             {
-                //response->setReturnCode(UMPS::Services::PacketCache::INVALID_MESSAGE);
-                //return std::move(response);
+                response.setReturnCode(
+                   UPacketCache::ReturnCode::INVALID_MESSAGE);
+                return response.clone();
             }
-            auto id = dataRequest.getIdentifier();
             // Does this SNCL exist in the cache?
-            auto network = dataRequest.getNetwork();
-            auto station = dataRequest.getStation();
-            auto channel = dataRequest.getChannel();
-            auto locationCode = dataRequest.getLocationCode();
-            auto haveSensor = mCappedCollection.haveSensor(network,
-                                                           station,
-                                                           channel,
-                                                           locationCode);
+            auto name = dataRequest.getNetwork() + "."
+                      + dataRequest.getStation() + "."
+                      + dataRequest.getChannel() + "."
+                      + dataRequest.getLocationCode();
+            auto haveSensor = mCappedCollection.haveSensor(name);
             if (haveSensor)
             {
-
+                auto [startTime, endTime] = dataRequest.getQueryTimes();
+                try
+                {
+                    auto packets = mCappedCollection.getPackets(
+                        name, startTime, endTime);
+                    response.setPackets(packets);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error(e.what());
+                    response.setReturnCode(
+                       UPacketCache::ReturnCode::ALGORITHM_FAILURE);
+                }
             }
             else
             {
-               //response.setReturnCode(UMPS::Services::PacketCache::NO_SENSOR);
-               //return response.clone();
+                response.setReturnCode(UPacketCache::ReturnCode::NO_SENSOR);
+                return response.clone();
             }
-          
+            return response.clone();
         }
-        UMPS::Services::PacketCache::SensorRequest sensorRequest;
+        // Get sensors
+        UPacketCache::SensorRequest sensorRequest;
         if (messageType == sensorRequest.getMessageType())
         {
             UPacketCache::SensorResponse response;
-            uint64_t id = 0;
             try
             {
                 sensorRequest.fromMessage(
                     static_cast<const char *> (messageContents), length);
-                id = sensorRequest.getIdentifier();
+                response.setIdentifier(sensorRequest.getIdentifier());
             }
             catch (...)
             {
@@ -268,7 +280,6 @@ public:
                 return response.clone();
             }
             // Now get the result
-            response.setIdentifier(id);
             try
             {
                 response.setNames(mCappedCollection->getSensors());
@@ -280,12 +291,10 @@ public:
             }
             return response.clone();
         }
-        else
-        {
-            //response->setReturnCode(UMPS::Services::PacketCache::INVALID_MESSAGE);
-            //return std::move(response);
-        }
-        
+        // Send something back so they don't wait forever
+        UPacketCache::SensorResponse response;
+        response.setReturnCode(UPacketCache::ReturnCode::INVALID_MESSAGE_TYPE);
+        return response.clone();
     }
     /// @brief Stops the publisher threads.
     void stop()
