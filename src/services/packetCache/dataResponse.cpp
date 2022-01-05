@@ -56,6 +56,7 @@ nlohmann::json toJSONObject(
         obj["Packets"] = nullptr;
     }
     obj["Identifier"] = response.getIdentifier();
+    obj["ReturnCode"] = static_cast<int> (response.getReturnCode());
     return obj;
 }
 
@@ -98,6 +99,8 @@ DataResponse<T> objectToDataResponse(const nlohmann::json &obj)
         response.setPackets(std::move(packets));
     }
     response.setIdentifier(obj["Identifier"]);
+    response.setReturnCode(static_cast<ReturnCode>
+                           (obj["ReturnCode"].get<int> ()));
     return response;
 }
 
@@ -166,25 +169,25 @@ class DataResponse<T>::DataResponseImpl
 public:
     void sortPackets()
     {
-        if (std::is_sorted(mPackets.begin(),
-                           mPackets.end(),
-                           [](const UMPS::MessageFormats::DataPacket<T> &lhs,
-                              const UMPS::MessageFormats::DataPacket<T> &rhs)
-                           {
-                               return lhs.getStartTime() <= rhs.getStartTime();
-                           }))
+        if (!std::is_sorted(mPackets.begin(),
+                            mPackets.end(),
+                            [](const UMPS::MessageFormats::DataPacket<T> &a,
+                               const UMPS::MessageFormats::DataPacket<T> &b)
+                            {
+                                return a.getStartTime() < b.getStartTime();
+                            }))
         {
-            std::cout << "sorting packets" << std::endl;
             std::sort(mPackets.begin(), mPackets.end(),
-                      [](const UMPS::MessageFormats::DataPacket<T> &lhs,
-                         const UMPS::MessageFormats::DataPacket<T> &rhs)
+                      [](const UMPS::MessageFormats::DataPacket<T> &a,
+                         const UMPS::MessageFormats::DataPacket<T> &b)
                        {
-                           return lhs.getStartTime() <= rhs.getStartTime();
+                           return a.getStartTime() < b.getStartTime();
                        });
         }
     }
     std::vector<UMPS::MessageFormats::DataPacket<T>> mPackets;
     uint64_t mIdentifier = 0;
+    ReturnCode mReturnCode = ReturnCode::SUCCESS;
 };
 
 /// C'tor
@@ -287,6 +290,19 @@ template<class T>
 uint64_t DataResponse<T>::getIdentifier() const noexcept
 {
     return pImpl->mIdentifier;
+}
+
+/// Return code
+template<class T>
+void DataResponse<T>::setReturnCode(const ReturnCode code) noexcept
+{
+    pImpl->mReturnCode = code;
+}
+
+template<class T>
+ReturnCode DataResponse<T>::getReturnCode() const noexcept
+{
+    return pImpl->mReturnCode;
 }
 
 /// Message type
