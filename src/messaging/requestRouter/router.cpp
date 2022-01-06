@@ -104,7 +104,7 @@ public:
 
 //    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         //mSubscriptions;
-    UMPS::MessageFormats::Messages mMessageFormats;
+//    UMPS::MessageFormats::Messages mMessageFormats;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mServer;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
@@ -207,11 +207,11 @@ void Router::initialize(const RouterOptions &options)
     {
         throw std::invalid_argument("Callback not set");
     }
-    pImpl->mMessageFormats = options.getMessageFormats();
-    if (pImpl->mMessageFormats.empty())
-    {
-        pImpl->mLogger->warn("No message types set in options");
-    }
+//    pImpl->mMessageFormats = options.getMessageFormats();
+//    if (pImpl->mMessageFormats.empty())
+//    {
+//        pImpl->mLogger->warn("No message types set in options");
+//    }
 
     pImpl->mOptions.clear();
     pImpl->unbind();

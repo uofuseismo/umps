@@ -1,20 +1,24 @@
-#ifndef UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PROXYOPTIONS_HPP
-#define UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PROXYOPTIONS_HPP
+#ifndef UMPS_MESSAGING_ROUTERDEALER_PROXYOPTIONS_HPP
+#define UMPS_MESSAGING_ROUTERDEALER_PROXYOPTIONS_HPP
 #include <memory>
 #include <string>
 namespace UMPS::Messaging::Authentication
 {
  class ZAPOptions;
 }
-namespace UMPS::Messaging::XPublisherXSubscriber
+namespace UMPS::Messaging::RouterDealer
 {
-/// @class ProxyOptions "proxyOptions.hpp" "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
+/// @class ProxyOptions "proxyOptions.hpp" "umps/messaging/routerDealer/proxyOptions.hpp"
 /// @brief Options for initializing the proxy.
-/// @detail A proxy is an intermediary that allows for an asynchronous pub/sub
-///         pattern.  In this case, there may be multiple publishers sending
-///         messages to this proxy.  The subscribers then read all of these
-///         messages of desired type from the proxy without having to know
-///         all of the individual publisher connection information. 
+/// @detail A proxy is an intermediary that allows for an asynchronous
+///         request/reply pattern.  In this case, there may be multiple
+///         clients sending requests to the servers.  This works by client(s)
+///         sending requests to the router (frontend), the router forwards
+///         the requests to the dealer, and the dealer sends the requests to
+///         servers.  The servers then process the requests and return the
+///         results to the dealer which forwards those to the router and 
+///         ultimately the router returns the appropriate requests to the
+///         original clients.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ProxyOptions
 {
@@ -45,9 +49,9 @@ public:
     ProxyOptions& operator=(ProxyOptions &&options) noexcept;
     /// @}
 
-    /// @name Publisher Options
+    /// @name Router Options
     /// @{
-    /// @brief Sets the address to which publishers connect.
+    /// @brief Sets the address to which clients connect.
     /// @throws std::invalid_argument if the address is empty.
     void setFrontendAddress(const std::string &address);
     /// @result The frontend address.
@@ -67,10 +71,10 @@ public:
     [[nodiscard]] int getFrontendHighWaterMark() const noexcept;
     /// @}
 
-    /// @name Subscriber Options
+    /// @name Dealer Options
     /// @{
-    /// @brief Sets the address to which subscribers connect.
-    /// @param[in] address  The address to which subscribers will connect.
+    /// @brief Sets the address to which servers connect.
+    /// @param[in] address  The address to which servers will connect.
     /// @throws std::invalid_argument if the address is empty.
     void setBackendAddress(const std::string &address);
     /// @result The backend address.
@@ -90,21 +94,6 @@ public:
     [[nodiscard]] int getBackendHighWaterMark() const noexcept;
     /// @}
  
-    /// @name Topic
-    /// @{
-    /// @brief Sets the topic for inprocess communication.  The control
-    ///        will talk to the service via "inproc://" + topic + "_control"
-    ///        hence topic should be a unique name such as the broadcast name.
-    /// @param[in] topic   The topic.
-    /// @throws std::invalid_argument if topic is blank.
-    void setTopic(const std::string &topic);
-    /// @result The topic name.
-    /// @throws std::runtime_error if \c haveTopic() is false.
-    [[nodiscard]] std::string getTopic() const;
-    /// @result True indicates that the topic was set.
-    [[nodiscard]] bool haveTopic() const noexcept;
-    /// @}
-
     /// @name ZeroMQ Authentication Protocol Options
     /// @{
     /// @brief Defines the ZAP options to be used when configuring the socket.

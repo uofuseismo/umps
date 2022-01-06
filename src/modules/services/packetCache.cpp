@@ -151,7 +151,7 @@ public:
         }
         // Put one last message in the queue so the other thread can unlock
         // and quit its for loop 
-        mLogger->debug("Subscriber thread has exited");
+        mLogger->debug("Data packet subscriber thread has exited");
         //UMF::DataPacket<T> lastPacket;
         //mDataPacketQueue.push(lastPacket);
     }
@@ -429,6 +429,7 @@ int main(int argc, char *argv[])
     auto dataPacketSubscriber
         = std::make_shared<UMPS::Broadcasts::DataPacket::Subscriber<double>> ();
     dataPacketSubscriber->initialize(dataPacketSubscriberOptions);
+    logger.info("Connected!");
 
     // Create a collection of circular buffers
     auto cappedCollection
@@ -471,16 +472,15 @@ int main(int argc, char *argv[])
 //std::cout << packet.toJSON(4) << std::endl;
 //break;
     }
-    loggerPtr->info("Number of packets in capped collection: "
-                  + std::to_string(
-                        dps.mCappedCollection->getTotalNumberOfPackets()));
-    loggerPtr->info("Final packet queue size is: "
-                  + std::to_string(dps.mDataPacketQueue.size()));
-    loggerPtr->info("Stopping services...");
+    logger.info("Number of packets in capped collection: "
+        + std::to_string(dps.mCappedCollection->getTotalNumberOfPackets()));
+    logger.info("Final packet queue size is: "
+              + std::to_string(dps.mDataPacketQueue.size()));
+    logger.info("Stopping services...");
     dps.stop();
     subscriberToQueueThread.join();
     queueToCircularBufferThread.join();
-
+    logger.info("Program finished");
 //std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }
 

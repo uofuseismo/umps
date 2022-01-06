@@ -235,7 +235,7 @@ void Service::initialize(const Parameters &parameters)
     // Add the message types
     std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
         = std::make_unique<AvailableConnectionsRequest> (); 
-    pImpl->mRouterOptions.addMessageFormat(requestType);
+    //pImpl->mRouterOptions.addMessageFormat(requestType);
     pImpl->mRouter->initialize(pImpl->mRouterOptions); 
     // Create the connection details
     ConnectionInformation::SocketDetails::Router socketDetails;

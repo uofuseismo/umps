@@ -161,7 +161,7 @@ void Service::initialize(const Parameters &parameters)
     // Add the message types
     std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
         = std::make_unique<Request> (); 
-    routerOptions.addMessageFormat(requestType);
+    //routerOptions.addMessageFormat(requestType);
     pImpl->mRouter.initialize(routerOptions); 
     // Save the incrementer service name
     pImpl->mName = name;

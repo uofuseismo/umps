@@ -101,7 +101,7 @@ void server()
                               std::placeholders::_3));
     std::unique_ptr<UMPS::MessageFormats::IMessage> messageSubscriptionType
         = std::make_unique<UMPS::Services::Incrementer::Request> (); 
-    routerOptions.addMessageFormat(messageSubscriptionType);
+    //routerOptions.addMessageFormat(messageSubscriptionType);
 
     UMPS::Messaging::RequestRouter::Router server(loggerPtr);
     server.initialize(routerOptions);

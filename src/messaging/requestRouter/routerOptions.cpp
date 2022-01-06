@@ -12,7 +12,7 @@ using namespace UMPS::Messaging::RequestRouter;
 class RouterOptions::RouterOptionsImpl
 {
 public:
-    UMPS::MessageFormats::Messages mMessageFormats;
+    //UMPS::MessageFormats::Messages mMessageFormats;
     UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
     std::string mEndPoint;
     std::function<
@@ -156,6 +156,7 @@ bool RouterOptions::haveCallback() const noexcept
 }
 
 /// Add a message subscription
+/*
 void RouterOptions::addMessageFormat(
     std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
 {
@@ -169,3 +170,4 @@ UMPS::MessageFormats::Messages RouterOptions::getMessageFormats() const noexcept
 {
     return pImpl->mMessageFormats;
 }
+*/

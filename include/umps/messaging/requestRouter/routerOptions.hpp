@@ -151,11 +151,11 @@ public:
     /// @brief Adds a message format that the router can receive from ZeroMQ
     ///        and process.
     /// @param[in] message  The message type.
-    void addMessageFormat(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
+    //void addMessageFormat(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
     /// @result The types of messages that the router can receive via
     ///         ZeroMQ and process.
     /// @note If this is empty then the router will listen for all messages.
-    [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
+    //[[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
     /// @}
 private:
     class RouterOptionsImpl;

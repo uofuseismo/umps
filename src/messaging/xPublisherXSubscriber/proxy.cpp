@@ -146,7 +146,8 @@ public:
             mHaveControl = false;
         }
     }
-    void bindBackend() //const std::string &backendAddress)
+    /// Bind the backend
+    void bindBackend()
     {
         mBackendAddress = mOptions.getBackendAddress();
         try
@@ -176,9 +177,9 @@ public:
             }   
         } 
     }
-    void bindFrontend() //const std::string &frontendAddress)
+    void bindFrontend()
     {
-        mFrontendAddress = mOptions.getFrontendAddress(); //frontendAddress;
+        mFrontendAddress = mOptions.getFrontendAddress();
         try 
         {
             mLogger->debug("Attempting to bind to frontend: "
@@ -206,9 +207,10 @@ public:
             }
         }
     }
-    void connectControl() //const std::string &topic)
+    void connectControl()
     {
-        mControlAddress = "inproc://" + mOptions.getTopic() + "_control";
+        mControlAddress = "inproc://" + mOptions.getTopic()
+                        + "_xpubxsub_control";
         // Connect the control
         try
         {
