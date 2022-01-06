@@ -2,7 +2,7 @@
 #define UMPS_MESSAGING_ROUTERDEALER_PROXYOPTIONS_HPP
 #include <memory>
 #include <string>
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
  class ZAPOptions;
 }

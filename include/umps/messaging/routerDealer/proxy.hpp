@@ -2,7 +2,7 @@
 #define UMPS_MESSAGING_ROUTERDEALER_PROXY_HPP
 #include <memory>
 #include <string>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {

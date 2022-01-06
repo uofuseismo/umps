@@ -1,14 +1,15 @@
 #include <string>
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::XPublisherXSubscriber;
+namespace UAuth = UMPS::Authentication;
 
 class PublisherOptions::PublisherOptionsImpl
 {
 public:
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     std::string mAddress;
     std::chrono::milliseconds mTimeOut{-1}; // Wait forever
     int mHighWaterMark = 0;
@@ -115,14 +116,12 @@ std::chrono::milliseconds PublisherOptions::getTimeOut() const noexcept
 }
 
 /// ZAP options
-void PublisherOptions::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+void PublisherOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mZAPOptions = options;
 } 
 
-UMPS::Messaging::Authentication::ZAPOptions 
-    PublisherOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions PublisherOptions::getZAPOptions() const noexcept
 {
     return pImpl->mZAPOptions;
 }

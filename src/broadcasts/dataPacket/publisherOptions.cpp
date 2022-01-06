@@ -2,9 +2,10 @@
 #include <chrono>
 #include "umps/broadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
+namespace UAuth = UMPS::Authentication;
 
 class PublisherOptions::PublisherOptionsImpl
 {
@@ -90,14 +91,12 @@ bool PublisherOptions::haveAddress() const noexcept
 }
 
 /// ZAP options
-void PublisherOptions::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+void PublisherOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mOptions.setZAPOptions(options);
 } 
 
-UMPS::Messaging::Authentication::ZAPOptions 
-    PublisherOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions PublisherOptions::getZAPOptions() const noexcept
 {
     return pImpl->mOptions.getZAPOptions();
 }

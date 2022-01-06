@@ -15,14 +15,14 @@
 //#include "umps/services/connectionInformation/response.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/authenticator.hpp"
-#include "umps/messaging/authentication/grasslands.hpp"
-#include "umps/messaging/authentication/service.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/authenticator.hpp"
+#include "umps/authentication/grasslands.hpp"
+#include "umps/authentication/service.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 class Service::ServiceImpl
 {
@@ -69,7 +69,7 @@ public:
         mRouter = std::make_unique<UMPS::Messaging::RequestRouter::Router>
                   (mContext, mLogger);
         mAuthenticatorService
-            = std::make_unique<UMPS::Messaging::Authentication::Service>
+            = std::make_unique<UAuth::Service>
               (mContext, mLogger, mAuthenticator);
     }
 /*
@@ -142,10 +142,8 @@ public:
     std::shared_ptr<zmq::context_t> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Messaging::RequestRouter::Router> mRouter{nullptr};
-    std::unique_ptr<UMPS::Messaging::Authentication::Service>
-        mAuthenticatorService{nullptr};
-    std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator>
-        mAuthenticator{nullptr};
+    std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
+    std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
     ConnectionInformation::Details mConnectionDetails;
     std::map<std::string, ConnectionInformation::Details> mConnections;
     UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions;

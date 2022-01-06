@@ -1,18 +1,18 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_USER_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_USER_HPP
+#ifndef UMPS_AUTHENTICATION_USER_HPP
+#define UMPS_AUTHENTICATION_USER_HPP
 #include <memory>
 #include <array>
 #include <string>
 #include "umps/messageFormats/message.hpp"
-#include "umps/messaging/authentication/enums.hpp"
-namespace UMPS::Messaging::Authentication::Certificate
+#include "umps/authentication/enums.hpp"
+namespace UMPS::Authentication::Certificate
 {
  class Keys;
  class UserNameAndPassword;
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
-/// @class User "user.hpp" "umps/messaging/authentication/user.hpp"
+/// @class User "user.hpp" "umps/authentication/user.hpp"
 /// @brief This class defines a user (row) in the user authentication table.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class User : public UMPS::MessageFormats::IMessage

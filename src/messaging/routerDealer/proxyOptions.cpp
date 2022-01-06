@@ -1,14 +1,15 @@
 #include <string>
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
+namespace UAuth = UMPS::Authentication;
 
 class ProxyOptions::ProxyOptionsImpl
 {
 public:
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     std::string mBackendAddress;
     std::string mFrontendAddress;
     int mBackendHighWaterMark = 0;
@@ -131,14 +132,12 @@ bool ProxyOptions::haveBackendAddress() const noexcept
 }
 
 /// ZAP options
-void ProxyOptions::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+void ProxyOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mZAPOptions = options;
 } 
 
-UMPS::Messaging::Authentication::ZAPOptions 
-    ProxyOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions ProxyOptions::getZAPOptions() const noexcept
 {
     return pImpl->mZAPOptions;
 }

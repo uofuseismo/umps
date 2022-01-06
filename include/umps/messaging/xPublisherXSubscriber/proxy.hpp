@@ -2,7 +2,7 @@
 #define UMPS_MESSAGING_XPUBLISHERXSUBSCRIBER_PROXY_HPP
 #include <memory>
 #include <string>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -63,7 +63,7 @@ public:
     /// @throws std::runtime_error if the creation of the proxy fails.
     void initialize(const ProxyOptions &options);
     /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
 
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;

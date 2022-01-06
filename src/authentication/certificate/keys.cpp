@@ -10,9 +10,9 @@
 #include <zmq.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/keys.hpp"
 
-using namespace UMPS::Messaging::Authentication::Certificate;
+using namespace UMPS::Authentication::Certificate;
 
 namespace
 {

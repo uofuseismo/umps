@@ -16,7 +16,7 @@ namespace
 {
 
 using namespace UMPS::Services::ConnectionInformation;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 TEST(ConnectionInformation, SocketDetails)
 {

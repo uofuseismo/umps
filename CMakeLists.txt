@@ -77,15 +77,15 @@ set(MESSAGE_FORMAT_SRC
     src/broadcasts/heartbeat/status.cpp
     src/messageFormats/pick.cpp)
 set(MESSAGING_SRC
-    src/messaging/authentication/authenticator.cpp
-    src/messaging/authentication/service.cpp
-    src/messaging/authentication/sqlite3Authenticator.cpp
-    src/messaging/authentication/grasslands.cpp
-    src/messaging/authentication/user.cpp
-    src/messaging/authentication/zapOptions.cpp
-    src/messaging/authentication/certificate/keys.cpp
-    src/messaging/authentication/certificate/userNameAndPassword.cpp
-    #src/messaging/authentication/generateKeyPair.cpp
+    src/authentication/authenticator.cpp
+    src/authentication/service.cpp
+    src/authentication/sqlite3Authenticator.cpp
+    src/authentication/grasslands.cpp
+    src/authentication/user.cpp
+    src/authentication/zapOptions.cpp
+    src/authentication/certificate/keys.cpp
+    src/authentication/certificate/userNameAndPassword.cpp
+    #src/authentication/generateKeyPair.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/publisherOptions.cpp
     src/messaging/publisherSubscriber/subscriber.cpp

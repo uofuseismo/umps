@@ -10,7 +10,7 @@
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 class Details::DetailsImpl
 {

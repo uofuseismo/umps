@@ -4,7 +4,7 @@
 #include "umps/broadcasts/heartbeat/subscriberOptions.hpp"
 #include "umps/broadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 
@@ -12,7 +12,7 @@ namespace
 {
 
 using namespace UMPS::Broadcasts::Heartbeat;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 TEST(BroadcastsHeartbeat, SubscriberOptions)
 {

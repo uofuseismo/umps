@@ -3,15 +3,18 @@
 #include <memory>
 #include <string>
 #include <chrono>
-namespace UMPS::Messaging
+namespace UMPS
 {
  namespace Authentication
  {
   class ZAPOptions;
  }
- namespace XPublisherXSubscriber
+ namespace Messaging
  {
-  class PublisherOptions;
+  namespace XPublisherXSubscriber
+  {
+   class PublisherOptions;
+  }
  }
 }
 namespace UMPS::Broadcasts::DataPacket
@@ -88,10 +91,10 @@ public:
     /// @{
     /// @brief Defines the ZAP options to be used when configuring the socket.
     /// @param[in] options  The ZAP options.
-    void setZAPOptions(const UMPS::Messaging::Authentication::ZAPOptions &options);
+    void setZAPOptions(const UMPS::Authentication::ZAPOptions &options);
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
-    [[nodiscard]] UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
     /// @result The publisher options.

@@ -8,7 +8,7 @@ namespace UMPS::MessageFormats
  class IMessage;
  class Messages;
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
@@ -98,7 +98,7 @@ public:
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
-    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
     /// @name Destructors

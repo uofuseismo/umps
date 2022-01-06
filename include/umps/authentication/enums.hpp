@@ -1,8 +1,8 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_ENUMS_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_ENUMS_HPP
-namespace UMPS::Messaging::Authentication
+#ifndef UMPS_AUTHENTICATION_ENUMS_HPP
+#define UMPS_AUTHENTICATION_ENUMS_HPP
+namespace UMPS::Authentication
 {
-/// @class SecurityLevel "enums.hpp" "umps/messaging/authentication/enums.hpp"
+/// @class SecurityLevel "enums.hpp" "umps/authentication/enums.hpp"
 /// @brief Defines the security level of a connection.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class SecurityLevel
@@ -16,7 +16,7 @@ enum class SecurityLevel
     IRONHOUSE    /*!< Server validates client's IP address and client's 
                       public key and client validate's server's public key. */
 };
-/// @class UserPrivileges "enums.hpp" "umps/messaging/authentication/enums.hpp"
+/// @class UserPrivileges "enums.hpp" "umps/authentication/enums.hpp"
 /// @brief Defines the user's privileges.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class UserPrivileges

@@ -4,15 +4,16 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include "umps/services/connectionInformation/parameters.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
+namespace UAuth = UMPS::Authentication;
 
 class Parameters::ParametersImpl
 {
 public:
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     std::string mClientAddress; 
     UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::ERROR;
 };
@@ -103,14 +104,12 @@ UMPS::Logging::Level Parameters::getVerbosity() const noexcept
 }
 
 /// ZAP Options
-void Parameters::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &zapOptions) noexcept
+void Parameters::setZAPOptions(const UAuth::ZAPOptions &zapOptions) noexcept
 {
     pImpl->mZAPOptions = zapOptions;
 }
 
-UMPS::Messaging::Authentication::ZAPOptions
-    Parameters::getZAPOptions() const noexcept
+UAuth::ZAPOptions Parameters::getZAPOptions() const noexcept
 {
     return pImpl->mZAPOptions;
 }

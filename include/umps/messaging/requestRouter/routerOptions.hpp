@@ -2,7 +2,7 @@
 #define UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
 #include <memory>
 #include <functional>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -11,7 +11,7 @@ namespace UMPS
   class Messages;
   class IMessage;
  }
- namespace Messaging::Authentication
+ namespace Authentication
  {
   class ZAPOptions;
  }
@@ -97,9 +97,9 @@ public:
     /// @brief Sets the ZAP options.
     /// @param[in] options  The ZAP options which will define the socket's
     ///                     security protocol.
-    void setZAPOptions(const Authentication::ZAPOptions &options);
+    void setZAPOptions(const UMPS::Authentication::ZAPOptions &options);
     /// @result The ZAP options.
-    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
     /// @name Poll Time Out

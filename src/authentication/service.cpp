@@ -7,16 +7,16 @@
 #include <sqlite3.h>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
-#include "umps/messaging/authentication/service.hpp"
-#include "umps/messaging/authentication/authenticator.hpp"
-#include "umps/messaging/authentication/grasslands.hpp"
-//#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/service.hpp"
+#include "umps/authentication/authenticator.hpp"
+#include "umps/authentication/grasslands.hpp"
+//#include "umps/authentication/sqlite3Authenticator.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Authentication;
 
 /*
 #define ZAP_OKAY "OK"

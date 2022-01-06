@@ -1,10 +1,10 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_KEYS_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_KEYS_HPP
+#ifndef UMPS_AUTHENTICATION_CERTIFICATE_KEYS_HPP
+#define UMPS_AUTHENTICATION_CERTIFICATE_KEYS_HPP
 #include <memory>
 #include <array>
-namespace UMPS::Messaging::Authentication::Certificate
+namespace UMPS::Authentication::Certificate
 {
-/// @class Keys "keys.hpp" "umps/messaging/authentication/certificate/keys.hpp"
+/// @class Keys "keys.hpp" "umps/authentication/certificate/keys.hpp"
 /// @brief A class for managing a public/private key-based certificates
 ///        authenticating a client or server with ZeroMQ and libsodium.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

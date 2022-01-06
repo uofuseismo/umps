@@ -1,7 +1,7 @@
 #ifndef UMPS_BROADCASTS_DATAPACKET_SUBSCRIBER_HPP
 #define UMPS_BROADCASTS_DATAPACKET_SUBSCRIBER_HPP
 #include <memory>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 namespace UMPS
 {
  namespace Logging
@@ -71,7 +71,7 @@ public:
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The security level of the connection.
-    [[nodiscard]] Messaging::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The socket endpoint.
     /// @throws std::runtime_error if \c isInitialized() is true.
     [[nodiscard]] std::string getEndPoint() const;

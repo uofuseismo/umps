@@ -20,7 +20,7 @@ namespace UMPS
  {
   class IBroadcast;
  }
- namespace Messaging::Authentication
+ namespace Authentication
  {
   class IAuthenticator;
  }
@@ -45,14 +45,14 @@ public:
             std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context and authenticator.
     Service(std::shared_ptr<zmq::context_t> &context,
-            std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator> &authenticator);
+            std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given logger and authenticator.
     Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
-            std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator> &authenticator);
+            std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given context, logger, and authenticator.
     Service(std::shared_ptr<zmq::context_t> &context,
             std::shared_ptr<UMPS::Logging::ILog> &logger,
-            std::shared_ptr<UMPS::Messaging::Authentication::IAuthenticator> &authenticator);
+            std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
 
     /// @brief Move constructor.
     Service(Service &&service) noexcept;

@@ -8,10 +8,11 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
+namespace UAuth = UMPS::Authentication;
 
 namespace UCI = UMPS::Services::ConnectionInformation;
 

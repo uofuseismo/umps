@@ -1,6 +1,6 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_ENUMS_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_ENUMS_HPP
-namespace UMPS::Messaging::Authentication::Certificate
+#ifndef UMPS_AUTHENTICATION_CERTIFICATE_ENUMS_HPP
+#define UMPS_AUTHENTICATION_CERTIFICATE_ENUMS_HPP
+namespace UMPS::Authentication::Certificate
 {
 /// @brief Influences the security of the hashed passwords and keys.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

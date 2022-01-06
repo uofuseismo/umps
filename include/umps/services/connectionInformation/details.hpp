@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include "umps/services/connectionInformation/enums.hpp"
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 namespace UMPS::Services::ConnectionInformation::SocketDetails
 {
  class Proxy;
@@ -146,15 +146,15 @@ public:
 
     /// @brief The required privileges to connect.
     /// @param[in] privileges  The privileges required to connect.
-    void setUserPrivileges(const UMPS::Messaging::Authentication::UserPrivileges privileges) noexcept;
+    void setUserPrivileges(const UMPS::Authentication::UserPrivileges privileges) noexcept;
     /// @result The requisite privileges to connect.
-    [[nodiscard]] UMPS::Messaging::Authentication::UserPrivileges getUserPrivileges() const noexcept;
+    [[nodiscard]] UMPS::Authentication::UserPrivileges getUserPrivileges() const noexcept;
 
     /// @brief Sets the security level required to establish a connection.
     /// @param[in] securityLevel  The requisite security level.
-    void setSecurityLevel(UMPS::Messaging::Authentication::SecurityLevel securityLevel) noexcept;
+    void setSecurityLevel(UMPS::Authentication::SecurityLevel securityLevel) noexcept;
     /// @result The security level required to establish a connection.
-    [[nodiscard]] UMPS::Messaging::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
 
     /// @name Destructors
     /// @{

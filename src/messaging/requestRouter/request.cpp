@@ -7,13 +7,14 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
+namespace UAuth = UMPS::Authentication;
 
 class Request::RequestImpl
 {
@@ -54,8 +55,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::string mEndPoint;
     int mHighWaterMark = 200;
-    Authentication::SecurityLevel mSecurityLevel
-        = Authentication::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mInitialized = false;
     bool mConnected = false;
 };
@@ -227,8 +227,7 @@ void Request::disconnect()
 Request::~Request() = default;
 
 /// Security level
-UMPS::Messaging::Authentication::SecurityLevel
-    Request::getSecurityLevel() const noexcept
+UAuth::SecurityLevel Request::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
 }

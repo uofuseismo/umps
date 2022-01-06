@@ -3,10 +3,10 @@
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket; 
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 template<class T>
 class SubscriberOptions<T>::SubscriberOptionsImpl
@@ -111,8 +111,7 @@ int SubscriberOptions<T>::getHighWaterMark() const noexcept
 
 /// ZAP options
 template<class T>
-void SubscriberOptions<T>::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+void SubscriberOptions<T>::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mOptions.setZAPOptions(options);
 } 

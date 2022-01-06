@@ -16,11 +16,11 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/algorithm/string.hpp>
 #include <filesystem>
-#include "umps/messaging/authentication/grasslands.hpp"
-#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
-#include "umps/messaging/authentication/service.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/authentication/grasslands.hpp"
+#include "umps/authentication/sqlite3Authenticator.hpp"
+#include "umps/authentication/service.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/certificate/keys.hpp"
 #include "umps/services/connectionInformation/parameters.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -36,7 +36,7 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
 
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 struct ProgramOptions
 {
@@ -46,7 +46,7 @@ struct ProgramOptions
         mConnectionInformationParameters;
     UMPS::Broadcasts::DataPacket::Parameters mDataPacketParameters;
     UMPS::Broadcasts::Heartbeat::Parameters mHeartbeatParameters;
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
                                  + "/.local/share/UMPS/tables/";
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
     std::cout << "Starting the authenticator..." << std::endl;
     try
     {
-        std::thread t(&UMPS::Messaging::Authentication::Service::start,
+        std::thread t(&UAuth::Service::start,
                       &authenticatorService);
         threads.push_back(std::move(t));
     }

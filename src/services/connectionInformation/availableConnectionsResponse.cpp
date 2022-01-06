@@ -9,10 +9,10 @@
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 #define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableConnectionsResponse"
 

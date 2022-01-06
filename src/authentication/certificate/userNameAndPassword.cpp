@@ -4,9 +4,9 @@
 #include <cassert>
 #endif
 #include <sodium/crypto_pwhash.h>
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
 
-using namespace UMPS::Messaging::Authentication::Certificate;
+using namespace UMPS::Authentication::Certificate;
 
 namespace
 {

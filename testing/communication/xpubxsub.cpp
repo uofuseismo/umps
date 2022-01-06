@@ -12,7 +12,7 @@
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -37,7 +37,7 @@ const uint64_t idBase = 100;
 const UMPS::MessageFormats::Pick::Polarity polarity = UMPS::MessageFormats::Pick::Polarity::UP;
 using namespace UMPS::Messaging::PublisherSubscriber;
 namespace XPUBSUB = UMPS::Messaging::XPublisherXSubscriber;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 void proxy()
 {

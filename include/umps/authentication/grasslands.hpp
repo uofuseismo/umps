@@ -1,18 +1,18 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_GRASSLANDS_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_GRASSLANDS_HPP
+#ifndef UMPS_AUTHENTICATION_GRASSLANDS_HPP
+#define UMPS_AUTHENTICATION_GRASSLANDS_HPP
 #include <memory>
-#include "umps/messaging/authentication/enums.hpp"
-#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/authentication/enums.hpp"
+#include "umps/authentication/authenticator.hpp"
 namespace UMPS::Logging
 {
  class ILog;
 }
-namespace UMPS::Messaging::Authentication::Certificate
+namespace UMPS::Authentication::Certificate
 {
  class Keys;
  class UserNameAndPassword;
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
 /// @class Grasslands "grasslands.hpp" "umps/messaging/authentication/grasslands.hpp"
 /// @brief This is a default authenticator that will allow all connections.

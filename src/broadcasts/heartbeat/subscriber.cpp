@@ -4,14 +4,11 @@
 #include "umps/broadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messaging/authentication/service.hpp"
-#include "umps/messaging/authentication/authenticator.hpp"
-#include "umps/messaging/authentication/grasslands.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Broadcasts::Heartbeat;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 
 class Subscriber::SubscriberImpl
@@ -45,7 +42,7 @@ public:
     }
     std::shared_ptr<zmq::context_t> mContext;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    std::shared_ptr<UAuth::IAuthenticator> mAuthenticator;
+    //std::shared_ptr<UAuth::IAuthenticator> mAuthenticator;
     std::unique_ptr<UPubSub::Subscriber> mSubscriber;
     SubscriberOptions mOptions;
 };

@@ -1,7 +1,7 @@
 #ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHER_HPP
 #define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_PUBLISHER_HPP
 #include <memory>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -15,10 +15,6 @@ namespace UMPS
  }
  namespace Messaging
  {
-  namespace Authentication
-  {
-   class ZAPOptions;
-  }
   namespace PublisherSubscriber
   {
    class PublisherOptions;

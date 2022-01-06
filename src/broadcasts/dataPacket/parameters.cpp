@@ -4,9 +4,10 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include "umps/broadcasts/dataPacket/parameters.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
+namespace UAuth = UMPS::Authentication;
 
 class Parameters::ParametersImpl
 {
@@ -126,14 +127,12 @@ bool Parameters::haveBackendAddress() const noexcept
 }
 
 /// ZAP Options
-void Parameters::setZAPOptions(
-        const UMPS::Messaging::Authentication::ZAPOptions &zapOptions) noexcept
+void Parameters::setZAPOptions(const UAuth::ZAPOptions &zapOptions) noexcept
 {
     pImpl->mProxyOptions.setZAPOptions(zapOptions);
 }
 
-UMPS::Messaging::Authentication::ZAPOptions
-    Parameters::getZAPOptions() const noexcept
+UAuth::ZAPOptions Parameters::getZAPOptions() const noexcept
 {
     return pImpl->mProxyOptions.getZAPOptions();
 }

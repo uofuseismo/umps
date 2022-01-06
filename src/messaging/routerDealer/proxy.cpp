@@ -3,10 +3,11 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/routerDealer/proxy.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
+namespace UAuth = UMPS::Authentication;
 
 class Proxy::ProxyImpl
 {
@@ -205,8 +206,7 @@ public:
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mControlAddress;
-    Authentication::SecurityLevel mSecurityLevel
-        = Authentication::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mHaveFrontend = false;
     bool mHaveBackend = false;
     bool mHaveControl = false;

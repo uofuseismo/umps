@@ -1,6 +1,6 @@
-#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/authentication/authenticator.hpp"
 
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Authentication;
 
 std::string IAuthenticator::okayStatus() noexcept
 {

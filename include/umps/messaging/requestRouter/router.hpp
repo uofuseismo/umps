@@ -1,8 +1,7 @@
 #ifndef UMPS_MESSAGING_REQUESTROUTER_ROUTER_HPP
 #define UMPS_MESSAGING_REQUESTROUTER_ROUTER_HPP
 #include <memory>
-#include <functional>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -13,11 +12,6 @@ namespace UMPS
  namespace MessageFormats
  {
   class IMessage;
- }
- namespace Messaging::Authentication::Certificate
- {
-  class Keys;
-  class UserNameAndPassword;
  }
  namespace Messaging::RequestRouter
  {
@@ -63,7 +57,7 @@ public:
     /// @throws std::invalid_argument if the endpoint or callback is not set. 
     void initialize(const RouterOptions &options);
     /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates that the router is bound to an address,
     ///         has a callback, and is ready to receive and process messages.
     [[nodiscard]] bool isInitialized() const noexcept;

@@ -1,7 +1,7 @@
 #ifndef UMPS_BROADCASTS_HEARTBEAT_PARAMETERS_HPP
 #define UMPS_BROADCASTS_HEARTBEAT_PARAMETERS_HPP
 #include <memory>
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
@@ -18,6 +18,7 @@ class Parameters
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Parameters();
     /// @brief Copy constructor.
@@ -29,10 +30,12 @@ public:
     ///                            this class.  On exit, parameters's behavior
     ///                            is undefined.
     Parameters(Parameters &&parameters) noexcept;
+
     /// @}
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] parameters  The parameters class to copy to this.
     /// @result A deep copy of the input parameters.
@@ -43,10 +46,12 @@ public:
     ///                            behavior is undefined.
     /// @result The memory from parameters moved to this.
     Parameters& operator=(Parameters &&parameters) noexcept;
+
     /// @}
 
     /// @name Connection Addresses
     /// @{
+
     /// @brief Sets the frontend's IP address.
     /// @param[in] address  The address of the frontend.
     /// @throws std::invalid_argument if this is empty.
@@ -66,6 +71,7 @@ public:
     [[nodiscard]] std::string getBackendAddress() const;
     /// @result True indicates the backend address was set.
     [[nodiscard]] bool haveBackendAddress() const noexcept;
+
     /// @}  
 
     /// @name High-Water Mark
@@ -91,13 +97,13 @@ public:
 
     /// @name ZAP Options
     /// @{
+
     /// @brief Sets the ZeroMQ Authentication Protocol options.
     /// @param[in] zapOptions  The ZAP options.
-    void setZAPOptions(
-        const UMPS::Messaging::Authentication::ZAPOptions &zapOptions) noexcept; 
+    void setZAPOptions(const UMPS::Authentication::ZAPOptions &zapOptions) noexcept; 
     /// @result The ZAP options.
-    [[nodiscard]] 
-    UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
+
     /// @}
  
     /// @result The name of the broadcast.
@@ -109,12 +115,15 @@ public:
     ///                     read variables.
     void parseInitializationFile(const std::string &iniFile,
                                  const std::string &section = "Heartbeat");
+
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
     ~Parameters();
+
     /// @}
 private:
     class ParametersImpl;

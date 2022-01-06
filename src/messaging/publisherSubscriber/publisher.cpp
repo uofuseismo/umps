@@ -6,16 +6,17 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
-#include "umps/messaging/authentication/enums.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/enums.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace UAuth = UMPS::Authentication;
 
 class Publisher::PublisherImpl
 {
@@ -61,8 +62,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     PublisherOptions mOptions;
     std::string mAddress;
-    Authentication::SecurityLevel mSecurityLevel
-        = Authentication::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mBound = false;
     bool mInitialized = false;
 };
@@ -170,122 +170,6 @@ std::string Publisher::getEndPoint() const
     return pImpl->mAddress;
 }
 
-/*
-/// Bind to an address if not already done so
-void Publisher::bind(const std::string &endPoint)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    auto idx = pImpl->mEndPoints.find(endPoint);
-    if (idx == pImpl->mEndPoints.end())
-    {
-        pImpl->mLogger->debug("Attempting to bind to: " + endPoint);
-    }
-    else
-    {
-        if (idx->second)
-        {
-            pImpl->mLogger->info("Already bound to end point: " + endPoint);
-            return;
-        }
-        else
-        {
-            pImpl->mLogger->info("Attempting to rebind to: " + endPoint);
-        }
-    }
-    try
-    {
-        pImpl->mPublisher->bind(endPoint);
-    }
-    catch (const std::exception &e)
-    {
-        auto errorMsg = "Failed to bind to endpoint: " + endPoint
-                      + "\nZeroMQ failed with: " + std::string(e.what());
-        pImpl->mLogger->error(errorMsg);
-        throw std::runtime_error(errorMsg);
-    }
-    pImpl->mEndPoints.insert(std::pair(endPoint, true));
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::GRASSLANDS;
-}
-
-/// Strawhouse
-void Publisher::bind(
-    const std::string &endPoint,
-    const bool isAuthenticationServer,
-    const std::string &domain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    if (pImpl->mEndPoints.contains(endPoint))
-    {
-        throw std::runtime_error("Already bound to endpoint: " + endPoint);
-    }
-    setStrawhouse(pImpl->mPublisher.get(), isAuthenticationServer, domain);
-    pImpl->mPublisher->bind(endPoint);
-    pImpl->mEndPoints.insert(std::pair(endPoint, true));
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::STRAWHOUSE;
-}
-
-
-/// Woodhouse
-void Publisher::bind(
-    const std::string &endPoint,
-    const Authentication::Certificate::UserNameAndPassword &credentials,
-    const bool isAuthenticationServer,
-    const std::string &domain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    if (pImpl->mEndPoints.contains(endPoint))
-    {
-        throw std::runtime_error("Already bound to endpoint: " + endPoint);
-    }
-    setWoodhouse(pImpl->mPublisher.get(), credentials,
-                 isAuthenticationServer, domain);
-    pImpl->mPublisher->bind(endPoint);
-    pImpl->mEndPoints.insert(std::pair(endPoint, true));
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::WOODHOUSE;
-}
-
-/// Stonehouse server
-void Publisher::bind(
-    const std::string &endPoint,
-    const Authentication::Certificate::Keys &serverKeys,
-    const std::string &domain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    if (isEmpty(domain)){throw std::invalid_argument("Domain is empty");}
-    if (pImpl->mEndPoints.contains(endPoint))
-    {
-        throw std::runtime_error("Already bound to endpoint: " + endPoint);
-    }
-    setStonehouseServer(pImpl->mPublisher.get(), serverKeys, domain);
-    pImpl->mPublisher->bind(endPoint);
-    pImpl->mEndPoints.insert(std::pair(endPoint, true));
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
-}
-
-/// Connect publisher as a CURVE client 
-void Publisher::bind(
-    const std::string &endPoint,
-    const UMPS::Messaging::Authentication::Certificate::Keys &serverKeys,
-    const UMPS::Messaging::Authentication::Certificate::Keys &clientKeys,
-    const std::string &domain)
-{
-    if (isEmpty(endPoint)){throw std::invalid_argument("endPoint is empty");}
-    if (pImpl->mEndPoints.contains(endPoint))
-    {
-        throw std::runtime_error("Already bound to endpoint: " + endPoint);
-    }
-    if (pImpl->mEndPoints.contains(endPoint))
-    {
-        throw std::runtime_error("Already bound to endpoint: " + endPoint);
-    }
-    setStonehouseClient(pImpl->mPublisher.get(),
-                        serverKeys, clientKeys, domain);
-    pImpl->mPublisher->bind(endPoint);
-    pImpl->mEndPoints.insert(std::pair(endPoint, true));
-    pImpl->mSecurityLevel = Authentication::SecurityLevel::STONEHOUSE;
-}
-*/
-
 /// Send a message
 void Publisher::send(const MessageFormats::IMessage &message)
 {
@@ -309,8 +193,7 @@ void Publisher::send(const MessageFormats::IMessage &message)
 }
 
 /// Security level
-UMPS::Messaging::Authentication::SecurityLevel 
-    Publisher::getSecurityLevel() const noexcept
+UAuth::SecurityLevel Publisher::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
 }

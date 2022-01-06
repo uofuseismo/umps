@@ -1,14 +1,14 @@
-#include "messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "initialize.hpp"
 
-using namespace PUMPS::Messaging::Authentication;
+using namespace PUMPS::Authentication;
 
 /// C'tor
 ZAPOptions::ZAPOptions() :
-    pImpl(std::make_unique<UMPS::Messaging::Authentication::ZAPOptions> ())
+    pImpl(std::make_unique<UMPS::Authentication::ZAPOptions> ())
 {
 }
 
@@ -19,7 +19,7 @@ ZAPOptions::ZAPOptions(const ZAPOptions &options)
 }
 
 ZAPOptions::ZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+    const UMPS::Authentication::ZAPOptions &options)
 {
     *this = options;
 }
@@ -34,15 +34,15 @@ ZAPOptions::ZAPOptions(ZAPOptions &&options) noexcept
 ZAPOptions& ZAPOptions::operator=(const ZAPOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<UMPS::Messaging::Authentication::ZAPOptions>
+    pImpl = std::make_unique<UMPS::Authentication::ZAPOptions>
             (*options.pImpl);
     return *this;
 }
 
 ZAPOptions& ZAPOptions::operator=(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+    const UMPS::Authentication::ZAPOptions &options)
 {
-    pImpl = std::make_unique<UMPS::Messaging::Authentication::ZAPOptions>
+    pImpl = std::make_unique<UMPS::Authentication::ZAPOptions>
             (options);
     return *this;
 }
@@ -56,7 +56,7 @@ ZAPOptions& ZAPOptions::operator=(ZAPOptions &&options) noexcept
 }
 
 /// Native class
-UMPS::Messaging::Authentication::ZAPOptions
+UMPS::Authentication::ZAPOptions
     ZAPOptions::getNativeClass() const noexcept
 {
     return *pImpl;
@@ -107,7 +107,7 @@ std::string ZAPOptions::getDomain() const noexcept
 }
 
 /// Security level
-UMPS::Messaging::Authentication::SecurityLevel
+UMPS::Authentication::SecurityLevel
     ZAPOptions::getSecurityLevel() const noexcept
 {
     return pImpl->getSecurityLevel();
@@ -128,9 +128,9 @@ bool ZAPOptions::isAuthenticationServer() const noexcept
 
 */
 
-void PUMPS::Messaging::Authentication::initializeZAPOptions(pybind11::module &m)
+void PUMPS::Authentication::initializeZAPOptions(pybind11::module &m)
 {
-    pybind11::class_<PUMPS::Messaging::Authentication::ZAPOptions>
+    pybind11::class_<PUMPS::Authentication::ZAPOptions>
         o(m, "ZAPOptions");
     o.def(pybind11::init<> ());
     o.doc() = R""""(

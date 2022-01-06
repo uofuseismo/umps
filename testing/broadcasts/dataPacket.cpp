@@ -5,7 +5,7 @@
 #include "umps/broadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
@@ -14,7 +14,7 @@ namespace
 {
 
 using namespace UMPS::Broadcasts::DataPacket;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 TEST(BroadcastsDataPacket, ProxyOptions)
 {

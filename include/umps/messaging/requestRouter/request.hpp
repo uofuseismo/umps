@@ -1,7 +1,7 @@
 #ifndef UMPS_MESSAGING_REQUESTROUTER_REQUEST_HPP
 #define UMPS_MESSAGING_REQUESTROUTER_REQUEST_HPP
 #include <memory>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -60,7 +60,7 @@ public:
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept; 
     /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The connection string.
     /// @throws std::runtime_error if \c isConnected() is false.
     [[nodiscard]] std::string getConnectionString() const;

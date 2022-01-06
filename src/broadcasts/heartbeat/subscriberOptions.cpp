@@ -3,10 +3,10 @@
 #include "umps/broadcasts/heartbeat/status.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 
 using namespace UMPS::Broadcasts::Heartbeat;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 class SubscriberOptions::SubscriberOptionsImpl
 {
@@ -97,8 +97,7 @@ int SubscriberOptions::getHighWaterMark() const noexcept
 }
 
 /// ZAP options
-void SubscriberOptions::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+void SubscriberOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mOptions.setZAPOptions(options);
 } 

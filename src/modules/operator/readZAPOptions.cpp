@@ -4,11 +4,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include "umps/modules/operator/readZAPOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
 
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 /// Loads the client ZAP options
 UAuth::ZAPOptions UMPS::Modules::Operator::readZAPClientOptions(

@@ -1,10 +1,10 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_USERNAMEANDPASSWORD_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_CERTIFICATE_USERNAMEANDPASSWORD_HPP
+#ifndef UMPS_AUTHENTICATION_CERTIFICATE_USERNAMEANDPASSWORD_HPP
+#define UMPS_AUTHENTICATION_CERTIFICATE_USERNAMEANDPASSWORD_HPP
 #include <memory>
-#include "umps/messaging/authentication/certificate/enums.hpp"
-namespace UMPS::Messaging::Authentication::Certificate
+#include "umps/authentication/certificate/enums.hpp"
+namespace UMPS::Authentication::Certificate
 {
-/// @class UserNameAndPassword "userNameAndPassword.hpp" "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+/// @class UserNameAndPassword "userNameAndPassword.hpp" "umps/authentication/certificate/userNameAndPassword.hpp"
 /// @brief This is a certificate based on a username and password.  
 /// @note This form of authentication in UMPS is not encrypted prior to 
 ///       transmission so if an unauthorized person is monitoring network

@@ -4,16 +4,17 @@
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
+namespace UAuth = UMPS::Authentication;
 
 class RouterOptions::RouterOptionsImpl
 {
 public:
     //UMPS::MessageFormats::Messages mMessageFormats;
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     std::string mEndPoint;
     std::function<
         std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -90,14 +91,12 @@ bool RouterOptions::haveEndPoint() const noexcept
 }
 
 /// ZAP Options
-void RouterOptions::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+void RouterOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mZAPOptions = options;
 }
 
-UMPS::Messaging::Authentication::ZAPOptions 
-    RouterOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions RouterOptions::getZAPOptions() const noexcept
 {
     return pImpl->mZAPOptions;
 }

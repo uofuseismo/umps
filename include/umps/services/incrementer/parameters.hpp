@@ -2,7 +2,7 @@
 #define UMPS_SERVICES_INCREMENTER_PARAMETERS_HPP
 #include <memory>
 #include "umps/logging/level.hpp"
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
@@ -112,10 +112,10 @@ public:
     /// @brief Sets the ZeroMQ Authentication Protocol options.
     /// @param[in] zapOptions  The ZAP options.
     void setZAPOptions(
-        const UMPS::Messaging::Authentication::ZAPOptions &zapOptions) noexcept; 
+        const UMPS::Authentication::ZAPOptions &zapOptions) noexcept; 
     /// @result The ZAP options.
     [[nodiscard]] 
-    UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
+    UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
     /// @name Destructors

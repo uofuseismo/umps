@@ -8,10 +8,10 @@
 #include <sodium/crypto_pwhash.h>
 #include <sqlite3.h>
 #include <cassert>
-#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
-#include "umps/messaging/authentication/user.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
+#include "umps/authentication/sqlite3Authenticator.hpp"
+#include "umps/authentication/user.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/certificate/keys.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 #include "private/authentication/checkIP.hpp"
@@ -19,7 +19,7 @@
 /// Magic place where ZMQ will send authentication requests to.
 #define ZAP_ENDPOINT  "inproc://zeromq.zap.01"
 
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Authentication;
 
 namespace
 {

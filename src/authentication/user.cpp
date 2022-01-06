@@ -3,12 +3,12 @@
 #include <string>
 #include <sodium/crypto_pwhash.h>
 #include <nlohmann/json.hpp>
-#include "umps/messaging/authentication/user.hpp"
+#include "umps/authentication/user.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "UMPS::Messaging::Authentication::User"
+#define MESSAGE_TYPE "UMPS::Authentication::User"
 
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Authentication;
 
 namespace
 {
@@ -398,7 +398,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 
 /// Prints the user information
 std::ostream&
-UMPS::Messaging::Authentication::operator<<(
+UMPS::Authentication::operator<<(
     std::ostream &os, const User &user)
 {
     std::string result = "User:\n";

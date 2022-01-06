@@ -1,12 +1,12 @@
 #include <string>
 #include <cassert>
 #include <zmq.hpp>
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Authentication;
 
 namespace
 {

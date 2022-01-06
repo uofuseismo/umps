@@ -2,12 +2,12 @@
 #define PYUMPS_MESSAGING_AUTHENTICATION_ZAPOPTIONS_HPP
 #include <memory>
 #include <pybind11/pybind11.h>
-#include "umps/messaging/authentication/enums.hpp"
-namespace UMPS::Messaging::Authentication
+#include "umps/authentication/enums.hpp"
+namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
-namespace PUMPS::Messaging::Authentication
+namespace PUMPS::Authentication
 {
 class UserNameAndPassword;
 class Keys;
@@ -17,12 +17,12 @@ public:
 
     ZAPOptions();
     ZAPOptions(const ZAPOptions &options);
-    ZAPOptions(const UMPS::Messaging::Authentication::ZAPOptions &options);
+    ZAPOptions(const UMPS::Authentication::ZAPOptions &options);
     ZAPOptions(ZAPOptions &&options) noexcept;
     ZAPOptions& operator=(const ZAPOptions &options);
     ZAPOptions& operator=(ZAPOptions &&options) noexcept;
-    ZAPOptions& operator=(const UMPS::Messaging::Authentication::ZAPOptions &options);
-    UMPS::Messaging::Authentication::ZAPOptions getNativeClass() const noexcept;
+    ZAPOptions& operator=(const UMPS::Authentication::ZAPOptions &options);
+    UMPS::Authentication::ZAPOptions getNativeClass() const noexcept;
     ~ZAPOptions();
 
     void setGrasslandsClient() noexcept;
@@ -41,11 +41,11 @@ public:
     void setDomain(const std::string &domain);
     std::string getDomain() const noexcept;
 
-    UMPS::Messaging::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
 
     bool isAuthenticationServer() const noexcept;
 private:
-    std::unique_ptr<UMPS::Messaging::Authentication::ZAPOptions> pImpl; 
+    std::unique_ptr<UMPS::Authentication::ZAPOptions> pImpl; 
 };
 }
 #endif

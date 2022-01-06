@@ -2,7 +2,6 @@
 #define UMPS_MESSAGING_ROUTERDEALER_REQUESTOPTIONS_HPP
 #include <memory>
 #include <chrono>
-#include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -11,7 +10,7 @@ namespace UMPS
   class Messages;
   class IMessage;
  }
- namespace Messaging::Authentication
+ namespace Authentication
  {
   class ZAPOptions;
  }

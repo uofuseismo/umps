@@ -7,19 +7,20 @@
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/details.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
 namespace UM = UMPS::Messaging;
+namespace UAuth = UMPS::Authentication;
 
 /// Get the available connections
 std::vector<Details>
 UMPS::Services::ConnectionInformation::getConnections(
     const std::string &endPoint,
-    const UM::Authentication::ZAPOptions &zapOptions)
+    const UAuth::ZAPOptions &zapOptions)
 {
     // Set endpoint
     UM::RequestRouter::RequestOptions requestOptions;
@@ -48,6 +49,6 @@ std::vector<Details>
 UMPS::Services::ConnectionInformation::getConnections(
     const std::string &endPoint)
 {
-    UM::Authentication::ZAPOptions zapOptions; // Defaults to grasslands
+    UAuth::ZAPOptions zapOptions; // Defaults to grasslands
     return getConnections(endPoint, zapOptions);
 }

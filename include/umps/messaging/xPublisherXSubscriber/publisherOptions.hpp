@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include <chrono>
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
  class ZAPOptions;
 }

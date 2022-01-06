@@ -1,7 +1,7 @@
 #ifndef UMPS_MESSAGING_ROUTERDEALER_REQUEST_HPP
 #define UMPS_MESSAGING_ROUTERDEALER_REQUEST_HPP
 #include <memory>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -65,7 +65,7 @@ public:
     /// @brief Sets the message format for receiving responses.
     //void setResponse(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
     /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The connection string.
     /// @throws std::runtime_error if \c isConnected() is false.
     [[nodiscard]] std::string getConnectionString() const;

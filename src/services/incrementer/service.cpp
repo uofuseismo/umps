@@ -5,7 +5,7 @@
 #include "umps/services/incrementer/service.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/services/incrementer/counter.hpp"
 #include "umps/services/incrementer/response.hpp"

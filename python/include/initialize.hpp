@@ -3,6 +3,12 @@
 #include <pybind11/pybind11.h>
 namespace PUMPS
 {
+ namespace Authentication
+ {
+  void initializeZAPOptions(pybind11::module &m);
+  void initializeUserNameAndPassword(pybind11::module &m);
+  void initializeKeys(pybind11::module &m);
+ }
  namespace Messaging
  {
   namespace PublisherSubscriber
@@ -10,12 +16,6 @@ namespace PUMPS
    void initializeSubscriber(pybind11::module &m);
    void initializeSubscriberOptions(pybind11::module &m);
    void initializePublisher(pybind11::module &m);
-  }
-  namespace Authentication
-  {
-   void initializeZAPOptions(pybind11::module &m);
-   void initializeUserNameAndPassword(pybind11::module &m);
-   void initializeKeys(pybind11::module &m);
   }
  }
  namespace MessageFormats

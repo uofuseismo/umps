@@ -1,7 +1,10 @@
 #ifndef UMPS_MODULES_OPERATOR_READZAPOPTIONS_HPP
 #define UMPS_MODULES_OPERATOR_READZAPOPTIONS_HPP
 #include <string>
-#include "umps/messaging/authentication/zapOptions.hpp"
+namespace UMPS::Authentication
+{
+ class ZAPOptions;
+}
 namespace boost::program_options
 {
 class ptree;
@@ -16,7 +19,7 @@ namespace UMPS::Modules::Operator
 /// @throws std::runtime_error if the options specified in the ini file are
 ///         invalid.
 /// @note By default a grasslands client will be returned.
-UMPS::Messaging::Authentication::ZAPOptions
+UMPS::Authentication::ZAPOptions
     readZAPClientOptions(const std::string &iniFile);
 /// @brief Parses an ini file and loads the uOperator ZAP security options for
 ///        a ZAP client.
@@ -25,7 +28,7 @@ UMPS::Messaging::Authentication::ZAPOptions
 /// @throws std::runtime_error if the options specified in the ini file are
 ///         invalid.
 /// @note By default a grasslands client will be returned.
-UMPS::Messaging::Authentication::ZAPOptions 
+UMPS::Authentication::ZAPOptions 
    readZAPClientOptions(const boost::property_tree::ptree &propertyTree);
 
 /// @brief Parses an ini file and loads the uOperator ZAP security options for
@@ -36,7 +39,7 @@ UMPS::Messaging::Authentication::ZAPOptions
 /// @throws std::runtime_error if the options specified in the ini file are
 ///         invalid.
 /// @note By default a grasslands server will be returned.
-UMPS::Messaging::Authentication::ZAPOptions
+UMPS::Authentication::ZAPOptions
     readZAPServerOptions(const std::string &iniFile);
 /// @brief Parses an ini file and loads the uOperator ZAP security options for
 ///        a ZAP server.
@@ -45,7 +48,7 @@ UMPS::Messaging::Authentication::ZAPOptions
 /// @throws std::runtime_error if the options specified in the ini file are
 ///         invalid.
 /// @note By default a grasslands server will be returned.
-UMPS::Messaging::Authentication::ZAPOptions 
+UMPS::Authentication::ZAPOptions 
    readZAPServerOptions(const boost::property_tree::ptree &propertyTree);
 }
 #endif

@@ -1,12 +1,12 @@
 #include <zmq.hpp>
 #include <thread>
 #include <sodium/crypto_pwhash.h>
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
-#include "umps/messaging/authentication/user.hpp"
-#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
-#include "umps/messaging/authentication/service.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/user.hpp"
+#include "umps/authentication/sqlite3Authenticator.hpp"
+#include "umps/authentication/service.hpp"
+#include "umps/authentication/zapOptions.hpp"
 //#include "umps/messaging/publisherSubscriber/publisher.hpp"
 //#include "umps/messaging/publisherSubscriber/subscriber.hpp"
 //#include "umps/messageFormats/pick.hpp"
@@ -17,7 +17,7 @@
 namespace
 {
 
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Authentication;
 
 TEST(Messaging, IAuthenticator)
 {

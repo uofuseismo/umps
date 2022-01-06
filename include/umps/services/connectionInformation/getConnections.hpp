@@ -1,7 +1,7 @@
 #ifndef UMPS_SERVICES_CONNECTIONINFORMATION_GETCONNECTIONS_HPP
 #define UMPS_SERVICES_CONNECTIONINFORMATION_GETCONNECTIONS_HPP
 #include <vector>
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
@@ -30,6 +30,6 @@ std::vector<Details> getConnections(const std::string &endPoint);
 /// @throws std::runtime_error if the connection fails.
 std::vector<Details> getConnections(
     const std::string &endPoint,
-    const UMPS::Messaging::Authentication::ZAPOptions &zapOptions);
+    const UMPS::Authentication::ZAPOptions &zapOptions);
 }
 #endif

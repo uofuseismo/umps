@@ -4,14 +4,14 @@
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
-#include "umps/messaging/authentication/service.hpp"
-#include "umps/messaging/authentication/authenticator.hpp"
-#include "umps/messaging/authentication/grasslands.hpp"
+#include "umps/authentication/service.hpp"
+#include "umps/authentication/authenticator.hpp"
+#include "umps/authentication/grasslands.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 
 class Publisher::PublisherImpl

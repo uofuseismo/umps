@@ -8,9 +8,7 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
@@ -18,7 +16,7 @@
 
 using namespace UMPS::Messaging::RequestRouter;
 
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 class Router::RouterImpl
 {
@@ -120,8 +118,7 @@ public:
     mutable std::mutex mMutex;
     std::string mEndPoint;
     int mHighWaterMark = 100; 
-    Authentication::SecurityLevel mSecurityLevel
-        = Authentication::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mBound = false;
     bool mRunning = false; 
     bool mConnected = false;
@@ -348,8 +345,7 @@ bool Router::isRunning() const noexcept
 }
 
 /// Security level
-UMPS::Messaging::Authentication::SecurityLevel
-    Router::getSecurityLevel() const noexcept
+UAuth::SecurityLevel Router::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
 }

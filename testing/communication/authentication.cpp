@@ -1,12 +1,12 @@
 #include <zmq.hpp>
 #include <thread>
 #include <sodium/crypto_pwhash.h>
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
-#include "umps/messaging/authentication/user.hpp"
-#include "umps/messaging/authentication/sqlite3Authenticator.hpp"
-#include "umps/messaging/authentication/service.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/user.hpp"
+#include "umps/authentication/sqlite3Authenticator.hpp"
+#include "umps/authentication/service.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
@@ -20,7 +20,7 @@
 namespace
 {
 
-using namespace UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 /*
 TEST(Messaging, IAuthenticator)
@@ -295,15 +295,15 @@ UMPS::MessageFormats::Pick makePickMessage() noexcept
 }
 
 void pub(std::shared_ptr<zmq::context_t> context,
-         const Certificate::Keys serverCertificate)
+         const UAuth::Certificate::Keys serverCertificate)
 {
     //bool isAuthenticationServer = true;
-    Certificate::UserNameAndPassword plainText; 
+    UAuth::Certificate::UserNameAndPassword plainText; 
     plainText.setUserName("server");
     plainText.setPassword("password");
 
     UMPS::Messaging::PublisherSubscriber::PublisherOptions options;
-    UMPS::Messaging::Authentication::ZAPOptions zapOptions;
+    UMPS::Authentication::ZAPOptions zapOptions;
     zapOptions.setStonehouseServer(serverCertificate);
     options.setAddress("tcp://*:5555");
     options.setZAPOptions(zapOptions);
@@ -321,16 +321,16 @@ void pub(std::shared_ptr<zmq::context_t> context,
     publisher.send(pick);
 }
 
-void sub(const Certificate::Keys serverCertificate)
+void sub(const UAuth::Certificate::Keys serverCertificate)
 {
-    Certificate::Keys clientCertificate;
+    UAuth::Certificate::Keys clientCertificate;
     clientCertificate.create();
 
-    Certificate::UserNameAndPassword plainText;
+    UAuth::Certificate::UserNameAndPassword plainText;
     plainText.setUserName("client");
     plainText.setPassword("letMeIn");
 
-    ZAPOptions zapOptions;
+    UAuth::ZAPOptions zapOptions;
     zapOptions.setStonehouseClient(serverCertificate, clientCertificate);
    
     std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
@@ -373,7 +373,7 @@ void sub(const Certificate::Keys serverCertificate)
 
 TEST(Messaging, Authenticator)
 {
-    Certificate::Keys serverCertificate;
+    UAuth::Certificate::Keys serverCertificate;
     serverCertificate.create();
 
     auto context = std::make_shared<zmq::context_t> (1);
@@ -381,10 +381,10 @@ TEST(Messaging, Authenticator)
     logger.setLevel(UMPS::Logging::Level::DEBUG);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
-    Service auth(context, loggerPtr);
+    UAuth::Service auth(context, loggerPtr);
 
     // Have this thread start the authenticator
-    std::thread t1(&Service::start, &auth);
+    std::thread t1(&UAuth::Service::start, &auth);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     //auth.whitelist("127.0.0.1");
     //auth.start();

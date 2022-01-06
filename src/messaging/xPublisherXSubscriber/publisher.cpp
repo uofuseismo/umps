@@ -3,11 +3,12 @@
 #include <zmq.hpp>
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Messaging::XPublisherXSubscriber;
+namespace UAuth = UMPS::Authentication;
 
 class Publisher::PublisherImpl
 {
@@ -51,8 +52,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     PublisherOptions mOptions;
     std::string mAddress;
-    Authentication::SecurityLevel mSecurityLevel
-        = Authentication::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mConnected = false;
     bool mInitialized = false;
 };
@@ -155,8 +155,7 @@ void Publisher::send(const MessageFormats::IMessage &message)
 }
 
 /// Security level
-UMPS::Messaging::Authentication::SecurityLevel 
-    Publisher::getSecurityLevel() const noexcept
+UAuth::SecurityLevel Publisher::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
 }

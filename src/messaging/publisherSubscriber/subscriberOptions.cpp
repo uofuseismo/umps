@@ -1,15 +1,16 @@
 #include <string>
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace UAuth = UMPS::Authentication;
 
 class SubscriberOptions::SubscriberOptionsImpl
 {
 public:
-    UMPS::Messaging::Authentication::ZAPOptions mZAPOptions;
+    UAuth::ZAPOptions mZAPOptions;
     UMPS::MessageFormats::Messages mMessageTypes;
     std::string mAddress;
     std::chrono::milliseconds mTimeOut{-1};
@@ -98,14 +99,12 @@ bool SubscriberOptions::haveAddress() const noexcept
 }
 
 /// ZAP options
-void SubscriberOptions::setZAPOptions(
-    const UMPS::Messaging::Authentication::ZAPOptions &options)
+void SubscriberOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mZAPOptions = options;
 } 
 
-UMPS::Messaging::Authentication::ZAPOptions 
-    SubscriberOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions SubscriberOptions::getZAPOptions() const noexcept
 {
     return pImpl->mZAPOptions;
 }

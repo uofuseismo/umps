@@ -1,13 +1,13 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
+#ifndef UMPS_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
+#define UMPS_AUTHENTICATION_SQLITE3AUTHENTICATOR_HPP
 #include <memory>
 #include <vector>
-#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/authentication/authenticator.hpp"
 namespace UMPS::Logging
 {
  class ILog;
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
  class User;
  namespace Certificate
@@ -16,9 +16,9 @@ namespace UMPS::Messaging::Authentication
   class UserNameAndPassword;
  }
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
-/// @class SQLite3Authenticator "sqlite3Authenticator.hpp" "umps/messaging/authentication/sqlite3Authenticator.hpp"
+/// @class SQLite3Authenticator "sqlite3Authenticator.hpp" "umps/authentication/sqlite3Authenticator.hpp"
 /// @brief Performs user authentication against a SQLite3 database.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class SQLite3Authenticator : public IAuthenticator

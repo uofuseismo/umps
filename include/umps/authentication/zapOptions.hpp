@@ -1,20 +1,20 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_ZAPOPTIONS_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_ZAPOPTIONS_HPP
+#ifndef UMPS_AUTHENTICATION_ZAPOPTIONS_HPP
+#define UMPS_AUTHENTICATION_ZAPOPTIONS_HPP
 #include <memory>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace zmq
 {
  class socket_t;
 }
-namespace UMPS::Messaging::Authentication::Certificate
+namespace UMPS::Authentication::Certificate
 {
  class UserNameAndPassword;
  class Keys;
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
-/// @class ZAPOptions "zapOptions.hpp" "umps/messaging/authentication/zapOptions.hpp"
+/// @class ZAPOptions "zapOptions.hpp" "umps/authentication/zapOptions.hpp"
 /// @brief Defines options for using the ZeroMQ authentication protocol.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ZAPOptions
@@ -22,6 +22,7 @@ class ZAPOptions
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     ZAPOptions();
     /// @brief Copy assignment operator.
@@ -33,10 +34,12 @@ public:
     ///                         this class.  On exit, options's behavior is
     ///                         undefined.
     ZAPOptions(ZAPOptions &&options) noexcept;
+
     /// @}
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment.
     /// @param[in] options   The options to copy to this.
     /// @result A deep copy of the input options.
@@ -47,20 +50,24 @@ public:
     ///                         undefined.
     /// @result The memory from options moved to this.
     ZAPOptions& operator=(ZAPOptions &&options) noexcept;
+
     /// @}
 
     /// @name Grasslands
     /// @{
+
     /// @brief This enables the grasslands security pattern.  Effectively, there
     ///        is no security.  This is the default security pattern.
     void setGrasslandsClient() noexcept;
     /// @brief This enables the grasslands security pattern.  Effectively, there
     ///        is no security.  This is the default security pattern.
     void setGrasslandsServer() noexcept;
+
     /// @}
     
     /// @name Strawhouse
     /// @{
+
     /// @brief This enables the strawhouse security pattern for the client.
     ///        In this case nothing else needs to be specified.
     void setStrawhouseClient() noexcept;
@@ -68,10 +75,12 @@ public:
     ///        The server will be provided the client's IP address on 
     ///        \c getDomain() and an auxiliary service will verify.
     void setStrawhouseServer() noexcept;
+
     /// @}
 
     /// @name Woodhouse
     /// @{
+
     /// @brief This enables the woodhouse security pattern for the client.
     ///        Here, the client provides their username and password which
     ///        ZeroMQ will pass to the server during authentication.
@@ -86,10 +95,12 @@ public:
     void setWoodhouseServer() noexcept;
     /// @result The client's username and password.
     [[nodiscard]] Certificate::UserNameAndPassword getClientCredentials() const;
+
     /// @}
 
     /// @name Stonehouse
     /// @{
+
     /// @brief This enables the stonehouse security pattern for the client.
     ///        The client must know the server's public key.  Additionally,
     ///        the client must have a valid public and private key pair.
@@ -115,10 +126,12 @@ public:
     [[nodiscard]] Certificate::Keys getServerKeys() const;
     /// @result The client's public and, potentially, private key information. 
     [[nodiscard]] Certificate::Keys getClientKeys() const;
+
     /// @}
 
     /// @name ZAP Domain
     /// @{
+
     /// @brief Sets the ZeroMQ Authentication Protocol Domain.  Effectively,
     ///        ZeroMQ will send an inter-process message to the authenticator
     ///        on a connection that utilizes this name.
@@ -128,10 +141,12 @@ public:
     void setDomain(const std::string &domain);
     /// @result The ZAP domain.  By default this is "global".
     [[nodiscard]] std::string getDomain() const noexcept;
+
     /// @}
 
     /// @name Auxiliary Properties
     /// @{
+
     /// @result The currently set security level.
     /// @note This is automatically set by the most recent call to the
     ///       \c setGrasslandsClient(), \c setGrasslandsServer(),
@@ -147,6 +162,7 @@ public:
     ///       \c setWoodhouseClient(), \c setWoodhouseServer(),
     ///       \c setStonehouseClient(), \c setStonehouseServer().
     [[nodiscard]] bool isAuthenticationServer() const noexcept;
+
     /// @}
 
     /// @brief A utility routine that sets the ZAP options on the
@@ -162,11 +178,13 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class to the grasslands pattern and releases
     ///        all memory.
     void clear() noexcept;
     /// @brief Destructor.
     ~ZAPOptions();
+
     /// @}
 private:
     class ZAPOptionsImpl; 

@@ -1,9 +1,9 @@
-#include "umps/messaging/authentication/grasslands.hpp"
+#include "umps/authentication/grasslands.hpp"
+#include "umps/authentication/certificate/keys.hpp"
+#include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/logging/stdout.hpp"
-#include "umps/messaging/authentication/certificate/keys.hpp"
-#include "umps/messaging/authentication/certificate/userNameAndPassword.hpp"
 
-using namespace UMPS::Messaging::Authentication;
+using namespace UMPS::Authentication;
 
 class Grasslands::GrasslandsImpl
 {

@@ -1,9 +1,9 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_THREADAUTHENTICATOR_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_THREADAUTHENTICATOR_HPP
+#ifndef UMPS_AUTHENTICATION_THREADAUTHENTICATOR_HPP
+#define UMPS_AUTHENTICATION_THREADAUTHENTICATOR_HPP
 #include <memory>
 #include <vector>
 #include <string>
-#include "umps/messaging/authentication/authenticator.hpp"
+#include "umps/authentication/authenticator.hpp"
 namespace zmq 
 {
  class context_t;
@@ -12,9 +12,9 @@ namespace UMPS::Logging
 {
  class ILog;
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
-/// @class Service "service.hpp" "umps/messaging/authentication/service.hpp"
+/// @class Service "service.hpp" "umps/authentication/service.hpp"
 /// @brief This class is used to run a ZAP authentication thread in
 ///        the background.
 /// @details Effectively when you \c start() the in a thread is running an

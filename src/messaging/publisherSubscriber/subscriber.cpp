@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/logging/log.hpp"
@@ -15,6 +15,7 @@
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace UAuth = UMPS::Authentication;
 
 class Subscriber::SubscriberImpl
 {
@@ -62,8 +63,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     SubscriberOptions mOptions;
     std::string mAddress;
-    Authentication::SecurityLevel mSecurityLevel
-        = Authentication::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mMadeContext = true;
     bool mInitialized = false;
     bool mConnected = false;
@@ -227,8 +227,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
 }
 
 /// Security level
-UMPS::Messaging::Authentication::SecurityLevel
-    Subscriber::getSecurityLevel() const noexcept
+UAuth::SecurityLevel Subscriber::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
 }

@@ -14,7 +14,7 @@
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
@@ -32,7 +32,7 @@
 
 namespace UPacketCache = UMPS::Services::PacketCache;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
-namespace UAuth = UMPS::Messaging::Authentication;
+namespace UAuth = UMPS::Authentication;
 
 #define DEFAULT_HWM 4096
 #define DEFAULT_TIMEOUT std::chrono::milliseconds{10}

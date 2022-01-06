@@ -1,17 +1,17 @@
-#ifndef UMPS_MESSAGING_AUTHENTICATION_AUTHENTICATOR_HPP
-#define UMPS_MESSAGING_AUTHENTICATION_AUTHENTICATOR_HPP
+#ifndef UMPS_AUTHENTICATION_AUTHENTICATOR_HPP
+#define UMPS_AUTHENTICATION_AUTHENTICATOR_HPP
 #include <string>
-#include "umps/messaging/authentication/enums.hpp"
+#include "umps/authentication/enums.hpp"
 namespace UMPS::Logging
 {
  class ILog;
 }
-namespace UMPS::Messaging::Authentication::Certificate
+namespace UMPS::Authentication::Certificate
 {
  class Keys;
  class UserNameAndPassword;
 }
-namespace UMPS::Messaging::Authentication
+namespace UMPS::Authentication
 {
 /// @class Authenticator "authenticator.hpp" "umps/messaging/authentication/authenticator.hpp"
 /// @brief This the base class that defines an authenticator.  
