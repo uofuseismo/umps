@@ -320,11 +320,12 @@ endif()
 ##########################################################################################
 #                                     CPACK Packaging                                    #
 ##########################################################################################
+include(CPack)
 set(CPACK_PACKAGE_NAME "URTS")
 set(CPACK_PACKAGE_VENDOR "UUSS")
 set(CPACK_PACKAGE_CONTACT "bbaker@seis.utah.edu")
 set(CPACK_PACKAGE_LICENSE "MIT")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "UUSS's Real-Time Seismic System tools.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "University of Utah Seismograph Stations Messaging Passing System")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
