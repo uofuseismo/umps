@@ -3,6 +3,8 @@
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
+#include "umps/messaging/routerDealer/proxyOptions.hpp"
+#include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -118,6 +120,34 @@ TEST(Messaging, XPubXSubPublisherOptions)
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), zero);
     EXPECT_EQ(options.getTimeOut(), negativeOne);
+}
+
+TEST(Messaging, RouterDealerProxyOptions)
+{
+    const std::string frontendAddress = "tcp://127.0.0.1:5555";
+    const std::string backendAddress = "tcp://127.0.0.2:5556";
+    //const std::string topic = "testTopic";
+    const int frontendHWM = 100;
+    const int backendHWM = 200;
+    const int zero = 0;
+    RouterDealer::ProxyOptions options;
+    options.setFrontendAddress(frontendAddress);
+    options.setFrontendHighWaterMark(frontendHWM);
+    options.setBackendAddress(backendAddress);
+    options.setBackendHighWaterMark(backendHWM);
+    //options.setTopic(topic);
+  
+    RouterDealer::ProxyOptions optionsCopy(options);
+
+    EXPECT_EQ(optionsCopy.getFrontendAddress(), frontendAddress);
+    EXPECT_EQ(optionsCopy.getBackendAddress(), backendAddress);
+    EXPECT_EQ(optionsCopy.getFrontendHighWaterMark(), frontendHWM);
+    EXPECT_EQ(optionsCopy.getBackendHighWaterMark(), backendHWM);
+    //EXPECT_EQ(optionsCopy.getTopic(), topic);
+   
+    options.clear();
+    EXPECT_EQ(options.getFrontendHighWaterMark(), zero);
+    EXPECT_EQ(options.getBackendHighWaterMark(), zero);
 }
 
 }

@@ -7,6 +7,7 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/messaging/routerDealer/proxy.hpp"
 #include "umps/messaging/routerDealer/request.hpp"
+#include "umps/messaging/routerDealer/requestOptions.hpp"
 //#include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
