@@ -14,11 +14,6 @@ namespace UMPS
  {
   class IMessage;
  }
- namespace Messaging::Authentication::Certificate
- {
-  class Keys;
-  class UserNameAndPassword;
- }
  namespace Messaging::RequestRouter
  {
   class RequestOptions;
@@ -63,10 +58,6 @@ public:
     void initialize(const RequestOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept; 
-    /// @brief Sets the message format for receiving responses.
-    void setResponse(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
-    //void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-    //                                     (const std::string &, const uint8_t *, size_t)> &callback);
 
     /// @name Connecting
     /// @{
