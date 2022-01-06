@@ -25,6 +25,7 @@ class RequestOptions
 public:
     /// @name Constructor
     /// @{
+
     /// @brief Constructor.
     RequestOptions();
     /// @brief Copy constructor.
@@ -36,10 +37,12 @@ public:
     ///                         this class.  On exit, options's behavior
     ///                         is undefined.
     RequestOptions(RequestOptions &&options) noexcept;
+
     /// @}
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of options.
@@ -50,10 +53,12 @@ public:
     ///                         undefined.
     /// @result The memory from options moved to this.
     RequestOptions& operator=(RequestOptions &&options) noexcept;
+
     /// @}
 
     /// @name End Point
     /// @{
+
     /// @param[in] endPoint  The endpoint on which to accept connections.
     ///                      For example, "tcp://127.0.0.1:5555".
     /// @throws std::invalid_argument if endPoint is blank.
@@ -63,10 +68,12 @@ public:
     [[nodiscard]] std::string getEndPoint() const;
     /// @result True indicates that the end point was set.
     [[nodiscard]] bool haveEndPoint() const noexcept;
+
     /// @}
 
     /// @name High Water Mark
     /// @{
+
     /// @param[in] highWaterMark  The approximate max number of messages to 
     ///                           cache on the socket.  0 will set this to
     ///                           "infinite".
@@ -74,20 +81,24 @@ public:
     void setHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0.
     [[nodiscard]] int getHighWaterMark() const noexcept;
+
     /// @}
 
     /// @name ZeroMQ Authentication Protocol
     /// @{
+
     /// @brief Sets the ZAP options.
     /// @param[in] options  The ZAP options which will define the socket's
     ///                     security protocol.
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+
     /// @}
 
     /// @name Message types
     /// @{
+
     /// @brief Adds a message format that the request can receive from the
     ///        ZeroMQ router.
     /// @param[in] message  The message type.
@@ -100,10 +111,12 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
     ~RequestOptions();
+
     /// @}
 private:
     class RequestOptionsImpl;

@@ -38,6 +38,7 @@ class Proxy
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Proxy();
     /// @brief Constructs a proxy with the given logger.
@@ -49,10 +50,12 @@ public:
     /// @brief Constructs a proxy with the given context and logger.
     Proxy(std::shared_ptr<zmq::context_t> &context,
           std::shared_ptr<UMPS::Logging::ILog> &logger);
+
     /// @}
 
     /// @name Initialization
     /// @{
+
     /// @brief Initializes the proxy.
     /// @param[in] options   The options must contain the frontend and backend
     ///                      addresses as well as the proxy's topic.
@@ -73,10 +76,12 @@ public:
     /// @result The address to which the producers will subscribe.
     /// @throws std::invalid_argument if \c isInitialized() is false.
     [[nodiscard]] std::string getBackendAddress() const;
+
     /// @}
 
     /// @name Usage
     /// @{
+
     /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
     void start(); 
@@ -89,12 +94,15 @@ public:
     /// @brief Stops the proxy.
     /// @note You will have to reinitialize after calling this.
     void stop();
+
     /// @}
 
     /// @name Destructors
     /// @{
+
     /// @brief Destructor.
     ~Proxy();
+
     /// @}
 
     Proxy(const Proxy &proxy) = delete;

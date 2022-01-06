@@ -106,8 +106,8 @@ public:
     ///        the client must have a valid public and private key pair.
     ///        The public key will be encrypted, sent to the server, and
     ///        validated.  Additionally, the IP may be validated.
-    /// @param[in] serverKey  The server's public key.
-    /// @param[in] clientKey  The client's public and private key pair.
+    /// @param[in] serverKeys  The server's public key.
+    /// @param[in] clientKeys  The client's public and private key pair.
     /// @throws std::invalid_argument if server.havePublicKey() is false,
     ///         client.havePublicKey() is false, or client.havePrivateKey()
     ///         is false. 

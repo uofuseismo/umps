@@ -25,6 +25,7 @@ class ProxyOptions
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     ProxyOptions();
     /// @brief Copy constructor.
@@ -34,10 +35,12 @@ public:
     /// @param[in,out] options  The class from which to initialize this class.
     ///                         On exit, options's behavior is undefined.  
     ProxyOptions(ProxyOptions &&options) noexcept;
+
     /// @}
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] options  The options to copy to this.
     /// @result A deep copy of the input options.
@@ -47,10 +50,12 @@ public:
     ///                         On exit, options's behavior is undefined.
     /// @result The memory moved from options to this.
     ProxyOptions& operator=(ProxyOptions &&options) noexcept;
+
     /// @}
 
     /// @name Router Options
     /// @{
+
     /// @brief Sets the address to which clients connect.
     /// @throws std::invalid_argument if the address is empty.
     void setFrontendAddress(const std::string &address);
@@ -69,10 +74,12 @@ public:
     void setFrontendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getFrontendHighWaterMark() const noexcept;
+
     /// @}
 
     /// @name Dealer Options
     /// @{
+
     /// @brief Sets the address to which servers connect.
     /// @param[in] address  The address to which servers will connect.
     /// @throws std::invalid_argument if the address is empty.
@@ -92,24 +99,29 @@ public:
     void setBackendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getBackendHighWaterMark() const noexcept;
+
     /// @}
  
     /// @name ZeroMQ Authentication Protocol Options
     /// @{
+
     /// @brief Defines the ZAP options to be used when configuring the socket.
     /// @param[in] options  The ZAP options.
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
-    Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+
     /// @}
  
     /// @name Destructors
     /// @{
+
     /// @brief Resets class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
     ~ProxyOptions();
+
     /// @}
 private:
     class ProxyOptionsImpl;

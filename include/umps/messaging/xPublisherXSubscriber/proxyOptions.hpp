@@ -21,6 +21,7 @@ class ProxyOptions
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     ProxyOptions();
     /// @brief Copy constructor.
@@ -30,10 +31,12 @@ public:
     /// @param[in,out] options  The class from which to initialize this class.
     ///                         On exit, options's behavior is undefined.  
     ProxyOptions(ProxyOptions &&options) noexcept;
+
     /// @}
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] options  The options to copy to this.
     /// @result A deep copy of the input options.
@@ -43,10 +46,12 @@ public:
     ///                         On exit, options's behavior is undefined.
     /// @result The memory moved from options to this.
     ProxyOptions& operator=(ProxyOptions &&options) noexcept;
+
     /// @}
 
     /// @name Publisher Options
     /// @{
+
     /// @brief Sets the address to which publishers connect.
     /// @throws std::invalid_argument if the address is empty.
     void setFrontendAddress(const std::string &address);
@@ -65,10 +70,12 @@ public:
     void setFrontendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getFrontendHighWaterMark() const noexcept;
+
     /// @}
 
     /// @name Subscriber Options
     /// @{
+
     /// @brief Sets the address to which subscribers connect.
     /// @param[in] address  The address to which subscribers will connect.
     /// @throws std::invalid_argument if the address is empty.
@@ -88,10 +95,12 @@ public:
     void setBackendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getBackendHighWaterMark() const noexcept;
+
     /// @}
  
     /// @name Topic
     /// @{
+
     /// @brief Sets the topic for inprocess communication.  The control
     ///        will talk to the service via "inproc://" + topic + "_control"
     ///        hence topic should be a unique name such as the broadcast name.
@@ -103,24 +112,29 @@ public:
     [[nodiscard]] std::string getTopic() const;
     /// @result True indicates that the topic was set.
     [[nodiscard]] bool haveTopic() const noexcept;
+
     /// @}
 
     /// @name ZeroMQ Authentication Protocol Options
     /// @{
+
     /// @brief Defines the ZAP options to be used when configuring the socket.
     /// @param[in] options  The ZAP options.
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
-    Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+
     /// @}
  
     /// @name Destructors
     /// @{
+
     /// @brief Resets class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
     ~ProxyOptions();
+
     /// @}
 private:
     class ProxyOptionsImpl;

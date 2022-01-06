@@ -1,10 +1,12 @@
 #include <string>
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
+#include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -14,6 +16,7 @@ namespace
 {
 
 using namespace UMPS::Messaging;
+namespace UAuth = UMPS::Authentication;
 
 TEST(Messaging, PubSubPublisherOptions)
 {
@@ -148,6 +151,36 @@ TEST(Messaging, RouterDealerProxyOptions)
     options.clear();
     EXPECT_EQ(options.getFrontendHighWaterMark(), zero);
     EXPECT_EQ(options.getBackendHighWaterMark(), zero);
+}
+
+TEST(Messaging, RouterDealerRequestOptions)
+{
+    //RouterDealer::RequestOptions options;
+}
+
+TEST(Messaging, RouterDealerReplyOptions)
+{
+    RouterDealer::ReplyOptions options; 
+    int hwm = 240;
+    const std::string address = "tcp://127.0.0.2:5556";
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
+        = std::make_unique<UMPS::MessageFormats::Pick> ();
+    EXPECT_NO_THROW(options.setHighWaterMark(hwm));
+    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+    EXPECT_NO_THROW(options.setEndPoint(address));
+    EXPECT_NO_THROW(options.addMessageFormat(pickMessage));
+    
+    RouterDealer::ReplyOptions optionsCopy(options); 
+    EXPECT_EQ(options.getHighWaterMark(), hwm);
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              UAuth::SecurityLevel::STRAWHOUSE);
+    EXPECT_EQ(options.getEndPoint(), address);
+    EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
+
+    options.clear();
+    EXPECT_EQ(options.getHighWaterMark(), 0);
 }
 
 }

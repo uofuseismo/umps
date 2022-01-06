@@ -1,8 +1,8 @@
-#ifndef UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
-#define UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
+#ifndef UMPS_MESSAGING_ROUTERDEALER_REPLYOPTIONS_HPP
+#define UMPS_MESSAGING_ROUTERDEALER_REPLYOPTIONS_HPP
 #include <memory>
 #include <functional>
-#include "umps/authentication/enums.hpp"
+#include <chrono>
 // Forward declarations
 namespace UMPS
 {
@@ -16,43 +16,31 @@ namespace UMPS
   class ZAPOptions;
  }
 }
-namespace UMPS::Messaging::RequestRouter
+namespace UMPS::Messaging::RouterDealer
 {
-/// @class RouterOptions "routerOptions.hpp" "umps/messaging/requestRouter/routerOptions.hpp"
-/// @brief Defines the router socket options.  A router works like a service.
-///        After binding to the endpoint, the service will run in a thread
-///        according to the following pseudo-code
-///        while (true)
-///        {
-///            Wait for message on the end point until specified time out
-///            if (Message Received)
-///            {
-///                Process message with callback
-///                Return response to sender.
-///            }
-///            if (Termination Requested)
-///            {
-///                Exit while loop.
-///            }
-///        }
+/// @class ReplyOptions "requestOptions.hpp" "umps/messaging/routerDealer/replyOptions.hpp"
+/// @brief Defines the reply socket options.
+/// @details After receiving a message from the dealer the router will use the
+///          callback function defined in this class to reply to the request.
+///          It is important that the callback not throw or fail.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RouterOptions
+class ReplyOptions
 {
 public:
     /// @name Constructor
     /// @{
 
     /// @brief Constructor.
-    RouterOptions();
+    ReplyOptions();
     /// @brief Copy constructor.
     /// @param[in] options  The options class from which to initialize
     ///                     this class.
-    RouterOptions(const RouterOptions &options);
+    ReplyOptions(const ReplyOptions &options);
     /// @brief Move constructor.
     /// @param[in,out] options  The options class from which to initialize
     ///                         this class.  On exit, options's behavior
     ///                         is undefined.
-    RouterOptions(RouterOptions &&options) noexcept;
+    ReplyOptions(ReplyOptions &&options) noexcept;
 
     /// @}
 
@@ -62,13 +50,13 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of options.
-    RouterOptions& operator=(const RouterOptions &options);
+    ReplyOptions& operator=(const ReplyOptions &options);
     /// @brief Move assignment operator.
     /// @param[in,out] options  The options class whose memory will be moved
     ///                         to this.  On exit, options's behavior is
     ///                         undefined.
     /// @result The memory from options moved to this.
-    RouterOptions& operator=(RouterOptions &&options) noexcept;
+    ReplyOptions& operator=(ReplyOptions &&options) noexcept;
 
     /// @}
 
@@ -90,10 +78,11 @@ public:
     /// @name Callback (Required)
     /// @{
 
-    /// @brief The callback function that defines how the router will reply to
-    ///        a request message. 
-    /// @details Your application will create a specific request/router pair.
-    ///          Nominally, the callback will validate the
+    /// @brief The callback function is specified by the user to process
+    ///        messages.
+    /// @details Your application will create a specific request/reply pair.
+    ///          The router/dealer will forward request messages to the
+    ///          reply service.  Nominally, the callback will validate the
     ///          message type and, based on the type, appropriately 
     ///          convert the message payload to an appropriate request 
     ///          IMessage.  The request will then be processed and responded
@@ -133,30 +122,23 @@ public:
     /// @brief Sets the ZAP options.
     /// @param[in] options  The ZAP options which will define the socket's
     ///                     security protocol.
-    void setZAPOptions(const UMPS::Authentication::ZAPOptions &options);
+    void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.
-    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
 
     /// @}
 
-    /// @name Poll Time Out
+    /// @name Message types
     /// @{
 
-    /// @brief When the service starts a thread will monitor messages on the
-    ///        endpoint by "polling."  This controls how long the thread will
-    ///        wait.  
-    /// @param[in] timeOutInMilliSeconds  The timeout in milliseconds.  If this
-    ///                                   is negative then the thread will wait
-    ///                                   forever for a message (dangerous).
-    ///                                   If this is 0 then thread will return
-    ///                                   immediately (this is a good way to get
-    ///                                   a thread to report as 100% in use in
-    ///                                   a system monitor).
-    void setPollTimeOut(const std::chrono::milliseconds &timeOutInMilliSeconds) noexcept;
-    /// @result The amount of time to wait before timing out in the polling
-    ///         operation.
-    [[nodiscard]] std::chrono::milliseconds getPollTimeOut() const noexcept;
-
+    /// @brief Adds a message format that the request can receive from the
+    ///        ZeroMQ router.
+    /// @param[in] message  The message type.
+    void addMessageFormat(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
+    /// @result The types of messages that the router can receive via
+    ///         ZeroMQ.
+    /// @note If this is empty then the request will listen for all messages.
+    [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
     /// @}
 
     /// @name Destructors
@@ -165,12 +147,12 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RouterOptions();
+    ~ReplyOptions();
 
     /// @}
 private:
-    class RouterOptionsImpl;
-    std::unique_ptr<RouterOptionsImpl> pImpl;
+    class ReplyOptionsImpl;
+    std::unique_ptr<ReplyOptionsImpl> pImpl;
 };
 }
 #endif
