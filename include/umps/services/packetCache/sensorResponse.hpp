@@ -15,6 +15,7 @@ class SensorResponse : public MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     SensorResponse();
     /// @brief Copy constructor.
@@ -25,10 +26,12 @@ public:
     ///                          this class.  On exit, responses' behavior is
     ///                          undefined.
     SensorResponse(SensorResponse &&response) noexcept;
+
     /// @}
     
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] response  The response to copy to this.
     /// @result A deep copy of the input response.
@@ -43,6 +46,7 @@ public:
 
     /// @name Sensors
     /// @{
+
     /// @result All the sensors currently in the capped collection.
     /// @note The sensor names are formatted as:
     ///       NETWORK.STATION.CHANNEL.LOCATION_CODE.
@@ -50,10 +54,12 @@ public:
     /// @brief Sets all the sensor names.
     /// @note Duplicate
     void setNames(const std::unordered_set<std::string> &names) noexcept;
+
     /// @} 
 
     /// @name Additional Information
     /// @{
+
     /// @brief Allows the service to set its return code and signal to
     ///        the requester whether or not the request was successfully
     ///        processed.
@@ -69,6 +75,7 @@ public:
     void setIdentifier(uint64_t identifier) noexcept;
     /// @result The request identifier.
     [[nodiscard]] uint64_t getIdentifier() const noexcept;
+
     /// @}
 
     /// @name Message Properties
@@ -98,6 +105,7 @@ public:
 
     /// @name Debugging Utilities
     /// @{
+
     /// @brief Creates the class from a JSON data reseponse message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -122,14 +130,17 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NUL or length is 0.
     virtual void fromCBOR(const uint8_t *data, size_t length);
+
     /// @}
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
     ~SensorResponse() override;
+
     /// @}
 private:
     class SensorResponseImpl;

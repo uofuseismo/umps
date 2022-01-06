@@ -26,12 +26,12 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 {
 /// @class Proxy "proxy.hpp" "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 /// @brief A ZeroMQ proxy to be used in the XPUB/XSUB pattern.
-/// @detail The XPUB/XSUB pattern is an extension of the PUB/SUB pattern.
-///         The proxy is an intermediary which can forward messages from 
-///         multiple publishers to multiple subscribers.   Conceptually,
-///         data flows from the frontend to the backend.  Hence, for a 
-///         pub/sub pattern publishers will connect to the frontend and
-///         subscribers will connect to the backend.
+/// @details The XPUB/XSUB pattern is an extension of the PUB/SUB pattern.
+///          The proxy is an intermediary which can forward messages from 
+///          multiple publishers to multiple subscribers.   Conceptually,
+///          data flows from the frontend to the backend.  Hence, for a 
+///          pub/sub pattern publishers will connect to the frontend and
+///          subscribers will connect to the backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Proxy
 {

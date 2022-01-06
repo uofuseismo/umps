@@ -12,28 +12,6 @@ using namespace UMPS::Messaging::XPublisherXSubscriber;
 class Publisher::PublisherImpl
 {
 public:
-/*
-    /// C'tor
-    PublisherImpl() :
-        mContext(std::make_shared<zmq::context_t> (1)),
-        mPublisher(std::make_unique<zmq::socket_t> (*mContext,
-                                                    zmq::socket_type::xpub)),
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ()) 
-    {
-    }
-    /// C'tor
-    explicit PublisherImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mContext(std::make_shared<zmq::context_t> (1)),
-        mPublisher(std::make_unique<zmq::socket_t> (*mContext,
-                                                    zmq::socket_type::xpub)),
-        mLogger(logger)
-    {
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-        }
-    }
-*/
     PublisherImpl(std::shared_ptr<zmq::context_t> context,
                   std::shared_ptr<UMPS::Logging::ILog> logger)
     {

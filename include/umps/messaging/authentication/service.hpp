@@ -14,13 +14,13 @@ namespace UMPS::Logging
 }
 namespace UMPS::Messaging::Authentication
 {
-/// @class Service "threadAuthenticator.hpp" "umps/messaging/authentication/threadAuthenticator.hpp"
+/// @class Service "service.hpp" "umps/messaging/authentication/service.hpp"
 /// @brief This class is used to run a ZAP authentication thread in
 ///        the background.
-/// @detail Effectively when you \c start() the in a thread is running an
-///         UMPS::Messaging::Authentication::Authenticator.  You modify the
-///         state of this Authenticator by issuing a service request.  This
-///         request is transmitted to the thread that strated the service.
+/// @details Effectively when you \c start() the in a thread is running an
+///          UMPS::Messaging::Authentication::Authenticator.  You modify the
+///          state of this Authenticator by issuing a service request.  This
+///          request is transmitted to the thread that strated the service.
 /// @note This draws ideas from auth/thread.py in the Python ZMQ implementation
 ///       as well as brettviren's cppzmq-houses examples.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -50,8 +50,9 @@ public:
     Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
             std::shared_ptr<IAuthenticator> &authenticator);
     /// @brief Initializes with a specified context and authenticator.
-    /// @param[in] context  The ZeroMQ context to on which to open a socket.
-    /// @param[in] logger   The logging utility.
+    /// @param[in] context        The ZeroMQ context to on which to open a
+    ///                           socket.
+    /// @param[in] authenticator  The authentication utility.
     Service(std::shared_ptr<zmq::context_t> &context,
             std::shared_ptr<IAuthenticator> &authenticator);
     /// @brief Initializes with a specified context, logger, and authenticator.
@@ -102,7 +103,7 @@ public:
 //    void whitelist(const std::vector<std::string> &addresses);
 
     /// @brief Blacklists (denies) connections from the given IP address.
-    /// @param[in] addresses  The address from which to deny connections.
+    /// @param[in] address  The address from which to deny connections.
     /// @throws std::runtime_error if \c isRunning is false.
     /// @throws std::invalid_argument if address is emtpy.
     void blacklist(const std::string &address);
@@ -128,7 +129,7 @@ public:
     ///       to following the update so that the authenticator's state can
     ///       be changed to reflect the updated certificate information.
     void configureCurve(const std::string domain = "*",
-                        const std::string location = "");
+                        const std::string directory = "");
     /// @}
 
     /// @name Destructors

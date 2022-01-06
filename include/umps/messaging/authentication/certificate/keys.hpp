@@ -72,7 +72,7 @@ public:
     /// @brief Sets the human-readable private key.
     /// @param[in] privateKeyText  The human-readable private key to set.
     /// @throws std::runtime_error in the case of algorithmic failure.
-    void setPrivateKey(const std::array<char, 41> &PrivateKeyText);
+    void setPrivateKey(const std::array<char, 41> &privateKeyText);
     /// @result The private key in a binary format.
     /// @throws std::runtime_error if \c havePrivateKey() is false.
     [[nodiscard]] std::array<uint8_t, 32> getPrivateKey() const;

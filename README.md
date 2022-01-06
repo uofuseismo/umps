@@ -28,6 +28,7 @@ The following libraries are required to build the core software
 
    1.  [Earthworm](http://folkworm.ceri.memphis.edu/ew-dist/v7.10.1/earthworm_7.10.1-src.tgz) v7.10 or greater for communicating with other earthworm rings.  Note, when compiling you must compile with an option to create position independent code.  For example, on GCC you would add the -fPIC flag.
    2.  [pybind11](https://github.com/pybind/pybind11) is used to generate Python bindings.
+   3.  [Doxygen](https://www.doxygen.nl/index.html) for generating API documentation.
 
 ## Configuration
 
@@ -56,6 +57,10 @@ Provided the configuration was successful, then descend into the appropriate bui
 The unit tests can then be run
 
     make test
+
+The documentation can be generated, provided Doxygen was found, by typing
+
+    make docs
 
 Finally, the software may be installed 
 

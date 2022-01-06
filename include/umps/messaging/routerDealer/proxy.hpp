@@ -26,12 +26,12 @@ namespace UMPS::Messaging::RouterDealer
 {
 /// @class Proxy "proxy.hpp" "umps/messaging/routerDealer/proxy.hpp"
 /// @brief A ZeroMQ proxy to be used in the ROUTER/DEALER pattern.
-/// @detail The ROUTER/DEALER pattern is an asynchronous extension of the
-///         REQUEST/REPLY pattern.  An intermediary ROUTER/DEALER sits
-///         between clients (requesters) and servers (repliers).  The 
-///         ROUTER/DEALER will forward requests from clients to servers to
-///         process.  The servers return the result to the ROUTER/DEALER
-///         which then forwards the reply to the approprirate client.
+/// @details The ROUTER/DEALER pattern is an asynchronous extension of the
+///          REQUEST/REPLY pattern.  An intermediary ROUTER/DEALER sits
+///          between clients (requesters) and servers (repliers).  The 
+///          ROUTER/DEALER will forward requests from clients to servers to
+///          process.  The servers return the result to the ROUTER/DEALER
+///          which then forwards the reply to the approprirate client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Proxy
 {

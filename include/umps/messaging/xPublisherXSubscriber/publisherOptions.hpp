@@ -11,9 +11,9 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 {
 /// @class PublisherOptions "publisherOptions.hpp" "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 /// @brief Options for initializing the publisher in the XPUB/XSUB pattern.
-/// @detail The publisher is the service that produces content.  It will send
-///         messages to the proxy which will then forward those messages to
-///         subscribers.
+/// @details The publisher is the service that produces content.  It will send
+///          messages to the proxy which will then forward those messages to
+///          subscribers.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class PublisherOptions
 {

@@ -104,7 +104,7 @@ public:
     /// @} 
 
     /// @brief Sets a unique pick identification number.
-    /// @param[in] id   The unique pick identification number.
+    /// @param[in] identifier   The unique pick identification number.
     void setIdentifier(uint64_t identifier) noexcept;
     /// @result The unique pick identification number.
     /// @throws std::runtime_error if \c haveIdentifier() is false.

@@ -86,10 +86,12 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Disconnects from the ring.  Additionally, all memory is released.
     void disconnect() noexcept;
     /// @brief Destructor.
     ~WaveRing(); 
+
     /// @}
  
     WaveRing& operator=(const WaveRing &waveRing) = delete;

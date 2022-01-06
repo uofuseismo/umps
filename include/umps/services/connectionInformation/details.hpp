@@ -31,8 +31,8 @@ public:
     /// @param[in] details  Creates this class from the given details.
     Details(const Details &details);
     /// @brief Move constructor.
-    /// @param[in,out] response  Creates this class from the given response.
-    ///                          On exit, response's behavior is undefined.
+    /// @param[in,out] details  Creates this class from the given details.
+    ///                         On exit, details's behavior is undefined.
     Details(Details &&details) noexcept;
     /// @}
 

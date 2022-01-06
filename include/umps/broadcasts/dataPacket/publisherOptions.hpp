@@ -18,8 +18,8 @@ namespace UMPS::Broadcasts::DataPacket
 {
 /// @class PublisherOptions "publisherOptions.hpp" "umps/broadcasts/dataPacket/publisherOptions.hpp"
 /// @brief Options for initializing the publisher in the datapacket broadcast.
-/// @detail The publisher sends datapackets and it is up to the subscribers to
-///         be listening.
+/// @details The publisher sends datapackets and it is up to the subscribers to
+///          be listening.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class PublisherOptions
 {

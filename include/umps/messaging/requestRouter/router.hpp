@@ -32,9 +32,9 @@ namespace UMPS::Messaging::RequestRouter
 {
 /// @class Router "router.hpp" "umps/messaging/requestRouter/router.hpp"
 /// @brief A ZeroMQ router for use in the request-router combination.
-/// @detail The request-router pattern is useful for when we want an 
-///         asynchronous server that can talk to multiple request clients
-///         at the same time.
+/// @details The request-router pattern is useful for when we want an 
+///          asynchronous server that can talk to multiple request clients
+///          at the same time.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Router
 {

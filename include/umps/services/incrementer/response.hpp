@@ -32,8 +32,8 @@ public:
     /// @result A deep copy of the the input response.
     Response& operator=(const Response &response);
     /// @brief Move assignment operator.
-    /// @param[in,out] resonse  The response whose memory will be moved to this.
-    ///                         On exit, response's behavior is undefined.
+    /// @param[in,out] response  The response whose memory will be moved to this.
+    ///                          On exit, response's behavior is undefined.
     /// @result The memory from response moved to this.
     Response& operator=(Response &&response) noexcept;
     /// @}

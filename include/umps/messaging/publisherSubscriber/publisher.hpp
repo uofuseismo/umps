@@ -33,10 +33,10 @@ namespace UMPS::Messaging::PublisherSubscriber
 {
 /// @class Publisher "publisher.hpp" "umps/messaging/publisherSubscriber/publisher.hpp"
 /// @brief A ZeroMQ publisher.
-/// @detail You can think of a publisher as a radio broadcast.  If you, as 
-///         a subscriber, are tuned in then you'll hear the broadcast.  
-///         However, if you tune in late or turn off your radio then
-///         you'll miss those sections of the broadcast.
+/// @details You can think of a publisher as a radio broadcast.  If you, as 
+///          a subscriber, are tuned in then you'll hear the broadcast.  
+///          However, if you tune in late or turn off your radio then
+///          you'll miss those sections of the broadcast.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Publisher
 {

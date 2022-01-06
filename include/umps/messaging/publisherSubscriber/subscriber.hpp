@@ -38,7 +38,7 @@ public:
     /// @param[in] logger  A pointer to the application's logger.
     explicit Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a specified context.
-    /// @param[i] context  The ZeroMQ context.
+    /// @param[in] context  The ZeroMQ context.
     explicit Subscriber(std::shared_ptr<zmq::context_t> &context);
     /// @brief Construtcs a publisher with a given ZeroMQ context and logger.
     Subscriber(std::shared_ptr<zmq::context_t> &context,

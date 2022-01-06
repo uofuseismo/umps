@@ -10,15 +10,15 @@ namespace UMPS::Messaging::RouterDealer
 {
 /// @class ProxyOptions "proxyOptions.hpp" "umps/messaging/routerDealer/proxyOptions.hpp"
 /// @brief Options for initializing the proxy.
-/// @detail A proxy is an intermediary that allows for an asynchronous
-///         request/reply pattern.  In this case, there may be multiple
-///         clients sending requests to the servers.  This works by client(s)
-///         sending requests to the router (frontend), the router forwards
-///         the requests to the dealer, and the dealer sends the requests to
-///         servers.  The servers then process the requests and return the
-///         results to the dealer which forwards those to the router and 
-///         ultimately the router returns the appropriate requests to the
-///         original clients.
+/// @details A proxy is an intermediary that allows for an asynchronous
+///          request/reply pattern.  In this case, there may be multiple
+///          clients sending requests to the servers.  This works by client(s)
+///          sending requests to the router (frontend), the router forwards
+///          the requests to the dealer, and the dealer sends the requests to
+///          servers.  The servers then process the requests and return the
+///          results to the dealer which forwards those to the router and 
+///          ultimately the router returns the appropriate requests to the
+///          original clients.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ProxyOptions
 {

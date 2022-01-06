@@ -10,11 +10,11 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 {
 /// @class ProxyOptions "proxyOptions.hpp" "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 /// @brief Options for initializing the proxy.
-/// @detail A proxy is an intermediary that allows for an asynchronous pub/sub
-///         pattern.  In this case, there may be multiple publishers sending
-///         messages to this proxy.  The subscribers then read all of these
-///         messages of desired type from the proxy without having to know
-///         all of the individual publisher connection information. 
+/// @details A proxy is an intermediary that allows for an asynchronous pub/sub
+///          pattern.  In this case, there may be multiple publishers sending
+///          messages to this proxy.  The subscribers then read all of these
+///          messages of desired type from the proxy without having to know
+///          all of the individual publisher connection information. 
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ProxyOptions
 {

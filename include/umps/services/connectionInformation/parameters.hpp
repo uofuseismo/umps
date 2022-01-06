@@ -81,7 +81,7 @@ public:
     /// @result The ZAP options.
     [[nodiscard]] 
     UMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
-    /// @param[in] verbosity   The verbosity.
+    /// @param[in] level   The logging level.
     void setVerbosity(UMPS::Logging::Level level) noexcept;
     /// @result The verbosity of the conter.
     [[nodiscard]] UMPS::Logging::Level getVerbosity() const noexcept;

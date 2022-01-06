@@ -11,7 +11,8 @@ namespace UMPS::Messaging::PublisherSubscriber
 {
 /// @class PublisherOptions "publisherOptions.hpp" "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 /// @brief Options for initializing the publisher in the PUB/SUB pattern.
-/// @detail The publisher sends content and it is up to the subscriber to be listening.
+/// @details The publisher sends content and it is up to the subscriber to
+///          be listening.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class PublisherOptions
 {
@@ -45,6 +46,7 @@ public:
     /// @name Publisher Options
     /// @{
     /// @brief Sets the address to which the publisher will bind.
+    /// @param[in] address  The address to which the publisher will connect.
     /// @throws std::invalid_argument if the address is empty.
     void setAddress(const std::string &address);
     /// @result The socket's address.

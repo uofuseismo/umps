@@ -38,11 +38,11 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 {
 /// @class Publisher "publisher.hpp" "umps/messaging/publisherSubscriber/publisher.hpp"
 /// @brief A ZeroMQ publisher.
-/// @detail This is the publisher in a XPUB/XSUB socket.  Here, we assume the
-///         proxy socket is the stable point of our network so with this
-///         publisher you connect to a socket whereas with the publisher in 
-///         the traditional pub/sub you bind to a socke and allow subscribers
-///         to connect to you.
+/// @details This is the publisher in a XPUB/XSUB socket.  Here, we assume the
+///          proxy socket is the stable point of our network so with this
+///          publisher you connect to a socket whereas with the publisher in 
+///          the traditional pub/sub you bind to a socke and allow subscribers
+///          to connect to you.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Publisher
 {

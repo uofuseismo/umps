@@ -1,6 +1,7 @@
 #ifndef UMPS_MESSAGING_REQUESTROUTER_REQUESTOPTIONS_HPP
 #define UMPS_MESSAGING_REQUESTROUTER_REQUESTOPTIONS_HPP
 #include <memory>
+#include <chrono>
 #include "umps/messaging/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
@@ -86,14 +87,6 @@ public:
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
-    /// @name Destructors
-    /// @{
-    /// @brief Resets the class and releases memory.
-    void clear() noexcept;
-    /// @brief Destructor.
-    ~RequestOptions();
-    /// @}
-
     /// @name Message types
     /// @{
     /// @brief Adds a message format that the request can receive from the
@@ -104,6 +97,14 @@ public:
     ///         ZeroMQ.
     /// @note If this is empty then the request will listen for all messages.
     [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
+    /// @}
+
+    /// @name Destructors
+    /// @{
+    /// @brief Resets the class and releases memory.
+    void clear() noexcept;
+    /// @brief Destructor.
+    ~RequestOptions();
     /// @}
 private:
     class RequestOptionsImpl;

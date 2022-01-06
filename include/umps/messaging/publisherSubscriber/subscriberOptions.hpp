@@ -16,7 +16,7 @@ namespace UMPS::Messaging::PublisherSubscriber
 {
 /// @class SubscriberOptions "publisherOptions.hpp" "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 /// @brief Options for initializing the subscriber in the PUB/SUB pattern.
-/// @detail The subscriber receives content from a publisher.
+/// @details The subscriber receives content from a publisher.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class SubscriberOptions
 {
