@@ -35,6 +35,7 @@ class Request
 public:
     /// @name Constructors
     /// @{
+
     Request();
     /// @brief Constructs a request socket with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
@@ -49,10 +50,12 @@ public:
     /// @brief Constructs a request socket with the given context and logger.
     Request(std::shared_ptr<zmq::context_t> &context,
             std::shared_ptr<UMPS::Logging::ILog> &logger);
+
     /// @}
 
     /// @name Step 1: Initialization
     /// @{
+
     /// @brief Initializes the request.
     /// @param[in] options   The request options.
     /// @throws std::invalid_argument if the endpoint.
@@ -64,10 +67,12 @@ public:
     /// @result The connection string.
     /// @throws std::runtime_error if \c isConnected() is false.
     [[nodiscard]] std::string getConnectionString() const;
+
     /// @}
 
     /// @name Step 2: Request
     /// @{
+
     /// @brief Performs a blocking request of from the router.
     /// @param[in] request  The request to make to the server via the router. 
     /// @result The response to the request from the server (via the router).
@@ -75,18 +80,24 @@ public:
     [[nodiscard]]
     std::unique_ptr<UMPS::MessageFormats::IMessage> request(
         const MessageFormats::IMessage &request);
+
     /// @}
 
     /// @name Step 3: Disconnect
     /// @{
+
     /// @brief Disconnects.
     /// @note This will automatically be done by the destructor.
     void disconnect();
+
     /// @}
 
     /// @name Destructors
     /// @{
+
+    /// @brief Destructor.
     ~Request();
+
     /// @}
 
     Request(const Request &request) = delete;

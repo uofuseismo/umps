@@ -96,6 +96,9 @@ set(MESSAGING_SRC
     src/messaging/requestRouter/routerOptions.cpp
     src/messaging/routerDealer/proxy.cpp
     src/messaging/routerDealer/proxyOptions.cpp
+    src/messaging/routerDealer/request.cpp
+    src/messaging/routerDealer/requestOptions.cpp
+    src/messaging/routerDealer/reply.cpp
     src/messaging/routerDealer/replyOptions.cpp
     src/messaging/xPublisherXSubscriber/proxy.cpp
     src/messaging/xPublisherXSubscriber/proxyOptions.cpp
