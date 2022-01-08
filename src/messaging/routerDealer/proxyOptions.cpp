@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"

@@ -32,9 +32,8 @@ public:
         //std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
         if (messageType == request.getMessageType())
         {
-            auto cborMessageContents
-                = reinterpret_cast<const uint8_t *> (messageContents);
-            request.fromCBOR(cborMessageContents, length);
+            request.fromMessage(
+                reinterpret_cast<const char *> (messageContents), length);
             response->setIdentifier(request.getIdentifier());
             //std::cout << "Unpacking: " << request.getIdentifier() << std::endl;
             response->setValue(request.getIdentifier());

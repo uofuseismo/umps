@@ -1,3 +1,4 @@
+#include <iostream>
 #include <mutex>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
@@ -240,6 +241,7 @@ Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
 /// Initialize
 void Proxy::initialize(const ProxyOptions &options)
 {
+    // Check and copy options
     if (!options.haveFrontendAddress())
     {
         throw std::invalid_argument("Frontend address not set");
@@ -248,6 +250,8 @@ void Proxy::initialize(const ProxyOptions &options)
     {
         throw std::invalid_argument("Backend address not set");
     }
+    pImpl->mOptions = options; 
+    pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
@@ -256,7 +260,49 @@ void Proxy::initialize(const ProxyOptions &options)
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mFrontend);
     zapOptions.setSocketOptions(&*pImpl->mBackend);
-    // Connect
+    // (Re)Establish connections
+    pImpl->bindBackend();
+    pImpl->bindFrontend();
+    pImpl->connectControl();
+    pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    pImpl->mInitialized = true;
+}
+
+/// Run the proxy
+void Proxy::start()
+{
+    if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
+    if (pImpl->mPaused)
+    {
+        pImpl->mLogger->debug("Resuming proxy...");
+        pImpl->mCommand->send(zmq::str_buffer("RESUME"), zmq::send_flags::none);
+        pImpl->mPaused = false;
+    }
+    else
+    {
+        if (!isRunning())
+        {
+            try
+            {
+                pImpl->mLogger->debug("Making steerable proxy...");
+                pImpl->setStarted(true);
+                zmq::proxy_steerable(*pImpl->mFrontend,
+                                     *pImpl->mBackend,
+                                     zmq::socket_ref(),
+                                     *pImpl->mControl);
+                pImpl->mLogger->debug("Exiting steerable proxy");
+                pImpl->disconnectControl();
+                pImpl->setStarted(false);
+            }
+            catch (const std::exception &e) 
+            {
+                auto errorMsg = "Failed to start proxy.  ZeroMQ failed with:\n"
+                              + std::string(e.what());
+                pImpl->mLogger->error(errorMsg);
+                throw std::runtime_error(errorMsg);
+            }   
+        }   
+    }   
 }
 
 /// Initialized?
@@ -272,5 +318,20 @@ Proxy::~Proxy() = default;
 bool Proxy::isRunning() const noexcept
 {
     return pImpl->isRunning();
+}
+
+// Stops the proxy
+void Proxy::stop()
+{
+    if (isRunning())
+    {   
+        pImpl->mLogger->debug("Terminating proxy...");
+        pImpl->mCommand->send(zmq::str_buffer("TERMINATE"),
+                              zmq::send_flags::none);
+        pImpl->disconnectFrontend();
+        pImpl->disconnectBackend();
+    }   
+    pImpl->mInitialized = false;
+    pImpl->setStarted(false);
 }
 

@@ -23,6 +23,7 @@ public:
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Pick();
     /// @brief Copy constructor.
@@ -32,10 +33,12 @@ public:
     /// @param[in,out] pick  The pick class from which to initialize this
     ///                      class.  On exit, pick's behavior is undefined.
     Pick(Pick &&pick) noexcept;
+
     /// @}
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment.
     /// @param[in] pick  The pick class to copy to this.
     /// @result A deep copy of the pick.
@@ -45,10 +48,12 @@ public:
     ///                      this.  On exit pick's behavior is undefined.
     /// @result The memory from pick moved to this.
     Pick& operator=(Pick &&pick) noexcept;
+
     /// @}
 
     /// @name Required Information
     /// @{
+
     /// @name Pick Time
     /// @{
     /// @brief Sets the pick time.
@@ -60,8 +65,12 @@ public:
     [[nodiscard]] double getTime() const;
     /// @result True indicates that the pick time was set.
     [[nodiscard]] bool haveTime() const noexcept;
+
     /// @}
  
+    /// @name Station Identification
+    /// @{
+
     /// @brief Sets the network code on which the pick was made.
     /// @param[in] network  The network code.
     /// @throws std::invalid_argument if network is empty.
@@ -101,7 +110,11 @@ public:
     [[nodiscard]] std::string getLocationCode() const;
     /// @result True indicates that the location code was set.
     [[nodiscard]] bool haveLocationCode() const noexcept;
+
     /// @} 
+
+    /// @name Pick Identifier
+    /// @{
 
     /// @brief Sets a unique pick identification number.
     /// @param[in] identifier   The unique pick identification number.
@@ -115,6 +128,7 @@ public:
 
     /// @name Optional Information
     /// @{
+
     /// @brief Sets a guess of the arrival's seismic phase.
     void setPhaseHint(const std::string &phase) noexcept;
     /// @result The phase hint.
@@ -131,10 +145,12 @@ public:
     void setAlgorithm(const std::string &algorithm) noexcept;
     /// @result The algorithm that created this picked.
     [[nodiscard]] std::string getAlgorithm() const noexcept;
+
     /// @}
 
     /// @name Message Abstract Base Class Properties
     /// @{
+
     /// @brief Converts the pick class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
@@ -154,10 +170,12 @@ public:
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An uninitialized instance of this class. 
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept override final;
+
     /// @}
 
     /// @name Debugging Utilities
     /// @{
+
     /// @brief Creates the class from a JSON pick message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -182,14 +200,17 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0.
     virtual void fromCBOR(const uint8_t *data, size_t length);
+
     /// @}
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
     ~Pick() override;
+
     /// @}
 private:
     class PickImpl;

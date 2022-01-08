@@ -1,3 +1,4 @@
+#include <iostream>
 #include <mutex>
 #include <string>
 #include <functional>
@@ -188,26 +189,30 @@ void Reply::start()
     pImpl->start();
     while (isRunning()) 
     {   
+        auto logLevel = pImpl->mLogger->getLevel();
         zmq::poll(&items[0], nPollItems, pImpl->mPollTimeOutMS);
         if (items[0].revents & ZMQ_POLLIN)
         {
             // Get the next message
             zmq::multipart_t messagesReceived(*pImpl->mServer);
             if (messagesReceived.empty()){continue;}
-            pImpl->mLogger->debug("Reply received message!");
+            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            {
+                pImpl->mLogger->debug("Reply received message!");
+            }
 #ifndef NDEBUG
-            assert(messagesReceived.size() == 4);
+            assert(messagesReceived.size() == 2);
 #else
-            if (messagesReceived.size() != 4)
+            if (messagesReceived.size() != 2)
             {
                 pImpl->mLogger->error("Only 2-part messages handled");
                 continue;
             }
 #endif
-            std::string messageType = messagesReceived.at(2).to_string();
+            std::string messageType = messagesReceived.at(0).to_string();
             auto messageContents = reinterpret_cast<const void *>
-                                   (messagesReceived.at(3).data());
-            auto messageSize = messagesReceived.at(3).size();
+                                   (messagesReceived.at(1).data());
+            auto messageSize = messagesReceived.at(1).size();
             auto response = pImpl->mCallback(messageType,
                                              messageContents, messageSize);
             // Send the response back
@@ -217,13 +222,10 @@ void Reply::start()
             {
                 pImpl->mLogger->warn("Reply received empty message");
             }
-            pImpl->mLogger->debug("Replying...");
-            zmq::const_buffer zmqHdr1{messagesReceived.at(0).data(),
-                                      messagesReceived.at(0).size()};
-            pImpl->mServer->send(zmqHdr1, zmq::send_flags::sndmore);
-            zmq::const_buffer zmqHdr2{messagesReceived.at(1).data(),
-                                      messagesReceived.at(1).size()};
-            pImpl->mServer->send(zmqHdr2, zmq::send_flags::sndmore);
+            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            {
+                pImpl->mLogger->debug("Replying...");
+            }
             zmq::const_buffer header{responseMessageType.data(),
                                      responseMessageType.size()};
             pImpl->mServer->send(header, zmq::send_flags::sndmore);

@@ -112,8 +112,7 @@ public:
     bool isStarted() const
     {
        std::scoped_lock lock(mMutex);
-       auto started = mStarted;
-       return started;
+       return mStarted;
     }
     void disconnectFrontend()
     {
@@ -362,7 +361,7 @@ void Proxy::start()
     }
     else
     {
-        if (!pImpl->mStarted)
+        if (!isRunning())
         {
             try
             {
