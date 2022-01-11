@@ -15,6 +15,9 @@ class Parameters;
 class Service : public UMPS::Services::IService
 {
 public:
+    /// @name Constructors
+    /// @{
+
     /// @brief Constructor.
     Service();
     /// @brief Constructor with a given logger.
@@ -23,6 +26,7 @@ public:
     Service(Service &&service) noexcept;
     /// @brief Move assignment operator.
     Service& operator=(Service &&service) noexcept;
+    /// @}
      
     /// @brief Initializes the service.
     void initialize(const Parameters &parameters);
@@ -55,7 +59,7 @@ public:
     void stop() override final;
 
     /// @brief Destructor.
-    virtual ~Service();
+    ~Service() override;
  
     Service(const Service &service) = delete;
     Service& operator=(const Service &service) = delete;

@@ -1,6 +1,8 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 
 namespace UCI = UMPS::Services::ConnectionInformation;
 using namespace UMPS::Services::ConnectionInformation::SocketDetails;
@@ -9,6 +11,7 @@ class Proxy::ProxyImpl
 {
 public:
     std::pair<XSubscriber, XPublisher> mXSubXPubSocketPair;
+    std::pair<Router, Dealer> mRouterDealerSocketPair;
     UCI::SocketType mFrontendSocket = UCI::SocketType::UNKNOWN;
     UCI::SocketType mBackendSocket = UCI::SocketType::UNKNOWN;
     bool mHavePair = false;
@@ -74,6 +77,22 @@ void Proxy::setSocketPair(const std::pair<XSubscriber, XPublisher> &socketPair)
     pImpl->mHavePair = true;
 }
 
+void Proxy::setSocketPair(const std::pair<Router, Dealer> &socketPair)
+{
+    if (!socketPair.first.haveAddress())
+    {
+        throw std::invalid_argument("router address not set");
+    }   
+    if (!socketPair.second.haveAddress())
+    {
+        throw std::invalid_argument("dealer address not set");
+    }
+    pImpl->mRouterDealerSocketPair = socketPair;
+    pImpl->mFrontendSocket = socketPair.first.getSocketType();
+    pImpl->mBackendSocket = socketPair.second.getSocketType();
+    pImpl->mHavePair = true;
+}
+
 /// Have socket pair?
 bool Proxy::haveSocketPair() const noexcept
 {
@@ -104,14 +123,33 @@ XSubscriber Proxy::getXSubscriberFrontend() const
     return pImpl->mXSubXPubSocketPair.first;
 }
 
+/// Frontend sockets
+Router Proxy::getRouterFrontend() const
+{
+    if (getFrontendSocketType() != UCI::SocketType::ROUTER)
+    {
+        throw std::invalid_argument("Frontend not ROUTER");
+    }
+    return pImpl->mRouterDealerSocketPair.first;
+}
+
 /// Backend sockets
 XPublisher Proxy::getXPublisherBackend() const
 {
     if (getBackendSocketType() != UCI::SocketType::XPUBLISHER)
     {
-        throw std::invalid_argument("Frontend not XPUB");
+        throw std::invalid_argument("Backend not XPUB");
     }
     return pImpl->mXSubXPubSocketPair.second;
+}
+
+Dealer Proxy::getDealerBackend() const
+{
+    if (getBackendSocketType() != UCI::SocketType::DEALER)
+    {
+        throw std::invalid_argument("Backend not DEALER");
+    }
+    return pImpl->mRouterDealerSocketPair.second;
 }
 
 /// Socket type
@@ -127,6 +165,10 @@ std::string Proxy::getFrontendAddress() const
     {
         return getXSubscriberFrontend().getAddress();
     }
+    else if (getFrontendSocketType() == UCI::SocketType::ROUTER)
+    {
+        return getRouterFrontend().getAddress();
+    }
     else
     {
         throw std::runtime_error("Unhandled frontend socket type");
@@ -140,6 +182,10 @@ std::string Proxy::getBackendAddress() const
     {
         return getXPublisherBackend().getAddress();
     }   
+    else if (getBackendSocketType() == UCI::SocketType::DEALER)
+    {
+        return getDealerBackend().getAddress();
+    }
     else
     {
         throw std::runtime_error("Unhandled backend socket type");

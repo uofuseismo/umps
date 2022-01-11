@@ -5,6 +5,8 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"

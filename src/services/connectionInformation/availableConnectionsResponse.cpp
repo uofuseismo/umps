@@ -5,6 +5,7 @@
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
@@ -49,7 +50,13 @@ nlohmann::json detailsToJSONObject(const Details &detail)
 
     auto socketType = detail.getSocketType();
     obj["SocketType"] = static_cast<int> (socketType);
-    if (socketType == SocketType::PUBLISHER)
+    if (socketType == SocketType::DEALER)
+    {
+        auto socket = detail.getDealerSocketDetails();
+        obj["Address"] = socket.getAddress();
+        obj["ConnectOrBind"] = static_cast<int> (socket.connectOrBind());
+    }
+    else if (socketType == SocketType::PUBLISHER)
     {
         auto socket = detail.getPublisherSocketDetails(); 
         obj["Address"] = socket.getAddress();
@@ -99,6 +106,15 @@ nlohmann::json detailsToJSONObject(const Details &detail)
             obj["FrontendConnectOrBind"]
                 = static_cast<int> (socket.connectOrBind());
         }
+        else if (frontendType == SocketType::ROUTER)
+        {
+            auto socket = proxy.getRouterFrontend(); 
+            obj["FrontendAddress"] = socket.getAddress();
+            obj["FrontendSocketType"]
+                = static_cast<int> (socket.getSocketType());
+            obj["FrontendConnectOrBind"]
+                = static_cast<int> (socket.connectOrBind());
+        }
         else
         {
             throw std::runtime_error("Unhandled frontend");
@@ -112,6 +128,15 @@ nlohmann::json detailsToJSONObject(const Details &detail)
                 = static_cast<int> (socket.getSocketType());
             obj["BackendConnectOrBind"]
                 = static_cast<int> (socket.connectOrBind());
+        }
+        else if (backendType == SocketType::DEALER)
+        {
+            auto socket = proxy.getDealerBackend();
+            obj["BackendAddress"] = socket.getAddress();
+            obj["BackendSocketType"]
+                = static_cast<int> (socket.getSocketType());
+            obj["BackendConnectOrBind"]
+                = static_cast<int> (socket.connectOrBind()); 
         }
         else
         {

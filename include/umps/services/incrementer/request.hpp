@@ -17,6 +17,7 @@ class Request : public UMPS::MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Request();
     /// @brief Copy constructor.
@@ -30,6 +31,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] request   The request to copy to this.
     /// @result A deep copy of the the input request.
@@ -43,6 +45,7 @@ public:
 
     /// @name Required Information
     /// @{
+
     /// @brief This represents a custom item to be incremented.
     /// @param[in] item  The item that (e.g., table name) that we are
     ///                  requesting be incremented.   
@@ -60,6 +63,7 @@ public:
 
     /// @name Optional Information
     /// @{
+
     /// @brief For asynchronous messaging this allows the requester to index
     ///        the request.  This value will be returned so the requester
     ///        can track which request was filled by the response.
@@ -71,6 +75,7 @@ public:
 
     /// @name Message Abstract Base Class Properties
     /// @{
+
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.
@@ -94,6 +99,7 @@ public:
 
     /// @name Debugging Utilities
     /// @{
+
     /// @brief Creates the class from a JSON request message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -126,6 +132,7 @@ public:
  
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.

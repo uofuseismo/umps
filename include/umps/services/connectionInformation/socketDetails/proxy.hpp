@@ -7,7 +7,8 @@ namespace UMPS::Services::ConnectionInformation::SocketDetails
  //class Publisher;
  //class Subscriber;
  //class Request;
- //class Router;
+ class Dealer;
+ class Router;
  class XPublisher;
  class XSubscriber;
 }
@@ -21,6 +22,7 @@ class Proxy
 public:
     /// @name Constructors
     /// @{ 
+
     /// @brief Constructor.
     Proxy();
     /// @brief Copy constructor.
@@ -34,6 +36,7 @@ public:
     
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] socket  The socket to copy to this.
     /// @result A deep copy of the input socket connection details. 
@@ -45,13 +48,21 @@ public:
     Proxy& operator=(Proxy &&socket) noexcept;
     /// @}
 
-    /// @brief Sets the socket pair for this proxy.
+    /// @brief Sets the socket xpub/xsub pair for this proxy.
     /// @param[in] socketPair  socketPair.first is the frontend (where data
-    ///                        comes in) and socketPair.end is the backend
+    ///                        comes in) and socketPair.second is the backend
     ///                        (where data goes out).  
-    /// @throws std::invalid_argument if the socketPair.first or
+    /// @throws std::invalid_argument if socketPair.first or
     ///         socketPair.second does not have an address.
     void setSocketPair(const std::pair<XSubscriber, XPublisher> &socketPair);
+    /// @brief Sets the socket router/dealer pair for this proxy.
+    /// @param[in] socketPair  socketPair.first is the frontend (where
+    ///                        requests come in) and socketPair.second is the
+    ///                        backend (where requests are processed).
+    /// @throws std::invalid_argument if socketPair.first or
+    ///         socketPair.second does not have an address.
+    void setSocketPair(const std::pair<Router, Dealer> &socketPair);
+
     /// @result True indicates that the socket pair was set.
     [[nodiscard]] bool haveSocketPair() const noexcept;
     /// @result The socket type of the frontend.
@@ -62,8 +73,12 @@ public:
     [[nodiscard]] SocketType getBackendSocketType() const;
     /// @result The socket information for the frontend.
     [[nodiscard]] XSubscriber getXSubscriberFrontend() const;
+    /// @result The socket information for the frontend.
+    [[nodiscard]] Router getRouterFrontend() const;
     /// @result The socket information for the backend.
     [[nodiscard]] XPublisher  getXPublisherBackend() const;
+    /// @result The socket information for the backend.
+    [[nodiscard]] Dealer getDealerBackend() const;
 
     /// @result The address of the frontend socket.
     /// @throws std::runtime_error if \c haveSocketPair() is false.

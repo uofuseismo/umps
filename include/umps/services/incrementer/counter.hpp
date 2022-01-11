@@ -13,6 +13,7 @@ class Counter
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Counter();
     /// @brief Move constructor.
@@ -23,6 +24,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @param[in] counter  The counter whose memory will be moved to this.
     ///                     On exit, counter's behavior is undefined.
     /// @result The memory from the operator moved to this.
@@ -54,6 +56,7 @@ public:
 
     /// @name Step 2: Typical Usage
     /// @{
+
     /// @brief This function is intended to provide the next available
     ///        unique identifier for the item of interest.
     /// @result The next available value in the increment.
@@ -77,7 +80,8 @@ public:
     /// @}
 
     /// @name Destructors
-    /// @{ 
+    /// @{
+
     /// @brief Resets the class to an uninitialized state. 
     /// @note If you intend to re-initialize the class it would be smart
     ///       to get the current value and increment it by some non-zero value

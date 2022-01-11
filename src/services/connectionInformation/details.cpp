@@ -3,6 +3,7 @@
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
@@ -18,6 +19,7 @@ public:
     std::string mName;
     std::string mConnectionString;
     ConnectionType mConnectionType;
+    SocketDetails::Dealer mDealer;
     SocketDetails::Proxy mProxy;
     SocketDetails::Publisher mPublisher;
     SocketDetails::Request mRequest;
@@ -165,6 +167,16 @@ bool Details::haveConnectionType() const noexcept
 }
 
 /// Set socket details
+void Details::setSocketDetails(const SocketDetails::Dealer &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mDealer = socket;
+    pImpl->mSocketType = socket.getSocketType();
+}
+
 void Details::setSocketDetails(const SocketDetails::Publisher &socket)
 {
     if (!socket.haveAddress())
@@ -236,6 +248,15 @@ void Details::setSocketDetails(const SocketDetails::Proxy &socket)
 }
 
 /// Get socket details
+SocketDetails::Dealer Details::getDealerSocketDetails() const
+{
+    if (getSocketType() != SocketType::DEALER)
+    {
+        throw std::runtime_error("Dealer socket details not set");
+    }
+    return pImpl->mDealer;
+}
+
 SocketDetails::Publisher Details::getPublisherSocketDetails() const
 {
     if (getSocketType() != SocketType::PUBLISHER)

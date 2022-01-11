@@ -16,6 +16,7 @@ class Parameters
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Parameters();
     /// @brief Copy constructor.
@@ -31,6 +32,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment.
     /// @param[in] parameters   The parameters class to copy to this.
     /// @result A deep copy of parameters.
@@ -58,6 +60,7 @@ public:
 
     /// @name Required Parameters
     /// @{
+
     /// @brief Sets the name of the item to be incremented.
     /// @param[in] name  The name of the item we are incrementing.
     /// @throws std::invalid_argument if name is empty.
@@ -91,6 +94,7 @@ public:
 
     /// @name Optional Parameters
     /// @{
+
     /// @brief Sets the increment.
     /// @param[in] increment  The amount by which to increment the counter.
     /// @throws std::invalid_argument if increment is not positive.
@@ -120,6 +124,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.

@@ -12,6 +12,7 @@ class Router
 public:
     /// @name Constructors
     /// @{ 
+
     /// @brief Constructor.
     Router();
     /// @brief Copy constructor.
@@ -25,6 +26,7 @@ public:
     
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] socket  The socket to copy to this.
     /// @result A deep copy of the input socket connection details. 
@@ -51,6 +53,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Reset the class and release all memory.
     void clear() noexcept;
     /// @brief Destructor.

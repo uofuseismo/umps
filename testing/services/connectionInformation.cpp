@@ -4,6 +4,7 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
@@ -48,10 +49,16 @@ TEST(ConnectionInformation, SocketDetails)
     EXPECT_EQ(xSubscriber.connectOrBind(), ConnectOrBind::CONNECT);
 
     SocketDetails::Router router;
-    EXPECT_NO_THROW(router.setAddress(backEnd));
-    EXPECT_EQ(router.getAddress(), backEnd);
+    EXPECT_NO_THROW(router.setAddress(frontEnd));
+    EXPECT_EQ(router.getAddress(), frontEnd);
     EXPECT_EQ(router.getSocketType(), SocketType::ROUTER);
     EXPECT_EQ(router.connectOrBind(), ConnectOrBind::CONNECT);
+
+    SocketDetails::Dealer dealer;
+    EXPECT_NO_THROW(dealer.setAddress(backEnd));
+    EXPECT_EQ(dealer.getAddress(), backEnd);
+    EXPECT_EQ(dealer.getSocketType(), SocketType::DEALER);
+    EXPECT_EQ(dealer.connectOrBind(), ConnectOrBind::CONNECT);
 
     SocketDetails::Proxy proxy;
     EXPECT_NO_THROW(proxy.setSocketPair(std::pair(xSubscriber, xPublisher)));
@@ -66,6 +73,19 @@ TEST(ConnectionInformation, SocketDetails)
     EXPECT_EQ(xPubCopy.getAddress(), backEnd);
     EXPECT_EQ(xPubCopy.getSocketType(), SocketType::XPUBLISHER);
     EXPECT_EQ(xPubCopy.connectOrBind(), ConnectOrBind::CONNECT);
+
+    EXPECT_NO_THROW(proxy.setSocketPair(std::pair(router, dealer)));
+    EXPECT_EQ(proxy.getSocketType(), SocketType::PROXY);
+    EXPECT_EQ(proxy.getFrontendSocketType(), SocketType::ROUTER);
+    EXPECT_EQ(proxy.getBackendSocketType(),  SocketType::DEALER);
+    auto routerCopy = proxy.getRouterFrontend();
+    auto dealerCopy = proxy.getDealerBackend(); 
+    EXPECT_EQ(routerCopy.getAddress(), frontEnd);
+    EXPECT_EQ(routerCopy.getSocketType(), SocketType::ROUTER);
+    EXPECT_EQ(routerCopy.connectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(dealerCopy.getAddress(), backEnd);
+    EXPECT_EQ(dealerCopy.getSocketType(), SocketType::DEALER);
+    EXPECT_EQ(dealerCopy.connectOrBind(), ConnectOrBind::CONNECT);
 }
 
 TEST(ConnectionInformation, Details)

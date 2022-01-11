@@ -6,6 +6,7 @@
 #include "umps/authentication/enums.hpp"
 namespace UMPS::Services::ConnectionInformation::SocketDetails
 {
+ class Dealer;
  class Proxy;
  class Publisher;
  class Request;
@@ -25,6 +26,7 @@ class Details
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Details();
     /// @brief Copy constructor.
@@ -38,6 +40,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move constructor.
     /// @param[in] details  The details to copy this.
     /// @result A deep copy of the input details.
@@ -62,6 +65,11 @@ public:
 
     /// @name Socket Details
     /// @{
+
+    /// @brief Sets the dealer socket connection details.
+    /// @param[in] socket  The dealer socket connection details.
+    /// @throws std::invalid_argument if \c socket.haveAddress() is false.
+    void setSocketDetails(const SocketDetails::Dealer &socket);
     /// @brief Sets the publisher socket connection details.
     /// @param[in] socket  The publisher socket connection details.
     /// @throws std::invalid_argument if \c socket.haveAddress() is false.
@@ -120,6 +128,10 @@ public:
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::PROXY.
     SocketDetails::Proxy getProxySocketDetails() const;
+    /// @result The dealer socket details.
+    /// @throws std::runtime_error if \c getSocketType() does not equal
+    ///         SocketType::DEALER.
+    SocketDetails::Dealer getDealerSocketDetails() const;
     /// @result The socket type.
     /// @note By default this is unknown and will obtain value from the last
     ///       call to \c setSocketDetails().
@@ -158,6 +170,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor

@@ -13,6 +13,7 @@ class Response : public UMPS::MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Response();
     /// @brief Copy constructor.
@@ -27,6 +28,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] response   The response to copy to this.
     /// @result A deep copy of the the input response.
@@ -40,6 +42,7 @@ public:
 
     /// @name Response Information
     /// @{
+
     /// @brief Sets the increment value.
     /// @param[in] value  The increment value.
     void setValue(uint64_t value) noexcept; 
@@ -64,6 +67,7 @@ public:
 
     /// @name Message Abstract Base Class Properties
     /// @{
+
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.
@@ -87,6 +91,7 @@ public:
 
     /// @name (De)serialization Utilities
     /// @{
+
     /// @brief Creates the class from a JSON response message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -118,6 +123,7 @@ public:
  
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
