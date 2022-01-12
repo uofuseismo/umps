@@ -239,14 +239,15 @@ public:
     /// Update socket details
     void updateSocketDetails()
     {
-        UCI::SocketDetails::XPublisher xPub;
         UCI::SocketDetails::XSubscriber xSub;
-        xPub.setAddress(mBackendAddress);
-        xPub.setSecurityLevel(mSecurityLevel);
-        xPub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
         xSub.setAddress(mFrontendAddress);
         xSub.setSecurityLevel(mSecurityLevel);
         xSub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+
+        UCI::SocketDetails::XPublisher xPub;
+        xPub.setAddress(mBackendAddress);
+        xPub.setSecurityLevel(mSecurityLevel);
+        xPub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
         mSocketDetails.setSocketPair(std::pair(xSub, xPub));
     }
 ///private:
