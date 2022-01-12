@@ -23,6 +23,7 @@ class SubscriberOptions
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     SubscriberOptions();
     /// @brief Copy constructor.
@@ -36,6 +37,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] options  The options to copy to this.
     /// @result A deep copy of the input options.
@@ -93,6 +95,7 @@ public:
 
     /// @name ZeroMQ Authentication Protocol Options
     /// @{
+
     /// @brief Defines the ZAP options to be used when configuring the socket.
     /// @param[in] options  The ZAP options.
     void setZAPOptions(const Authentication::ZAPOptions &options);
@@ -103,6 +106,7 @@ public:
  
     /// @name Destructors
     /// @{
+
     /// @brief Resets class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.

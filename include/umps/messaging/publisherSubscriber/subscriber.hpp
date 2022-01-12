@@ -32,6 +32,7 @@ class Subscriber
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Default constructor.
     Subscriber();
     /// @brief Constructor with specified logger.
@@ -52,6 +53,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment operator.
     /// @param[in,out] subscriber  The subscriber class whose memory will be
     ///                            moved to this.  On exit, the subscriber's
@@ -85,9 +87,11 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Destructor.
     ~Subscriber();
     /// @}
+
     /// Delete some functions
     Subscriber(const Subscriber &subscriber) = delete;
     Subscriber& operator=(const Subscriber &subscriber) = delete;

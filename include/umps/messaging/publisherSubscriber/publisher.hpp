@@ -39,6 +39,7 @@ class Publisher
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Default constructor.
     Publisher();
     /// @brief Constructs a publisher with the given logger.
@@ -63,6 +64,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment operator.
     /// @param[in,out] publisher  The publisher class whose memory will be
     ///                           moved to this.  On exit, publisher's
@@ -91,6 +93,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Destructor.
     ~Publisher();
     /// @}
