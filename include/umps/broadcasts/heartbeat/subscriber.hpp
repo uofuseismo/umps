@@ -13,6 +13,10 @@ namespace UMPS
   class Status; 
   class SubscriberOptions;
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Subscriber;
+ }
 }
 namespace UMPS::Broadcasts::Heartbeat
 {
@@ -49,10 +53,13 @@ public:
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[deprecated]] [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The socket endpoint.
     /// @throws std::runtime_error if \c isInitialized() is true.
-    [[nodiscard]] std::string getEndPoint() const;
+    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
+    /// @result The connection details for this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false. 
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Subscriber getSocketDetails() const;
 
     /// @brief Receives a status message.
     /// @throws std::invalid_argument if the message cannot be serialized.

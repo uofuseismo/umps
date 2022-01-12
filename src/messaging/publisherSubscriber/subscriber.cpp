@@ -243,3 +243,12 @@ UAuth::SecurityLevel Subscriber::getSecurityLevel() const noexcept
     return pImpl->mSecurityLevel;
 }
 
+/// Socket details
+UCI::SocketDetails::Subscriber Subscriber::getSocketDetails() const
+{
+    if (!isInitialized())
+    {
+        throw std::runtime_error("Subscriber not initialized");
+    }
+    return pImpl->mSocketDetails;
+}

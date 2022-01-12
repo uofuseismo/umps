@@ -166,12 +166,10 @@ void Service::initialize(const Parameters &parameters)
     // Save the incrementer service name
     pImpl->mName = name;
     // Create the connection details
-    ConnectionInformation::SocketDetails::Router socketDetails;
-    socketDetails.setAddress(pImpl->mRouter.getEndPoint());
     pImpl->mConnectionDetails.setConnectionType(
         ConnectionInformation::ConnectionType::SERVICE);
     pImpl->mConnectionDetails.setName(pImpl->mName);
-    pImpl->mConnectionDetails.setSocketDetails(socketDetails);
+    pImpl->mConnectionDetails.setSocketDetails(pImpl->mRouter.getSocketDetails());
     // Done
     pImpl->mInitialized = true;
 }

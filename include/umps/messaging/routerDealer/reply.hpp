@@ -17,6 +17,10 @@ namespace UMPS
  {
   class ReplyOptions;
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Reply;
+ }
 }
 namespace zmq 
 {
@@ -50,7 +54,6 @@ public:
     /// @brief Constructs a reply socket with the given context and logger.
     Reply(std::shared_ptr<zmq::context_t> &context,
           std::shared_ptr<UMPS::Logging::ILog> &logger);
-
     /// @}
 
     /// @name Step 1: Initialization
@@ -63,11 +66,13 @@ public:
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The security level of the connection.
-    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The connection string.
     /// @throws std::runtime_error if \c isConnected() is false.
-    [[nodiscard]] std::string getConnectionString() const;
-
+    [[deprecated]] [[nodiscard]] std::string getConnectionString() const;
+    /// @result The details for connecting to this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Reply getSocketDetails() const;
     /// @}
 
     /// @name Step 2: Start the Reply Service
@@ -89,7 +94,6 @@ public:
 
     /// @brief This will stop the reply service.
     void stop();
-
     /// @}
 
     /// @name Destructors
@@ -97,8 +101,12 @@ public:
 
     /// @brief Destructor.
     ~Reply();
-
     /// @}
+
+    Reply(const Reply &reply) = delete;
+    Reply(Reply &&reply) noexcept = delete;
+    Reply& operator=(const Reply &reply) = delete;
+    Reply& operator=(Reply &&reply) noexcept = delete;
 private:
     class ReplyImpl;
     std::unique_ptr<ReplyImpl> pImpl;

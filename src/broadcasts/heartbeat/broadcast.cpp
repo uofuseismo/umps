@@ -95,14 +95,9 @@ void Broadcast::initialize(const Parameters &parameters)
     options.setZAPOptions(parameters.getZAPOptions());
     pImpl->mProxy.initialize(options);
     // Figure out the connection details
-    UCI::SocketDetails::XSubscriber xSub;
-    UCI::SocketDetails::XPublisher xPub;
-    xSub.setAddress(pImpl->mProxy.getFrontendAddress());
-    xPub.setAddress(pImpl->mProxy.getBackendAddress());
-    UCI::SocketDetails::Proxy proxyDetails;
-    proxyDetails.setSocketPair(std::pair(xSub, xPub));
     pImpl->mConnectionDetails.setName(getName());
-    pImpl->mConnectionDetails.setSocketDetails(proxyDetails);
+    pImpl->mConnectionDetails.setSocketDetails(
+        pImpl->mProxy.getSocketDetails());
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::BROADCAST);
     pImpl->mConnectionDetails.setSecurityLevel(
         pImpl->mProxy.getSecurityLevel());

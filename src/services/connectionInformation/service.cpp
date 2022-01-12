@@ -236,13 +236,14 @@ void Service::initialize(const Parameters &parameters)
     //pImpl->mRouterOptions.addMessageFormat(requestType);
     pImpl->mRouter->initialize(pImpl->mRouterOptions); 
     // Create the connection details
-    ConnectionInformation::SocketDetails::Router socketDetails;
-    socketDetails.setAddress(pImpl->mRouter->getEndPoint());
+    //ConnectionInformation::SocketDetails::Router socketDetails;
+    //socketDetails.setAddress(pImpl->mRouter->getEndPoint());
+    auto socketDetails = pImpl->mRouter->getSocketDetails();
     pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
     pImpl->mConnectionDetails.setConnectionType(ConnectionType::SERVICE);
     pImpl->mConnectionDetails.setSecurityLevel(
-        pImpl->mRouter->getSecurityLevel());
+        socketDetails.getSecurityLevel());
     // Add myself
     pImpl->mConnections.insert(std::pair(getName(),
                                          pImpl->mConnectionDetails));

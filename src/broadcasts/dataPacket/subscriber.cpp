@@ -7,10 +7,12 @@
 #include "umps/authentication/service.hpp"
 #include "umps/authentication/authenticator.hpp"
 #include "umps/authentication/grasslands.hpp"
+#include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 
@@ -91,6 +93,7 @@ bool Subscriber<T>::isInitialized() const noexcept
     return pImpl->mSubscriber->isInitialized();
 }
 
+/*
 /// End point
 template<class T>
 std::string Subscriber<T>::getEndPoint() const
@@ -103,6 +106,12 @@ template<class T>
 UAuth::SecurityLevel Subscriber<T>::getSecurityLevel() const noexcept
 {
     return pImpl->mSubscriber->getSecurityLevel();
+}
+*/
+template<class T>
+UCI::SocketDetails::Subscriber Subscriber<T>::getSocketDetails() const
+{
+    return pImpl->mSubscriber->getSocketDetails();
 }
 
 /// Destructor

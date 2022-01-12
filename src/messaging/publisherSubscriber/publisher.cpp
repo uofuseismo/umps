@@ -212,3 +212,12 @@ UAuth::SecurityLevel Publisher::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
 }
+
+UCI::SocketDetails::Publisher Publisher::getSocketDetails() const
+{
+    if (!isInitialized())
+    {
+        throw std::runtime_error("Publisher not initialized");
+    }
+    return pImpl->mSocketDetails;
+}

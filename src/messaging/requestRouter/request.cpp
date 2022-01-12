@@ -243,3 +243,14 @@ UAuth::SecurityLevel Request::getSecurityLevel() const noexcept
 {
     return pImpl->mSecurityLevel;
 }
+
+/// Connection information
+UCI::SocketDetails::Request Request::getSocketDetails() const
+{
+    if (!isInitialized())
+    {   
+        throw std::runtime_error("Request not initialized");
+    }   
+    return pImpl->mSocketDetails;
+}
+

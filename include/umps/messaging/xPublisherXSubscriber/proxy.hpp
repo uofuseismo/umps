@@ -17,6 +17,10 @@ namespace UMPS
    class ProxyOptions;
   }
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Proxy;
+ }
 }
 namespace zmq 
 {
@@ -72,11 +76,13 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The address to which the consumers will subscribe.
     /// @throws std::invalid_argument if \c isInitialized() is false.
-    [[nodiscard]] std::string getFrontendAddress() const;
+    [[deprecated]] [[nodiscard]] std::string getFrontendAddress() const;
     /// @result The address to which the producers will subscribe.
     /// @throws std::invalid_argument if \c isInitialized() is false.
-    [[nodiscard]] std::string getBackendAddress() const;
-
+    [[deprecated]] [[nodiscard]] std::string getBackendAddress() const;
+    /// @result The details for connecting to this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Proxy getSocketDetails() const;
     /// @}
 
     /// @name Usage

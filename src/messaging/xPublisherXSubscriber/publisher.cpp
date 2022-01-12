@@ -184,3 +184,13 @@ std::string Publisher::getEndPoint() const
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     return pImpl->mAddress;
 }
+
+/// Socket details
+UCI::SocketDetails::XPublisher Publisher::getSocketDetails() const
+{
+    if (!isInitialized())
+    {
+        throw std::runtime_error("Publisher not initialized");
+    }
+    return pImpl->mSocketDetails;
+}

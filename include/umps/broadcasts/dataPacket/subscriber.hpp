@@ -17,6 +17,10 @@ namespace UMPS
  {
   template<class T> class SubscriberOptions;
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Subscriber;
+ }
 }
 namespace zmq
 {
@@ -71,10 +75,13 @@ public:
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The security level of the connection.
-    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[nodiscard]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The socket endpoint.
     /// @throws std::runtime_error if \c isInitialized() is true.
-    [[nodiscard]] std::string getEndPoint() const;
+    [[nodiscard]] [[nodiscard]] std::string getEndPoint() const;
+    /// @result The details for connecting to this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Subscriber getSocketDetails() const;
 
     /// @brief Receives a data packet message.
     /// @throws std::invalid_argument if the message cannot be serialized.

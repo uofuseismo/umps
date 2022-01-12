@@ -20,6 +20,10 @@ namespace UMPS
    class RequestOptions;
   }
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Request;
+ }
 }
 namespace zmq
 {
@@ -53,7 +57,6 @@ public:
     /// @brief Constructs a request socket with the given context and logger.
     Request(std::shared_ptr<zmq::context_t> &context,
             std::shared_ptr<UMPS::Logging::ILog> &logger);
-
     /// @}
 
     /// @name Step 1: Initialization
@@ -68,11 +71,13 @@ public:
     /// @brief Sets the message format for receiving responses.
     //void setResponse(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
     /// @result The security level of the connection.
-    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The connection string.
     /// @throws std::runtime_error if \c isConnected() is false.
-    [[nodiscard]] std::string getConnectionString() const;
-
+    [[deprecated]] [[nodiscard]] std::string getConnectionString() const;
+    /// @result The details for connecting to this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Request getSocketDetails() const;
     /// @}
 
     /// @name Step 2: Request 
@@ -86,7 +91,6 @@ public:
     [[nodiscard]]
     std::unique_ptr<UMPS::MessageFormats::IMessage> request(
         const MessageFormats::IMessage &request);
-
     /// @}
 
     /// @name Step 3: Disconnecting
@@ -95,7 +99,6 @@ public:
     /// @brief Disconnects the requestor from the router-dealer.
     /// @note This step is optional as it will be done by the destructor.
     void disconnect();
-
     /// @}
  
     /// @name Destructors
@@ -103,7 +106,6 @@ public:
 
     /// @brief Destructor.
     ~Request();
-
     /// @}
 
     Request(const Request &request) = delete;

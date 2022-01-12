@@ -17,6 +17,10 @@ namespace UMPS
  {
   class RouterOptions;
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Router;
+ }
 }
 namespace zmq
 {
@@ -57,13 +61,16 @@ public:
     /// @throws std::invalid_argument if the endpoint or callback is not set. 
     void initialize(const RouterOptions &options);
     /// @result The security level of the connection.
-    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates that the router is bound to an address,
     ///         has a callback, and is ready to receive and process messages.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result Gets the connection string.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::string getEndPoint() const;
+    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
+    /// @result the connection details.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Router getSocketDetails() const;
     /// @}
 
     /// @name Step 2: Start the Router

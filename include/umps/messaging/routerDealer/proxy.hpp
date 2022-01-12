@@ -17,6 +17,10 @@ namespace UMPS
    class ProxyOptions;
   }
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Proxy;
+ }
 }
 namespace zmq
 {
@@ -38,6 +42,7 @@ class Proxy
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Proxy();
     /// @brief Constructs a proxy with the given logger.
@@ -53,6 +58,7 @@ public:
 
     /// @name Initialization
     /// @{
+
     /// @brief Initializes the proxy.
     /// @param[in] options   The options must contain the frontend and backend
     ///                      addresses.  Additionally, options will contain the
@@ -72,10 +78,14 @@ public:
     /// @result The address to which the servers will connect.
     /// @throws std::invalid_argument if \c isInitialized() is false.
     [[nodiscard]] std::string getBackendAddress() const;
+    /// @result The details for connecting to this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Proxy getSocketDetails() const;
     /// @}
 
     /// @name Usage
     /// @{
+
     /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
     void start(); 
@@ -92,6 +102,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Destructor.
     ~Proxy();
     /// @}

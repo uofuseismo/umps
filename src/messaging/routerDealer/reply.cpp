@@ -259,3 +259,13 @@ void Reply::stop()
 {
     pImpl->stop();
 }
+
+/// Connection details
+UCI::SocketDetails::Reply Reply::getSocketDetails() const
+{
+    if (!isInitialized())
+    {
+        throw std::runtime_error("Reply not initialized");
+    }
+    return pImpl->mSocketDetails;
+}

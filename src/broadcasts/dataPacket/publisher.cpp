@@ -7,10 +7,12 @@
 #include "umps/authentication/service.hpp"
 #include "umps/authentication/authenticator.hpp"
 #include "umps/authentication/grasslands.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 
@@ -80,6 +82,7 @@ bool Publisher::isInitialized() const noexcept
     return pImpl->mPublisher->isInitialized();
 }
 
+/*
 /// End point
 std::string Publisher::getEndPoint() const
 {
@@ -90,6 +93,11 @@ std::string Publisher::getEndPoint() const
 UAuth::SecurityLevel Publisher::getSecurityLevel() const noexcept
 {
     return pImpl->mPublisher->getSecurityLevel();
+}
+*/
+UCI::SocketDetails::XPublisher Publisher::getSocketDetails() const
+{
+    return pImpl->mPublisher->getSocketDetails();
 }
 
 /// Destructor

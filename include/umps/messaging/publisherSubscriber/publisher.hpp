@@ -20,6 +20,10 @@ namespace UMPS
    class PublisherOptions;
   }
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Publisher;
+ }
 }
 namespace zmq
 {
@@ -80,10 +84,13 @@ public:
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[deprecated]] [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The socket endpoint.
     /// @throws std::runtime_error if \c isInitialized() is true.
-    [[nodiscard]] std::string getEndPoint() const;
+    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
+    /// @result Gets the details for connecting to this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Publisher getSocketDetails() const;
 
     /// @brief Sends a message.  This will serialize the message.
     /// @param[in] message  The message to send.

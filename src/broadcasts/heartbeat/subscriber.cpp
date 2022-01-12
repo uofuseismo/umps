@@ -4,10 +4,12 @@
 #include "umps/broadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Broadcasts::Heartbeat;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 
@@ -81,6 +83,7 @@ bool Subscriber::isInitialized() const noexcept
     return pImpl->mSubscriber->isInitialized();
 }
 
+/*
 /// End point
 std::string Subscriber::getEndPoint() const
 {
@@ -91,6 +94,11 @@ std::string Subscriber::getEndPoint() const
 UAuth::SecurityLevel Subscriber::getSecurityLevel() const noexcept
 {
     return pImpl->mSubscriber->getSecurityLevel();
+}
+*/
+UCI::SocketDetails::Subscriber Subscriber::getSocketDetails() const
+{
+    return pImpl->mSubscriber->getSocketDetails();
 }
 
 /// Destructor

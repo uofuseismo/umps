@@ -20,6 +20,10 @@ namespace UMPS
    class PublisherOptions;
   }
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class XPublisher;
+ }
 }
 namespace zmq
 {
@@ -84,13 +88,15 @@ public:
     /// @throws std::runtime_error if the creation of the publisher fails.
     void initialize(const PublisherOptions &options);
     /// @result The security level of the connection.
-    [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
-
+    [[deprecated]] [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The socket endpoint.
     /// @throws std::runtime_error if \c isInitialized() is true.
-    [[nodiscard]] std::string getEndPoint() const;
+    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
+    /// @result The details for connecting to this socket.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::XPublisher getSocketDetails() const;
     /// @}
 
     /// @brief Sends a message.
@@ -114,7 +120,9 @@ public:
 
     /// Delete some functions
     Publisher(const Publisher &publisher) = delete;
+    //Publisher(Publisher &&publisher) noexcept = delete;
     Publisher& operator=(const Publisher &publisher) = delete;
+    //Publisher& operator=(Publisher &&publisher) noexcept = delete;
 private:
     class PublisherImpl;
     std::unique_ptr<PublisherImpl> pImpl;

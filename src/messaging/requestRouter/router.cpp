@@ -348,3 +348,13 @@ std::string Router::getEndPoint() const
     if (!isInitialized()){throw std::runtime_error("Router not initialized");}
     return pImpl->mEndPoint;
 }
+
+/// Connection information
+UCI::SocketDetails::Router Router::getSocketDetails() const
+{
+    if (!isInitialized())
+    {   
+        throw std::runtime_error("Router not initialized");
+    }   
+    return pImpl->mSocketDetails;
+}

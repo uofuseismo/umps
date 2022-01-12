@@ -357,3 +357,12 @@ void Proxy::stop()
     pImpl->setStarted(false);
 }
 
+/// Connection details
+UCI::SocketDetails::Proxy Proxy::getSocketDetails() const
+{
+    if (!isInitialized())
+    {
+        throw std::runtime_error("Proxy not initialized");
+    }
+    return pImpl->mSocketDetails;
+}

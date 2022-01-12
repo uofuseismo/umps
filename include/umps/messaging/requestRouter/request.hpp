@@ -17,6 +17,10 @@ namespace UMPS
  {
   class RequestOptions;
  }
+ namespace Services::ConnectionInformation::SocketDetails
+ {
+  class Request;
+ }
 }
 namespace zmq
 {
@@ -63,10 +67,13 @@ public:
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept; 
     /// @result The security level of the connection.
-    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
+    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result The connection string.
     /// @throws std::runtime_error if \c isConnected() is false.
-    [[nodiscard]] std::string getConnectionString() const;
+    [[deprecated]] [[nodiscard]] std::string getConnectionString() const;
+    /// @result the connection details.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Request getSocketDetails() const;
 
     /// @}
 
