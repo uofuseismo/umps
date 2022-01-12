@@ -241,10 +241,10 @@ public:
     {
         UCI::SocketDetails::XPublisher xPub;
         UCI::SocketDetails::XSubscriber xSub;
-        xPub.setAddress(mFrontendAddress);
+        xPub.setAddress(mBackendAddress);
         xPub.setSecurityLevel(mSecurityLevel);
         xPub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
-        xSub.setAddress(mBackendAddress);
+        xSub.setAddress(mFrontendAddress);
         xSub.setSecurityLevel(mSecurityLevel);
         xSub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
         mSocketDetails.setSocketPair(std::pair(xSub, xPub));
