@@ -3,6 +3,7 @@
 #include "private/isEmpty.hpp"
 
 namespace UCI = UMPS::Services::ConnectionInformation;
+namespace UAuth = UMPS::Authentication;
 using namespace UMPS::Services::ConnectionInformation::SocketDetails;
 
 
@@ -10,6 +11,7 @@ class Dealer::DealerImpl
 {
 public:
     std::string mAddress;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
 /// C'tor
@@ -73,6 +75,17 @@ bool Dealer::haveAddress() const noexcept
     return !pImpl->mAddress.empty();
 }
 
+/// Securtiy level
+void Dealer::setSecurityLevel(const UAuth::SecurityLevel securityLevel) noexcept
+{
+    pImpl->mSecurityLevel = securityLevel;
+}
+
+UAuth::SecurityLevel Dealer::getSecurityLevel() const noexcept
+{
+    return pImpl->mSecurityLevel;
+}
+
 UCI::ConnectOrBind Dealer::connectOrBind() noexcept
 {
     return UCI::ConnectOrBind::CONNECT;
@@ -82,3 +95,5 @@ UCI::SocketType Dealer::getSocketType() noexcept
 {
     return UCI::SocketType::DEALER;
 }
+
+

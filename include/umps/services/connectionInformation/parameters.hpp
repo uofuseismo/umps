@@ -16,6 +16,7 @@ class Parameters
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Parameters();
     /// @brief Copy constructor.
@@ -31,6 +32,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment.
     /// @param[in] parameters   The parameters class to copy to this.
     /// @result A deep copy of parameters.
@@ -58,6 +60,7 @@ public:
 
     /// @name Required Parameters
     /// @{
+
     /// @result The name of the connectionInformation service.
     [[nodiscard]] static std::string getName() noexcept;
 
@@ -74,6 +77,7 @@ public:
 
     /// @name Optional Parameters
     /// @{
+
     /// @brief Sets the ZeroMQ Authentication Protocol options.
     /// @param[in] zapOptions  The ZAP options.
     void setZAPOptions(
@@ -89,6 +93,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.

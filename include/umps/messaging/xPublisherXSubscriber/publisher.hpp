@@ -40,6 +40,7 @@ class Publisher
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Default constructor.
     Publisher();
     /// @brief Constructs a publisher with the given logger.
@@ -74,6 +75,7 @@ public:
 
     /// @name Initialization
     /// @{
+
     /// @brief Initializes the publisher.
     /// @param[in] options   The options must contain the socket's address.
     ///                      Additionally, options will contain the security
@@ -105,6 +107,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Destructor.
     ~Publisher();
     /// @}

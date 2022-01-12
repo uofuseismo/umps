@@ -14,7 +14,7 @@ namespace UMPS
 }
 namespace UMPS::Broadcasts::Earthworm
 {
-/// @name WaveRing "waveRing.hpp" "umps/broadcasts/earthworm/waveRing.hpp"
+/// @class WaveRing "waveRing.hpp" "umps/broadcasts/earthworm/waveRing.hpp"
 /// @brief A utility for reading from an Earthworm wave ring.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class WaveRing
@@ -22,6 +22,7 @@ class WaveRing
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Default constructor.
     WaveRing();
     /// @brief Constructor using the given logger.
@@ -35,6 +36,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment operator.
     /// @param[in,out] waveRing  The waveRing class whose memory will be moved
     ///                          to this.  On exit, waveRing's behavior is
@@ -45,6 +47,7 @@ public:
 
     /// @name Connection
     /// @{
+
     /// @result True indicates that UMPS has been compiled with the ability
     ///         to use the earthworm library.
     [[nodiscard]] bool haveEarthworm() const noexcept;
@@ -66,6 +69,7 @@ public:
 
     /// @name Reading
     /// @{
+
     /// @brief Flushes the ring.  This is usually a good thing to do on startup.
     /// @throws std::runtime_error if \c isConnected() is false.
     void flush();
@@ -91,7 +95,6 @@ public:
     void disconnect() noexcept;
     /// @brief Destructor.
     ~WaveRing(); 
-
     /// @}
  
     WaveRing& operator=(const WaveRing &waveRing) = delete;

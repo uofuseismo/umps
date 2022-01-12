@@ -108,8 +108,9 @@ public:
     /// @result The initial value of the incrementer.
     [[nodiscard]] uint64_t getInitialValue() const noexcept;
 
+    /// @brief Sets the verbosity. 
     /// @param[in] verbosity   The verbosity.
-    void setVerbosity(UMPS::Logging::Level level) noexcept;
+    void setVerbosity(UMPS::Logging::Level verbosity) noexcept;
     /// @result The verbosity of the conter.
     [[nodiscard]] UMPS::Logging::Level getVerbosity() const noexcept;
 

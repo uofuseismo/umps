@@ -6,7 +6,7 @@
 #include "umps/services/packetCache/enums.hpp"
 namespace UMPS::Services::PacketCache
 {
-/// @name SensorResponse "sensorResponse.hpp" "umps/services/packetCache/sensorResponse.hpp"
+/// @class SensorResponse "sensorResponse.hpp" "umps/services/packetCache/sensorResponse.hpp"
 /// @brief This represents all available sensors in the cache.
 /// @sa SensorRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -119,7 +119,7 @@ public:
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 
-    [[nodiscard]] virtual std::string toCBOR() const;
+    [[nodiscard]] std::string toCBOR() const;
     /// @brief Creates the class from a CBOR message.
     /// @param[in] cbor  The CBOR message.
     void fromCBOR(const std::string &cbor);
@@ -129,8 +129,7 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NUL or length is 0.
-    virtual void fromCBOR(const uint8_t *data, size_t length);
-
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @}
 
     /// @name Destructors

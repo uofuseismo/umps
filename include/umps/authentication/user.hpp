@@ -20,6 +20,7 @@ class User : public UMPS::MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     User();
     /// @brief Copy constructor.
     /// @param[in] user  The user class from which to initialize this class.
@@ -32,6 +33,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @param[in] user  The user class to copy to this.
     /// @result A deep copy of the user class.
     User& operator=(const User &user);
@@ -41,6 +43,7 @@ public:
 
     /// @name Name 
     /// @{
+
     /// @brief Sets the user's name.
     /// @throws std::invalid_argument if the name is empty.
     void setName(const std::string &name);
@@ -52,6 +55,7 @@ public:
 
     /// @name Email
     /// @{
+
     /// @brief Sets the user's email address.
     /// @param[in] email   The email address.
     /// @throws std::invalid_argument if the email address is NULL.
@@ -65,6 +69,7 @@ public:
 
     /// @name Password
     /// @{
+
     /// @brief Sets the hashed password.
     /// @param[in] password  The hashed password.  This must have length
     ///                      at most \c getMaximumHashedStringLength().
@@ -85,6 +90,7 @@ public:
 
     /// @name Public Key
     /// @{
+
     /// @brief Sets the public key.
     /// @param[in] publicKey  The user's hashed public key.  This must have
     ///                       length at most \c getKeyLength().
@@ -108,6 +114,7 @@ public:
 
     /// @name Privileges
     /// @{
+
     /// @brief Sets the user's privileges.
     /// @param[in] privileges  The user's privileges.
     void setPrivileges(const UserPrivileges privileges) noexcept;
@@ -117,6 +124,7 @@ public:
 
     /// @name Identifier Number
     /// @{
+
     /// @brief Sets the user's unique identifier number.  
     /// @param[in] identifier  The identifier number.
     void setIdentifier(int identifier) noexcept; 
@@ -134,6 +142,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
@@ -142,6 +151,7 @@ public:
 
     /// @name Message Properties
     /// @{
+
     /// @brief Creates a copy of this class.
     /// @result A copy of this class.
     [[nodiscard]] std::unique_ptr<IMessage> clone() const override final;
@@ -157,6 +167,7 @@ public:
 
     /// @name Debugging Properties
     /// @{
+
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables this.
     /// @result This class converted to a JSON representation.

@@ -33,7 +33,6 @@ public:
     /// @param[in,out] pick  The pick class from which to initialize this
     ///                      class.  On exit, pick's behavior is undefined.
     Pick(Pick &&pick) noexcept;
-
     /// @}
 
     /// @name Operators
@@ -48,7 +47,6 @@ public:
     ///                      this.  On exit pick's behavior is undefined.
     /// @result The memory from pick moved to this.
     Pick& operator=(Pick &&pick) noexcept;
-
     /// @}
 
     /// @name Required Information
@@ -65,7 +63,6 @@ public:
     [[nodiscard]] double getTime() const;
     /// @result True indicates that the pick time was set.
     [[nodiscard]] bool haveTime() const noexcept;
-
     /// @}
  
     /// @name Station Identification
@@ -110,7 +107,6 @@ public:
     [[nodiscard]] std::string getLocationCode() const;
     /// @result True indicates that the location code was set.
     [[nodiscard]] bool haveLocationCode() const noexcept;
-
     /// @} 
 
     /// @name Pick Identifier
@@ -170,7 +166,6 @@ public:
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An uninitialized instance of this class. 
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept override final;
-
     /// @}
 
     /// @name Debugging Utilities
@@ -189,7 +184,7 @@ public:
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 
-    [[nodiscard]] virtual std::string toCBOR() const;
+    [[nodiscard]] std::string toCBOR() const;
     /// @brief Creates the class from a CBOR message.
     /// @param[in] cbor  The CBOR message.
     void fromCBOR(const std::string &cbor);
@@ -199,8 +194,7 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0.
-    virtual void fromCBOR(const uint8_t *data, size_t length);
-
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @}
 
     /// @name Destructors
@@ -210,7 +204,6 @@ public:
     void clear() noexcept;
     /// @brief Destructor.
     ~Pick() override;
-
     /// @}
 private:
     class PickImpl;

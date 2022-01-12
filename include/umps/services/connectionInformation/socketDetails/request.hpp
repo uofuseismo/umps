@@ -2,6 +2,7 @@
 #define UMPS_SERVICES_CONNECTIONINFORMATION_SOCKETDETAILS_REQUEST_HPP
 #include <memory>
 #include "umps/services/connectionInformation/enums.hpp"
+#include "umps/authentication/enums.hpp"
 namespace UMPS::Services::ConnectionInformation::SocketDetails
 {
 /// @class Request "request.hpp" "umps/services/connectionInformation/socketDetails/request.hpp"
@@ -45,6 +46,12 @@ public:
     [[nodiscard]] std::string getAddress() const;
     /// @result True indicates that the address is set.
     [[nodiscard]] bool haveAddress() const noexcept;
+
+    /// @brief Sets the security level.
+    void setSecurityLevel(const UMPS::Authentication::SecurityLevel level) noexcept;
+    /// @result The security level.
+    /// @note The default is grasslands.
+    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
 
     /// @result Defines whether peers should connect or bind.
     [[nodiscard]] static ConnectOrBind connectOrBind() noexcept;

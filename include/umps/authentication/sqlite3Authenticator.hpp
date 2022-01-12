@@ -26,6 +26,7 @@ class SQLite3Authenticator : public IAuthenticator
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     SQLite3Authenticator();
     /// @brief Move constructor.
@@ -40,6 +41,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment operator.
     /// @param[in,out] authentciator  The authenticator class whose memory will
     ///                               be moved to this.  On exit,
@@ -104,6 +106,7 @@ public:
 
     /// @name White and Blacklisting
     /// @{
+
     /// @brief Denies access to a certain IP address.
     /// @param[in] address  The address to add to the blacklist.
     /// @throws std::invalid_argument if the address is whitelisted or empty.
@@ -139,12 +142,13 @@ public:
 
     /// @name Destructor
     /// @{
+
     /// @brief Destructor.
     virtual ~SQLite3Authenticator();
     /// @}
 
-//    Authenticator(const Authenticator &authenticator) = delete;
-//    Authenticator& operator=(const Authenticator &authenticator) = delete;
+    SQLite3Authenticator(const SQLite3Authenticator &authenticator) = delete;
+    SQLite3Authenticator& operator=(const SQLite3Authenticator &authenticator) = delete;
 private:
     class AuthenticatorImpl;
     std::unique_ptr<AuthenticatorImpl> pImpl;

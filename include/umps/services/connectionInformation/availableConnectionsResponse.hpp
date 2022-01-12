@@ -19,6 +19,7 @@ class AvailableConnectionsResponse : public UMPS::MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     AvailableConnectionsResponse();
     /// @brief Copy constructor.
@@ -43,6 +44,7 @@ public:
 
     /// @name Properties
     /// @{
+
     /// @brief Sets the connection details for every available broadcast,
     ///        service, etc.
     /// @throws std::invalid_argument if any of the details are not properly
@@ -63,6 +65,7 @@ public:
 
     /// @name Message Properties
     /// @{
+
     /// @brief Create a copy of this class.
     /// @result A copy of this class.
     [[nodiscard]] std::unique_ptr<IMessage> clone() const override final;
@@ -81,6 +84,7 @@ public:
 
     /// @name (De)serialization Utilities
     /// @{
+
     /// @brief Creates the class from a JSON response message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -112,6 +116,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Reset class and release all memory.
     void clear() noexcept;
     /// @brief Destructor.

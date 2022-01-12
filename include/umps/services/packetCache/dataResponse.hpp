@@ -20,6 +20,7 @@ class DataResponse : public MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     DataResponse();
     /// @brief Copy constructor.
@@ -34,6 +35,7 @@ public:
     
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] response  The response to copy to this.
     /// @result A deep copy of the input response.
@@ -48,6 +50,7 @@ public:
 
     /// @name Data Packets
     /// @{
+
     /// @brief Sets the data packets.
     /// @param[in] packets  The data packets corresponding to the request.
     /// @throws std::invalid_argument if any packet's network, station, channel,
@@ -72,6 +75,7 @@ public:
 
     /// @name Additional Information
     /// @{
+
     /// @brief Allows the service to set its return code and signal to
     ///        the requester whether or not the request was successfully
     ///        processed.
@@ -91,6 +95,7 @@ public:
 
     /// @name Message Properties
     /// @{
+
     /// @brief Converts the packet class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
@@ -116,6 +121,7 @@ public:
 
     /// @name Debugging Utilities
     /// @{
+
     /// @brief Creates the class from a JSON data reseponse message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -129,7 +135,7 @@ public:
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 
-    [[nodiscard]] virtual std::string toCBOR() const;
+    [[nodiscard]] std::string toCBOR() const;
     /// @brief Creates the class from a CBOR message.
     /// @param[in] cbor  The CBOR message.
     void fromCBOR(const std::string &cbor);
@@ -139,11 +145,12 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NUL or length is 0.
-    virtual void fromCBOR(const uint8_t *data, size_t length);
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @}
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.

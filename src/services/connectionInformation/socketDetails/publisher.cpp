@@ -3,6 +3,7 @@
 #include "private/isEmpty.hpp"
 
 namespace UCI = UMPS::Services::ConnectionInformation;
+namespace UAuth = UMPS::Authentication;
 using namespace UMPS::Services::ConnectionInformation::SocketDetails;
 
 
@@ -10,6 +11,7 @@ class Publisher::PublisherImpl
 {
 public:
     std::string mAddress;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
 /// C'tor
@@ -71,6 +73,18 @@ std::string Publisher::getAddress() const
 bool Publisher::haveAddress() const noexcept
 {
     return !pImpl->mAddress.empty();
+}
+
+/// Securtiy level
+void Publisher::setSecurityLevel(
+    const UAuth::SecurityLevel securityLevel) noexcept
+{
+    pImpl->mSecurityLevel = securityLevel;
+}
+
+UAuth::SecurityLevel Publisher::getSecurityLevel() const noexcept
+{
+    return pImpl->mSecurityLevel;
 }
 
 UCI::ConnectOrBind Publisher::connectOrBind() noexcept

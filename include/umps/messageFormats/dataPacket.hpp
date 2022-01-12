@@ -15,6 +15,7 @@ class DataPacket : public IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     DataPacket();
     /// @brief Copy constructor.
@@ -28,6 +29,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment.
     /// @param[in] packet  The packet to copy to this class.
     /// @result A deep copy of the input packet.
@@ -41,6 +43,7 @@ public:
  
     /// @name Required Information
     /// @{
+
     /// @brief Sets the network code on which the pick was made.
     /// @param[in] network  The network code.
     /// @throws std::invalid_argument if network is empty.
@@ -95,6 +98,7 @@ public:
 
     /// @name Optional Information
     /// @{
+
     /// @param[in] startTime  The UTC start time in seconds from the epoch
     ///                       (Jan 1, 1970).
     void setStartTime(double startTime) noexcept;
@@ -140,6 +144,7 @@ public:
 
     /// @name Message Abstract Base Class Properties
     /// @{
+
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.
@@ -163,6 +168,7 @@ public:
 
     /// @name Debugging Utilities
     /// @{
+
     /// @brief Convenience function to initialize this class from a CBOR
     ///        message.
     /// @param[in] cbor  The CBOR message held in a string container.
@@ -194,6 +200,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.

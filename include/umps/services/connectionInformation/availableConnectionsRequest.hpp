@@ -13,6 +13,7 @@ class AvailableConnectionsRequest : public UMPS::MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     AvailableConnectionsRequest();
     /// @brief Copy constructor.
@@ -26,7 +27,7 @@ public:
 
     /// @name Operator
     /// @{
-    /// 
+
     /// @brief Copy assignment operator.
     /// @result A deep copy of the given request.
     AvailableConnectionsRequest& operator=(const AvailableConnectionsRequest &request);
@@ -55,6 +56,7 @@ public:
 
     /// @name (De)serialization Utilities
     /// @{
+
     /// @brief Creates the class from a JSON response message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -86,6 +88,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Destructor.
     ~AvailableConnectionsRequest() override;
     /// @}

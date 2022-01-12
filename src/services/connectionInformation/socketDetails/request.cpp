@@ -3,6 +3,7 @@
 #include "private/isEmpty.hpp"
 
 namespace UCI = UMPS::Services::ConnectionInformation;
+namespace UAuth = UMPS::Authentication;
 using namespace UMPS::Services::ConnectionInformation::SocketDetails;
 
 
@@ -10,6 +11,7 @@ class Request::RequestImpl
 {
 public:
     std::string mAddress;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
 /// C'tor
@@ -72,6 +74,19 @@ bool Request::haveAddress() const noexcept
 {
     return !pImpl->mAddress.empty();
 }
+
+/// Securtiy level
+void Request::setSecurityLevel(
+    const UAuth::SecurityLevel securityLevel) noexcept
+{
+    pImpl->mSecurityLevel = securityLevel;
+}
+
+UAuth::SecurityLevel Request::getSecurityLevel() const noexcept
+{
+    return pImpl->mSecurityLevel;
+}
+
 
 UCI::ConnectOrBind Request::connectOrBind() noexcept
 {
