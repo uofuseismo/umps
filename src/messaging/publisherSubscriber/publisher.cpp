@@ -4,6 +4,9 @@
 #include <map>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/authentication/enums.hpp"
@@ -11,11 +14,13 @@
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "umps/services/connectionInformation/socketDetails/publisher.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 class Publisher::PublisherImpl
@@ -53,14 +58,23 @@ public:
         if (mBound)
         {
             mPublisher->disconnect(mAddress);
+            mSocketDetails.clear();
             mBound = false;
         }
+    }
+    /// Update socket details
+    void updateSocketDetails()
+    {
+        mSocketDetails.setAddress(mAddress);
+        mSocketDetails.setSecurityLevel(mSecurityLevel);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
     }
     std::shared_ptr<zmq::context_t> mContext;
     std::unique_ptr<zmq::socket_t> mPublisher;
     std::map<std::string, bool> mEndPoints;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     PublisherOptions mOptions;
+    UCI::SocketDetails::Publisher mSocketDetails;
     std::string mAddress;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mBound = false;
@@ -154,6 +168,7 @@ void Publisher::initialize(const PublisherOptions &options)
     pImpl->mBound = true;
     // Set some final details
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
 }
 

@@ -10,10 +10,12 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
+#include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 class Request::RequestImpl
@@ -45,6 +47,13 @@ public:
         mClient = std::make_unique<zmq::socket_t> (*mContext,
                                                    zmq::socket_type::req);
     }
+    /// Update socket details
+    void updateSocketDetails()
+    {   
+        mSocketDetails.setAddress(mEndPoint);
+        mSocketDetails.setSecurityLevel(mSecurityLevel);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
+    }
 //private:
     //std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
     //    mSubscriptions;
@@ -54,6 +63,7 @@ public:
     std::unique_ptr<zmq::socket_t> mClient;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     std::string mEndPoint;
+    UCI::SocketDetails::Request mSocketDetails;
     int mHighWaterMark = 200;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mInitialized = false;
@@ -118,6 +128,7 @@ void Request::initialize(const RequestOptions &options)
     {
         pImpl->mEndPoint = pImpl->mClient->get(zmq::sockopt::last_endpoint);
     }
+    pImpl->updateSocketDetails();
     pImpl->mConnected = true;
     pImpl->mInitialized = true;
 }
@@ -219,6 +230,7 @@ void Request::disconnect()
         pImpl->mLogger->debug("Disconnecting from " + pImpl->mEndPoint);
         pImpl->mClient->disconnect(pImpl->mEndPoint);
         pImpl->mEndPoint.clear();
+        pImpl->mSocketDetails.clear();
         pImpl->mConnected = false;
     }
 }

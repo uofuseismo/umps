@@ -10,10 +10,12 @@
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/authentication/zapOptions.hpp"
+#include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 class Reply::ReplyImpl
@@ -71,10 +73,17 @@ public:
        {
            mServer->disconnect(mEndPoint);
            mEndPoint.clear();
+           mSocketDetails.clear();
            mConnected = false;
        }
     }
-
+    /// Update socket details
+    void updateSocketDetails()
+    {   
+        mSocketDetails.setAddress(mEndPoint);
+        mSocketDetails.setSecurityLevel(mSecurityLevel);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
+    }
 ///private:
     mutable std::mutex mMutex;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
@@ -86,6 +95,7 @@ public:
            const size_t length)
     > mCallback;
     ReplyOptions mOptions;
+    UCI::SocketDetails::Reply mSocketDetails;
     std::string mEndPoint;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
@@ -163,6 +173,7 @@ void Reply::initialize(const ReplyOptions &options)
         pImpl->mEndPoint = pImpl->mServer->get(zmq::sockopt::last_endpoint);
     }
     pImpl->mConnected = true; 
+    pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
 }
 

@@ -2,7 +2,9 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#ifndef NDEBUG
 #include <cassert>
+#endif
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/router.hpp"
@@ -10,38 +12,17 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
-
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 class Router::RouterImpl
 {
 public:
-    /*
-    /// C'tor
-    RouterImpl() :
-        mContext(std::make_shared<zmq::context_t> (1)),
-        mServer(std::make_unique<zmq::socket_t> (*mContext,
-                                                 zmq::socket_type::router)),
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
-    {
-    }
-    /// C'tor with specified logger
-    explicit RouterImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mContext(std::make_shared<zmq::context_t> (1)),
-        mServer(std::make_unique<zmq::socket_t> (*mContext,
-                                                 zmq::socket_type::router)),
-        mLogger(logger)
-    {
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-        }
-    }
-    */
     /// C'tor
     RouterImpl(std::shared_ptr<zmq::context_t> context,
                std::shared_ptr<UMPS::Logging::ILog> logger)
@@ -98,7 +79,13 @@ public:
            mBound = false;
        }
     }
-
+    /// Update socket details
+    void updateSocketDetails()
+    {
+        mSocketDetails.setAddress(mEndPoint);
+        mSocketDetails.setSecurityLevel(mSecurityLevel);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+    }
 //    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         //mSubscriptions;
 //    UMPS::MessageFormats::Messages mMessageFormats;
@@ -111,6 +98,7 @@ public:
            const size_t length)
     > mCallback;
     RouterOptions mOptions;
+    UCI::SocketDetails::Router mSocketDetails;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{10};

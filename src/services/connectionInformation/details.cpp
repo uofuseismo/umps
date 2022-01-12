@@ -2,6 +2,7 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
@@ -22,6 +23,7 @@ public:
     SocketDetails::Dealer mDealer;
     SocketDetails::Proxy mProxy;
     SocketDetails::Publisher mPublisher;
+    SocketDetails::Reply mReply;
     SocketDetails::Request mRequest;
     SocketDetails::Router mRouter;
     SocketDetails::Subscriber mSubscriber;
@@ -197,6 +199,16 @@ void Details::setSocketDetails(const SocketDetails::Subscriber &socket)
     pImpl->mSocketType = socket.getSocketType();
 }
 
+void Details::setSocketDetails(const SocketDetails::Reply &socket)
+{
+    if (!socket.haveAddress())
+    {
+        throw std::invalid_argument("Address not set");
+    }
+    pImpl->mReply = socket;
+    pImpl->mSocketType = socket.getSocketType();
+}
+
 void Details::setSocketDetails(const SocketDetails::Request &socket)
 {
     if (!socket.haveAddress())
@@ -273,6 +285,15 @@ SocketDetails::Subscriber Details::getSubscriberSocketDetails() const
         throw std::runtime_error("Subscriber socket details not set");
     }
     return pImpl->mSubscriber;
+}
+
+SocketDetails::Reply Details::getReplySocketDetails() const
+{
+    if (getSocketType() != SocketType::REPLY)
+    {
+        throw std::runtime_error("Reply socket details not set");
+    }
+    return pImpl->mReply;
 }
 
 SocketDetails::Request Details::getRequestSocketDetails() const

@@ -32,6 +32,9 @@ enum class SocketType
     DEALER,      /*!< This is a socket that receives requests asynchronously.
                       This will accept connections from a ROUTER, RESPONSE, or
                       DEALER socket. */
+    REPLY,       /*!< This is a socket that replies to responses.
+                      This will accept connections from a REQUEST or
+                      ROUTER socket. */
     RESPONSE,    /*!< This is a socket that receives responses.
                       This will accept connections from a REQUEST
                       or DEALER socket. */

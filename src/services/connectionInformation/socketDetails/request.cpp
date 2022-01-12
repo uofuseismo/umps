@@ -11,6 +11,7 @@ class Request::RequestImpl
 {
 public:
     std::string mAddress;
+    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::BIND;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
@@ -87,10 +88,16 @@ UAuth::SecurityLevel Request::getSecurityLevel() const noexcept
     return pImpl->mSecurityLevel;
 }
 
-
-UCI::ConnectOrBind Request::connectOrBind() noexcept
+/// Connect or bind
+void Request::setConnectOrBind(
+    const UCI::ConnectOrBind connectOrBind) noexcept
 {
-    return UCI::ConnectOrBind::BIND;
+    pImpl->mConnectOrBind = connectOrBind;
+}
+
+UCI::ConnectOrBind Request::getConnectOrBind() const noexcept
+{
+    return pImpl->mConnectOrBind;
 }
 
 UCI::SocketType Request::getSocketType() noexcept

@@ -53,8 +53,12 @@ public:
     /// @note The default is grasslands.
     [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
 
+    /// @brief Defines whether peers should connect or bind.
+    /// @param[in] connectOrBind  Defines if peers should connect or bind
+    ///                           to interact with this socket.
+    void setConnectOrBind(ConnectOrBind connectOrBind) noexcept;
     /// @result Defines whether peers should connect or bind.
-    [[nodiscard]] static ConnectOrBind connectOrBind() noexcept;
+    [[nodiscard]] ConnectOrBind getConnectOrBind() const noexcept;
     /// @result The socket type.
     [[nodiscard]] static SocketType getSocketType() noexcept;
 

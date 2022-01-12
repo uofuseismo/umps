@@ -10,6 +10,7 @@ namespace UMPS::Services::ConnectionInformation::SocketDetails
  class Proxy;
  class Publisher;
  class Request;
+ class Reply;
  class Router;
  class Subscriber;
  class XPublisher;
@@ -82,6 +83,10 @@ public:
     /// @param[in] socket  The request socket connection details.
     /// @throws std::invalid_argument if \c socket.haveAddress() is false.
     void setSocketDetails(const SocketDetails::Request &socket);
+    /// @brief Sets the reply socket connection details.
+    /// @param[in] socket  The reply socket connection details.
+    /// @throws std::invalid_argument if \c socket.haveAddress() is false.
+    void setSocketDetails(const SocketDetails::Reply &socket);
     /// @brief Sets the router socket connection details.
     /// @param[in] socket  The router socket connection details.
     /// @throws std::invalid_argument if \c socket.haveAddress() is false.
@@ -112,6 +117,10 @@ public:
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::REQUEST.
     SocketDetails::Request getRequestSocketDetails() const;
+    /// @result The reply socket details.
+    /// @throws std::runtime_error if \c getSocketType() does not equal
+    ///         SocketType::REPLY
+    SocketDetails::Reply getReplySocketDetails() const;
     /// @result The router socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::ROUTER.

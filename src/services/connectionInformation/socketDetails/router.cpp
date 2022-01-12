@@ -11,6 +11,7 @@ class Router::RouterImpl
 {
 public:
     std::string mAddress;
+    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::CONNECT;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
@@ -87,9 +88,16 @@ UAuth::SecurityLevel Router::getSecurityLevel() const noexcept
 }
 
 
-UCI::ConnectOrBind Router::connectOrBind() noexcept
+/// Connect or bind
+void Router::setConnectOrBind(
+    const UCI::ConnectOrBind connectOrBind) noexcept
 {
-    return UCI::ConnectOrBind::CONNECT;
+    pImpl->mConnectOrBind = connectOrBind;
+}
+
+UCI::ConnectOrBind Router::getConnectOrBind() const noexcept
+{
+    return pImpl->mConnectOrBind;
 }
 
 UCI::SocketType Router::getSocketType() noexcept

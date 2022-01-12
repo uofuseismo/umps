@@ -8,10 +8,16 @@
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/authentication/enums.hpp"
 #include "umps/authentication/zapOptions.hpp"
+#include "umps/services/connectionInformation/socketDetails/proxy.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::XPublisherXSubscriber;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 namespace 
@@ -230,6 +236,19 @@ public:
             throw std::runtime_error(errorMsg);
         }
     }
+    /// Update socket details
+    void updateSocketDetails()
+    {
+        UCI::SocketDetails::XPublisher xPub;
+        UCI::SocketDetails::XSubscriber xSub;
+        xPub.setAddress(mFrontendAddress);
+        xPub.setSecurityLevel(mSecurityLevel);
+        xPub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        xSub.setAddress(mBackendAddress);
+        xSub.setSecurityLevel(mSecurityLevel);
+        xSub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        mSocketDetails.setSocketPair(std::pair(xSub, xPub));
+    }
 ///private:
     mutable std::mutex mMutex;
     // This context handles terminate/pause/start messages from the API
@@ -248,6 +267,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     // Options
     ProxyOptions mOptions;
+    UCI::SocketDetails::Proxy mSocketDetails;
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mControlAddress;
@@ -307,6 +327,7 @@ void Proxy::initialize(const ProxyOptions &options)
     pImpl->mOptions = options; 
     pImpl->mInitialized = false;
     // Disconnect from old connections
+    pImpl->mSocketDetails.clear();
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
     pImpl->disconnectControl();
@@ -319,6 +340,7 @@ void Proxy::initialize(const ProxyOptions &options)
     pImpl->bindFrontend();
     pImpl->connectControl();
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
 }
 

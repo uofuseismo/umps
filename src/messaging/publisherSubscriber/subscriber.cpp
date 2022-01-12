@@ -10,11 +10,13 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
+#include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 class Subscriber::SubscriberImpl
@@ -52,16 +54,24 @@ public:
         if (mConnected)
         {
             mSubscriber->disconnect(mAddress);
+            mSocketDetails.clear();
             mConnected = false; 
         }
     }
- 
+    /// Update socket details
+    void updateSocketDetails()
+    {
+        mSocketDetails.setAddress(mAddress);
+        mSocketDetails.setSecurityLevel(mSecurityLevel);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
+    }
     UMPS::MessageFormats::Messages mMessageTypes;
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mSubscriber;
     ///std::map<std::string, bool> mEndPoints;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
     SubscriberOptions mOptions;
+    UCI::SocketDetails::Subscriber mSocketDetails;
     std::string mAddress;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mMadeContext = true;
@@ -164,6 +174,7 @@ void Subscriber::initialize(const SubscriberOptions &options)
     }
     // Set some final details
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
 }
 

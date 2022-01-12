@@ -11,6 +11,7 @@ class XPublisher::XPublisherImpl
 {
 public:
     std::string mAddress;
+    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::BIND;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
@@ -87,9 +88,15 @@ UAuth::SecurityLevel XPublisher::getSecurityLevel() const noexcept
     return pImpl->mSecurityLevel;
 }
 
-UCI::ConnectOrBind XPublisher::connectOrBind() noexcept
+void XPublisher::setConnectOrBind(
+    const UCI::ConnectOrBind connectOrBind) noexcept
 {
-    return UCI::ConnectOrBind::CONNECT;
+    pImpl->mConnectOrBind = connectOrBind;
+}
+
+UCI::ConnectOrBind XPublisher::getConnectOrBind() const noexcept
+{
+    return pImpl->mConnectOrBind;
 }
 
 UCI::SocketType XPublisher::getSocketType() noexcept

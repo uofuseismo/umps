@@ -5,9 +5,11 @@
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Messaging::XPublisherXSubscriber;
+namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 class Publisher::PublisherImpl
@@ -43,14 +45,22 @@ public:
         if (mConnected)
         {
             mPublisher->disconnect(mAddress);
+            mSocketDetails.clear();
             mConnected = false;
         }
+    }
+    void updateSocketDetails()
+    {
+        mSocketDetails.setAddress(mAddress);
+        mSocketDetails.setSecurityLevel(mSecurityLevel);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
     }
 //private:
     std::shared_ptr<zmq::context_t> mContext;
     std::unique_ptr<zmq::socket_t> mPublisher;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     PublisherOptions mOptions;
+    UCI::SocketDetails::XPublisher mSocketDetails;
     std::string mAddress;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mConnected = false;
@@ -121,6 +131,7 @@ void Publisher::initialize(const PublisherOptions &options)
     pImpl->mConnected = true;
     // Copy some last details
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
+    pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
 }
 
