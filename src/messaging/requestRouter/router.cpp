@@ -222,6 +222,7 @@ void Router::initialize(const RouterOptions &options)
     {
         pImpl->mEndPoint = pImpl->mServer->get(zmq::sockopt::last_endpoint);
     }
+    pImpl->updateSocketDetails();
     pImpl->mBound = true;
     pImpl->mInitialized = true;
 }

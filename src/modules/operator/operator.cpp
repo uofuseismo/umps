@@ -241,7 +241,6 @@ int main(int argc, char *argv[])
     connectionInformation.initialize(options.mConnectionInformationParameters);
     modules.mConnectionInformation = std::move(connectionInformation);
 
-
     modules.mIncrementers.reserve(options.mIncrementerParameters.size());
     for (const auto &parameters : options.mIncrementerParameters)
     {
