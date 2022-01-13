@@ -101,6 +101,12 @@ Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger,
+                     std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<BroadcastImpl> (nullptr, logger, authenticator))
+{
+}
+
 /// Move c'tor
 Broadcast::Broadcast(Broadcast &&broadcast) noexcept
 {

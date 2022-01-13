@@ -7,6 +7,7 @@
 #include <cassert>
 #endif
 #include <map>
+#include <set>
 #include <zmq.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -128,6 +129,30 @@ std::string makeNextAvailableAddress(
     return address;
 }
 
+
+std::set<std::string>
+makePropertyList(const boost::property_tree::ptree &propertyTree,
+                 const std::string &propertyName = "Counters")
+{
+    std::set<std::string> result;
+    for (const auto &p : propertyTree)
+    {
+        if (p.first.find(propertyName) != std::string::npos)
+        {
+            auto item = p.first;
+            if (result.contains(item))
+            {
+                std::cerr << "Warning!  " << propertyName << ": " << item
+                              << " already exists; skipping..."
+                              << std::endl;
+                break;
+            }
+            result.insert(item);
+        }
+    }
+    return result;
+}
+
 /*
 std::string ipResolver(const std::string &serverName)
 {
@@ -231,7 +256,7 @@ int main(int argc, char *argv[])
     UMPS::Logging::SpdLog connectionInformationLogger;
     connectionInformationLogger.initialize("ConnectionInformation",
                                            connectionInformationLogFileName,
-                                           UMPS::Logging::Level::DEBUG, //options.mVerbosity,
+                                           UMPS::Logging::Level::INFO, //options.mVerbosity,
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
@@ -321,7 +346,8 @@ int main(int argc, char *argv[])
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        UMPS::Broadcasts::DataPacket::Broadcast dataPacketBroadcast(loggerPtr);
+        UMPS::Broadcasts::DataPacket::Broadcast
+            dataPacketBroadcast(loggerPtr, authenticator);
         dataPacketBroadcast.initialize(options.mDataPacketParameters);
         modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
         std::thread t(&UMPS::Broadcasts::IBroadcast::start,
@@ -583,26 +609,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     options.mConnectionInformationParameters.setClientAccessAddress(address);
     options.mAvailablePorts.at(0).second = false;
     // Next get all the counters
-    std::vector<std::string> counters;
-    for (const auto &p : propertyTree)
-    {
-        if (p.first.find("Counters") != std::string::npos)
-        {
-            auto lExists = false;
-            for (const auto &c : counters)
-            {
-                if (c == p.first)
-                {
-                    std::cerr << "Warning!  Counter: " << c
-                              << " already exists; skipping..."
-                              << std::endl;
-                    lExists = true;
-                    break;
-                }
-            }
-            if (!lExists){counters.push_back(p.first);}
-        }
-    }
+    auto counters = makePropertyList(propertyTree, "Counters");
     // Parse the options for each counter
     for (const auto &counter : counters)
     {
@@ -631,11 +638,24 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         counterOptions.setZAPOptions(options.mZAPOptions);
         options.mIncrementerParameters.push_back(std::move(counterOptions));
     }
+    // Parse the packetcache options
+    auto packetCaches = makePropertyList(propertyTree, "PacketCaches");
+    for (const auto &packetCache : packetCaches)
+    {
+        auto frontendAddress = makeNextAvailableAddress(
+                                    options.mAvailablePorts,
+                                    options.mIPAddress,
+                                    "tcp://");
+        auto backendAddress = makeNextAvailableAddress(
+                                    options.mAvailablePorts,
+                                    options.mIPAddress,
+                                    "tcp://");
+    }
     // Parse the datapacket broadcast options 
     UMPS::Broadcasts::DataPacket::Parameters dataPacketOptions;
     try
     {
-        dataPacketOptions.parseInitializationFile(iniFile, "Broadcasts");
+        dataPacketOptions.parseInitializationFile(iniFile, "Broadcasts:DataPackets");
     }
     catch (const std::exception &e)
     {
@@ -668,7 +688,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     UMPS::Broadcasts::Heartbeat::Parameters heartbeatOptions;
     try
     {
-        heartbeatOptions.parseInitializationFile(iniFile, "Broadcasts");
+        heartbeatOptions.parseInitializationFile(iniFile, "Broadcasts:Heartbeat");
     }
     catch (const std::exception &e) 
     {   

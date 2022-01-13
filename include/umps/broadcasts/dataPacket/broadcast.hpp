@@ -20,6 +20,10 @@ namespace UMPS
  {
   class Parameters;
  }
+ namespace Authentication
+ {
+  class IAuthenticator;
+ }
 }
 namespace UMPS::Broadcasts::DataPacket
 {
@@ -43,6 +47,9 @@ public:
     Broadcast(Broadcast &&broadcast) noexcept;
     /// @brief Constructs the XPUB/XSUB with a given logger.
     explicit Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given logger and authenticator.
+    Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger,
+              std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @}
 
     /// @name Operators
