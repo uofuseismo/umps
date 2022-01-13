@@ -29,18 +29,9 @@ class Service::ServiceImpl
 public:
     /// Constructors
     ServiceImpl() = delete;
-/*
-    ServiceImpl() :
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
-        mRouter(mLogger)
-    {
-    }
-*/
     ServiceImpl(std::shared_ptr<zmq::context_t> context,
                 std::shared_ptr<UMPS::Logging::ILog> logger,
                 std::shared_ptr<UAuth::IAuthenticator> authenticator)
-        //mLogger(logger),
-        //mRouter(context, logger)
     {
         if (context == nullptr)
         {
@@ -72,14 +63,6 @@ public:
             = std::make_unique<UAuth::Service>
               (mContext, mLogger, mAuthenticator);
     }
-/*
-    ServiceImpl(std::shared_ptr<zmq::context_t> &context,
-                std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mLogger(logger),
-        mRouter(context, logger)
-    {
-    }
-*/
     /// The callback to handle connection requests
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
@@ -192,7 +175,6 @@ Service::Service(std::shared_ptr<zmq::context_t> &context,
 {
 }
 
-
 /// Move c'tor
 Service::Service(Service &&service) noexcept
 {
@@ -236,8 +218,6 @@ void Service::initialize(const Parameters &parameters)
     //pImpl->mRouterOptions.addMessageFormat(requestType);
     pImpl->mRouter->initialize(pImpl->mRouterOptions); 
     // Create the connection details
-    //ConnectionInformation::SocketDetails::Router socketDetails;
-    //socketDetails.setAddress(pImpl->mRouter->getEndPoint());
     auto socketDetails = pImpl->mRouter->getSocketDetails();
     pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);

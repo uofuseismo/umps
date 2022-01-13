@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <zmq.hpp>
 #include "umps/broadcasts/dataPacket/broadcast.hpp"
 #include "umps/broadcasts/dataPacket/parameters.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -11,16 +12,19 @@
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 #include "umps/authentication/zapOptions.hpp"
+#include "umps/authentication/authenticator.hpp"
+#include "umps/authentication/grasslands.hpp"
+#include "umps/authentication/service.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Broadcasts::DataPacket;
 namespace UAuth = UMPS::Authentication;
-
 namespace UCI = UMPS::Services::ConnectionInformation;
 
 class Broadcast::BroadcastImpl
 {
 public:
+/*
     /// Constructors
     BroadcastImpl() :
         mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
@@ -36,10 +40,50 @@ public:
            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
        }
     }
+*/
+    /// Constructors
+    BroadcastImpl() = delete;
+    BroadcastImpl(std::shared_ptr<zmq::context_t> context,
+                  std::shared_ptr<UMPS::Logging::ILog> logger,
+                  std::shared_ptr<UAuth::IAuthenticator> authenticator)
+    {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<zmq::context_t> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        if (authenticator == nullptr)
+        {
+            mAuthenticator = std::make_shared<UAuth::Grasslands> (mLogger);
+        }
+        else
+        {
+            mAuthenticator = authenticator;
+        }
+        mProxy = std::make_unique<UMPS::Messaging::XPublisherXSubscriber::Proxy>
+                 (mContext, mLogger);
+        mAuthenticatorService = std::make_unique<UAuth::Service>
+                                (mContext, mLogger, mAuthenticator);
+    }
 ///private:
-    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<zmq::context_t> mContext{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::shared_ptr<UMPS::Messaging::XPublisherXSubscriber::Proxy>
+         mProxy{nullptr};
+    std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
+    std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
     Parameters mParameters;
-    UMPS::Messaging::XPublisherXSubscriber::Proxy mProxy;
     UCI::Details mConnectionDetails;
     const std::string mName = Parameters::getName();
     bool mInitialized = false;
@@ -47,13 +91,13 @@ public:
 
 /// C'tor
 Broadcast::Broadcast() :
-    pImpl(std::make_unique<BroadcastImpl> ())
+    pImpl(std::make_unique<BroadcastImpl> (nullptr, nullptr, nullptr))
 {
 }
 
 /// C'tor
 Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<BroadcastImpl> (logger))
+    pImpl(std::make_unique<BroadcastImpl> (nullptr, logger, nullptr))
 {
 }
 
@@ -97,52 +141,23 @@ void Broadcast::initialize(const Parameters &parameters)
         pImpl->mParameters.getBackendHighWaterMark());
     options.setTopic(getName());
     options.setZAPOptions(pImpl->mParameters.getZAPOptions());
-    pImpl->mProxy.initialize(options);
+    pImpl->mProxy->initialize(options);
     // Figure out the connection details
     pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(
-        pImpl->mProxy.getSocketDetails());
+        pImpl->mProxy->getSocketDetails());
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::BROADCAST);
     pImpl->mConnectionDetails.setSecurityLevel(
-        pImpl->mProxy.getSecurityLevel());
+        pImpl->mProxy->getSecurityLevel());
     pImpl->mInitialized = true;
 }
-/*
-void proxy()
-{
-    ProxyOptions options;
-    UAuth::ZAPOptions zapOptions;
-    options.setFrontendAddress(frontendAddress);
-    options.setFrontendHighWaterMark(100);
-    options.setBackendAddress(backendAddress);
-    options.setBackendHighWaterMark(200);
-    options.setTopic(topic);
-    options.setZAPOptions(zapOptions);
-    // Make a logger
-    UMPS::Logging::StdOut logger;
-    logger.setLevel(UMPS::Logging::Level::INFO);
-    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
-    // Initialize the server
-    UMPS::Messaging::PublisherSubscriber::Proxy proxy(loggerPtr);
-    proxy.initialize(options);
-    // A thread runs the proxy
-    std::thread t1(&UMPS::Messaging::PublisherSubscriber::Proxy::start,
-                   &proxy);
-    // Main thread waits...
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-    /// Main thread tells proxy to stop
-    proxy.stop();
-    t1.join();
-}
-*/
 
 /// Start the service
 void Broadcast::start()
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     pImpl->mLogger->info("Beginning " + getName() + " broadcast...");
-    pImpl->mProxy.start();
+    pImpl->mProxy->start();
     pImpl->mLogger->info("Exited " + getName() + " broadcast proxy");
 }
 
@@ -150,13 +165,13 @@ void Broadcast::start()
 [[maybe_unused]]
 bool Broadcast::isRunning() const noexcept
 {
-    return pImpl->mProxy.isRunning();
+    return pImpl->mProxy->isRunning();
 }
 
 /// Stop the service
 void Broadcast::stop()
 {
-    pImpl->mProxy.stop();
+    pImpl->mProxy->stop();
 }
 
 /// Initialized?

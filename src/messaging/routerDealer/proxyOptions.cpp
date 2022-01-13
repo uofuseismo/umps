@@ -94,6 +94,11 @@ int ProxyOptions::getBackendHighWaterMark() const noexcept
 void ProxyOptions::setFrontendAddress(const std::string &address)
 {
     if (isEmpty(address)){throw std::invalid_argument("Address is empty");}
+    if (pImpl->mBackendAddress == address)
+    {
+        throw std::invalid_argument(
+            "Frontend address cannot match backend address");
+    }
     pImpl->mFrontendAddress = address;
 }
 
@@ -115,6 +120,11 @@ bool ProxyOptions::haveFrontendAddress() const noexcept
 void ProxyOptions::setBackendAddress(const std::string &address)
 {
     if (isEmpty(address)){throw std::invalid_argument("Address is empty");}
+    if (pImpl->mFrontendAddress == address)
+    {
+        throw std::invalid_argument(
+            "Backend address cannot match frontend address");
+    }
     pImpl->mBackendAddress = address;
 }
 
