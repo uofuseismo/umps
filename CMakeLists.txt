@@ -75,7 +75,8 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/messages.cpp
     src/messageFormats/dataPacket.cpp
     src/broadcasts/heartbeat/status.cpp
-    src/messageFormats/pick.cpp)
+    src/messageFormats/pick.cpp
+    src/messageFormats/text.cpp)
 set(MESSAGING_SRC
     src/authentication/authenticator.cpp
     src/authentication/service.cpp
@@ -256,6 +257,7 @@ set(TEST_SRC
     testing/messageFormats/heartbeat.cpp
     testing/messageFormats/pick.cpp
     testing/messageFormats/dataPacket.cpp
+    testing/messageFormats/text.cpp
     testing/messageFormats/heartbeat.cpp
     testing/broadcasts/dataPacket.cpp
     testing/broadcasts/heartbeat.cpp
@@ -313,7 +315,7 @@ endif()
 ##########################################################################################
 if (DOXYGEN_FOUND)
    # set input and output files
-   set(DOXYGEN_IN  ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
+   set(DOXYGEN_IN  ${CMAKE_CURRENT_SOURCE_DIR}/docs/docs_doxygen/Doxyfile.in)
    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.out)
    # request to configure the file
    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)

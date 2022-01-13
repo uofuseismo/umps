@@ -138,7 +138,7 @@ public:
     /// @param[in] zapDomain  The ZAP domain.
     /// @throws std::invalid_argument if zapDomain is blank.
     /// @note This will only be accessed if \c isAuthenticationServer() is true.
-    void setDomain(const std::string &domain);
+    void setDomain(const std::string &zapDomain);
     /// @result The ZAP domain.  By default this is "global".
     [[nodiscard]] std::string getDomain() const noexcept;
 

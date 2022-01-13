@@ -54,6 +54,7 @@ public:
 
     /// @name Pick Time
     /// @{
+
     /// @brief Sets the pick time.
     /// @param[in] time  The time (UTC) of the arrival.  This is measured in
     ///                  seconds since the epoch (Jan 1 1970).

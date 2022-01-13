@@ -26,6 +26,7 @@ class RequestOptions
 public:
     /// @name Constructor
     /// @{
+
     /// @brief Constructor.
     RequestOptions();
     /// @brief Copy constructor.
@@ -55,6 +56,7 @@ public:
 
     /// @name End Point
     /// @{
+
     /// @param[in] endPoint  The endpoint on which to accept connections.
     ///                      For example, "tcp://127.0.0.1:5555".
     /// @throws std::invalid_argument if endPoint is blank.
@@ -68,6 +70,7 @@ public:
 
     /// @name High Water Mark
     /// @{
+
     /// @param[in] highWaterMark  The approximate max number of messages to 
     ///                           cache on the socket.  0 will set this to
     ///                           "infinite".
@@ -79,6 +82,7 @@ public:
 
     /// @name ZeroMQ Authentication Protocol
     /// @{
+
     /// @brief Sets the ZAP options.
     /// @param[in] options  The ZAP options which will define the socket's
     ///                     security protocol.
@@ -89,6 +93,7 @@ public:
 
     /// @name Message types
     /// @{
+
     /// @brief Adds a message format that the request can receive from the
     ///        ZeroMQ router.
     /// @param[in] message  The message type.
@@ -101,6 +106,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
