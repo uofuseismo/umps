@@ -43,7 +43,8 @@ std::pair<std::string, std::string> Grasslands::isBlacklisted(
 {
     if (pImpl->mLogger->getLevel() >= UMPS::Logging::Level::INFO)
     {
-        pImpl->mLogger->info("Address: " + address + " is not blacklisted");
+        pImpl->mLogger->info("Grasslands address: "
+                           + address + " is not blacklisted");
     }
     return std::pair(okayStatus(), okayMessage());
 }   
@@ -53,7 +54,8 @@ std::pair<std::string, std::string> Grasslands::isWhitelisted(
 {
     if (pImpl->mLogger->getLevel() >= UMPS::Logging::Level::INFO)
     {
-        pImpl->mLogger->info("Address: " + address + " is whitelisted");
+        pImpl->mLogger->info("Grasslands address: "
+                           + address + " is whitelisted");
     }
     return std::pair(okayStatus(), okayMessage());
 }
@@ -70,7 +72,7 @@ std::pair<std::string, std::string> Grasslands::isValid(
         }
         else
         {
-            pImpl->mLogger->info("User is allowed");
+            pImpl->mLogger->info("Grasslands user is allowed");
         }
     }
     return std::pair(okayStatus(), okayMessage());
@@ -81,7 +83,7 @@ std::pair<std::string, std::string> Grasslands::isValid(
 {
     if (pImpl->mLogger->getLevel() >= UMPS::Logging::Level::INFO)
     {
-        pImpl->mLogger->info("User public key is allowed");
+        pImpl->mLogger->info("Grasslands user public key is allowed");
     }
     return std::pair(okayStatus(), okayMessage());
 }   
