@@ -95,7 +95,11 @@ Broadcast::Broadcast() :
 {
 }
 
-/// C'tor
+Broadcast::Broadcast(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<BroadcastImpl> (context, nullptr, nullptr))
+{
+}
+
 Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<BroadcastImpl> (nullptr, logger, nullptr))
 {
@@ -104,6 +108,19 @@ Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger,
                      std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
     pImpl(std::make_unique<BroadcastImpl> (nullptr, logger, authenticator))
+{
+}
+
+Broadcast::Broadcast(std::shared_ptr<zmq::context_t> &context,
+                     std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<BroadcastImpl> (context, nullptr, authenticator))
+{
+}
+
+Broadcast::Broadcast(std::shared_ptr<zmq::context_t> &context,
+                     std::shared_ptr<UMPS::Logging::ILog> &logger,
+                     std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<BroadcastImpl> (context, logger, authenticator))
 {
 }
 

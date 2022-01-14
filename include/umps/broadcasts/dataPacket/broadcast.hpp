@@ -25,6 +25,10 @@ namespace UMPS
   class IAuthenticator;
  }
 }
+namespace zmq
+{
+ class context_t;
+}
 namespace UMPS::Broadcasts::DataPacket
 {
 /// @class Broadcast "broadcast.hpp" "umps/broadcasts/dataPacket/broadcast.hpp"
@@ -47,8 +51,15 @@ public:
     Broadcast(Broadcast &&broadcast) noexcept;
     /// @brief Constructs the XPUB/XSUB with a given logger.
     explicit Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Broadcast(std::shared_ptr<zmq::context_t> &context);
     /// @brief Constructor with a given logger and authenticator.
     Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger,
+              std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+    Broadcast(std::shared_ptr<zmq::context_t> &context,
+              std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+
+    Broadcast(std::shared_ptr<zmq::context_t> &context,
+              std::shared_ptr<UMPS::Logging::ILog> &logger,
               std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @}
 

@@ -346,7 +346,7 @@ int main(int argc, char *argv[])
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
         UMPS::Broadcasts::DataPacket::Broadcast
-            dataPacketBroadcast(loggerPtr);//, authenticator);
+            dataPacketBroadcast(authenticatorContext, loggerPtr, authenticator);
         dataPacketBroadcast.initialize(options.mDataPacketParameters);
         modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
         std::thread t(&UMPS::Broadcasts::IBroadcast::start,
