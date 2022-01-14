@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
     UMPS::Logging::SpdLog authenticationLogger;
     authenticationLogger.initialize("Authenticator",
                                     authenticatorLogFileName,
-                                    UMPS::Logging::Level::DEBUG, //options.mVerbosity,
+                                    UMPS::Logging::Level::INFO, //options.mVerbosity,
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
         = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
@@ -261,8 +261,8 @@ int main(int argc, char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
     UMPS::Services::ConnectionInformation::Service
-        connectionInformation(connectionInformationLoggerPtr,
-                              authenticator);
+        connectionInformation(connectionInformationLoggerPtr);
+//                              authenticator);
     connectionInformation.initialize(options.mConnectionInformationParameters);
     modules.mConnectionInformation = std::move(connectionInformation);
 
@@ -347,7 +347,7 @@ int main(int argc, char *argv[])
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
         UMPS::Broadcasts::DataPacket::Broadcast
-            dataPacketBroadcast(loggerPtr, authenticator);
+            dataPacketBroadcast(loggerPtr);//, authenticator);
         dataPacketBroadcast.initialize(options.mDataPacketParameters);
         modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
         std::thread t(&UMPS::Broadcasts::IBroadcast::start,
