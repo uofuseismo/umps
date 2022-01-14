@@ -249,6 +249,11 @@ int main(int argc, char *argv[])
     UAuth::Service authenticatorService(authenticatorContext,
                                         authenticationLoggerPtr,
                                         authenticator);
+ 
+auto authenticatorContext1 = std::make_shared<zmq::context_t> (1);
+UAuth::Service authenticatorService1(authenticatorContext1,
+                                     authenticationLoggerPtr,
+                                     authenticator);
     // Initialize the services
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
@@ -302,7 +307,10 @@ int main(int argc, char *argv[])
     {
         std::thread t(&UAuth::Service::start,
                       &authenticatorService);
+std::thread t1(&UAuth::Service::start,
+              &authenticatorService1);
         threads.push_back(std::move(t));
+threads.push_back(std::move(t1));
     }
     catch (const std::exception &e)
     {
@@ -353,7 +361,7 @@ int main(int argc, char *argv[])
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
         //auto broadcastContext = std::make_shared<zmq::context_t> (1);
         UMPS::Broadcasts::DataPacket::Broadcast
-            dataPacketBroadcast(loggerPtr);//, authenticator);
+            dataPacketBroadcast(authenticatorContext1, loggerPtr, authenticator);
         dataPacketBroadcast.initialize(options.mDataPacketParameters);
         modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
         std::thread t(&UMPS::Broadcasts::IBroadcast::start,
@@ -435,6 +443,7 @@ int main(int argc, char *argv[])
     // Shut down the services
     std::cout << "Stopping the authenticator..." << std::endl;
     authenticatorService.stop();
+authenticatorService1.stop();
     std::cout << "Stopping incrementer services..." << std::endl;
     for (auto &module : modules.mIncrementers)
     {
