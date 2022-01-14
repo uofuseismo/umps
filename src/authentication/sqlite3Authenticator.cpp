@@ -747,6 +747,7 @@ public:
                            + " does not match user's " + userName
                            + " password");
         }
+        mLogger->info("Validated user/password");
         return std::pair(okayStatus(), okayMessage());
     }
     /// Does public key match?
@@ -770,6 +771,7 @@ public:
 #ifndef NDEBUG 
         assert(static_cast<int> (returnedUsers.size()) == 1);  
 #endif
+        mLogger->info("Validated public key");
         return std::pair(okayStatus(), okayMessage()); 
     }
 ///private:
@@ -855,10 +857,12 @@ std::pair<std::string, std::string> SQLite3Authenticator::isWhitelisted(
 {
     if (pImpl->isWhitelisted(address))
     {
+        pImpl->mLogger->info("Address: " + address + " is whitelisted");
         return std::pair(okayStatus(), "OK");
     }
     else
     {
+        pImpl->mLogger->info("Address: " + address + " is blacklisted");
         return std::pair("400",
                          "Address: " + address + " is blacklisted");
     }
