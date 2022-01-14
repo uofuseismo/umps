@@ -260,8 +260,14 @@ int main(int argc, char *argv[])
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
+    //auto connectionInformationContext = std::make_shared<zmq::context_t> (1);
+    //UAuth::Service authenticatorService(connectionInformationContext,
+    //                                    authenticationLoggerPtr,
+    //                                    authenticator);
     UMPS::Services::ConnectionInformation::Service
-        connectionInformation(authenticatorContext, connectionInformationLoggerPtr, authenticator);
+        connectionInformation(//connectionInformationContext,
+                              connectionInformationLoggerPtr,
+                              authenticator);
     connectionInformation.initialize(options.mConnectionInformationParameters);
     modules.mConnectionInformation = std::move(connectionInformation);
 
@@ -345,8 +351,9 @@ int main(int argc, char *argv[])
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
+        //auto broadcastContext = std::make_shared<zmq::context_t> (1);
         UMPS::Broadcasts::DataPacket::Broadcast
-            dataPacketBroadcast(authenticatorContext, loggerPtr, authenticator);
+            dataPacketBroadcast(loggerPtr);//, authenticator);
         dataPacketBroadcast.initialize(options.mDataPacketParameters);
         modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
         std::thread t(&UMPS::Broadcasts::IBroadcast::start,
