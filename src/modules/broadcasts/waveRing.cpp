@@ -203,12 +203,11 @@ int main(int argc, char *argv[])
                   + " at " + packetAddress); 
     }
     // Connect to proxy
-    //UXPubXSub::PublisherOptions publisherOptions;
     UMPS::Broadcasts::DataPacket::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
     publisherOptions.setZAPOptions(options.mZAPOptions);
-    //auto publisher = std::make_shared<UXPubXSub::Publisher> (loggerPtr);
-    auto publisher = std::make_shared<UMPS::Broadcasts::DataPacket::Publisher> (loggerPtr);
+    auto publisher
+        = std::make_shared<UMPS::Broadcasts::DataPacket::Publisher> (loggerPtr);
     publisher->initialize(publisherOptions);
 #ifndef NDEBUG
     assert(publisher->isInitialized());
