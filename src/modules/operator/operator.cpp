@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
  
 auto authenticatorContext1 = std::make_shared<zmq::context_t> (1);
 UAuth::Service authenticatorService1(authenticatorContext1,
-                                     authenticationLoggerPtr,
+                                     //authenticationLoggerPtr,
                                      authenticator);
     // Initialize the services
     Modules modules;
