@@ -17,10 +17,15 @@ public:
     virtual ~DataPacket();
     DataPacket(const DataPacket &packet);
     DataPacket(DataPacket &&packet) noexcept;
+    DataPacket(const UMPS::MessageFormats::DataPacket<double> &dataPacket);
     DataPacket& operator=(const DataPacket &packet);
     DataPacket& operator=(DataPacket &&packet) noexcept;
+    DataPacket& operator=(const UMPS::MessageFormats::DataPacket<double> &dataPacket);
     void clear() noexcept;
+    std::unique_ptr<IMessage> clone(const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const override;
+    std::unique_ptr<IMessage> createInstance() const override;
     UMPS::MessageFormats::DataPacket<double> getNativeClass() const noexcept;
+    void fromBaseClass(UMPS::MessageFormats::IMessage &message) override;
     std::unique_ptr<UMPS::MessageFormats::IMessage> getBaseClass() const noexcept override;
  
     [[nodiscard]] std::string getMessageType() const noexcept;

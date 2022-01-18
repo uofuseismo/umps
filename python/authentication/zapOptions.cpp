@@ -1,4 +1,6 @@
 #include "authentication/zapOptions.hpp"
+#include "authentication/keys.hpp"
+#include "authentication/userNameAndPassword.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
@@ -121,9 +123,17 @@ bool ZAPOptions::isAuthenticationServer() const noexcept
 /*
 
     void setWoodhouseClient(const UserNameAndPassword &credentials);
+*/
 
-    void setStonehouseClient(const Keys &serverKeys,
-                             const Keys &clientKeys);
+void ZAPOptions::setStonehouseClient(const Keys &serverKeysIn,
+                                     const Keys &clientKeysIn)
+{
+    auto serverKeys = serverKeysIn.getNativeClass();
+    auto clientKeys = clientKeysIn.getNativeClass();
+    pImpl->setStonehouseClient(serverKeys, clientKeys);
+}
+
+/*
     void setStonehouseServer(const Keys &serverKeys);
 
 */
@@ -181,6 +191,10 @@ Read-only Properties :
          &ZAPOptions::setWoodhouseClient,
          "Sets this as a Woodhouse client - i.e., its IP address and username/password may be validated.");
 */
+
+   o.def("set_stonehouse_client",
+         &ZAPOptions::setStonehouseClient,
+         "Sets this as a Stonhouse client - i.e., its IP address is validated.  Additionally, the server's public key and this client's public and private keys must be specified");
 
    o.def_property("domain",
                   &ZAPOptions::getDomain,

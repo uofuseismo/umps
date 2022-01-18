@@ -47,8 +47,9 @@ void Subscriber::addSubscription(const PUMPS::MessageFormats::IMessage &message)
 }
 */
 
+/*
 /// Security level
-UMPS::Messaging::Authentication::SecurityLevel
+UMPS::Authentication::SecurityLevel
     Subscriber::getSecurityLevel() const noexcept
 {
     return mSubscriber->getSecurityLevel();
@@ -59,6 +60,7 @@ std::string Subscriber::getEndPoint() const
 {
     return mSubscriber->getEndPoint();
 }
+*/
 
 /// 
 std::unique_ptr<PUMPS::MessageFormats::IMessage> Subscriber::receive() const
@@ -120,10 +122,10 @@ Properties :
     o.def_property_readonly("is_initialized",
                             &Subscriber::isInitialized);
                             
-    o.def_property_readonly("end_point",
-                            &Subscriber::getEndPoint);
+    //o.def_property_readonly("end_point",
+    //                        &Subscriber::getEndPoint);
  
-    o.def_property_readonly("security_level",
-                            &Subscriber::getSecurityLevel);
+    //o.def_property_readonly("security_level",
+    //                        &Subscriber::getSecurityLevel);
 }
 

@@ -233,7 +233,8 @@ if (WRAP_PYTHON)
                python/messageFormats/messages.cpp
                python/messageFormats/dataPacket.cpp
                python/messageFormats/pick.cpp
-               python/messaging/authentication/zapOptions.cpp
+               python/authentication/keys.cpp
+               python/authentication/zapOptions.cpp
                python/messaging/publisherSubscriber/publisher.cpp
                python/messaging/publisherSubscriber/subscriberOptions.cpp
                python/messaging/publisherSubscriber/subscriber.cpp)

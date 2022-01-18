@@ -1,7 +1,9 @@
+#include <iostream>
 #include <string>
 #include <sstream>
 #include "messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
+#include "private/staticUniquePointerCast.hpp"
 
 using namespace PUMPS::MessageFormats;
 
@@ -13,6 +15,12 @@ DataPacket::DataPacket() :
 
 /// Copy c'tor
 DataPacket::DataPacket(const DataPacket &packet)
+{
+    *this = packet;
+}
+
+DataPacket::DataPacket(
+    const UMPS::MessageFormats::DataPacket<double> &packet)
 {
     *this = packet;
 }
@@ -32,6 +40,13 @@ DataPacket& DataPacket::operator=(const DataPacket &packet)
     if (&packet == this){return *this;}
     pImpl = std::make_unique<UMPS::MessageFormats::DataPacket<double>>
             (*packet.pImpl);
+    return *this;
+}
+
+DataPacket& DataPacket::operator=(
+    const UMPS::MessageFormats::DataPacket<double> &packet)
+{
+    pImpl = std::make_unique<UMPS::MessageFormats::DataPacket<double>> (packet);
     return *this;
 }
 
@@ -163,6 +178,39 @@ std::vector<double> DataPacket::getDataAsVector() const
     return pImpl->getData();
 }
 
+void DataPacket::fromBaseClass(UMPS::MessageFormats::IMessage &message)
+{
+    if (message.getMessageType() != pImpl->getMessageType())
+    {
+        throw std::invalid_argument("Expecting message type: " 
+                                  + pImpl->getMessageType()
+                                  + " but given: "
+                                  + message.getMessageType());
+    }
+    pImpl = static_unique_pointer_cast<UMPS::MessageFormats::DataPacket<double>> (message.clone());
+}
+
+std::unique_ptr<IMessage> DataPacket::clone(
+    const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const
+{
+std::cout << "cloning" << std::endl;
+   if (message->getMessageType() != pImpl->getMessageType())
+   {
+       throw std::invalid_argument("Expecting: " + pImpl->getMessageType()
+                                 + " but got: " + message->getMessageType());
+   }
+   auto copy = static_unique_pointer_cast<UMPS::MessageFormats::DataPacket<double>>
+               (message->clone());
+   auto result = std::make_unique<DataPacket> (*copy);
+   return result;
+}
+
+std::unique_ptr<IMessage> DataPacket::createInstance() const
+{
+   auto result = std::make_unique<DataPacket> ();
+   return result; 
+}
+
 /// JSON
 std::string DataPacket::toJSON(const int nSpaces) const
 {
@@ -190,7 +238,23 @@ void PUMPS::MessageFormats::initializeDataPacket(pybind11::module &m)
 {
     pybind11::class_<DataPacket, IMessage> o(m, "DataPacket");
     o.def(pybind11::init<> ());
-    o.doc() = "This defines a datapacket.\n\nThe following properties are required:\n   network : The station's network name on which the pick was made.\n    station : The name of the station on which the pick was made.\n    channel : The station's channel name on which the pick was made.\n  location_code : The location code of the station on which the pick was made.\n    time : The pick time in UTC seconds since the epoch.\n    sampling_rate : The sampling rate in Hz.\n\nThe following properties are optional:\n    start_time_in_microseconds : The UTC start time in microseconds from the epoch (Jan 1, 1970)\n   data : The time series data comprising this packet.\n";
+    o.doc() = R""""(
+This defines a datapacket.
+
+Required Properties:
+
+   network : The station's network name on which the pick was made.
+   station : The name of the station on which the pick was made.
+   channel : The station's channel name on which the pick was made.
+   location_code : The location code of the station on which the pick was made.
+   time : The pick time in UTC seconds since the epoch.
+   sampling_rate : The sampling rate in Hz.
+
+Optional Properties:
+
+   start_time_in_microseconds : The UTC start time in microseconds from the epoch (Jan 1, 1970)
+   data : The time series data comprising this packet.
+)"""";
     o.def_property("network",
                    &DataPacket::getNetwork,
                    &DataPacket::setNetwork);

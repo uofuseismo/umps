@@ -13,6 +13,7 @@ class Keys
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Keys();
     /// @brief Copy constructor.
@@ -27,6 +28,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] keys  The certificate to copy to this.
     /// @result A deep copy of the input certificate.
@@ -41,6 +43,7 @@ public:
 
     /// @name Keypair Creation
     /// @{
+
     /// @brief This will create a new public/private keypair.
     /// @throws std::runtime_error if an algorithmic error occurred.
     void create();
@@ -48,6 +51,7 @@ public:
 
     /// @name Keys
     /// @{
+
     /// @brief Sets the binary public key.
     /// @param[in] publicKey  The binary public key to set.
     /// @throws std::runtime_error in the case of algorithmic failure.
@@ -101,6 +105,7 @@ public:
 
     /// @name Metadata
     /// @{
+
     /// @brief Sets the metadata for this key pair.  This can be a description
     ///        like "Client test certificate"
     /// @param[in] metadata   The metadata for this keypair.
@@ -111,6 +116,7 @@ public:
 
     /// @name File Input/Output
     /// @{
+
     /// @brief Writes the public key to a text file.
     /// @param[in] fileName  The public key file name.  The recommended suffix
     ///                      is ".public_key".
@@ -131,6 +137,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.

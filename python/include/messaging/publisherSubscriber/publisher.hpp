@@ -19,6 +19,5 @@ public:
 private:
     std::unique_ptr<UMPS::Messaging::PublisherSubscriber::Publisher> pImpl; 
 };
-void initializePublisher(pybind11::module &m);
 }
 #endif

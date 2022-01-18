@@ -22,10 +22,15 @@ public:
     Pick();
     virtual ~Pick();
     Pick(const Pick &pick);
+    Pick(const UMPS::MessageFormats::Pick &pick);
     Pick(Pick &&pick) noexcept;
     Pick& operator=(const Pick &pick);
     Pick& operator=(Pick &&pick) noexcept;
+    Pick& operator=(const UMPS::MessageFormats::Pick &pick);
     UMPS::MessageFormats::Pick getNativeClass() const noexcept;
+    std::unique_ptr<IMessage> clone(const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const override;
+    std::unique_ptr<IMessage> createInstance() const override;
+    void fromBaseClass(UMPS::MessageFormats::IMessage &message) override;
     std::unique_ptr<UMPS::MessageFormats::IMessage> getBaseClass() const noexcept override;
     void clear() noexcept;
 

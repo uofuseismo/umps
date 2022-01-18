@@ -1,11 +1,11 @@
 #include <iostream>
 #include "messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "messaging/authentication/zapOptions.hpp"
+#include "authentication/zapOptions.hpp"
 #include "messageFormats/message.hpp"
 #include "messageFormats/messages.hpp"
 #include "initialize.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "umps/messaging/authentication/zapOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 
@@ -114,16 +114,16 @@ int SubscriberOptions::getHighWaterMark() const noexcept
 
 /// ZAP
 void SubscriberOptions::setZAPOptions(
-    const PUMPS::Messaging::Authentication::ZAPOptions &options)
+    const PUMPS::Authentication::ZAPOptions &options)
 {
     auto nativeOptions = options.getNativeClass();
     pImpl->setZAPOptions(nativeOptions);
 }
 
-PUMPS::Messaging::Authentication::ZAPOptions
+PUMPS::Authentication::ZAPOptions
     SubscriberOptions::getZAPOptions() const noexcept
 {
-    PUMPS::Messaging::Authentication::ZAPOptions result(pImpl->getZAPOptions());
+    PUMPS::Authentication::ZAPOptions result(pImpl->getZAPOptions());
     return result;    
 }
 

@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include "messageFormats/message.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "initialize.hpp"
 
 void PUMPS::MessageFormats::initializeIMessage(pybind11::module &m)
 {

@@ -2,6 +2,7 @@
 #include <vector>
 #include "messageFormats/pick.hpp"
 #include "umps/messageFormats/pick.hpp"
+#include "private/staticUniquePointerCast.hpp"
 
 using namespace PUMPS::MessageFormats;
 
@@ -17,6 +18,11 @@ Pick::Pick(const Pick &pick)
     *this = pick;
 }
 
+Pick::Pick(const UMPS::MessageFormats::Pick &pick)
+{
+    *this = pick;
+}
+
 /// Move c'tor
 Pick::Pick(Pick &&pick) noexcept
 {
@@ -28,6 +34,12 @@ Pick& Pick::operator=(const Pick &pick)
 {
     if (&pick == this){return *this;}
     pImpl = std::make_unique<UMPS::MessageFormats::Pick> (*pick.pImpl);
+    return *this;
+}
+
+Pick& Pick::operator=(const UMPS::MessageFormats::Pick &pick)
+{
+    pImpl = std::make_unique<UMPS::MessageFormats::Pick> (pick);
     return *this;
 }
 
@@ -177,6 +189,37 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     return message;
 }
 
+void Pick::fromBaseClass(UMPS::MessageFormats::IMessage &message)
+{
+    if (message.getMessageType() != pImpl->getMessageType())
+    {
+        throw std::invalid_argument("Expecting message type: " 
+                                  + pImpl->getMessageType()
+                                  + " but given: "
+                                  + message.getMessageType());
+    }
+    pImpl = static_unique_pointer_cast<UMPS::MessageFormats::Pick> (message.clone());
+}
+
+std::unique_ptr<IMessage> Pick::clone(
+    const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const
+{
+   if (message->getMessageType() != pImpl->getMessageType())
+   {
+       throw std::invalid_argument("Expecting: " + pImpl->getMessageType()
+                                 + " but got: " + message->getMessageType());
+   }
+   auto copy = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+               (message->clone());
+   auto result = std::make_unique<Pick> (*copy);
+   return result;
+}
+
+std::unique_ptr<IMessage> Pick::createInstance() const
+{
+   auto result = std::make_unique<Pick> (); 
+   return result; 
+}
 
 void PUMPS::MessageFormats::initializePick(pybind11::module &m)
 {

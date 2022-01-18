@@ -16,12 +16,9 @@ namespace PUMPS
   class IMessage;
   class Messages;
  }
- namespace Messaging
+ namespace Authentication
  {
-  namespace Authentication
-  {
-   class ZAPOptions;
-  }
+  class ZAPOptions;
  }
 }
 namespace PUMPS::Messaging::PublisherSubscriber
@@ -44,8 +41,8 @@ public:
     void setHighWaterMark(int hwm);
     [[nodiscard]] int getHighWaterMark() const noexcept; 
 
-    void setZAPOptions(const PUMPS::Messaging::Authentication::ZAPOptions &options);
-    [[nodiscard]] PUMPS::Messaging::Authentication::ZAPOptions getZAPOptions() const noexcept;
+    void setZAPOptions(const PUMPS::Authentication::ZAPOptions &options);
+    [[nodiscard]] PUMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
 
     void setMessageTypes(const PUMPS::MessageFormats::Messages &messageTypes);
     [[nodiscard]] PUMPS::MessageFormats::Messages getMessageTypes() const;

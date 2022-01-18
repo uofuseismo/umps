@@ -1,6 +1,8 @@
 #ifndef PYUMPS_MESSAGEFORMATS_MESSAGE_HPP
 #define PYUMPS_MESSAGEFORMATS_MESSAGE_HPP
 #include <memory>
+#include <string>
+#include "umps/messageFormats/message.hpp"
 namespace UMPS::MessageFormats
 {
 class IMessage;
@@ -11,8 +13,10 @@ class IMessage
 {
 public:
     virtual ~IMessage() = default;
-    [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> getBaseClass() const noexcept = 0;
+    virtual void fromBaseClass(UMPS::MessageFormats::IMessage &message){};
+    [[nodiscard]] virtual std::unique_ptr<IMessage> clone(const std::unique_ptr<UMPS::MessageFormats::IMessage> &) const{return nullptr;};
+    [[nodiscard]] virtual std::unique_ptr<IMessage> createInstance() const{return nullptr;}
+    [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> getBaseClass() const noexcept{return nullptr;} // = 0;
 };
-void initializeIMessage(pybind11::module &m);
 }
 #endif
