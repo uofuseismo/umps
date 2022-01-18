@@ -84,6 +84,11 @@ public:
         mAuthenticatorThread = std::thread(&UAuth::Service::start,
                                            &*mAuthenticatorService);
     }
+    /// Destructor
+    ~BroadcastImpl()
+    {   
+        stop();
+    }
 /*
     explicit BroadcastImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
        mLogger(logger),

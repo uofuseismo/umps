@@ -100,6 +100,11 @@ public:
         mAuthenticatorThread = std::thread(&UAuth::Service::start,
                                            &*mAuthenticatorService);
     }
+    /// Destructor
+    ~BroadcastImpl()
+    {
+        stop();
+    }
 ///private:
     std::shared_ptr<zmq::context_t> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};

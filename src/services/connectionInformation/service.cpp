@@ -3,6 +3,9 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include <functional>
 #include <zmq.hpp>
 #include "umps/services/service.hpp"
@@ -22,6 +25,7 @@
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Services::ConnectionInformation;
+namespace URequestRouter = UMPS::Messaging::RequestRouter;
 namespace UAuth = UMPS::Authentication;
 
 class Service::ServiceImpl
@@ -57,8 +61,7 @@ public:
         {
             mAuthenticator = authenticator;
         }
-        mRouter = std::make_unique<UMPS::Messaging::RequestRouter::Router>
-                  (mContext, mLogger);
+        mRouter = std::make_unique<URequestRouter::Router> (mContext, mLogger);
         mAuthenticatorService
             = std::make_unique<UAuth::Service>
               (mContext, mLogger, mAuthenticator);
@@ -121,15 +124,42 @@ public:
         } 
         return response;
     }
+    /// Stops the proxy and authenticator and joins threads
+    void stop()
+    {   
+        if (mRouter->isRunning()){mRouter->stop();}
+        if (mAuthenticatorService->isRunning()){mAuthenticatorService->stop();}
+        if (mProxyThread.joinable()){mProxyThread.join();}
+        if (mAuthenticatorThread.joinable()){mAuthenticatorThread.join();}
+    }
+    /// Starts the proxy and authenticator and creates threads
+    void start()
+    {
+        stop();
+#ifndef NDEBUG
+        assert(mRouter->isInitialized());
+#endif
+        mProxyThread = std::thread(&URequestRouter::Router::start,
+                                   &*mRouter);
+        mAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                           &*mAuthenticatorService);
+    }
+    /// Destructor
+    ~ServiceImpl()
+    {
+        stop();
+    }
 ///private:
     std::shared_ptr<zmq::context_t> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::unique_ptr<UMPS::Messaging::RequestRouter::Router> mRouter{nullptr};
+    std::unique_ptr<URequestRouter::Router> mRouter{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
     ConnectionInformation::Details mConnectionDetails;
     std::map<std::string, ConnectionInformation::Details> mConnections;
     UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions;
+    std::thread mProxyThread;
+    std::thread mAuthenticatorThread;
     const std::string mName = Parameters::getName(); //"ConnectionInformation";
     bool mInitialized = false;
 };
@@ -145,6 +175,7 @@ Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+/*
 Service::Service(std::shared_ptr<zmq::context_t> &context) :
     pImpl(std::make_unique<ServiceImpl> (context, nullptr, nullptr))
 {
@@ -161,6 +192,7 @@ Service::Service(std::shared_ptr<zmq::context_t> &context,
     pImpl(std::make_unique<ServiceImpl> (context, nullptr, authenticator))
 {
 }
+*/
 
 Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
                  std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
@@ -168,12 +200,14 @@ Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
 {
 }
 
+/*
 Service::Service(std::shared_ptr<zmq::context_t> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger,
                  std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
     pImpl(std::make_unique<ServiceImpl> (context, logger, authenticator))
 {
 }
+*/
 
 /// Move c'tor
 Service::Service(Service &&service) noexcept
@@ -267,7 +301,8 @@ std::string Service::getRequestAddress() const
 /// Stop the service
 void Service::stop()
 {
-    pImpl->mRouter->stop();
+    //pImpl->mRouter->stop();
+    pImpl->stop();
 }
 
 /// Runs the service
@@ -279,6 +314,8 @@ void Service::start()
     }
     pImpl->mLogger->debug("Beginning authenticator for service "
                         + getName() + "...");
+    pImpl->start();
+/*
     std::thread authThread(&UAuth::Service::start,
                            &*pImpl->mAuthenticatorService);
     pImpl->mLogger->debug("Beginning service " + getName() + "...");
@@ -288,6 +325,7 @@ void Service::start()
     pImpl->mAuthenticatorService->stop();
     authThread.join();
     pImpl->mLogger->debug("Thread exiting service " + getName());
+*/
 }
 
 /// Add (service) connection

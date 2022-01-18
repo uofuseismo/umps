@@ -247,10 +247,10 @@ int main(int argc, char *argv[])
         }
         authenticator = sqlite3; 
     }
-    auto authenticatorContext = std::make_shared<zmq::context_t> (1);
-    UAuth::Service authenticatorService(authenticatorContext,
-                                        authenticationLoggerPtr,
-                                        authenticator);
+    //auto authenticatorContext = std::make_shared<zmq::context_t> (1);
+    //UAuth::Service authenticatorService(authenticatorContext,
+    //                                    authenticationLoggerPtr,
+    //                                    authenticator);
     // Initialize the services
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
@@ -262,10 +262,10 @@ int main(int argc, char *argv[])
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
-    //auto connectionInformationContext = std::make_shared<zmq::context_t> (1);
-    //UAuth::Service authenticatorService(connectionInformationContext,
-    //                                    authenticationLoggerPtr,
-    //                                    authenticator);
+    ////auto connectionInformationContext = std::make_shared<zmq::context_t> (1);
+    ////UAuth::Service authenticatorService(connectionInformationContext,
+    ////                                    authenticationLoggerPtr,
+    ////                                    authenticator);
     UMPS::Services::ConnectionInformation::Service
         connectionInformation(//connectionInformationContext,
                               connectionInformationLoggerPtr,
@@ -299,6 +299,7 @@ int main(int argc, char *argv[])
     }
     // Start the connection information service
     std::vector<std::thread> threads;
+/*
     std::cout << "Starting the authenticator..." << std::endl;
     try
     {
@@ -311,13 +312,15 @@ int main(int argc, char *argv[])
         std::cerr << "Failed to initialize authenticator service" << std::endl;
         return EXIT_FAILURE;
     }
+*/
 
     std::cout << "Starting connection information service..." << std::endl;
     try
     {
-        std::thread t(&UMPS::Services::ConnectionInformation::Service::start,
-                      &modules.mConnectionInformation); 
-        threads.push_back(std::move(t));
+        modules.mConnectionInformation.start();
+        //std::thread t(&UMPS::Services::ConnectionInformation::Service::start,
+        //              &modules.mConnectionInformation); 
+        //threads.push_back(std::move(t));
     }
     catch (const std::exception &e)
     {
@@ -446,7 +449,7 @@ int main(int argc, char *argv[])
 
     // Shut down the services
     std::cout << "Stopping the authenticator..." << std::endl;
-    authenticatorService.stop();
+    //authenticatorService.stop();
 //authenticatorService1.stop();
     std::cout << "Stopping incrementer services..." << std::endl;
     for (auto &module : modules.mIncrementers)
