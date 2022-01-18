@@ -26,16 +26,12 @@ public:
     /// @result The connection details for connecting to the broadcast.
     [[nodiscard]] virtual Services::ConnectionInformation::Details getConnectionDetails() const = 0;
     /// @brief Starts the broadcast.
-    /// @note This would be run like:
-    ///       Broadcast thisBroadcast;
-    ///       std::thread broadcastThread(&Broadcast::start, &thisBroadcast);
-    ///       .
-    ///       .
-    ///       .
-    ///       thisBroadcast.stop(); // Called by main thread
-    ///       broadcastThread.join();
+    /// @note This will create background threads that manage the underlying
+    ///       proxy and authenticator service.
     virtual void start() = 0;
     /// @brief Stops the broadcast.
+    /// @note This will join the threads that manage the underlying proxy
+    ///       proxy and authenticator service. 
     virtual void stop() = 0;
 };
 }

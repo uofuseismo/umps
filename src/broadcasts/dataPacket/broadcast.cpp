@@ -1,5 +1,9 @@
 #include <iostream>
 #include <string>
+#include <thread>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include <zmq.hpp>
 #include "umps/broadcasts/dataPacket/broadcast.hpp"
 #include "umps/broadcasts/dataPacket/parameters.hpp"
@@ -19,6 +23,7 @@
 
 using namespace UMPS::Broadcasts::DataPacket;
 namespace UAuth = UMPS::Authentication;
+namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UCI = UMPS::Services::ConnectionInformation;
 
 class Broadcast::BroadcastImpl
@@ -71,20 +76,40 @@ public:
         {
             mAuthenticator = authenticator;
         }
-        mProxy = std::make_unique<UMPS::Messaging::XPublisherXSubscriber::Proxy>
-                 (mContext, mLogger);
+        mProxy = std::make_unique<UXPubXSub::Proxy> (mContext, mLogger);
         mAuthenticatorService = std::make_unique<UAuth::Service>
                                 (mContext, mLogger, mAuthenticator);
+    }
+    /// Stops the proxy and authenticator and joins threads
+    void stop()
+    {   
+        if (mProxy->isRunning()){mProxy->stop();}
+        if (mAuthenticatorService->isRunning()){mAuthenticatorService->stop();}
+        if (mProxyThread.joinable()){mProxyThread.join();}
+        if (mAuthenticatorThread.joinable()){mAuthenticatorThread.join();}
+    }   
+    /// Starts the proxy and authenticator and creates threads
+    void start()
+    {
+        stop();
+#ifndef NDEBUG
+        assert(mProxy->isInitialized());
+#endif
+        mProxyThread = std::thread(&UXPubXSub::Proxy::start,
+                                   &*mProxy);
+        mAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                           &*mAuthenticatorService);
     }
 ///private:
     std::shared_ptr<zmq::context_t> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::shared_ptr<UMPS::Messaging::XPublisherXSubscriber::Proxy>
-         mProxy{nullptr};
+    std::shared_ptr<UXPubXSub::Proxy> mProxy{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
     Parameters mParameters;
     UCI::Details mConnectionDetails;
+    std::thread mProxyThread;
+    std::thread mAuthenticatorThread;
     const std::string mName = Parameters::getName();
     bool mInitialized = false;
 };
@@ -180,8 +205,9 @@ void Broadcast::start()
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     pImpl->mLogger->info("Beginning " + getName() + " broadcast...");
-    pImpl->mProxy->start();
-    pImpl->mLogger->info("Exited " + getName() + " broadcast proxy");
+    pImpl->start();
+    //pImpl->mProxy->start();
+    //pImpl->mLogger->info("Exited " + getName() + " broadcast proxy");
 }
 
 /// Is the proxy running?
@@ -194,7 +220,8 @@ bool Broadcast::isRunning() const noexcept
 /// Stop the service
 void Broadcast::stop()
 {
-    pImpl->mProxy->stop();
+    pImpl->stop();
+    //pImpl->mProxy->stop();
 }
 
 /// Initialized?

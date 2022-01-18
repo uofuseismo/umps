@@ -62,8 +62,8 @@ struct Modules
 {
     std::vector<std::unique_ptr<UMPS::Services::IService>> mIncrementers;
     std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
-    UMPS::Broadcasts::DataPacket::Broadcast mDataPacketBroadcast;
-    UMPS::Broadcasts::Heartbeat::Broadcast mHeartbeatBroadcast;
+    std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
+    std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
     UMPS::Services::ConnectionInformation::Service mConnectionInformation;
 };
 
@@ -250,10 +250,10 @@ int main(int argc, char *argv[])
                                         authenticationLoggerPtr,
                                         authenticator);
  
-auto authenticatorContext1 = std::make_shared<zmq::context_t> (1);
-UAuth::Service authenticatorService1(authenticatorContext1,
-                                     //authenticationLoggerPtr,
-                                     authenticator);
+//auto authenticatorContext1 = std::make_shared<zmq::context_t> (1);
+//UAuth::Service authenticatorService1(authenticatorContext1,
+//                                     //authenticationLoggerPtr,
+//                                     authenticator);
     // Initialize the services
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
@@ -307,10 +307,10 @@ UAuth::Service authenticatorService1(authenticatorContext1,
     {
         std::thread t(&UAuth::Service::start,
                       &authenticatorService);
-std::thread t1(&UAuth::Service::start,
-              &authenticatorService1);
+//std::thread t1(&UAuth::Service::start,
+//              &authenticatorService1);
         threads.push_back(std::move(t));
-threads.push_back(std::move(t1));
+//threads.push_back(std::move(t1));
     }
     catch (const std::exception &e)
     {
@@ -360,14 +360,17 @@ threads.push_back(std::move(t1));
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
         //auto broadcastContext = std::make_shared<zmq::context_t> (1);
-        UMPS::Broadcasts::DataPacket::Broadcast
-            dataPacketBroadcast(authenticatorContext1, loggerPtr, authenticator);
-        dataPacketBroadcast.initialize(options.mDataPacketParameters);
+        auto dataPacketBroadcast
+            = std::make_unique<UMPS::Broadcasts::DataPacket::Broadcast> (loggerPtr, authenticator);
+        //UMPS::Broadcasts::DataPacket::Broadcast dataPacketBroadcast(authenticatorContext1, loggerPtr, authenticator);
+        dataPacketBroadcast->initialize(options.mDataPacketParameters);
         modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
-        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
-                      &modules.mDataPacketBroadcast);
-        threads.push_back(std::move(t));
-        modules.mConnectionInformation.addConnection(modules.mDataPacketBroadcast);
+        modules.mDataPacketBroadcast->start();
+std::cout << "started" << std::endl;
+//        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
+//                      &modules.mDataPacketBroadcast);
+//        threads.push_back(std::move(t));
+        modules.mConnectionInformation.addConnection(*modules.mDataPacketBroadcast);
     }
     catch (const std::exception &e)
     {
@@ -383,14 +386,19 @@ threads.push_back(std::move(t1));
         logger.initialize(modulesName, logFileName,
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-           = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        UMPS::Broadcasts::Heartbeat::Broadcast heartbeatBroadcast(loggerPtr);
-        heartbeatBroadcast.initialize(options.mHeartbeatParameters);
+            = std::make_shared<UMPS::Logging::SpdLog> (logger);
+        auto heartbeatBroadcast
+            = std::make_unique<UMPS::Broadcasts::Heartbeat::Broadcast> (loggerPtr, authenticator);
+        heartbeatBroadcast->initialize(options.mHeartbeatParameters);
         modules.mHeartbeatBroadcast = std::move(heartbeatBroadcast);
-        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
-                      &modules.mHeartbeatBroadcast);
-        threads.push_back(std::move(t));
-        modules.mConnectionInformation.addConnection(modules.mHeartbeatBroadcast);
+        //UMPS::Broadcasts::Heartbeat::Broadcast heartbeatBroadcast(loggerPtr);
+        //heartbeatBroadcast.initialize(options.mHeartbeatParameters);
+        //modules.mHeartbeatBroadcast = std::move(heartbeatBroadcast);
+        modules.mHeartbeatBroadcast->start();
+//        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
+//                      &modules.mHeartbeatBroadcast);
+//        threads.push_back(std::move(t));
+        modules.mConnectionInformation.addConnection(*modules.mHeartbeatBroadcast);
     }   
     catch (const std::exception &e) 
     {   
@@ -430,8 +438,8 @@ threads.push_back(std::move(t1));
             std::cout << std::endl;
 
             std::cout << "Broadcasts:" << std::endl;
-            printBroadcast(modules.mDataPacketBroadcast);
-            printBroadcast(modules.mHeartbeatBroadcast);
+            printBroadcast(*modules.mDataPacketBroadcast);
+            printBroadcast(*modules.mHeartbeatBroadcast);
         }
         else
         {
@@ -443,15 +451,15 @@ threads.push_back(std::move(t1));
     // Shut down the services
     std::cout << "Stopping the authenticator..." << std::endl;
     authenticatorService.stop();
-authenticatorService1.stop();
+//authenticatorService1.stop();
     std::cout << "Stopping incrementer services..." << std::endl;
     for (auto &module : modules.mIncrementers)
     {
         modules.mConnectionInformation.removeConnection(module->getName());
         module->stop();
     }
-    modules.mDataPacketBroadcast.stop();
-    modules.mHeartbeatBroadcast.stop();
+    if (modules.mDataPacketBroadcast){modules.mDataPacketBroadcast->stop();}
+    if (modules.mHeartbeatBroadcast){modules.mHeartbeatBroadcast->stop();}
     modules.mConnectionInformation.stop();
     // Join the threads
     for (auto &thread : threads)

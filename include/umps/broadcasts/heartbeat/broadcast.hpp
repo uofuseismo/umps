@@ -20,6 +20,10 @@ namespace UMPS
  {
   class Parameters;
  }
+ namespace Authentication
+ {
+  class IAuthenticator;
+ }
 }
 namespace UMPS::Broadcasts::Heartbeat
 {
@@ -34,15 +38,16 @@ class Broadcast : public IBroadcast
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructs the XPUB/XSUB proxy.
     Broadcast();
-    /// @brief Move constructor.
-    /// @param[in,out] broadcast  The broadcast from which to initialize 
-    ///                           this class.  On exit, broadcasts's behavior
-    ///                           is undefined.
-    Broadcast(Broadcast &&broadcast) noexcept;
-    /// @brief Constructs the XPUB/XSUB with a given logger.
+    /// @brief Constructs the proxy with a given logger.
     explicit Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructs the given authenticator. 
+    explicit Broadcast(std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+    /// @brief Constructs the proxy with a given logger and authenticator.
+    Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger,
+              std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @}
 
     /// @name Operators
@@ -52,7 +57,7 @@ public:
     ///                           to this.  On exit, broadcast's will be
     ///                           undefined.
     /// @result The memory from broadcast moved to this.
-    Broadcast& operator=(Broadcast &&broadcast) noexcept;
+    //Broadcast& operator=(Broadcast &&broadcast) noexcept;
     /// @}
 
     /// @brief Initializes the proxy.
@@ -69,14 +74,15 @@ public:
         getConnectionDetails() const override final;
     /// @}
 
-    /// @name Starts the proxy.
+    /// @name Proxy Management
     /// @{
-    /// @brief Starts the proxy.
+
+    /// @brief Starts the proxy and authenticator service.
     /// @throws std::runtime_error if \c isInitialized() is false.
     void start() override final;
-    /// @result True indicates the proxy is running.
+    /// @result True indicates the proxy and authenticator are running.
     bool isRunning() const noexcept;
-    /// @brief Stops the proxy.
+    /// @brief Stops the proxy and authenticator.
     void stop() override final;
     /// @}
 
@@ -89,7 +95,9 @@ public:
     /// @}
 
     Broadcast(const Broadcast &broadcast);
+    Broadcast(Broadcast &&broadcast) noexcept = delete;
     Broadcast& operator=(const Broadcast &broadcast) = delete;
+    Broadcast& operator=(Broadcast &&broadcast) noexcept = delete;
 private:
     class BroadcastImpl;
     std::unique_ptr<BroadcastImpl> pImpl;

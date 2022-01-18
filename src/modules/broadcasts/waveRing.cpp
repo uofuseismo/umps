@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     // Connect so that I may publish to appropriate broadcast - e.g., DataPacket
-    std::string packetAddress = "tcp://155.98.50.104:5003";
+    std::string packetAddress;
     for (const auto &connectionDetail : connectionDetails)
     {
         if (connectionDetail.getName() == options.dataBroadcastName)
