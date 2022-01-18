@@ -24,17 +24,9 @@ public:
     [[nodiscard]] virtual std::string getRequestAddress() const = 0;
     /// @result The connection details for connecting to the service.
     [[nodiscard]] virtual ConnectionInformation::Details getConnectionDetails() const = 0;
-    /// @brief Starts the service.
-    /// @note This would be run like:
-    ///       Service thisService;
-    ///       std::thread serviceThread(&Service::start, &thisService);
-    ///       .
-    ///       .
-    ///       .
-    ///       thisService.stop(); // Called by main thread
-    ///       serviceThread.join();
+    /// @brief Starts the service and authenticator service.
     virtual void start() = 0;
-    /// @brief Stops the service.
+    /// @brief Stops the service and authenticator service.
     virtual void stop() = 0;
 };
 }

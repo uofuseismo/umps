@@ -39,20 +39,20 @@ public:
     /// @brief Constructor with a given logger.
     explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context.
-    explicit Service(std::shared_ptr<zmq::context_t> &context);
+    //explicit Service(std::shared_ptr<zmq::context_t> &context);
     /// @brief Constructor with a given context and logger.
-    Service(std::shared_ptr<zmq::context_t> &context,
-            std::shared_ptr<UMPS::Logging::ILog> &logger);
+    //Service(std::shared_ptr<zmq::context_t> &context,
+    //        std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context and authenticator.
-    Service(std::shared_ptr<zmq::context_t> &context,
-            std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+    //Service(std::shared_ptr<zmq::context_t> &context,
+    //        std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given logger and authenticator.
     Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
             std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given context, logger, and authenticator.
-    Service(std::shared_ptr<zmq::context_t> &context,
-            std::shared_ptr<UMPS::Logging::ILog> &logger,
-            std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+    //Service(std::shared_ptr<zmq::context_t> &context,
+    //        std::shared_ptr<UMPS::Logging::ILog> &logger,
+    //        std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
 
     /// @brief Move constructor.
     Service(Service &&service) noexcept;
@@ -103,16 +103,16 @@ public:
     /// @result The connection details for connecting to the service.
     [[nodiscard]] Details getConnectionDetails() const override final;
  
-    /// @brief Starts the service.
+    /// @brief Starts the service and authenticator.
     /// @throws std::invalid_argument if \c isInitialized() is false.
     void start() final override;
     /// @result True indicates the service was started and is running.
     [[nodiscard]] bool isRunning() const noexcept;
-    /// @brief Stops the service.
+    /// @brief Stops the service and authenticator.
     void stop() final override;
 
     /// @brief Destructors.
-    virtual ~Service();
+    ~Service() override;
 
     Service(const Service &service) = delete;
     Service& operator=(const Service &service) = delete;
