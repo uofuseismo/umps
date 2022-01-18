@@ -61,9 +61,10 @@ struct ProgramOptions
 struct Modules
 {
     std::vector<std::unique_ptr<UMPS::Services::IService>> mIncrementers;
-    std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
-    std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
-    std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
+    //std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
+    std::map<std::string, std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
+    //std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
+    //std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
     UMPS::Services::ConnectionInformation::Service mConnectionInformation;
 };
 
@@ -207,9 +208,10 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    // Create the authenticator (on a different context)
-    const int hour = 0;
-    const int minute = 0;
+    // Create the authenticator.  Both authenticators will typically say a
+    // connection has been established and not much more.
+    constexpr int hour = 0;
+    constexpr int minute = 0;
     auto authenticatorLogFileName = options.mLogDirectory
                                   + "/" + "authenticator.log";
     UMPS::Logging::SpdLog authenticationLogger;
@@ -249,11 +251,6 @@ int main(int argc, char *argv[])
     UAuth::Service authenticatorService(authenticatorContext,
                                         authenticationLoggerPtr,
                                         authenticator);
- 
-//auto authenticatorContext1 = std::make_shared<zmq::context_t> (1);
-//UAuth::Service authenticatorService1(authenticatorContext1,
-//                                     //authenticationLoggerPtr,
-//                                     authenticator);
     // Initialize the services
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
@@ -307,10 +304,7 @@ int main(int argc, char *argv[])
     {
         std::thread t(&UAuth::Service::start,
                       &authenticatorService);
-//std::thread t1(&UAuth::Service::start,
-//              &authenticatorService1);
         threads.push_back(std::move(t));
-//threads.push_back(std::move(t1));
     }
     catch (const std::exception &e)
     {
@@ -358,19 +352,16 @@ int main(int argc, char *argv[])
         logger.initialize(modulesName, logFileName,
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-           = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        //auto broadcastContext = std::make_shared<zmq::context_t> (1);
+            = std::make_shared<UMPS::Logging::SpdLog> (logger);
         auto dataPacketBroadcast
-            = std::make_unique<UMPS::Broadcasts::DataPacket::Broadcast> (loggerPtr, authenticator);
-        //UMPS::Broadcasts::DataPacket::Broadcast dataPacketBroadcast(authenticatorContext1, loggerPtr, authenticator);
+            = std::make_unique<UMPS::Broadcasts::DataPacket::Broadcast>
+              (loggerPtr, authenticator);
         dataPacketBroadcast->initialize(options.mDataPacketParameters);
-        modules.mDataPacketBroadcast = std::move(dataPacketBroadcast);
-        modules.mDataPacketBroadcast->start();
-std::cout << "started" << std::endl;
-//        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
-//                      &modules.mDataPacketBroadcast);
-//        threads.push_back(std::move(t));
-        modules.mConnectionInformation.addConnection(*modules.mDataPacketBroadcast);
+        modules.mBroadcasts.insert(
+            std::pair("DataPacket", std::move(dataPacketBroadcast)));
+        modules.mBroadcasts["DataPacket"]->start();
+        modules.mConnectionInformation.addConnection(
+            *modules.mBroadcasts["DataPacket"]);
     }
     catch (const std::exception &e)
     {
@@ -388,24 +379,25 @@ std::cout << "started" << std::endl;
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
             = std::make_shared<UMPS::Logging::SpdLog> (logger);
         auto heartbeatBroadcast
-            = std::make_unique<UMPS::Broadcasts::Heartbeat::Broadcast> (loggerPtr, authenticator);
+            = std::make_unique<UMPS::Broadcasts::Heartbeat::Broadcast>
+              (loggerPtr, authenticator);
         heartbeatBroadcast->initialize(options.mHeartbeatParameters);
+        modules.mBroadcasts.insert(
+            std::pair("Heartbeat", std::move(heartbeatBroadcast)));
+        modules.mBroadcasts["Heartbeat"]->start();
+        modules.mConnectionInformation.addConnection(
+            *modules.mBroadcasts["Heartbeat"]);
+/*
         modules.mHeartbeatBroadcast = std::move(heartbeatBroadcast);
-        //UMPS::Broadcasts::Heartbeat::Broadcast heartbeatBroadcast(loggerPtr);
-        //heartbeatBroadcast.initialize(options.mHeartbeatParameters);
-        //modules.mHeartbeatBroadcast = std::move(heartbeatBroadcast);
         modules.mHeartbeatBroadcast->start();
-//        std::thread t(&UMPS::Broadcasts::IBroadcast::start,
-//                      &modules.mHeartbeatBroadcast);
-//        threads.push_back(std::move(t));
         modules.mConnectionInformation.addConnection(*modules.mHeartbeatBroadcast);
+*/
     }   
     catch (const std::exception &e) 
-    {   
+    {
         std::cerr << e.what() << std::endl;
     }
 
-                  
     // Main program loop
     while (true)
     {
@@ -438,8 +430,12 @@ std::cout << "started" << std::endl;
             std::cout << std::endl;
 
             std::cout << "Broadcasts:" << std::endl;
-            printBroadcast(*modules.mDataPacketBroadcast);
-            printBroadcast(*modules.mHeartbeatBroadcast);
+            for (const auto &broadcast : modules.mBroadcasts)
+            {
+                printBroadcast(*broadcast.second);
+            }
+            //printBroadcast(*modules.mDataPacketBroadcast);
+            //printBroadcast(*modules.mHeartbeatBroadcast);
         }
         else
         {
@@ -458,8 +454,12 @@ std::cout << "started" << std::endl;
         modules.mConnectionInformation.removeConnection(module->getName());
         module->stop();
     }
-    if (modules.mDataPacketBroadcast){modules.mDataPacketBroadcast->stop();}
-    if (modules.mHeartbeatBroadcast){modules.mHeartbeatBroadcast->stop();}
+    for (auto &broadcast : modules.mBroadcasts)
+    {
+        broadcast.second->stop();
+    } 
+    //if (modules.mDataPacketBroadcast){modules.mDataPacketBroadcast->stop();}
+    //if (modules.mHeartbeatBroadcast){modules.mHeartbeatBroadcast->stop();}
     modules.mConnectionInformation.stop();
     // Join the threads
     for (auto &thread : threads)
@@ -570,7 +570,6 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     options.mZAPOptions
         = UMPS::Modules::Operator::readZAPServerOptions(propertyTree);
     auto securityLevel = options.mZAPOptions.getSecurityLevel();
-    //mZAPOptions.mSecurityLevel = static_cast<UAuth::SecurityLevel> (securityLevel);
     // Get sqlite3 authentication tables
     if (securityLevel != UAuth::SecurityLevel::GRASSLANDS)
     {
@@ -594,37 +593,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             = propertyTree.get<std::string> ("uOperator.whiteListTable",
                                              options.mWhiteListTable);
     }
-/*
-    // Define ZAP options
-    options.mZAPOptions.setGrasslandsServer();
-    if (securityLevel == UAuth::SecurityLevel::GRASSLANDS)
-    {
-        options.mZAPOptions.setGrasslandsServer();
-    }
-    else if (securityLevel == UAuth::SecurityLevel::STRAWHOUSE)
-    {
-        options.mZAPOptions.setStrawhouseServer();
-    }
-    else if (securityLevel == UAuth::SecurityLevel::WOODHOUSE)
-    {
-        options.mZAPOptions.setWoodhouseServer();
-    }
-    else if (securityLevel == UAuth::SecurityLevel::STONEHOUSE)
-    {
-        auto publicKeyFile 
-            = propertyTree.get<std::string> ("uOperator.serverPublicKeyFile");
-        auto privateKeyFile
-            = propertyTree.get<std::string> ("uOperator.serverPrivateKeyFile");
-        UAuth::Certificate::Keys serverKeys;
-        serverKeys.loadFromTextFile(publicKeyFile);
-        serverKeys.loadFromTextFile(privateKeyFile);
-        options.mZAPOptions.setStonehouseServer(serverKeys);
-    } 
-    else
-    {
-        throw std::runtime_error("Unhandled security level");
-    }
-*/
+    // Set the ZAP information for the connection information service
     options.mConnectionInformationParameters.setZAPOptions(options.mZAPOptions);
     // First make sure the connection information service is available
     auto address = "tcp://" + options.mIPAddress
