@@ -1,5 +1,5 @@
-#ifndef UMPS_BROADCASTS_DATAPACKET_PUBLISHER_HPP
-#define UMPS_BROADCASTS_DATAPACKET_PUBLISHER_HPP
+#ifndef UMPS_PROXYBROADCASTS_DATAPACKET_PUBLISHER_HPP
+#define UMPS_PROXYBROADCASTS_DATAPACKET_PUBLISHER_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
@@ -13,7 +13,7 @@ namespace UMPS
  {
   template<class T> class DataPacket;
  }
- namespace Broadcasts::DataPacket
+ namespace ProxyBroadcasts::DataPacket
  {
   class PublisherOptions;
  }
@@ -26,9 +26,9 @@ namespace zmq
 {
  class context_t;
 }
-namespace UMPS::Broadcasts::DataPacket
+namespace UMPS::ProxyBroadcasts::DataPacket
 {
-/// @class Publisher "publisher.hpp" "umps/broadcasts/dataPacket/publisher.hpp"
+/// @class Publisher "publisher.hpp" "umps/proxyBroadcasts/dataPacket/publisher.hpp"
 /// @brief A ZeroMQ publisher specialized for sending data packets.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Publisher

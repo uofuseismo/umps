@@ -17,8 +17,8 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
-#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
-#include "umps/broadcasts/dataPacket/subscriber.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
@@ -122,7 +122,7 @@ public:
     /// C'tor
     DataPacketSubscriber(
         std::shared_ptr<UMPS::Logging::ILog> &logger,
-        std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>> &subscriber,
+        std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>> &subscriber,
         std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection) :
         mLogger(logger),
         mDataPacketSubscriber(subscriber),
@@ -308,7 +308,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
     std::shared_ptr<UMPS::Messaging::RequestRouter::Router> mRequestRouter;
-    std::shared_ptr<UMPS::Broadcasts::DataPacket::Subscriber<T>>
+    std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>>
         mDataPacketSubscriber;
     std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
@@ -419,7 +419,7 @@ int main(int argc, char *argv[])
 #endif
 */
 
-    UMPS::Broadcasts::DataPacket::SubscriberOptions<double>
+    UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>
         dataPacketSubscriberOptions;
     dataPacketSubscriberOptions.setAddress(dataPacketAddress);
     dataPacketSubscriberOptions.setHighWaterMark(
@@ -427,7 +427,7 @@ int main(int argc, char *argv[])
     dataPacketSubscriberOptions.setTimeOut(options.dataPacketTimeOut);
     dataPacketSubscriberOptions.setZAPOptions(zapOptions);
     auto dataPacketSubscriber
-        = std::make_shared<UMPS::Broadcasts::DataPacket::Subscriber<double>> ();
+        = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Subscriber<double>> ();
     dataPacketSubscriber->initialize(dataPacketSubscriberOptions);
     logger.info("Connected!");
 

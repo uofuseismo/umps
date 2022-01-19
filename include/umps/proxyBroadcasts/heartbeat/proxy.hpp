@@ -1,7 +1,7 @@
-#ifndef UMPS_BROADCASTS_HEARTBEAT_BROADCAST_HPP
-#define UMPS_BROADCASTS_HEARTBEAT_BROADCAST_HPP
+#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_BROADCAST_HPP
+#define UMPS_PROXYBROADCASTS_HEARTBEAT_BROADCAST_HPP
 #include <memory>
-#include "umps/broadcasts/broadcast.hpp"
+#include "umps/proxyBroadcasts/proxy.hpp"
 namespace UMPS
 {
  namespace MessageFormats
@@ -16,55 +16,48 @@ namespace UMPS
  {
   class Details;
  }
- namespace Broadcasts::Heartbeat
+ namespace ProxyBroadcasts::Heartbeat
  {
-  class Parameters;
+  class ProxyOptions;
  }
  namespace Authentication
  {
   class IAuthenticator;
  }
 }
-namespace UMPS::Broadcasts::Heartbeat
+namespace UMPS::ProxyBroadcasts::Heartbeat
 {
-/// @class Broadcast "broadcast.hpp" "umps/broadcasts/heartbeat/broadcast.hpp"
+/// @class Broadcast "broadcast.hpp" "umps/proxyBroadcasts/heartbeat/proxy.hpp"
 /// @brief This defines the XPUB/XSUB proxy to broadcast heartbeats.
 ///        This is an intermediate message layer to which producers
 ///        can publish messages to this XSUB socket and from which
 ///        subscribers can receive content from this XPUB socket.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Broadcast : public IBroadcast
+class Proxy : public IProxy
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructs the XPUB/XSUB proxy.
-    Broadcast();
+    Proxy();
     /// @brief Constructs the proxy with a given logger.
-    explicit Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructs the given authenticator. 
-    explicit Broadcast(std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+    explicit Proxy(std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructs the proxy with a given logger and authenticator.
-    Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger,
-              std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+    Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+          std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @}
 
-    /// @name Operators
+    /// @name Initialization
     /// @{
-    /// @brief Move assignment operator.
-    /// @param[in,out] broadcast  The broadcast whose memory will be moved
-    ///                           to this.  On exit, broadcast's will be
-    ///                           undefined.
-    /// @result The memory from broadcast moved to this.
-    //Broadcast& operator=(Broadcast &&broadcast) noexcept;
-    /// @}
 
     /// @brief Initializes the proxy.
-    void initialize(const Parameters &parameters);
-
-    /// @name Implementations required for an IBroadcast
-    /// @{
+    /// @param[in] options  The proxy options.   
+    /// @throws std::invalid_argument if the requisite parameters in the options
+    ///         are not set.
+    void initialize(const ProxyOptions &options);
     /// @result True indicates that the broadcast is initialized.
     [[nodiscard]] bool isInitialized() const noexcept override final;
     /// @result The name of the broadcast.
@@ -87,20 +80,20 @@ public:
     /// @}
 
     /// @result An uninitialized instance of this class.
-    [[nodiscard]] std::unique_ptr<IBroadcast> createInstance() const noexcept override final;
+    //[[nodiscard]] std::unique_ptr<IProxy> createInstance() const noexcept override final;
 
     /// @name Destructors
     /// @{
-    virtual ~Broadcast();
+    ~Proxy() override;
     /// @}
 
-    Broadcast(const Broadcast &broadcast);
-    Broadcast(Broadcast &&broadcast) noexcept = delete;
-    Broadcast& operator=(const Broadcast &broadcast) = delete;
-    Broadcast& operator=(Broadcast &&broadcast) noexcept = delete;
+    Proxy(const Proxy &proxy);
+    Proxy(Proxy &&proxy) noexcept = delete;
+    Proxy& operator=(const Proxy &proxy) = delete;
+    Proxy& operator=(Proxy &&proxy) noexcept = delete;
 private:
-    class BroadcastImpl;
-    std::unique_ptr<BroadcastImpl> pImpl;
+    class ProxyImpl;
+    std::unique_ptr<ProxyImpl> pImpl;
 };
 };
 #endif

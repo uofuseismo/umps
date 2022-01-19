@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include <chrono>
-#include "umps/broadcasts/heartbeat/subscriberOptions.hpp"
-#include "umps/broadcasts/heartbeat/status.hpp"
+#include "umps/proxyBroadcasts/heartbeat/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -11,7 +11,7 @@
 namespace
 {
 
-using namespace UMPS::Broadcasts::Heartbeat;
+using namespace UMPS::ProxyBroadcasts::Heartbeat;
 namespace UAuth = UMPS::Authentication;
 
 TEST(BroadcastsHeartbeat, SubscriberOptions)

@@ -1,11 +1,11 @@
 #include <string>
-#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 
-using namespace UMPS::Broadcasts::DataPacket; 
+using namespace UMPS::ProxyBroadcasts::DataPacket; 
 namespace UAuth = UMPS::Authentication;
 
 template<class T>
@@ -147,6 +147,6 @@ UMPS::Messaging::PublisherSubscriber::SubscriberOptions
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
 ///--------------------------------------------------------------------------///
-template class UMPS::Broadcasts::DataPacket::SubscriberOptions<double>;
-template class UMPS::Broadcasts::DataPacket::SubscriberOptions<float>;
-template class UMPS::Broadcasts::DataPacket::SubscriberOptions<int>;
+template class UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>;
+template class UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<float>;
+template class UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<int>;

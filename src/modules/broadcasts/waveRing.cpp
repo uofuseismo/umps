@@ -14,8 +14,8 @@
 #include "umps/logging/stdout.hpp"
 #include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "umps/broadcasts/earthworm/waveRing.hpp"
-#include "umps/broadcasts/dataPacket/publisher.hpp"
-#include "umps/broadcasts/dataPacket/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
+#include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
@@ -50,7 +50,7 @@ class BroadcastPackets
 {
 public:
     BroadcastPackets(
-        std::shared_ptr<UMPS::Broadcasts::DataPacket::Publisher> &publisher,
+        std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> &publisher,
         std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> &waveRing,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mPublisher(publisher),
@@ -118,7 +118,7 @@ public:
         mLogger->info("Broadcast thread is terminating");
     }
     mutable std::mutex mMutex;
-    std::shared_ptr<UMPS::Broadcasts::DataPacket::Publisher> mPublisher;
+    std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> mPublisher;
     std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> mWaveRing;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     bool mKeepRunning = true;
@@ -203,11 +203,10 @@ int main(int argc, char *argv[])
                   + " at " + packetAddress); 
     }
     // Connect to proxy
-    UMPS::Broadcasts::DataPacket::PublisherOptions publisherOptions;
+    UMPS::ProxyBroadcasts::DataPacket::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
     publisherOptions.setZAPOptions(options.mZAPOptions);
-    auto publisher
-        = std::make_shared<UMPS::Broadcasts::DataPacket::Publisher> (loggerPtr);
+    auto publisher = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Publisher> (loggerPtr);
     publisher->initialize(publisherOptions);
 #ifndef NDEBUG
     assert(publisher->isInitialized());

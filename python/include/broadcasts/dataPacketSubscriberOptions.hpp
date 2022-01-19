@@ -3,7 +3,7 @@
 #include <memory>
 #include <chrono>
 #include <pybind11/pybind11.h>
-namespace UMPS::Broadcasts::DataPacket
+namespace UMPS::ProxyBroadcasts::DataPacket
 {
  template<class T> class SubscriberOptions;
 }
@@ -11,7 +11,7 @@ namespace PUMPS::Authentication
 {
  class ZAPOptions;
 }
-namespace PUMPS::Broadcasts
+namespace PUMPS::ProxyBroadcasts
 {
 class DataPacketSubscriberOptions
 {
@@ -34,12 +34,12 @@ public:
     void setTimeOut(const int timeOut) noexcept;
     [[nodiscard]] int getTimeOut() const noexcept;
 
-    [[nodiscard]] UMPS::Broadcasts::DataPacket::SubscriberOptions<double> getNativeClass() const noexcept;
+    [[nodiscard]] UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double> getNativeClass() const noexcept;
 
     DataPacketSubscriberOptions& operator=(const DataPacketSubscriberOptions &subscriber);
     DataPacketSubscriberOptions& operator=(DataPacketSubscriberOptions &&subscriber) noexcept; 
 private:
-    std::unique_ptr< UMPS::Broadcasts::DataPacket::SubscriberOptions<double> > pImpl;
+    std::unique_ptr< UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double> > pImpl;
 };
 }
 #endif

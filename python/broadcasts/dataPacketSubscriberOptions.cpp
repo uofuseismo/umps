@@ -2,17 +2,17 @@
 #include <string>
 #include "broadcasts/dataPacketSubscriberOptions.hpp"
 #include "authentication/zapOptions.hpp"
-#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "initialize.hpp"
 #include <pybind11/stl.h>
 #include <pybind11/chrono.h>
 
-using namespace PUMPS::Broadcasts;
+using namespace PUMPS::ProxyBroadcasts;
 
 /// C'tor
 DataPacketSubscriberOptions::DataPacketSubscriberOptions() :
-    pImpl(std::make_unique<UMPS::Broadcasts::DataPacket::SubscriberOptions<double>> ()) 
+    pImpl(std::make_unique<UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>> ()) 
 {
 }
 
@@ -44,7 +44,7 @@ DataPacketSubscriberOptions&
 DataPacketSubscriberOptions::operator=(const DataPacketSubscriberOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<UMPS::Broadcasts::DataPacket::SubscriberOptions<double>> (*options.pImpl);
+    pImpl = std::make_unique<UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>> (*options.pImpl);
     return *this;
 }
 
@@ -58,7 +58,7 @@ DataPacketSubscriberOptions::operator=(DataPacketSubscriberOptions &&options) no
 }
 
 /// Native class
-UMPS::Broadcasts::DataPacket::SubscriberOptions<double> 
+UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double> 
     DataPacketSubscriberOptions::getNativeClass() const noexcept
 {
     return *pImpl;
@@ -113,9 +113,9 @@ int DataPacketSubscriberOptions::getTimeOut() const noexcept
 }
 
 /// Initialize the class
-void PUMPS::Broadcasts::initializeDataPacketSubscriberOptions(pybind11::module &m) 
+void PUMPS::ProxyBroadcasts::initializeDataPacketSubscriberOptions(pybind11::module &m) 
 {
-    pybind11::class_<PUMPS::Broadcasts::DataPacketSubscriberOptions>
+    pybind11::class_<PUMPS::ProxyBroadcasts::DataPacketSubscriberOptions>
         o(m, "DataPacketSubscriberOptions");
     o.def(pybind11::init<> ());
     o.doc() = R""""(

@@ -74,7 +74,6 @@ set(LOGGING_SRC
 set(MESSAGE_FORMAT_SRC
     src/messageFormats/messages.cpp
     src/messageFormats/dataPacket.cpp
-    src/broadcasts/heartbeat/status.cpp
     src/messageFormats/pick.cpp
     src/messageFormats/text.cpp)
 set(MESSAGING_SRC
@@ -108,16 +107,6 @@ set(MESSAGING_SRC
 set(MODULES_LIBSRC
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
-    src/broadcasts/dataPacket/broadcast.cpp
-    src/broadcasts/dataPacket/parameters.cpp
-    src/broadcasts/dataPacket/publisher.cpp
-    src/broadcasts/dataPacket/publisherOptions.cpp
-    src/broadcasts/dataPacket/subscriber.cpp
-    src/broadcasts/dataPacket/subscriberOptions.cpp
-    src/broadcasts/heartbeat/broadcast.cpp
-    src/broadcasts/heartbeat/parameters.cpp
-    src/broadcasts/heartbeat/subscriber.cpp
-    src/broadcasts/heartbeat/subscriberOptions.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
     src/services/connectionInformation/availableConnectionsResponse.cpp
     src/services/connectionInformation/getConnections.cpp
@@ -138,6 +127,17 @@ set(MODULES_LIBSRC
     src/services/incrementer/counter.cpp
     src/services/incrementer/parameters.cpp
     src/services/incrementer/service.cpp
+    src/proxyBroadcasts/dataPacket/proxy.cpp
+    src/proxyBroadcasts/dataPacket/proxyOptions.cpp
+    src/proxyBroadcasts/dataPacket/publisher.cpp
+    src/proxyBroadcasts/dataPacket/publisherOptions.cpp
+    src/proxyBroadcasts/dataPacket/subscriber.cpp
+    src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
+    src/proxyBroadcasts/heartbeat/proxy.cpp
+    src/proxyBroadcasts/heartbeat/proxyOptions.cpp
+    src/proxyBroadcasts/heartbeat/subscriber.cpp
+    src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
+    src/proxyBroadcasts/heartbeat/status.cpp
     src/proxyServices/packetCache/circularBuffer.cpp
     src/proxyServices/packetCache/cappedCollection.cpp
     src/proxyServices/packetCache/dataRequest.cpp

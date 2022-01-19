@@ -30,10 +30,10 @@
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
-#include "umps/broadcasts/dataPacket/broadcast.hpp"
-#include "umps/broadcasts/dataPacket/parameters.hpp"
-#include "umps/broadcasts/heartbeat/broadcast.hpp"
-#include "umps/broadcasts/heartbeat/parameters.hpp"
+#include "umps/proxyBroadcasts/dataPacket/proxy.hpp"
+#include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/proxy.hpp"
+#include "umps/proxyBroadcasts/heartbeat/proxyOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
 
@@ -45,8 +45,8 @@ struct ProgramOptions
     std::vector<std::pair<int, bool>> mAvailablePorts;
     UMPS::Services::ConnectionInformation::Parameters
         mConnectionInformationParameters;
-    UMPS::Broadcasts::DataPacket::Parameters mDataPacketParameters;
-    UMPS::Broadcasts::Heartbeat::Parameters mHeartbeatParameters;
+    UMPS::ProxyBroadcasts::DataPacket::ProxyOptions mDataPacketParameters;
+    UMPS::ProxyBroadcasts::Heartbeat::ProxyOptions mHeartbeatParameters;
     UAuth::ZAPOptions mZAPOptions;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
@@ -63,7 +63,7 @@ struct Modules
     std::map<std::string, std::unique_ptr<UMPS::Services::IService>>
         mServices;
     //std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
-    std::map<std::string, std::unique_ptr<UMPS::Broadcasts::IBroadcast>>
+    std::map<std::string, std::unique_ptr<UMPS::ProxyBroadcasts::IProxy>>
         mProxyBroadcasts;
     //std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
     //std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
@@ -89,6 +89,7 @@ void printService(const UMPS::Services::IService &service)
     }
 }
 
+/*
 void printBroadcast(const UMPS::Broadcasts::IBroadcast &broadcast)
 {
     try
@@ -105,6 +106,25 @@ void printBroadcast(const UMPS::Broadcasts::IBroadcast &broadcast)
     {
         std::cerr << e.what() << std::endl;
     } 
+}
+*/
+
+void printBroadcast(const UMPS::ProxyBroadcasts::IProxy &proxy)
+{
+    try 
+    {   
+        auto details = proxy.getConnectionDetails();
+        auto socketInfo = details.getProxySocketDetails();
+        std::cout << "ProxyBroadcast: " << proxy.getName()
+                  << " frontend available at: "
+                  << socketInfo.getFrontendAddress()
+                  << " and backend available at: "
+                  << socketInfo.getBackendAddress() << std::endl;
+    }   
+    catch (const std::exception &e) 
+    {   
+        std::cerr << e.what() << std::endl;
+    }   
 }
 
 std::string makeNextAvailableAddress(
@@ -361,7 +381,7 @@ int main(int argc, char *argv[])
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
             = std::make_shared<UMPS::Logging::SpdLog> (logger);
         auto dataPacketBroadcast
-            = std::make_unique<UMPS::Broadcasts::DataPacket::Broadcast>
+            = std::make_unique<UMPS::ProxyBroadcasts::DataPacket::Proxy>
               (loggerPtr, authenticator);
         dataPacketBroadcast->initialize(options.mDataPacketParameters);
         modules.mProxyBroadcasts.insert(
@@ -387,7 +407,7 @@ int main(int argc, char *argv[])
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
             = std::make_shared<UMPS::Logging::SpdLog> (logger);
         auto heartbeatBroadcast
-            = std::make_unique<UMPS::Broadcasts::Heartbeat::Broadcast>
+            = std::make_unique<UMPS::ProxyBroadcasts::Heartbeat::Proxy>
               (loggerPtr, authenticator);
         heartbeatBroadcast->initialize(options.mHeartbeatParameters);
         modules.mProxyBroadcasts.insert(
@@ -654,7 +674,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                     "tcp://");
     }
     // Parse the datapacket broadcast options 
-    UMPS::Broadcasts::DataPacket::Parameters dataPacketOptions;
+    UMPS::ProxyBroadcasts::DataPacket::ProxyOptions dataPacketOptions;
     try
     {
         dataPacketOptions.parseInitializationFile(iniFile, "Broadcasts:DataPackets");
@@ -687,7 +707,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         options.mDataPacketParameters = dataPacketOptions;
     }
     // Parse the heartbeat broadcast options
-    UMPS::Broadcasts::Heartbeat::Parameters heartbeatOptions;
+    UMPS::ProxyBroadcasts::Heartbeat::ProxyOptions heartbeatOptions;
     try
     {
         heartbeatOptions.parseInitializationFile(iniFile, "Broadcasts:Heartbeat");

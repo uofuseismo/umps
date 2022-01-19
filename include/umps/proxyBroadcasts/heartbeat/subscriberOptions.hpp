@@ -1,5 +1,5 @@
-#ifndef UMPS_BROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
-#define UMPS_BROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
+#ifndef UMPS_PROXYBROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
+#define UMPS_PROXYBROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS
@@ -16,9 +16,9 @@ namespace UMPS
   class ZAPOptions;
  }
 }
-namespace UMPS::Broadcasts::Heartbeat
+namespace UMPS::ProxyBroadcasts::Heartbeat
 {
-/// @class SubscriberOptions "subscriberOptions.hpp" "umps/broadcasts/heartbeat/subscriberOptions.hpp"
+/// @class SubscriberOptions "subscriberOptions.hpp" "umps/proxyBroadcasts/heartbeat/subscriberOptions.hpp"
 /// @brief Defines the parameters for connecting to the heartbeat backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class SubscriberOptions

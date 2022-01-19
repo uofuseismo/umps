@@ -5,14 +5,14 @@
 #include <limits>
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/host_name.hpp>
-#include "umps/broadcasts/heartbeat/status.hpp"
+#include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
-#define MESSAGE_TYPE "UMPS::Broadcasts::Heartbeat::Status"
+#define MESSAGE_TYPE "UMPS::ProxyBroadcasts::Heartbeat::Status"
 
-using namespace UMPS::Broadcasts::Heartbeat;
+using namespace UMPS::ProxyBroadcasts::Heartbeat;
 
 TEST(HeartbeatTest, Status)
 {

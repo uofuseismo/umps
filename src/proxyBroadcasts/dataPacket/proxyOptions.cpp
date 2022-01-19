@@ -2,17 +2,17 @@
 #include <filesystem>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "umps/broadcasts/dataPacket/parameters.hpp"
+#include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 
-using namespace UMPS::Broadcasts::DataPacket;
+using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UAuth = UMPS::Authentication;
 
-class Parameters::ParametersImpl
+class ProxyOptions::ProxyOptionsImpl
 {
 public:
-    ParametersImpl()
+    ProxyOptionsImpl()
     {
         mProxyOptions.setFrontendHighWaterMark(2000);
         mProxyOptions.setBackendHighWaterMark(1000);
@@ -22,131 +22,131 @@ public:
 };
 
 /// Constructor
-Parameters::Parameters() :
-    pImpl(std::make_unique<ParametersImpl> ())
+ProxyOptions::ProxyOptions() :
+    pImpl(std::make_unique<ProxyOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
 [[maybe_unused]]
-Parameters::Parameters(const Parameters &parameters)
+ProxyOptions::ProxyOptions(const ProxyOptions &options)
 {
-    *this = parameters;
+    *this = options;
 }
 
 /// Move c'tor
 [[maybe_unused]]
-Parameters::Parameters(Parameters &&parameters) noexcept
+ProxyOptions::ProxyOptions(ProxyOptions &&options) noexcept
 {
-    *this = std::move(parameters);
+    *this = std::move(options);
 }
 
 /// Copy assignment
-Parameters& Parameters::operator=(const Parameters &parameters)
+ProxyOptions& ProxyOptions::operator=(const ProxyOptions &options)
 {
-    if (&parameters == this){return *this;}
-    pImpl = std::make_unique<ParametersImpl> (*parameters.pImpl);
+    if (&options == this){return *this;}
+    pImpl = std::make_unique<ProxyOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-Parameters& Parameters::operator=(Parameters &&parameters) noexcept
+ProxyOptions& ProxyOptions::operator=(ProxyOptions &&options) noexcept
 {
-    if (&parameters == this){return *this;}
-    pImpl = std::move(parameters.pImpl);
+    if (&options == this){return *this;}
+    pImpl = std::move(options.pImpl);
     return *this;
 }
 
 /// Destructor
-Parameters::~Parameters() = default;
+ProxyOptions::~ProxyOptions() = default;
 
 /// Reset class
-void Parameters::clear() noexcept
+void ProxyOptions::clear() noexcept
 {
-    pImpl = std::make_unique<ParametersImpl> ();
+    pImpl = std::make_unique<ProxyOptionsImpl> ();
 }
 
 /// Broadcast name
-std::string Parameters::getName() noexcept
+std::string ProxyOptions::getName() noexcept
 {
     return "DataPacket";
 }
 
 /// Frontend highwater mark
-void Parameters::setFrontendHighWaterMark(const int highWaterMark)
+void ProxyOptions::setFrontendHighWaterMark(const int highWaterMark)
 {
     pImpl->mProxyOptions.setFrontendHighWaterMark(highWaterMark);
 }
 
-int Parameters::getFrontendHighWaterMark() const noexcept
+int ProxyOptions::getFrontendHighWaterMark() const noexcept
 {
     return pImpl->mProxyOptions.getFrontendHighWaterMark();
 }
 
 /// Backend highwater mark
-void Parameters::setBackendHighWaterMark(const int highWaterMark)
+void ProxyOptions::setBackendHighWaterMark(const int highWaterMark)
 {
     pImpl->mProxyOptions.setBackendHighWaterMark(highWaterMark);
 }
 
-int Parameters::getBackendHighWaterMark() const noexcept
+int ProxyOptions::getBackendHighWaterMark() const noexcept
 {
     return pImpl->mProxyOptions.getBackendHighWaterMark();
 }
 
 /// Sets the frontend address
-void Parameters::setFrontendAddress(const std::string &address)
+void ProxyOptions::setFrontendAddress(const std::string &address)
 {
     pImpl->mProxyOptions.setFrontendAddress(address);
 }
 
-std::string Parameters::getFrontendAddress() const
+std::string ProxyOptions::getFrontendAddress() const
 {
     return pImpl->mProxyOptions.getFrontendAddress();
 }
 
-bool Parameters::haveFrontendAddress() const noexcept
+bool ProxyOptions::haveFrontendAddress() const noexcept
 {
     return pImpl->mProxyOptions.haveFrontendAddress();
 }
 
 /// Sets the backend adddress
-void Parameters::setBackendAddress(const std::string &address)
+void ProxyOptions::setBackendAddress(const std::string &address)
 {
     pImpl->mProxyOptions.setBackendAddress(address);
 }
 
-std::string Parameters::getBackendAddress() const
+std::string ProxyOptions::getBackendAddress() const
 {
     return pImpl->mProxyOptions.getBackendAddress();
 }
 
-bool Parameters::haveBackendAddress() const noexcept
+bool ProxyOptions::haveBackendAddress() const noexcept
 {
     return pImpl->mProxyOptions.haveBackendAddress();
 }
 
 /// ZAP Options
-void Parameters::setZAPOptions(const UAuth::ZAPOptions &zapOptions) noexcept
+void ProxyOptions::setZAPOptions(const UAuth::ZAPOptions &zapOptions) noexcept
 {
     pImpl->mProxyOptions.setZAPOptions(zapOptions);
 }
 
-UAuth::ZAPOptions Parameters::getZAPOptions() const noexcept
+UAuth::ZAPOptions ProxyOptions::getZAPOptions() const noexcept
 {
     return pImpl->mProxyOptions.getZAPOptions();
 }
 
-/// Read parameters from an ini file
-void Parameters::parseInitializationFile(const std::string &iniFile,
-                                         const std::string &section)
+/// Read proxy options from an ini file
+void ProxyOptions::parseInitializationFile(const std::string &iniFile,
+                                           const std::string &section)
 {
     if (!std::filesystem::exists(iniFile))
     {
         throw std::invalid_argument("Initialization file: "
                                   + iniFile + " does not exist");
     }
-    Parameters parameters;
+    ProxyOptions options;
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
 
@@ -155,7 +155,7 @@ void Parameters::parseInitializationFile(const std::string &iniFile,
                                          "");
     if (!frontendAddress.empty())
     {
-        parameters.setFrontendAddress(frontendAddress);
+        options.setFrontendAddress(frontendAddress);
     }
 
     auto backendAddress
@@ -163,26 +163,26 @@ void Parameters::parseInitializationFile(const std::string &iniFile,
                                          "");
     if (!backendAddress.empty())
     {
-        parameters.setBackendAddress(backendAddress);
+        options.setBackendAddress(backendAddress);
     }
 
     auto frontendHighWaterMark
        = propertyTree.get<int> (section + ".frontendHighWaterMark",
-                                parameters.getFrontendHighWaterMark());
+                                options.getFrontendHighWaterMark());
     if (frontendHighWaterMark >= 0)
     {
-        parameters.setFrontendHighWaterMark(frontendHighWaterMark);
+        options.setFrontendHighWaterMark(frontendHighWaterMark);
     }
 
     auto backendHighWaterMark
        = propertyTree.get<int> (section + ".backendHighWaterMark",
-                                parameters.getBackendHighWaterMark());
+                                options.getBackendHighWaterMark());
     if (backendHighWaterMark >= 0)
     {
-        parameters.setBackendHighWaterMark(backendHighWaterMark);
+        options.setBackendHighWaterMark(backendHighWaterMark);
     }
 
     // Got everything and didn't throw -> copy to this
-    *this = std::move(parameters);
+    *this = std::move(options);
 
 }

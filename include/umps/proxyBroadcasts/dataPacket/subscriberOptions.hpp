@@ -1,5 +1,5 @@
-#ifndef UMPS_BROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
-#define UMPS_BROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
+#ifndef UMPS_PROXYBROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
+#define UMPS_PROXYBROADCASTS_DATAPACKET_SUBSCRIBEROPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS
@@ -16,9 +16,9 @@ namespace UMPS
   }
  }
 }
-namespace UMPS::Broadcasts::DataPacket
+namespace UMPS::ProxyBroadcasts::DataPacket
 {
-/// @class SubscriberOptions "subscriberOptions.hpp" "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+/// @class SubscriberOptions "subscriberOptions.hpp" "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 /// @brief Defines the parameters for connecting to the data packet backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 template<class T = double>

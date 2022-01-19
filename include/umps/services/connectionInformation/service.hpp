@@ -16,6 +16,10 @@ namespace UMPS
  {
   class IBroadcast;
  }
+ namespace ProxyBroadcasts
+ {
+  class IProxy;
+ }
  namespace Authentication
  {
   class IAuthenticator;
@@ -71,6 +75,10 @@ public:
     /// @param[in] broadcast  The broadcast whose connection information will.
     /// @throws std::runtime_error if the class is not initialized.
     void addConnection(const UMPS::Broadcasts::IBroadcast &broadcast);
+    /// @brief Adds a proxy broadcast connection.
+    /// @param[in] proxy  The broadcast whose connection information will.
+    /// @throws std::runtime_error if the class is not initialized.
+    void addConnection(const UMPS::ProxyBroadcasts::IProxy &proxy);
     /// @brief Adds a connection.
     /// @param[in] connectionDetails  Contains the name of the connection and the
     ///                               connection information.

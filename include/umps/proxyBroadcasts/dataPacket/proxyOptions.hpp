@@ -1,52 +1,55 @@
-#ifndef UMPS_BROADCASTS_DATAPACKET_PARAMETERS_HPP
-#define UMPS_BROADCASTS_DATAPACKET_PARAMETERS_HPP
+#ifndef UMPS_PROXYBROADCASTS_DATAPACKET_PROXYOPTIONS_HPP
+#define UMPS_PROXYBROADCASTS_DATAPACKET_PROXYOPTIONS_HPP
 #include <memory>
 namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
-namespace UMPS::Broadcasts::DataPacket
+namespace UMPS::ProxyBroadcasts::DataPacket
 {
-/// @class Parameters "parameters.hpp" "umps/broadcasts/dataPacket/parameters.hpp"
-/// @brief Defines the parameters for the underlying proxy socket that enables
+/// @class ProxyOptions "proxyOptions.hpp" "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
+/// @brief Defines the options for the underlying proxy socket that enables
 ///        the packet broadcast.  Note the terminology - publishers connect
 ///        to the frontend and subscribers connect to the backend so that
 ///        data flows from front to back.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Parameters
+class ProxyOptions
 {
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
-    Parameters();
+    ProxyOptions();
     /// @brief Copy constructor.
-    /// @param[in] parameters  The parameters class from which to initialize 
-    ///                        this class.
-    Parameters(const Parameters &parameters);
+    /// @param[in] options  The options class from which to initialize
+    ///                     this class.
+    ProxyOptions(const ProxyOptions &options);
     /// @brief Move constructor.
-    /// @param[in,out] parameters  The parameters class from which to initialize
-    ///                            this class.  On exit, parameters's behavior
-    ///                            is undefined.
-    Parameters(Parameters &&parameters) noexcept;
+    /// @param[in,out] options  The options class from which to initialize
+    ///                         this class.  On exit, options's behavior
+    ///                         is undefined.
+    ProxyOptions(ProxyOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
-    /// @param[in] parameters  The parameters class to copy to this.
-    /// @result A deep copy of the input parameters.
-    Parameters& operator=(const Parameters &parameters);
+    /// @param[in] options  The options class to copy to this.
+    /// @result A deep copy of the input options.
+    ProxyOptions& operator=(const ProxyOptions &options);
     /// @brief Move assignment operator.
-    /// @param[in,out] parameters  The parameters class whose memory will
-    ///                            be moved to this.  On exit, parameters's
-    ///                            behavior is undefined.
-    /// @result The memory from parameters moved to this.
-    Parameters& operator=(Parameters &&parameters) noexcept;
+    /// @param[in,out] options  The options class whose memory will
+    ///                         be moved to this.  On exit, options's
+    ///                         behavior is undefined.
+    /// @result The memory from options moved to this.
+    ProxyOptions& operator=(ProxyOptions &&options) noexcept;
     /// @}
 
     /// @name Connection Addresses
     /// @{
+
     /// @brief Sets the frontend's IP address.
     /// @param[in] address  The address of the frontend.
     /// @throws std::invalid_argument if this is empty.
@@ -70,6 +73,7 @@ public:
 
     /// @name High-Water Mark
     /// @{
+
     /// @brief Sets the frontend's high water mark.
     /// @param[in] highWaterMark  The approximate number of messages that can
     ///                           be cached by the frontend.  Note, that setting
@@ -91,6 +95,7 @@ public:
 
     /// @name ZAP Options
     /// @{
+
     /// @brief Sets the ZeroMQ Authentication Protocol options.
     /// @param[in] zapOptions  The ZAP options.
     void setZAPOptions(const UMPS::Authentication::ZAPOptions &zapOptions) noexcept;
@@ -98,10 +103,10 @@ public:
     [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
-    /// @result The name of the broadcast.
+    /// @result The name of the proxy broadcast.
     [[nodiscard]] static std::string getName() noexcept;
 
-    /// @brief Loads parameters from an initialization file.
+    /// @brief Loads proxy options from an initialization file.
     /// @param[in] iniFile  The name of the initialization file.
     /// @param[in] section  The section of the ini file from which to
     ///                     read variables.
@@ -109,14 +114,15 @@ public:
                                  const std::string &section = "DataPacket");
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~Parameters();
+    ~ProxyOptions();
     /// @}
 private:
-    class ParametersImpl;
-    std::unique_ptr<ParametersImpl> pImpl;
+    class ProxyOptionsImpl;
+    std::unique_ptr<ProxyOptionsImpl> pImpl;
 };
 }
 #endif

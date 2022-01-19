@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include <chrono>
-#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
-#include "umps/broadcasts/dataPacket/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -13,7 +13,7 @@
 namespace
 {
 
-using namespace UMPS::Broadcasts::DataPacket;
+using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UAuth = UMPS::Authentication;
 
 TEST(BroadcastsDataPacket, ProxyOptions)

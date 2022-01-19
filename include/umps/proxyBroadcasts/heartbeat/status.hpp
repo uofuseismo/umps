@@ -1,8 +1,8 @@
-#ifndef UMPS_BROADCASTS_HEARTBEAT_STATUS_HPP
-#define UMPS_BROADCASTS_HEARTBEAT_STATUS_HPP
+#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_STATUS_HPP
+#define UMPS_PROXYBROADCASTS_HEARTBEAT_STATUS_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::Broadcasts::Heartbeat
+namespace UMPS::ProxyBroadcasts::Heartbeat
 {
 /// @brief Defines the module's status.
 enum class ModuleStatus : int8_t

@@ -1,5 +1,5 @@
-#ifndef UMPS_BROADCASTS_DATAPACKET_PUBLISHEROPTIONS_HPP
-#define UMPS_BROADCASTS_DATAPACKET_PUBLISHEROPTIONS_HPP
+#ifndef UMPS_PROXYBROADCASTS_DATAPACKET_PUBLISHEROPTIONS_HPP
+#define UMPS_PROXYBROADCASTS_DATAPACKET_PUBLISHEROPTIONS_HPP
 #include <memory>
 #include <string>
 #include <chrono>
@@ -17,9 +17,9 @@ namespace UMPS
   }
  }
 }
-namespace UMPS::Broadcasts::DataPacket
+namespace UMPS::ProxyBroadcasts::DataPacket
 {
-/// @class PublisherOptions "publisherOptions.hpp" "umps/broadcasts/dataPacket/publisherOptions.hpp"
+/// @class PublisherOptions "publisherOptions.hpp" "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 /// @brief Options for initializing the publisher in the datapacket broadcast.
 /// @details The publisher sends datapackets and it is up to the subscribers to
 ///          be listening.

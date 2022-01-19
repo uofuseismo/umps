@@ -4,12 +4,12 @@
 #include <chrono>
 #include <nlohmann/json.hpp>
 #include <boost/asio/ip/host_name.hpp>
-#include "umps/broadcasts/heartbeat/status.hpp"
+#include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "UMPS::Broadcasts::Heartbeat::Status"
+#define MESSAGE_TYPE "UMPS::ProxyBroadcasts::Heartbeat::Status"
 
-using namespace UMPS::Broadcasts::Heartbeat;
+using namespace UMPS::ProxyBroadcasts::Heartbeat;
 
 namespace
 {
@@ -304,7 +304,7 @@ void Status::fromMessage(const char *messageIn, const size_t length)
 std::unique_ptr<UMPS::MessageFormats::IMessage> Status::clone() const
 {
     std::unique_ptr<UMPS::MessageFormats::IMessage> result
-        = std::make_unique<Broadcasts::Heartbeat::Status> (*this);
+        = std::make_unique<Status> (*this);
     return result;
 }
 
@@ -313,13 +313,13 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     Status::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<Broadcasts::Heartbeat::Status> (); 
+        = std::make_unique<Status> (); 
     return result;
 }
 
 /// Compare status's based on time 
-bool UMPS::Broadcasts::Heartbeat::operator>(const Status &lhs,
-                                            const Status &rhs)
+bool UMPS::ProxyBroadcasts::Heartbeat::operator>(const Status &lhs,
+                                                 const Status &rhs)
 {
     auto t1 = lhs.getTimeStamp();
     auto t2 = rhs.getTimeStamp(); 

@@ -2,16 +2,16 @@
 #include "broadcasts/dataPacketSubscriber.hpp"
 #include "broadcasts/dataPacketSubscriberOptions.hpp"
 #include "messageFormats/dataPacket.hpp"
-#include "umps/broadcasts/dataPacket/subscriber.hpp"
-#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "initialize.hpp"
 
-using namespace PUMPS::Broadcasts;
+using namespace PUMPS::ProxyBroadcasts;
 
 /// C'tor
 DataPacketSubscriber::DataPacketSubscriber() :
-    pImpl(std::make_unique<UMPS::Broadcasts::DataPacket::Subscriber<double>> ())
+    pImpl(std::make_unique<UMPS::ProxyBroadcasts::DataPacket::Subscriber<double>> ())
 {
 }
 
@@ -42,9 +42,9 @@ PUMPS::MessageFormats::DataPacket DataPacketSubscriber::receive() const
 
 
 /// Initialize the class
-void PUMPS::Broadcasts::initializeDataPacketSubscriber(pybind11::module &m)
+void PUMPS::ProxyBroadcasts::initializeDataPacketSubscriber(pybind11::module &m)
 {
-    pybind11::class_<PUMPS::Broadcasts::DataPacketSubscriber>
+    pybind11::class_<PUMPS::ProxyBroadcasts::DataPacketSubscriber>
         o(m, "DataPacketSubscriber");
     o.def(pybind11::init<> ());
     o.doc() = R""""(

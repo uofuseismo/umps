@@ -1,14 +1,14 @@
 #include <zmq.hpp>
-#include "umps/broadcasts/heartbeat/subscriber.hpp"
-#include "umps/broadcasts/heartbeat/subscriberOptions.hpp"
-#include "umps/broadcasts/heartbeat/status.hpp"
+#include "umps/proxyBroadcasts/heartbeat/subscriber.hpp"
+#include "umps/proxyBroadcasts/heartbeat/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
-using namespace UMPS::Broadcasts::Heartbeat;
+using namespace UMPS::ProxyBroadcasts::Heartbeat;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
@@ -18,7 +18,6 @@ class Subscriber::SubscriberImpl
 public:
     SubscriberImpl(std::shared_ptr<zmq::context_t> context,
                    std::shared_ptr<UMPS::Logging::ILog> logger)
-    //               std::shared_ptr<UAuth::IAuthenticator> authenticator)
     {
         if (context == nullptr)
         {
@@ -36,15 +35,10 @@ public:
         {
             mLogger = logger;
         }
-        //if (authenticator == nullptr)
-        //{
-        //    mAuthenticator = std::make_shared<UAuth::Grasslands> (logger);
-        //}
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
     }
     std::shared_ptr<zmq::context_t> mContext;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    //std::shared_ptr<UAuth::IAuthenticator> mAuthenticator;
     std::unique_ptr<UPubSub::Subscriber> mSubscriber;
     SubscriberOptions mOptions;
 };

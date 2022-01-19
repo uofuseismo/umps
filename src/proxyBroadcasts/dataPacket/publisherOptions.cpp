@@ -1,10 +1,10 @@
 #include <string>
 #include <chrono>
-#include "umps/broadcasts/dataPacket/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 
-using namespace UMPS::Broadcasts::DataPacket;
+using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UAuth = UMPS::Authentication;
 
 class PublisherOptions::PublisherOptionsImpl

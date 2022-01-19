@@ -5,8 +5,8 @@
 #include <cassert>
 #endif
 #include <zmq.hpp>
-#include "umps/broadcasts/dataPacket/broadcast.hpp"
-#include "umps/broadcasts/dataPacket/parameters.hpp"
+#include "umps/proxyBroadcasts/dataPacket/proxy.hpp"
+#include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
@@ -21,36 +21,19 @@
 #include "umps/authentication/service.hpp"
 #include "umps/logging/stdout.hpp"
 
-using namespace UMPS::Broadcasts::DataPacket;
+using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UAuth = UMPS::Authentication;
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UCI = UMPS::Services::ConnectionInformation;
 
-class Broadcast::BroadcastImpl
+class Proxy::ProxyImpl
 {
 public:
-/*
     /// Constructors
-    BroadcastImpl() :
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
-        mProxy(mLogger)
-    {   
-    }
-    explicit BroadcastImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-       mLogger(logger),
-       mProxy(mLogger)
-    {
-       if (mLogger == nullptr)
-       {
-           mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-       }
-    }
-*/
-    /// Constructors
-    BroadcastImpl() = delete;
-    BroadcastImpl(std::shared_ptr<zmq::context_t> context,
-                  std::shared_ptr<UMPS::Logging::ILog> logger,
-                  std::shared_ptr<UAuth::IAuthenticator> authenticator)
+    ProxyImpl() = delete;
+    ProxyImpl(std::shared_ptr<zmq::context_t> context,
+              std::shared_ptr<UMPS::Logging::ILog> logger,
+              std::shared_ptr<UAuth::IAuthenticator> authenticator)
     {
         if (context == nullptr)
         {
@@ -101,7 +84,7 @@ public:
                                            &*mAuthenticatorService);
     }
     /// Destructor
-    ~BroadcastImpl()
+    ~ProxyImpl()
     {
         stop();
     }
@@ -111,68 +94,72 @@ public:
     std::shared_ptr<UXPubXSub::Proxy> mProxy{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
-    Parameters mParameters;
+    ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
-    const std::string mName = Parameters::getName();
+    const std::string mName = ProxyOptions::getName();
     bool mInitialized = false;
 };
 
 /// C'tor
-Broadcast::Broadcast() :
-    pImpl(std::make_unique<BroadcastImpl> (nullptr, nullptr, nullptr))
+Proxy::Proxy() :
+    pImpl(std::make_unique<ProxyImpl> (nullptr, nullptr, nullptr))
 {
 }
 
-Broadcast::Broadcast(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<BroadcastImpl> (context, nullptr, nullptr))
+/*
+Proxy::Proxy(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<ProxyImpl> (context, nullptr, nullptr))
+{
+}
+*/
+
+Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ProxyImpl> (nullptr, logger, nullptr))
 {
 }
 
-Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<BroadcastImpl> (nullptr, logger, nullptr))
+Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+             std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ProxyImpl> (nullptr, logger, authenticator))
 {
 }
 
-Broadcast::Broadcast(std::shared_ptr<UMPS::Logging::ILog> &logger,
-                     std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
-    pImpl(std::make_unique<BroadcastImpl> (nullptr, logger, authenticator))
+/*
+Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
+             std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ProxyImpl> (context, nullptr, authenticator))
 {
 }
 
-Broadcast::Broadcast(std::shared_ptr<zmq::context_t> &context,
-                     std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
-    pImpl(std::make_unique<BroadcastImpl> (context, nullptr, authenticator))
-{
-}
-
-Broadcast::Broadcast(std::shared_ptr<zmq::context_t> &context,
-                     std::shared_ptr<UMPS::Logging::ILog> &logger,
-                     std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
-    pImpl(std::make_unique<BroadcastImpl> (context, logger, authenticator))
+Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
+             std::shared_ptr<UMPS::Logging::ILog> &logger,
+             std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+    pImpl(std::make_unique<ProxyImpl> (context, logger, authenticator))
 {
 }
 
 /// Move c'tor
-Broadcast::Broadcast(Broadcast &&broadcast) noexcept
+Proxy::Proxy(Proxy &&proxy) noexcept
 {
-    *this = std::move(broadcast);
+    *this = std::move(proxy);
 }
 
 /// Move assignment
-Broadcast& Broadcast::operator=(Broadcast &&broadcast) noexcept
+Proxy& Proxy::operator=(Proxy &&proxy) noexcept
 {
     if (&broadcast == this){return *this;}
     pImpl = std::move(broadcast.pImpl);
     return *this;
 }
+*/
 
 /// Destructor
-Broadcast::~Broadcast() = default;
+Proxy::~Proxy() = default;
 
 /// Initialize the proxy
-void Broadcast::initialize(const Parameters &parameters)
+void Proxy::initialize(const ProxyOptions &parameters)
 {
     if (!parameters.haveFrontendAddress())
     {
@@ -184,16 +171,16 @@ void Broadcast::initialize(const Parameters &parameters)
     }
     stop();
     // Set the proxy options
-    pImpl->mParameters = parameters;
+    pImpl->mOptions = parameters;
     UMPS::Messaging::XPublisherXSubscriber::ProxyOptions options;
-    options.setFrontendAddress(pImpl->mParameters.getFrontendAddress());
-    options.setBackendAddress(pImpl->mParameters.getBackendAddress());
+    options.setFrontendAddress(pImpl->mOptions.getFrontendAddress());
+    options.setBackendAddress(pImpl->mOptions.getBackendAddress());
     options.setFrontendHighWaterMark(
-        pImpl->mParameters.getFrontendHighWaterMark());
+        pImpl->mOptions.getFrontendHighWaterMark());
     options.setBackendHighWaterMark(
-        pImpl->mParameters.getBackendHighWaterMark());
+        pImpl->mOptions.getBackendHighWaterMark());
     options.setTopic(getName());
-    options.setZAPOptions(pImpl->mParameters.getZAPOptions());
+    options.setZAPOptions(pImpl->mOptions.getZAPOptions());
     pImpl->mProxy->initialize(options);
     // Figure out the connection details
     pImpl->mConnectionDetails.setName(getName());
@@ -206,56 +193,55 @@ void Broadcast::initialize(const Parameters &parameters)
 }
 
 /// Start the service
-void Broadcast::start()
+void Proxy::start()
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    pImpl->mLogger->info("Beginning " + getName() + " broadcast...");
+    pImpl->mLogger->info("Beginning " + getName() + " proxy broadcast...");
     pImpl->start();
-    //pImpl->mProxy->start();
-    //pImpl->mLogger->info("Exited " + getName() + " broadcast proxy");
 }
 
 /// Is the proxy running?
-[[maybe_unused]]
-bool Broadcast::isRunning() const noexcept
+bool Proxy::isRunning() const noexcept
 {
     return pImpl->mProxy->isRunning();
 }
 
 /// Stop the service
-void Broadcast::stop()
+void Proxy::stop()
 {
     pImpl->stop();
-    //pImpl->mProxy->stop();
 }
 
 /// Initialized?
-bool Broadcast::isInitialized() const noexcept
+bool Proxy::isInitialized() const noexcept
 {
     return pImpl->mInitialized;
 }
 
-/// Gets the broadcast name
-std::string Broadcast::getName() const
+/// Gets the proxy name
+std::string Proxy::getName() const
 {
     return pImpl->mName;
 }
 
 /// Connection details
-UCI::Details Broadcast::getConnectionDetails() const
+UCI::Details Proxy::getConnectionDetails() const
 {
     if (!isInitialized())
     {
-        throw std::runtime_error("Broadcast " + getName() + " not initialized");
+        throw std::runtime_error("ProxyBroadcast " + getName()
+                               + " not initialized");
     }
     return pImpl->mConnectionDetails;
 }
 
-/// Create an instance of this clsas
-std::unique_ptr<UMPS::Broadcasts::IBroadcast>
-    Broadcast::createInstance() const noexcept
+/*
+/// Create an instance of this class
+std::unique_ptr<UMPS::ProxyBroadcasts::IProxy>
+    Proxy::createInstance() const noexcept
 {
-    std::unique_ptr<UMPS::Broadcasts::IBroadcast> result
-        = std::make_unique<Broadcast> ();
+    std::unique_ptr<UMPS::ProxyBroadcasts::IProxy> result
+        = std::make_unique<Proxy> ();
     return result;
 }
+*/

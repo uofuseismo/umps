@@ -42,10 +42,10 @@ PYBIND11_MODULE(pyumps, m)
     PUMPS::Authentication::initializeKeys(authenticationModule);
 
     // Message-specific broadcasts
-    pybind11::module broadcastsModule = m.def_submodule("Broadcasts");
-    broadcastsModule.attr("__doc__") = "An assortment of modules for publishing to and receiving packets with pre-defined message types."; 
-    PUMPS::Broadcasts::initializeDataPacketSubscriber(broadcastsModule);
-    PUMPS::Broadcasts::initializeDataPacketSubscriberOptions(broadcastsModule);
+    pybind11::module broadcastsModule = m.def_submodule("ProxyBroadcasts");
+    broadcastsModule.attr("__doc__") = "An assortment of modules for publishing to and receiving messages with pre-defined message types."; 
+    PUMPS::ProxyBroadcasts::initializeDataPacketSubscriber(broadcastsModule);
+    PUMPS::ProxyBroadcasts::initializeDataPacketSubscriberOptions(broadcastsModule);
     
     pybind11::module pubsubModule = messagingModule.def_submodule("PublisherSubscriber");
     //PUMPS::Messaging::XPublisherXSubscriber::initializePublisherOptions(messagingModule);

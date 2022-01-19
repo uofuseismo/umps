@@ -1,6 +1,6 @@
 #include <zmq.hpp>
-#include "umps/broadcasts/dataPacket/publisher.hpp"
-#include "umps/broadcasts/dataPacket/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
+#include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
@@ -11,7 +11,7 @@
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
-using namespace UMPS::Broadcasts::DataPacket;
+using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
@@ -113,11 +113,11 @@ void Publisher::send(const UMPS::MessageFormats::DataPacket<U> &message)
 ///--------------------------------------------------------------------------///
 ///                             Template Instantiation                       ///
 ///--------------------------------------------------------------------------///
-template void UMPS::Broadcasts::DataPacket::Publisher::send(
+template void UMPS::ProxyBroadcasts::DataPacket::Publisher::send(
     const UMPS::MessageFormats::DataPacket<double> &message);
-template void UMPS::Broadcasts::DataPacket::Publisher::send(
+template void UMPS::ProxyBroadcasts::DataPacket::Publisher::send(
     const UMPS::MessageFormats::DataPacket<float> &message);
-template void UMPS::Broadcasts::DataPacket::Publisher::send(
+template void UMPS::ProxyBroadcasts::DataPacket::Publisher::send(
     const UMPS::MessageFormats::DataPacket<int> &message);
-template void UMPS::Broadcasts::DataPacket::Publisher::send(
+template void UMPS::ProxyBroadcasts::DataPacket::Publisher::send(
     const UMPS::MessageFormats::DataPacket<int16_t> &message);

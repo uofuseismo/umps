@@ -1,7 +1,7 @@
 #include <iostream>
 #include <zmq.hpp>
-#include "umps/broadcasts/dataPacket/subscriber.hpp"
-#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
@@ -12,7 +12,7 @@
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
-using namespace UMPS::Broadcasts::DataPacket;
+using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
@@ -133,6 +133,6 @@ std::unique_ptr<UMPS::MessageFormats::DataPacket<T>>
 ///--------------------------------------------------------------------------///
 ///                             Template Instantiation                       ///
 ///--------------------------------------------------------------------------///
-template class UMPS::Broadcasts::DataPacket::Subscriber<double>;
-template class UMPS::Broadcasts::DataPacket::Subscriber<float>;
-template class UMPS::Broadcasts::DataPacket::Subscriber<int>;
+template class UMPS::ProxyBroadcasts::DataPacket::Subscriber<double>;
+template class UMPS::ProxyBroadcasts::DataPacket::Subscriber<float>;
+template class UMPS::ProxyBroadcasts::DataPacket::Subscriber<int>;
