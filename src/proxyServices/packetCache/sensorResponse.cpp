@@ -5,11 +5,11 @@
 #include <unordered_set>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/packetCache/sensorResponse.hpp"
+#include "umps/proxyServices/packetCache/sensorResponse.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::PacketCache::SensorResponse"
+#define MESSAGE_TYPE "UMPS::ProxyServices::PacketCache::SensorResponse"
 
-using namespace UMPS::Services::PacketCache;
+using namespace UMPS::ProxyServices::PacketCache;
 
 namespace
 {

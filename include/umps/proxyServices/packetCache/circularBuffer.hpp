@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
-#define UMPS_SERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_CIRCULARBUFFER_HPP
 #include <memory>
 #include <chrono>
 #include <vector>
@@ -10,9 +10,9 @@ namespace UMPS
   template<class T> class DataPacket;
  }
 }
-namespace UMPS::Services::PacketCache
+namespace UMPS::ProxyServices::PacketCache
 {
-/// @class CircularBuffer "circularBuffer.hpp" "umps/services/packetCache/circularBuffer.hpp"
+/// @class CircularBuffer "circularBuffer.hpp" "umps/proxyServices/packetCache/circularBuffer.hpp"
 /// @brief This is a thread-safe circular buffer for storing data packets for
 ///        a given station's channel.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -22,6 +22,7 @@ class CircularBuffer
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     CircularBuffer();
     /// @brief Copy constructor.
@@ -37,6 +38,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] circularBuffer  The circularBuffer class to copy to this.
     /// @result A deep copy of circularBuffer.
@@ -51,6 +53,7 @@ public:
      
     /// @brief Initialization
     /// @{
+
     /// @param[in] network       The network code - e.g., UU.
     /// @param[in] station       The station name - e.g., FSU.  
     /// @param[in] channel       The channel name - e.g., EHZ.
@@ -87,6 +90,7 @@ public:
 
     /// @name Adding Packets
     /// @{
+
     /// @brief Attempts to add the given packets to the buffer.
     /// @param[in] packets  The packets to add to this buffer.
     /// @sa \c addPacket() for rules defining a valid data packet.
@@ -112,6 +116,7 @@ public:
 
     /// @name Querying Packets
     /// @{
+
     /// @brief Returns the start time of the earliest packet in the buffer.
     /// @throws std::runtime_error \c isInitialized() is false or the 
     ///         \c getNumberOfPackets() is zero. 
@@ -153,12 +158,14 @@ public:
 
     /// @name Cleaning
     /// @{
+
     /// @brief Removes all packets that began before the given time. 
     //void removeExpiredPackets(double t0);
     /// @}
 
     /// @name Destructors
     /// @{ 
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.

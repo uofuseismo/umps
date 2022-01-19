@@ -1,7 +1,7 @@
-#ifndef UMPS_SERVICES_PACKETCACHE_ENUMS_HPP
-#define UMPS_SERVICES_PACKETCACHE_ENUMS_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_ENUMS_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_ENUMS_HPP
 #include <memory>
-namespace UMPS::Services::PacketCache
+namespace UMPS::ProxyServices::PacketCache
 {
 /// @brief These are return codes from the packet cache.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

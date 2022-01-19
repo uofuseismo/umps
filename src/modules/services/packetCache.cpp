@@ -6,11 +6,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
-#include "umps/services/packetCache/cappedCollection.hpp"
-#include "umps/services/packetCache/dataRequest.hpp"
-#include "umps/services/packetCache/dataResponse.hpp"
-#include "umps/services/packetCache/sensorRequest.hpp"
-#include "umps/services/packetCache/sensorResponse.hpp"
+#include "umps/proxyServices/packetCache/cappedCollection.hpp"
+#include "umps/proxyServices/packetCache/dataRequest.hpp"
+#include "umps/proxyServices/packetCache/dataResponse.hpp"
+#include "umps/proxyServices/packetCache/sensorRequest.hpp"
+#include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
@@ -30,7 +30,7 @@
 #include "private/staticUniquePointerCast.hpp"
 #include "private/isEmpty.hpp"
 
-namespace UPacketCache = UMPS::Services::PacketCache;
+namespace UPacketCache = UMPS::ProxyServices::PacketCache;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 namespace UAuth = UMPS::Authentication;
 

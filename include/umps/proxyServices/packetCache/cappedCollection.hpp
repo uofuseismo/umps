@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
-#define UMPS_SERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_CAPPEDCOLLECTION_HPP
 #include <memory>
 #include <unordered_set>
 namespace UMPS
@@ -13,9 +13,9 @@ namespace UMPS
   template<class T> class DataPacket;
  }
 }
-namespace UMPS::Services::PacketCache
+namespace UMPS::ProxyServices::PacketCache
 {
-/// @class CappedCollection "cappedCollection.hpp" "umps/services/packetCache/cappedCollection.hpp"
+/// @class CappedCollection "cappedCollection.hpp" "umps/proxyServices/packetCache/cappedCollection.hpp"
 /// @brief This is a thread-safe fixed-size collection of trace-packets for a
 ///        unique sensor (network, station, channel, location code).
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -25,6 +25,7 @@ class CappedCollection
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     CappedCollection();
     /// @brief Constructor.
@@ -44,6 +45,7 @@ public:
 
     /// @name Adding Packets 
     /// @{
+
     /// @brief Adds a packet to the collection.
     /// @param[in] packet  The datapacket to add to the collection.
     /// @throws std::invalid_argument if the network, station, channel,
@@ -79,6 +81,7 @@ public:
 
     /// @name Querying Packets 
     /// @{
+
     /// @brief Returns the start time of the earliest packet in the buffer.
     /// @throws std::runtime_error \c isInitialized() is false or the 
     ///         \c getNumberOfPackets() is zero. 
@@ -132,6 +135,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.

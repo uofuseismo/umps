@@ -5,17 +5,17 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "umps/services/packetCache/circularBuffer.hpp"
-#include "umps/services/packetCache/cappedCollection.hpp"
-#include "umps/services/packetCache/dataRequest.hpp"
-#include "umps/services/packetCache/dataResponse.hpp"
-#include "umps/services/packetCache/sensorRequest.hpp"
-#include "umps/services/packetCache/sensorResponse.hpp"
+#include "umps/proxyServices/packetCache/circularBuffer.hpp"
+#include "umps/proxyServices/packetCache/cappedCollection.hpp"
+#include "umps/proxyServices/packetCache/dataRequest.hpp"
+#include "umps/proxyServices/packetCache/dataResponse.hpp"
+#include "umps/proxyServices/packetCache/sensorRequest.hpp"
+#include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include <gtest/gtest.h>
 namespace
 {
-namespace PC = UMPS::Services::PacketCache;
+namespace PC = UMPS::ProxyServices::PacketCache;
 namespace MF = UMPS::MessageFormats;
 
 template<typename T>
@@ -108,7 +108,7 @@ TEST(PacketCache, SensorRequest)
     const uint64_t id = 600238; 
     request.setIdentifier(id);
     EXPECT_EQ(request.getMessageType(),
-              "UMPS::Services::PacketCache::SensorRequest");
+              "UMPS::ProxyServices::PacketCache::SensorRequest");
  
     auto message = request.toMessage();
     PC::SensorRequest requestCopy;
@@ -129,7 +129,7 @@ TEST(PacketCache, SensorResponse)
     response.setReturnCode(rc);
     EXPECT_NO_THROW(response.setNames(names));
     EXPECT_EQ(response.getMessageType(),
-              "UMPS::Services::PacketCache::SensorResponse");
+              "UMPS::ProxyServices::PacketCache::SensorResponse");
  
     auto message = response.toMessage();
     PC::SensorResponse responseCopy;
@@ -165,7 +165,7 @@ TEST(PacketCache, DataRequest)
     double t0 = 1629737861;
     double t1 = 1629737865;
     EXPECT_EQ(request.getMessageType(),
-              "UMPS::Services::PacketCache::DataRequest");
+              "UMPS::ProxyServices::PacketCache::DataRequest");
     EXPECT_NO_THROW(request.setNetwork(network));
     EXPECT_NO_THROW(request.setStation(station));
     EXPECT_NO_THROW(request.setChannel(channel));
@@ -234,7 +234,7 @@ TEST(PacketCache, DataResponse)
     EXPECT_EQ(responseCopy.getIdentifier(), id);
     EXPECT_EQ(responseCopy.getReturnCode(), rc);
     EXPECT_EQ(responseCopy.getMessageType(), 
-              "UMPS::Services::PacketCache::DataResponse");
+              "UMPS::ProxyServices::PacketCache::DataResponse");
     auto packetsBack = responseCopy.getPackets();
     EXPECT_EQ(packetsBack.size(), dataPackets.size());
     for (size_t i = 0; i < packetsBack.size(); ++i)

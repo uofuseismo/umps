@@ -138,12 +138,12 @@ set(MODULES_LIBSRC
     src/services/incrementer/counter.cpp
     src/services/incrementer/parameters.cpp
     src/services/incrementer/service.cpp
-    src/services/packetCache/circularBuffer.cpp
-    src/services/packetCache/cappedCollection.cpp
-    src/services/packetCache/dataRequest.cpp
-    src/services/packetCache/dataResponse.cpp
-    src/services/packetCache/sensorRequest.cpp
-    src/services/packetCache/sensorResponse.cpp
+    src/proxyServices/packetCache/circularBuffer.cpp
+    src/proxyServices/packetCache/cappedCollection.cpp
+    src/proxyServices/packetCache/dataRequest.cpp
+    src/proxyServices/packetCache/dataResponse.cpp
+    src/proxyServices/packetCache/sensorRequest.cpp
+    src/proxyServices/packetCache/sensorResponse.cpp
     src/modules/operator/readZAPOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 

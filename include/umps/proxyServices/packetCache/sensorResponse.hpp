@@ -1,36 +1,31 @@
-#ifndef UMPS_SERVICES_PACKETCACHE_DATARESPONSE_HPP
-#define UMPS_SERVICES_PACKETCACHE_DATARESPONSE_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_SENSORRESPONSE_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_SENSORRESPONSE_HPP
 #include <memory>
-#include <vector>
+#include <unordered_set>
 #include "umps/messageFormats/message.hpp"
-#include "umps/services/packetCache/enums.hpp"
-namespace UMPS::MessageFormats
+#include "umps/proxyServices/packetCache/enums.hpp"
+namespace UMPS::ProxyServices::PacketCache
 {
- template<class T> class DataPacket;
-}
-namespace UMPS::Services::PacketCache
-{
-/// @name DataResponse "dataResponse.hpp" "umps/services/packetCache/dataResponse.hpp"
-/// @brief This represents the packet data for a sensor.
-/// @sa DataRequest
+/// @class SensorResponse "sensorResponse.hpp" "umps/proxyServices/packetCache/sensorResponse.hpp"
+/// @brief This represents all available sensors in the cache.
+/// @sa SensorRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-template<class T = double>
-class DataResponse : public MessageFormats::IMessage
+class SensorResponse : public MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    DataResponse();
+    SensorResponse();
     /// @brief Copy constructor.
     /// @param[in] response  The response from which to initialize this class.
-    DataResponse(const DataResponse &response);
+    SensorResponse(const SensorResponse &response);
     /// @brief Move constructor.
     /// @param[in,out] response  The response from which to initialize
     ///                          this class.  On exit, responses' behavior is
     ///                          undefined.
-    DataResponse(DataResponse &&response) noexcept;
+    SensorResponse(SensorResponse &&response) noexcept;
     /// @}
     
     /// @name Operators
@@ -39,39 +34,26 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] response  The response to copy to this.
     /// @result A deep copy of the input response.
-    DataResponse& operator=(const DataResponse &response); 
+    SensorResponse& operator=(const SensorResponse &response); 
     /// @brief Move assignment operator.
     /// @param[in,out] response  The response whose memory will be moved to
     ///                          this.  On exit, response's behavior is
     ///                          undefined.
     /// @result The memory from response moved to this.
-    DataResponse& operator=(DataResponse &&response) noexcept;
+    SensorResponse& operator=(SensorResponse &&response) noexcept;
     /// @}
 
-    /// @name Data Packets
+    /// @name Sensors
     /// @{
 
-    /// @brief Sets the data packets.
-    /// @param[in] packets  The data packets corresponding to the request.
-    /// @throws std::invalid_argument if any packet's network, station, channel,
-    ///         location code, or sampling rate is not set.
-    void setPackets(const std::vector<UMPS::MessageFormats::DataPacket<T>> &packets);
-    /// @brief Sets the data packets.
-    /// @param[in,out] packets  On input these are the data packets to set.
-    ///                         On exit, packets's behavior is undefined.
-    /// @throws std::invalid_argument if any packet's network, station, channel,
-    ///         location code, or sampling rate is not set.
-    void setPackets(std::vector<UMPS::MessageFormats::DataPacket<T>> &&packets);
-    /// @result The number of packets.
-    [[nodiscard]] int getNumberOfPackets() const noexcept;
-    /// @result A pointer to the data packets.  This is an array with dimensions
-    ///         [\c getNumberOfPackets()].
-    [[nodiscard]] const UMPS::MessageFormats::DataPacket<T> *getPacketsPointer() const noexcept;
-    /// @result The data packets corresponding to the data request. 
-    /// @note If result.empty() then a problem was likely detected and you
-    ///       should check the return code.
-    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets() const noexcept;
-    /// @}
+    /// @result All the sensors currently in the capped collection.
+    /// @note The sensor names are formatted as:
+    ///       NETWORK.STATION.CHANNEL.LOCATION_CODE.
+    [[nodiscard]] std::unordered_set<std::string> getNames() const noexcept;
+    /// @brief Sets all the sensor names.
+    /// @note Duplicate
+    void setNames(const std::unordered_set<std::string> &names) noexcept;
+    /// @} 
 
     /// @name Additional Information
     /// @{
@@ -154,11 +136,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~DataResponse() override;
+    ~SensorResponse() override;
     /// @}
 private:
-    class DataResponseImpl;
-    std::unique_ptr<DataResponseImpl> pImpl;
+    class SensorResponseImpl;
+    std::unique_ptr<SensorResponseImpl> pImpl;
 };
 }
 #endif

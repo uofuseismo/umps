@@ -1,48 +1,88 @@
-#ifndef UMPS_SERVICES_PACKETCACHE_SENSORREQUEST_HPP
-#define UMPS_SERVICES_PACKETCACHE_SENSORREQUEST_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_DATARESPONSE_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_DATARESPONSE_HPP
 #include <memory>
+#include <vector>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::Services::PacketCache
+#include "umps/proxyServices/packetCache/enums.hpp"
+namespace UMPS::MessageFormats
 {
-/// @name SensorRequest "sensorRequest.hpp" "umps/services/packetCache/sensorRequest.hpp"
-/// @brief This is a request message for querying the available sensors - i.e.,
-///        all unique Network, Station, Channel, Location Codes.
-/// @note Since the underlying messaging is asynchronous it is to your advantage
-///       to provide your request a unique identifier since the requests are
-///       not required to filled in the order that they are put on the wire.
-/// @sa SensorResponse
+ template<class T> class DataPacket;
+}
+namespace UMPS::ProxyServices::PacketCache
+{
+/// @name DataResponse "dataResponse.hpp" "umps/proxyServices/packetCache/dataResponse.hpp"
+/// @brief This represents the packet data for a sensor.
+/// @sa DataRequest
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class SensorRequest : public MessageFormats::IMessage
+template<class T = double>
+class DataResponse : public MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    SensorRequest();
+    DataResponse();
     /// @brief Copy constructor.
-    /// @param[in] request  The request from which to initialize this class.
-    SensorRequest(const SensorRequest &request);
-    /// @brief 
-    SensorRequest(SensorRequest &&request) noexcept;
+    /// @param[in] response  The response from which to initialize this class.
+    DataResponse(const DataResponse &response);
+    /// @brief Move constructor.
+    /// @param[in,out] response  The response from which to initialize
+    ///                          this class.  On exit, responses' behavior is
+    ///                          undefined.
+    DataResponse(DataResponse &&response) noexcept;
     /// @}
     
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment operator.
-    /// @param[in] request  The request to copy to this.
-    /// @result A deep copy of the input request.
-    SensorRequest& operator=(const SensorRequest &request); 
+    /// @param[in] response  The response to copy to this.
+    /// @result A deep copy of the input response.
+    DataResponse& operator=(const DataResponse &response); 
     /// @brief Move assignment operator.
-    /// @param[in,out] request  The request whose memory will be moved to this.
-    ///                         On exit, request's behavior is undefined.
-    /// @result The memory from request moved to this.
-    SensorRequest& operator=(SensorRequest &&request) noexcept;
+    /// @param[in,out] response  The response whose memory will be moved to
+    ///                          this.  On exit, response's behavior is
+    ///                          undefined.
+    /// @result The memory from response moved to this.
+    DataResponse& operator=(DataResponse &&response) noexcept;
     /// @}
 
-    /// @name Optional Information
+    /// @name Data Packets
     /// @{
+
+    /// @brief Sets the data packets.
+    /// @param[in] packets  The data packets corresponding to the request.
+    /// @throws std::invalid_argument if any packet's network, station, channel,
+    ///         location code, or sampling rate is not set.
+    void setPackets(const std::vector<UMPS::MessageFormats::DataPacket<T>> &packets);
+    /// @brief Sets the data packets.
+    /// @param[in,out] packets  On input these are the data packets to set.
+    ///                         On exit, packets's behavior is undefined.
+    /// @throws std::invalid_argument if any packet's network, station, channel,
+    ///         location code, or sampling rate is not set.
+    void setPackets(std::vector<UMPS::MessageFormats::DataPacket<T>> &&packets);
+    /// @result The number of packets.
+    [[nodiscard]] int getNumberOfPackets() const noexcept;
+    /// @result A pointer to the data packets.  This is an array with dimensions
+    ///         [\c getNumberOfPackets()].
+    [[nodiscard]] const UMPS::MessageFormats::DataPacket<T> *getPacketsPointer() const noexcept;
+    /// @result The data packets corresponding to the data request. 
+    /// @note If result.empty() then a problem was likely detected and you
+    ///       should check the return code.
+    [[nodiscard]] std::vector<UMPS::MessageFormats::DataPacket<T>> getPackets() const noexcept;
+    /// @}
+
+    /// @name Additional Information
+    /// @{
+
+    /// @brief Allows the service to set its return code and signal to
+    ///        the requester whether or not the request was successfully
+    ///        processed.
+    /// @param[in] code  The return code.
+    void setReturnCode(ReturnCode code) noexcept;
+    /// @result The return code from the service.
+    [[nodiscard]] ReturnCode getReturnCode() const noexcept;
 
     /// @brief For asynchronous messaging this allows the requester to index
     ///        the request.  This value will be returned so the requester
@@ -82,10 +122,10 @@ public:
     /// @name Debugging Utilities
     /// @{
 
-    /// @brief Creates the class from a JSON data request message.
+    /// @brief Creates the class from a JSON data reseponse message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
-    /// @brief Converts the data request class to a JSON message.
+    /// @brief Converts the data response class to a JSON message.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
@@ -114,11 +154,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~SensorRequest() override;
+    ~DataResponse() override;
     /// @}
 private:
-    class SensorRequestImpl;
-    std::unique_ptr<SensorRequestImpl> pImpl;
+    class DataResponseImpl;
+    std::unique_ptr<DataResponseImpl> pImpl;
 };
 }
 #endif

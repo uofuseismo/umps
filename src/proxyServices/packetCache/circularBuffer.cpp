@@ -7,11 +7,11 @@
 #include <mutex>
 #include <cassert>
 #include <boost/circular_buffer.hpp>
-#include "umps/services/packetCache/circularBuffer.hpp"
+#include "umps/proxyServices/packetCache/circularBuffer.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "private/applications/packetCache.hpp"
 
-using namespace UMPS::Services::PacketCache;
+using namespace UMPS::ProxyServices::PacketCache;
 namespace UMF = UMPS::MessageFormats;
 
 #define NAN_TIME std::chrono::microseconds{std::numeric_limits<int64_t>::lowest()}
@@ -530,5 +530,5 @@ std::vector<UMF::DataPacket<T>> CircularBuffer<T>::getPackets(
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
 ///--------------------------------------------------------------------------///
-template class UMPS::Services::PacketCache::CircularBuffer<double>;
-template class UMPS::Services::PacketCache::CircularBuffer<float>;
+template class UMPS::ProxyServices::PacketCache::CircularBuffer<double>;
+template class UMPS::ProxyServices::PacketCache::CircularBuffer<float>;

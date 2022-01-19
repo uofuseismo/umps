@@ -4,11 +4,11 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/packetCache/sensorRequest.hpp"
+#include "umps/proxyServices/packetCache/sensorRequest.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::PacketCache::SensorRequest"
+#define MESSAGE_TYPE "UMPS::ProxyServices::PacketCache::SensorRequest"
 
-using namespace UMPS::Services::PacketCache;
+using namespace UMPS::ProxyServices::PacketCache;
 
 namespace
 {

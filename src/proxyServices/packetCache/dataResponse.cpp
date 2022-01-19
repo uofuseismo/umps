@@ -4,13 +4,13 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/packetCache/dataResponse.hpp"
+#include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "private/applications/packetCache.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::PacketCache::DataResponse"
+#define MESSAGE_TYPE "UMPS::ProxyServices::PacketCache::DataResponse"
 
-using namespace UMPS::Services::PacketCache;
+using namespace UMPS::ProxyServices::PacketCache;
 
 namespace
 {
@@ -377,5 +377,5 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 ///--------------------------------------------------------------------------///
 ///                              Template Instantiation                      ///
 ///--------------------------------------------------------------------------///
-template class UMPS::Services::PacketCache::DataResponse<double>;
-template class UMPS::Services::PacketCache::DataResponse<float>;
+template class UMPS::ProxyServices::PacketCache::DataResponse<double>;
+template class UMPS::ProxyServices::PacketCache::DataResponse<float>;

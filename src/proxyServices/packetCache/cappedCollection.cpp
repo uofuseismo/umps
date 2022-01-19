@@ -4,12 +4,12 @@
 #include <unordered_set>
 #include <vector>
 #include <mutex>
-#include "umps/services/packetCache/cappedCollection.hpp"
-#include "umps/services/packetCache/circularBuffer.hpp"
+#include "umps/proxyServices/packetCache/cappedCollection.hpp"
+#include "umps/proxyServices/packetCache/circularBuffer.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/applications/packetCache.hpp"
 
-using namespace UMPS::Services::PacketCache;
+using namespace UMPS::ProxyServices::PacketCache;
 
 /// Implementation
 template<class T>
@@ -352,5 +352,5 @@ std::vector<UMPS::MessageFormats::DataPacket<T>>
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
 ///--------------------------------------------------------------------------///
-template class UMPS::Services::PacketCache::CappedCollection<double>;
-template class UMPS::Services::PacketCache::CappedCollection<float>;
+template class UMPS::ProxyServices::PacketCache::CappedCollection<double>;
+template class UMPS::ProxyServices::PacketCache::CappedCollection<float>;

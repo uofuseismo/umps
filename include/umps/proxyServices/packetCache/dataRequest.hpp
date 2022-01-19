@@ -1,10 +1,10 @@
-#ifndef UMPS_SERVICES_PACKETCACHE_DATAREQUEST_HPP
-#define UMPS_SERVICES_PACKETCACHE_DATAREQUEST_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_DATAREQUEST_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_DATAREQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::Services::PacketCache
+namespace UMPS::ProxyServices::PacketCache
 {
-/// @name DataRequst "dataRequest.hpp" "umps/services/packetCache/dataRequest.hpp"
+/// @name DataRequst "dataRequest.hpp" "umps/proxyServices/packetCache/dataRequest.hpp"
 /// @brief This is a request message for querying the packetCache.  A query
 ///        consists of a network, station, channel, location code, and 
 ///        optionally a start time and end time.
