@@ -2,9 +2,16 @@
 #define UMPS_SERVICES_INCREMENTER_SERVICE_HPP
 #include <memory>
 #include "umps/services/service.hpp"
-namespace UMPS::Logging
+namespace UMPS
 {
- class ILog;
+ namespace Logging
+ {
+  class ILog;
+ }
+ namespace Authentication
+ {
+  class IAuthenticator;
+ }
 }
 namespace UMPS::Services::Incrementer
 {
@@ -22,10 +29,13 @@ public:
     Service();
     /// @brief Constructor with a given logger.
     explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given logger and authenticator.
+    Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
+            std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Move constructor.
-    Service(Service &&service) noexcept;
+    //Service(Service &&service) noexcept;
     /// @brief Move assignment operator.
-    Service& operator=(Service &&service) noexcept;
+    //Service& operator=(Service &&service) noexcept;
     /// @}
      
     /// @brief Initializes the service.
@@ -63,6 +73,8 @@ public:
  
     Service(const Service &service) = delete;
     Service& operator=(const Service &service) = delete;
+    Service(Service &&service) noexcept = delete;
+    Service& operator=(Service &&service) noexcept = delete;
 private:
     class ServiceImpl;
     std::unique_ptr<ServiceImpl> pImpl;

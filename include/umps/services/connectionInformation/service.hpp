@@ -2,10 +2,6 @@
 #define UMPS_SERVICES_CONNECTIONINFORMATION_SERVICE_HPP
 #include <memory>
 #include "umps/services/service.hpp"
-namespace zmq
-{
- class context_t;
-}
 namespace UMPS
 {
  namespace Logging
@@ -55,9 +51,9 @@ public:
     //        std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
 
     /// @brief Move constructor.
-    Service(Service &&service) noexcept;
+    //Service(Service &&service) noexcept;
     /// @brief Move assignment operator.
-    Service& operator=(Service &&service) noexcept;
+    //Service& operator=(Service &&service) noexcept;
 
     /// @brief Initializes the service.
     void initialize(const Parameters &parameters);
@@ -116,6 +112,8 @@ public:
 
     Service(const Service &service) = delete;
     Service& operator=(const Service &service) = delete;
+    Service(Service &&service) noexcept = delete;
+    Service& operator=(Service &&service) noexcept = delete;
 private:
     class ServiceImpl;
     std::unique_ptr<ServiceImpl> pImpl;

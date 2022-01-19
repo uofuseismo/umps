@@ -60,12 +60,14 @@ struct ProgramOptions
 
 struct Modules
 {
-    std::vector<std::unique_ptr<UMPS::Services::IService>> mIncrementers;
+    std::map<std::string, std::unique_ptr<UMPS::Services::IService>>
+        mServices;
     //std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
-    std::map<std::string, std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
+    std::map<std::string, std::unique_ptr<UMPS::Broadcasts::IBroadcast>>
+        mProxyBroadcasts;
     //std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
     //std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
-    UMPS::Services::ConnectionInformation::Service mConnectionInformation;
+    std::unique_ptr<UMPS::Services::ConnectionInformation::Service> mConnectionInformation;
 };
 
 ProgramOptions parseIniFile(const std::string &iniFile);
@@ -266,14 +268,12 @@ int main(int argc, char *argv[])
     ////UAuth::Service authenticatorService(connectionInformationContext,
     ////                                    authenticationLoggerPtr,
     ////                                    authenticator);
-    UMPS::Services::ConnectionInformation::Service
-        connectionInformation(//connectionInformationContext,
-                              connectionInformationLoggerPtr,
-                              authenticator);
-    connectionInformation.initialize(options.mConnectionInformationParameters);
+    auto connectionInformation
+        = std::make_unique<UMPS::Services::ConnectionInformation::Service>
+          (connectionInformationLoggerPtr, authenticator);
+    connectionInformation->initialize(options.mConnectionInformationParameters);
     modules.mConnectionInformation = std::move(connectionInformation);
 
-    modules.mIncrementers.reserve(options.mIncrementerParameters.size());
     for (const auto &parameters : options.mIncrementerParameters)
     {
         auto modulesName = "incrementer_" + parameters.getName();
@@ -283,8 +283,8 @@ int main(int argc, char *argv[])
                           parameters.getVerbosity(), hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
            = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        auto service
-           = std::make_unique<UMPS::Services::Incrementer::Service> (loggerPtr);
+        auto service = std::make_unique<UMPS::Services::Incrementer::Service>
+                       (loggerPtr, authenticator);
         //std::unique_ptr<UMPS::Services::Incrementer::Service> service(loggerPtr);
         try
         {
@@ -295,7 +295,8 @@ int main(int argc, char *argv[])
             std::cerr << "Failed to initialize incrementer service"
                       << std::endl;
         }
-        modules.mIncrementers.push_back(std::move(service));
+        modules.mServices.insert(std::pair("Services::" + parameters.getName(),
+                                           std::move(service)));
     }
     // Start the connection information service
     std::vector<std::thread> threads;
@@ -317,7 +318,7 @@ int main(int argc, char *argv[])
     std::cout << "Starting connection information service..." << std::endl;
     try
     {
-        modules.mConnectionInformation.start();
+        modules.mConnectionInformation->start();
         //std::thread t(&UMPS::Services::ConnectionInformation::Service::start,
         //              &modules.mConnectionInformation); 
         //threads.push_back(std::move(t));
@@ -330,8 +331,10 @@ int main(int argc, char *argv[])
     }
     // Now start the services - a thread per service
     std::cout << "Starting incrementer services..." << std::endl;
-    for (auto &module : modules.mIncrementers)
+    for (auto &module : modules.mServices)
     {
+        module.second->start();
+/*
         try
         {
             std::thread t(&UMPS::Services::IService::start, //Incrementer::Service::start,
@@ -343,7 +346,8 @@ int main(int argc, char *argv[])
             std::cerr << e.what() << std::endl;
             continue;
         }
-        modules.mConnectionInformation.addConnection(*module);
+*/
+        modules.mConnectionInformation->addConnection(*module.second);
     }
     // And start the broadcasts...
     try
@@ -360,11 +364,12 @@ int main(int argc, char *argv[])
             = std::make_unique<UMPS::Broadcasts::DataPacket::Broadcast>
               (loggerPtr, authenticator);
         dataPacketBroadcast->initialize(options.mDataPacketParameters);
-        modules.mBroadcasts.insert(
-            std::pair("DataPacket", std::move(dataPacketBroadcast)));
-        modules.mBroadcasts["DataPacket"]->start();
-        modules.mConnectionInformation.addConnection(
-            *modules.mBroadcasts["DataPacket"]);
+        modules.mProxyBroadcasts.insert(
+            std::pair("ProxyBroadcasts::DataPacket",
+                      std::move(dataPacketBroadcast)));
+        modules.mProxyBroadcasts["ProxyBroadcasts::DataPacket"]->start();
+        modules.mConnectionInformation->addConnection(
+            *modules.mProxyBroadcasts["ProxyBroadcasts::DataPacket"]);
     }
     catch (const std::exception &e)
     {
@@ -385,11 +390,12 @@ int main(int argc, char *argv[])
             = std::make_unique<UMPS::Broadcasts::Heartbeat::Broadcast>
               (loggerPtr, authenticator);
         heartbeatBroadcast->initialize(options.mHeartbeatParameters);
-        modules.mBroadcasts.insert(
-            std::pair("Heartbeat", std::move(heartbeatBroadcast)));
-        modules.mBroadcasts["Heartbeat"]->start();
-        modules.mConnectionInformation.addConnection(
-            *modules.mBroadcasts["Heartbeat"]);
+        modules.mProxyBroadcasts.insert(
+            std::pair("ProxyBroadcasts::Heartbeat",
+                      std::move(heartbeatBroadcast)));
+        modules.mProxyBroadcasts["ProxyBroadcasts::Heartbeat"]->start();
+        modules.mConnectionInformation->addConnection(
+            *modules.mProxyBroadcasts["ProxyBroadcasts::Heartbeat"]);
 /*
         modules.mHeartbeatBroadcast = std::move(heartbeatBroadcast);
         modules.mHeartbeatBroadcast->start();
@@ -422,18 +428,18 @@ int main(int argc, char *argv[])
         else if (command == "list")
         {
             std::cout << "Connection Information:" << std::endl;
-            printService(modules.mConnectionInformation);
+            printService(*modules.mConnectionInformation);
             std::cout << std::endl;
 
             std::cout << "Incrementers:" << std::endl;
-            for (const auto &module : modules.mIncrementers)
+            for (const auto &module : modules.mServices)
             {
-                printService(*module);
+                printService(*module.second);
             }
             std::cout << std::endl;
 
             std::cout << "Broadcasts:" << std::endl;
-            for (const auto &broadcast : modules.mBroadcasts)
+            for (const auto &broadcast : modules.mProxyBroadcasts)
             {
                 printBroadcast(*broadcast.second);
             }
@@ -451,19 +457,20 @@ int main(int argc, char *argv[])
     std::cout << "Stopping the authenticator..." << std::endl;
     //authenticatorService.stop();
 //authenticatorService1.stop();
-    std::cout << "Stopping incrementer services..." << std::endl;
-    for (auto &module : modules.mIncrementers)
+    std::cout << "Stopping the services..." << std::endl;
+    for (auto &module : modules.mServices)
     {
-        modules.mConnectionInformation.removeConnection(module->getName());
-        module->stop();
+        modules.mConnectionInformation->removeConnection(module.second->getName());
+        module.second->stop();
     }
-    for (auto &broadcast : modules.mBroadcasts)
+    for (auto &broadcast : modules.mProxyBroadcasts)
     {
+        modules.mConnectionInformation->removeConnection(broadcast.second->getName());
         broadcast.second->stop();
     } 
     //if (modules.mDataPacketBroadcast){modules.mDataPacketBroadcast->stop();}
     //if (modules.mHeartbeatBroadcast){modules.mHeartbeatBroadcast->stop();}
-    modules.mConnectionInformation.stop();
+    modules.mConnectionInformation->stop();
     // Join the threads
     for (auto &thread : threads)
     {

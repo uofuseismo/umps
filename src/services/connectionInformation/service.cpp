@@ -209,6 +209,7 @@ Service::Service(std::shared_ptr<zmq::context_t> &context,
 }
 */
 
+/*
 /// Move c'tor
 Service::Service(Service &&service) noexcept
 {
@@ -222,6 +223,7 @@ Service& Service::operator=(Service &&service) noexcept
     pImpl = std::move(service.pImpl);
     return *this;
 }
+*/
 
 /// Destructor
 Service::~Service() = default;
