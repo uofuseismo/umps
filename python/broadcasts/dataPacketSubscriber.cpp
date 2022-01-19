@@ -1,6 +1,9 @@
+#include <iostream>
 #include "broadcasts/dataPacketSubscriber.hpp"
+#include "broadcasts/dataPacketSubscriberOptions.hpp"
 #include "messageFormats/dataPacket.hpp"
 #include "umps/broadcasts/dataPacket/subscriber.hpp"
+#include "umps/broadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "initialize.hpp"
 
@@ -15,6 +18,13 @@ DataPacketSubscriber::DataPacketSubscriber() :
 /// Destructor
 DataPacketSubscriber::~DataPacketSubscriber() = default;
 
+/// Initialize
+void DataPacketSubscriber::initialize(const DataPacketSubscriberOptions &options)
+{
+    auto nativeOptions = options.getNativeClass();
+    pImpl->initialize(nativeOptions);
+}
+
 /// Initialized?
 bool DataPacketSubscriber::isInitialized() const noexcept
 {
@@ -24,8 +34,9 @@ bool DataPacketSubscriber::isInitialized() const noexcept
 /// Receive a message
 PUMPS::MessageFormats::DataPacket DataPacketSubscriber::receive() const
 {
+    PUMPS::MessageFormats::DataPacket result;
     auto message = pImpl->receive();
-    PUMPS::MessageFormats::DataPacket result(*message);
+    if (message != nullptr){result.fromBaseClass(*message);} 
     return result;
 }
 
@@ -48,13 +59,11 @@ Read-only Properties :
 
    o.def_property_readonly("is_initialized",
                            &DataPacketSubscriber::isInitialized);
-/*
-   o.def("set_grasslands_server",
-         &ZAPOptions::setGrasslandsServer,
-         "Sets this as a grasslands server.  This machine will accept all connections.");
-   o.def("set_grasslands_client",
-         &ZAPOptions::setGrasslandsClient,
-         "Sets this as a grasslands client.  This machine will be able to connect to Grasslands servers.");
-*/
+   o.def("receive",
+         &DataPacketSubscriber::receive, 
+         "Receives a message from the broadcast.  The class must be initialized prior to calling this.  Note, the message may have no information.  In this case, the receive timed out.");
+   o.def("initialize",
+         &DataPacketSubscriber::initialize,
+         "Initializes the subscriber.  Note, the address to which to connect must, at minimum, be set on the options");
 
 }

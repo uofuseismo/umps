@@ -37,12 +37,15 @@ PYBIND11_MODULE(pyumps, m)
 
     // Authentication
     pybind11::module authenticationModule = m.def_submodule("Authentication");
+    authenticationModule.attr("__doc__") = "ZeroMQ Authentication Protocol patterns used in UMPS.";
     PUMPS::Authentication::initializeZAPOptions(authenticationModule);
     PUMPS::Authentication::initializeKeys(authenticationModule);
 
     // Message-specific broadcasts
     pybind11::module broadcastsModule = m.def_submodule("Broadcasts");
+    broadcastsModule.attr("__doc__") = "An assortment of modules for publishing to and receiving packets with pre-defined message types."; 
     PUMPS::Broadcasts::initializeDataPacketSubscriber(broadcastsModule);
+    PUMPS::Broadcasts::initializeDataPacketSubscriberOptions(broadcastsModule);
     
     pybind11::module pubsubModule = messagingModule.def_submodule("PublisherSubscriber");
     //PUMPS::Messaging::XPublisherXSubscriber::initializePublisherOptions(messagingModule);

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <zmq.hpp>
 #include "umps/broadcasts/dataPacket/subscriber.hpp"
 #include "umps/broadcasts/dataPacket/subscriberOptions.hpp"

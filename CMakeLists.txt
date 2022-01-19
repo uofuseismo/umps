@@ -236,6 +236,7 @@ if (WRAP_PYTHON)
                python/authentication/keys.cpp
                python/authentication/zapOptions.cpp
                python/broadcasts/dataPacketSubscriber.cpp
+               python/broadcasts/dataPacketSubscriberOptions.cpp
                python/messaging/publisherSubscriber/publisher.cpp
                python/messaging/publisherSubscriber/subscriberOptions.cpp
                python/messaging/publisherSubscriber/subscriber.cpp)
