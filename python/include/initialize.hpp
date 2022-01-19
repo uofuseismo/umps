@@ -23,5 +23,9 @@ namespace PUMPS
   void initializeIMessage(pybind11::module &m);
   void initializeMessages(pybind11::module &m);
  }
+ namespace Broadcasts
+ {
+  void initializeDataPacketSubscriber(pybind11::module &m);
+ }
 }
 #endif

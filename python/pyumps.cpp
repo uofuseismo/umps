@@ -39,6 +39,10 @@ PYBIND11_MODULE(pyumps, m)
     pybind11::module authenticationModule = m.def_submodule("Authentication");
     PUMPS::Authentication::initializeZAPOptions(authenticationModule);
     PUMPS::Authentication::initializeKeys(authenticationModule);
+
+    // Message-specific broadcasts
+    pybind11::module broadcastsModule = m.def_submodule("Broadcasts");
+    PUMPS::Broadcasts::initializeDataPacketSubscriber(broadcastsModule);
     
     pybind11::module pubsubModule = messagingModule.def_submodule("PublisherSubscriber");
     //PUMPS::Messaging::XPublisherXSubscriber::initializePublisherOptions(messagingModule);

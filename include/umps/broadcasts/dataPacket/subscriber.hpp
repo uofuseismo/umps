@@ -37,6 +37,7 @@ class Subscriber
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Subscriber();
     /// @brief Constructs a subscriber with the given logger.
