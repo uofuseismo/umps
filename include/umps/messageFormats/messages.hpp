@@ -8,6 +8,7 @@ namespace UMPS::MessageFormats
 }
 namespace UMPS::MessageFormats
 {
+/// @class Messages "messages.hpp" "umps/messageFormats/messages.hpp"
 /// @brief This is a container for holding multiple (unique) message formats.
 /// @copyright Ben Baker (University of Utah)
 class Messages
@@ -15,6 +16,7 @@ class Messages
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Messages();
     /// @brief Copy constructor.
@@ -30,6 +32,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] messages  The messages container to copy to this.
     /// @result A deep copy of the input messages container.
@@ -79,6 +82,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
