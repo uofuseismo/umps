@@ -1,15 +1,17 @@
-#ifndef UMPS_PROXYBROADCASTS_PROXY_HPP
-#define UMPS_PROXYBROADCASTS_PROXY_HPP
+#ifndef UMPS_PROXYSERVICES_PROXY_HPP
+#define UMPS_PROXYSERVICES_PROXY_HPP
 #include <memory>
 #include <string>
 #include "umps/services/connectionInformation/details.hpp"
-namespace UMPS::ProxyBroadcasts
+namespace UMPS::ProxyServices
 {
-/// @class IProxy "proxy.hpp" "umps/proxyBroadcasts/proxy.hpp"
+/// @class IProxy "proxy.hpp" "umps/proxyServices/proxy.hpp"
 /// @brief This is the abstract base class which defines the proxy defining
-///        an xPub/xSub broadcast.  The xPub/xSub intermediary is a lightweight
-///        proxy that forwards messages from producers to a location that is
-///        accessible by clients.
+///        an router/dealer-based request/reply mechanism.  The router/dealer
+///        is a lightweight intermediary that forwards requests from clients
+///        to servers whereby the servers create a response for the request.
+///        This response is then propagated back to the client via the
+///        router/dealer proxy.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class IProxy
 {
