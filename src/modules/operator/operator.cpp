@@ -30,10 +30,14 @@
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
+#include "umps/proxyServices/proxy.hpp"
 #include "umps/proxyBroadcasts/dataPacket/proxy.hpp"
 #include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/proxy.hpp"
 #include "umps/proxyBroadcasts/heartbeat/proxyOptions.hpp"
+#include "umps/proxyServices/proxy.hpp"
+#include "umps/proxyServices/packetCache/proxy.hpp"
+#include "umps/proxyServices/packetCache/proxyOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
 
@@ -65,6 +69,8 @@ struct Modules
     //std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
     std::map<std::string, std::unique_ptr<UMPS::ProxyBroadcasts::IProxy>>
         mProxyBroadcasts;
+    std::map<std::string, std::unique_ptr<UMPS::ProxyServices::IProxy>>
+        mProxyServices;
     //std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
     //std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
     std::unique_ptr<UMPS::Services::ConnectionInformation::Service> mConnectionInformation;
@@ -85,6 +91,24 @@ void printService(const UMPS::Services::IService &service)
     }
     catch (const std::exception &e)
     {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void printService(const UMPS::ProxyServices::IProxy &proxy)
+{
+    try
+    {
+        auto details = proxy.getConnectionDetails();
+        auto socketInfo = details.getProxySocketDetails();
+        std::cout << "ProxyService: " << proxy.getName()
+                  << " frontend available at: "
+                  << socketInfo.getFrontendAddress()
+                  << " and backend available at: "
+                  << socketInfo.getBackendAddress() << std::endl;
+    }
+    catch (const std::exception &e)
+    {   
         std::cerr << e.what() << std::endl;
     }
 }
@@ -319,7 +343,7 @@ int main(int argc, char *argv[])
                                            std::move(service)));
     }
     // Start the connection information service
-    std::vector<std::thread> threads;
+//    std::vector<std::thread> threads;
 /*
     std::cout << "Starting the authenticator..." << std::endl;
     try
@@ -451,18 +475,36 @@ int main(int argc, char *argv[])
             printService(*modules.mConnectionInformation);
             std::cout << std::endl;
 
-            std::cout << "Incrementers:" << std::endl;
-            for (const auto &module : modules.mServices)
+            if (!modules.mServices.empty())
             {
-                printService(*module.second);
+                std::cout << "Services:" << std::endl;
+                for (const auto &module : modules.mServices)
+                {
+                    printService(*module.second);
+                }
+                std::cout << std::endl;
             }
-            std::cout << std::endl;
 
-            std::cout << "Broadcasts:" << std::endl;
-            for (const auto &broadcast : modules.mProxyBroadcasts)
+            if (!modules.mProxyBroadcasts.empty())
             {
-                printBroadcast(*broadcast.second);
+                std::cout << "ProxyBroadcasts:" << std::endl;
+                for (const auto &broadcast : modules.mProxyBroadcasts)
+                {
+                    printBroadcast(*broadcast.second);
+                }
+                std::cout << std::endl;
             }
+
+            if (!modules.mProxyServices.empty())
+            {
+                std::cout << "ProxyServices:" << std::endl;
+                for (const auto &service : modules.mProxyServices)
+                {
+                    printService(*service.second);
+                }
+                std::cout << std::endl;
+            }
+
             //printBroadcast(*modules.mDataPacketBroadcast);
             //printBroadcast(*modules.mHeartbeatBroadcast);
         }
@@ -474,28 +516,37 @@ int main(int argc, char *argv[])
     }
 
     // Shut down the services
-    std::cout << "Stopping the authenticator..." << std::endl;
+    //std::cout << "Stopping the authenticator..." << std::endl;
     //authenticatorService.stop();
-//authenticatorService1.stop();
-    std::cout << "Stopping the services..." << std::endl;
-    for (auto &module : modules.mServices)
-    {
-        modules.mConnectionInformation->removeConnection(module.second->getName());
-        module.second->stop();
-    }
+    std::cout << "Stopping the proxy broadcasts..." << std::endl;
     for (auto &broadcast : modules.mProxyBroadcasts)
     {
         modules.mConnectionInformation->removeConnection(broadcast.second->getName());
         broadcast.second->stop();
     } 
+    std::cout << "Stopping the proxy services..." << std::endl;
+    for (auto &service : modules.mProxyServices)
+    {
+        modules.mConnectionInformation->removeConnection(service.second->getName());
+        service.second->stop();
+    }
+    std::cout << "Stopping the services..." << std::endl;
+    for (auto &service : modules.mServices)
+    {
+        modules.mConnectionInformation->removeConnection(service.second->getName());
+        service.second->stop();
+    }
     //if (modules.mDataPacketBroadcast){modules.mDataPacketBroadcast->stop();}
     //if (modules.mHeartbeatBroadcast){modules.mHeartbeatBroadcast->stop();}
+    std::cout << "Stopping the connection information service..." << std::endl;
     modules.mConnectionInformation->stop();
     // Join the threads
+/*
     for (auto &thread : threads)
     {
         if (thread.joinable()){thread.join();}
     }
+*/
     return EXIT_SUCCESS;
 }
 

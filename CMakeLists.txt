@@ -142,6 +142,8 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/cappedCollection.cpp
     src/proxyServices/packetCache/dataRequest.cpp
     src/proxyServices/packetCache/dataResponse.cpp
+    src/proxyServices/packetCache/proxy.cpp
+    src/proxyServices/packetCache/proxyOptions.cpp
     src/proxyServices/packetCache/sensorRequest.cpp
     src/proxyServices/packetCache/sensorResponse.cpp
     src/modules/operator/readZAPOptions.cpp)

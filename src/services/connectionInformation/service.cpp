@@ -11,6 +11,7 @@
 #include "umps/services/service.hpp"
 #include "umps/broadcasts/broadcast.hpp"
 #include "umps/proxyBroadcasts/proxy.hpp"
+#include "umps/proxyServices/proxy.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/parameters.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
@@ -347,6 +348,13 @@ void Service::addConnection(const UMPS::Broadcasts::IBroadcast &broadcast)
 
 /// Add (proxy broadcast) connection
 void Service::addConnection(const UMPS::ProxyBroadcasts::IProxy &proxy)
+{
+    auto details = proxy.getConnectionDetails();
+    addConnection(details);
+}
+
+/// Add (proxy service) connection
+void Service::addConnection(const UMPS::ProxyServices::IProxy &proxy)
 {
     auto details = proxy.getConnectionDetails();
     addConnection(details);
