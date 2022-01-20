@@ -1,5 +1,5 @@
-#ifndef UMPS_BROADCASTS_EARTHWORM_WAVERING_HPP
-#define UMPS_BROADCASTS_EARTHWORM_WAVERING_HPP
+#ifndef UMPS_EARTHWORM_WAVERING_HPP
+#define UMPS_EARTHWORM_WAVERING_HPP
 #include <memory>
 namespace UMPS
 {
@@ -7,14 +7,14 @@ namespace UMPS
  {
   class ILog;
  }
- namespace Broadcasts::Earthworm
+ namespace Earthworm
  {
   template<typename T> class TraceBuf2;
  }
 }
-namespace UMPS::Broadcasts::Earthworm
+namespace UMPS::Earthworm
 {
-/// @class WaveRing "waveRing.hpp" "umps/broadcasts/earthworm/waveRing.hpp"
+/// @class WaveRing "waveRing.hpp" "umps/earthworm/waveRing.hpp"
 /// @brief A utility for reading from an Earthworm wave ring.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class WaveRing

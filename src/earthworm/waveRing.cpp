@@ -20,12 +20,12 @@ extern "C"
 #include <trace_buf.h>
 }
 #endif
-#include "umps/broadcasts/earthworm/waveRing.hpp"
-#include "umps/broadcasts/earthworm/traceBuf2.hpp"
+#include "umps/earthworm/waveRing.hpp"
+#include "umps/earthworm/traceBuf2.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
 
-using namespace UMPS::Broadcasts::Earthworm;
+using namespace UMPS::Earthworm;
 
 namespace
 {
@@ -525,7 +525,7 @@ std::vector<TraceBuf2<double>>
     return pImpl->mTraceBuf2Messages;
 }
 
-const UMPS::Broadcasts::Earthworm::TraceBuf2<double> *
+const UMPS::Earthworm::TraceBuf2<double> *
     WaveRing::getTraceBuf2MessagesPointer() const noexcept
 {
     return pImpl->mTraceBuf2Messages.data();

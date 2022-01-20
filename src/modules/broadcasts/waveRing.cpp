@@ -12,8 +12,8 @@
 #include <filesystem>
 #include "umps/logging/spdlog.hpp"
 #include "umps/logging/stdout.hpp"
-#include "umps/broadcasts/earthworm/traceBuf2.hpp"
-#include "umps/broadcasts/earthworm/waveRing.hpp"
+#include "umps/earthworm/traceBuf2.hpp"
+#include "umps/earthworm/waveRing.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
@@ -51,7 +51,7 @@ class BroadcastPackets
 public:
     BroadcastPackets(
         std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> &publisher,
-        std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> &waveRing,
+        std::shared_ptr<UMPS::Earthworm::WaveRing> &waveRing,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mPublisher(publisher),
         mWaveRing(waveRing),
@@ -119,7 +119,7 @@ public:
     }
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> mPublisher;
-    std::shared_ptr<UMPS::Broadcasts::Earthworm::WaveRing> mWaveRing;
+    std::shared_ptr<UMPS::Earthworm::WaveRing> mWaveRing;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     bool mKeepRunning = true;
 };
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
     setenv("EW_PARAMS", options.earthwormParametersDirectory.c_str(), true);
     setenv("EW_INSTALLATION", options.earthwormInstallation.c_str(), true);
     auto waveRing
-        = std::make_shared<UMPS::Broadcasts::Earthworm::WaveRing> (loggerPtr);
+        = std::make_shared<UMPS::Earthworm::WaveRing> (loggerPtr);
     try
     {
         waveRing->connect(options.earthwormWaveRingName, options.earthwormWait);

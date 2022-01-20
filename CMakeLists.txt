@@ -147,8 +147,8 @@ set(MODULES_LIBSRC
     src/modules/operator/readZAPOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
-       src/broadcasts/earthworm/traceBuf2.cpp
-       src/broadcasts/earthworm/waveRing.cpp)
+       src/earthworm/traceBuf2.cpp
+       src/earthworm/waveRing.cpp)
 endif()
 
 set(BUILD_SHARED_LIBS YES)

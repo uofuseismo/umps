@@ -6,7 +6,7 @@
 #include <cassert>
 #include <bit>
 #include <nlohmann/json.hpp>
-#include "umps/broadcasts/earthworm/traceBuf2.hpp"
+#include "umps/earthworm/traceBuf2.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #ifdef WITH_EARTHWORM
    #include "trace_buf.h"
@@ -25,9 +25,9 @@
    #define LOC_LEN 2
 #endif
  
-#define MESSAGE_TYPE "UMPS::Broadcasts::Earthworm::TraceBuf2"
+#define MESSAGE_TYPE "UMPS::Earthworm::TraceBuf2"
 
-using namespace UMPS::Broadcasts::Earthworm;
+using namespace UMPS::Earthworm;
 
 namespace
 {
@@ -869,7 +869,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     TraceBuf2<T>::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<Broadcasts::Earthworm::TraceBuf2<T>> (*this);
+        = std::make_unique<Earthworm::TraceBuf2<T>> (*this);
     return result;
 }
 
@@ -879,7 +879,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     TraceBuf2<T>::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<Broadcasts::Earthworm::TraceBuf2<T>> ();
+        = std::make_unique<Earthworm::TraceBuf2<T>> ();
     return result;
 }
 
@@ -925,26 +925,26 @@ std::string TraceBuf2<T>::getMessageType() const noexcept
 }
 
 /// Swap 
-void UMPS::Broadcasts::Earthworm::swap(TraceBuf2<double> &lhs,
-                                       TraceBuf2<double> &rhs)
+void UMPS::Earthworm::swap(TraceBuf2<double> &lhs,
+                           TraceBuf2<double> &rhs)
 {
     std::swap(lhs.pImpl, rhs.pImpl);
 }
 
-void UMPS::Broadcasts::Earthworm::swap(TraceBuf2<float> &lhs,
-                                       TraceBuf2<float> &rhs)
+void UMPS::Earthworm::swap(TraceBuf2<float> &lhs,
+                           TraceBuf2<float> &rhs)
 {
     std::swap(lhs.pImpl, rhs.pImpl);
 }
 
-void UMPS::Broadcasts::Earthworm::swap(TraceBuf2<int> &lhs,
-                                       TraceBuf2<int> &rhs)
+void UMPS::Earthworm::swap(TraceBuf2<int> &lhs,
+                           TraceBuf2<int> &rhs)
 {
     std::swap(lhs.pImpl, rhs.pImpl);
 }
 
-void UMPS::Broadcasts::Earthworm::swap(TraceBuf2<int16_t> &lhs,
-                                       TraceBuf2<int16_t> &rhs)
+void UMPS::Earthworm::swap(TraceBuf2<int16_t> &lhs,
+                           TraceBuf2<int16_t> &rhs)
 {
     std::swap(lhs.pImpl, rhs.pImpl);
 }
@@ -953,44 +953,44 @@ void UMPS::Broadcasts::Earthworm::swap(TraceBuf2<int16_t> &lhs,
 ///--------------------------------------------------------------------------///
 ///                          Template Instantiation                          ///
 ///--------------------------------------------------------------------------///
-template class UMPS::Broadcasts::Earthworm::TraceBuf2<double>;
-template class UMPS::Broadcasts::Earthworm::TraceBuf2<float>;
-template class UMPS::Broadcasts::Earthworm::TraceBuf2<int>;
-template class UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>;
+template class UMPS::Earthworm::TraceBuf2<double>;
+template class UMPS::Earthworm::TraceBuf2<float>;
+template class UMPS::Earthworm::TraceBuf2<int>;
+template class UMPS::Earthworm::TraceBuf2<int16_t>;
 
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(const std::vector<double> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(const std::vector<float> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(const std::vector<int> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(const std::vector<int8_t> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(int nSamples, const double *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(int nSamples, const float *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(int nSamples, const int *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<double>::setData(int nSamples, const int16_t *x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(const std::vector<double> &x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(const std::vector<float> &x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(const std::vector<int> &x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(const std::vector<int8_t> &x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(int nSamples, const double *x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(int nSamples, const float *x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(int nSamples, const int *x);
+template void UMPS::Earthworm::TraceBuf2<double>::setData(int nSamples, const int16_t *x);
 
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(const std::vector<double> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(const std::vector<float> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(const std::vector<int> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(const std::vector<int8_t> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(int nSamples, const double *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(int nSamples, const float *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(int nSamples, const int *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<float>::setData(int nSamples, const int16_t *x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(const std::vector<double> &x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(const std::vector<float> &x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(const std::vector<int> &x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(const std::vector<int8_t> &x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(int nSamples, const double *x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(int nSamples, const float *x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(int nSamples, const int *x);
+template void UMPS::Earthworm::TraceBuf2<float>::setData(int nSamples, const int16_t *x);
 
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(const std::vector<double> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(const std::vector<float> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(const std::vector<int> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(const std::vector<int8_t> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(int nSamples, const double *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(int nSamples, const float *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(int nSamples, const int *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int>::setData(int nSamples, const int16_t *x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(const std::vector<double> &x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(const std::vector<float> &x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(const std::vector<int> &x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(const std::vector<int8_t> &x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(int nSamples, const double *x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(int nSamples, const float *x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(int nSamples, const int *x);
+template void UMPS::Earthworm::TraceBuf2<int>::setData(int nSamples, const int16_t *x);
 
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<double> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<float> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<int> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<int8_t> &x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const double *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const float *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const int *x);
-template void UMPS::Broadcasts::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const int16_t *x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<double> &x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<float> &x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<int> &x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(const std::vector<int8_t> &x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const double *x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const float *x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const int *x);
+template void UMPS::Earthworm::TraceBuf2<int16_t>::setData(int nSamples, const int16_t *x);
 

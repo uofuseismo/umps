@@ -1,5 +1,5 @@
-#ifndef UMPS_BROADCASTS_EARTHWORM_TRACEBUF2
-#define UMPS_BROADCASTS_EARTHWORM_TRACEBUF2
+#ifndef UMPS_EARTHWORM_TRACEBUF2
+#define UMPS_EARTHWORM_TRACEBUF2
 #include <memory>
 #include <vector>
 #include <string>
@@ -8,9 +8,9 @@ namespace UMPS::MessageFormats
 {
  template<class T> class DataPacket;
 }
-namespace UMPS::Broadcasts::Earthworm
+namespace UMPS::Earthworm
 {
-/// @name TraceBuf2 "tracebuf2.hpp" "umps/broadcasts/earthworm/tracebuf2.hpp"
+/// @name TraceBuf2 "tracebuf2.hpp" "umps/earthworm/tracebuf2.hpp"
 /// @brief Defines an Earthworm tracebuf2 message format.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 template<class T = double>
@@ -19,6 +19,7 @@ class TraceBuf2 : public UMPS::MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor
     TraceBuf2();
     /// @brief Copy constructor.
@@ -32,6 +33,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment.
     /// @param[in] traceBuf2  The traceBuf2 class to copy to this.
     /// @result A deep copy of the input traceBuf2.
@@ -46,6 +48,7 @@ public:
 
     /// @name Trace Header Information
     /// @{
+
     /// @param[in] pinNumber  The pin number.
     void setPinNumber(int pinNumber) noexcept;
     /// @result The pin number.
@@ -147,6 +150,7 @@ public:
 
     /// @name Data
     /// @{
+
     /// @param[in,out] data  The trace data to set.  On exit, data's behavior is
     ///                      undefined.
     void setData(std::vector<T> &&data) noexcept;
@@ -169,6 +173,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
@@ -177,6 +182,7 @@ public:
 
     /// @name (De)serialization
     /// @{
+
     /// @brief Unpacks a tracebuf2 message from the earthworm ring.
     /// @param[in] message   The earthworm message.
     /// @throws std::runtime_error if the message is invalid or NULL.
@@ -209,6 +215,7 @@ public:
 
     /// @name Message Abstract Base Class Properties
     /// @{
+
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.

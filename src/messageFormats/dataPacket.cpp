@@ -5,7 +5,6 @@
 #include <cmath>
 #include <nlohmann/json.hpp>
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/broadcasts/earthworm/traceBuf2.hpp"
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::MessageFormats::DataPacket"
