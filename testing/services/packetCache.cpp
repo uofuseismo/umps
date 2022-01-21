@@ -12,12 +12,19 @@
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/proxyServices/packetCache/proxyOptions.hpp"
+#include "umps/proxyServices/packetCache/requestOptions.hpp"
+#include "umps/proxyServices/packetCache/replyOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
+#include "umps/messaging/routerDealer/requestOptions.hpp"
+#include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 namespace PC = UMPS::ProxyServices::PacketCache;
 namespace MF = UMPS::MessageFormats;
+namespace UAuth = UMPS::Authentication;
 
 template<typename T>
 bool operator==(const MF::DataPacket<T> &lhs, const MF::DataPacket<T> &rhs)
@@ -110,11 +117,14 @@ TEST(PacketCache, ProxyOptions)
     //const std::string topic = "testTopic";
     const int frontendHWM = 100;
     const int backendHWM = 200;
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseServer();
     PC::ProxyOptions options;
     options.setFrontendAddress(frontendAddress);
     options.setFrontendHighWaterMark(frontendHWM);
     options.setBackendAddress(backendAddress);
     options.setBackendHighWaterMark(backendHWM);
+    options.setZAPOptions(zapOptions);
     //options.setTopic(topic);
   
     PC::ProxyOptions optionsCopy(options);
@@ -123,11 +133,45 @@ TEST(PacketCache, ProxyOptions)
     EXPECT_EQ(optionsCopy.getBackendAddress(), backendAddress);
     EXPECT_EQ(optionsCopy.getFrontendHighWaterMark(), frontendHWM);
     EXPECT_EQ(optionsCopy.getBackendHighWaterMark(), backendHWM);
+    EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
     //EXPECT_EQ(optionsCopy.getTopic(), topic);
    
     options.clear();
     EXPECT_EQ(options.getFrontendHighWaterMark(), 1000);
     EXPECT_EQ(options.getBackendHighWaterMark(), 1000);
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              UAuth::SecurityLevel::GRASSLANDS);
+}
+
+TEST(PacketCache, RequestOptions)
+{
+    const std::string frontendAddress = "tcp://127.0.0.1:5555";
+    //const std::string topic = "testTopic";
+    const int hwm = 100;
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    PC::RequestOptions options;
+    options.setEndPoint(frontendAddress);
+    options.setHighWaterMark(hwm);
+    options.setZAPOptions(zapOptions);
+
+    PC::RequestOptions optionsCopy(options);
+
+    EXPECT_EQ(optionsCopy.getEndPoint(), frontendAddress);
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
+    EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+    auto messages = optionsCopy.getRequestOptions().getMessageFormats();
+    PC::SensorResponse sensorResponse;
+    PC::DataResponse<double> dataResponse;
+    EXPECT_TRUE(messages.contains(sensorResponse.getMessageType()));
+    EXPECT_TRUE(messages.contains(dataResponse.getMessageType()));
+
+    
+
+    options.clear();
+    EXPECT_EQ(options.getHighWaterMark(), 512);
 }
 
 TEST(PacketCache, SensorRequest)
