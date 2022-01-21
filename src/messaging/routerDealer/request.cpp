@@ -90,6 +90,20 @@ Request::Request(std::shared_ptr<zmq::context_t> &context,
 {
 }
 
+/// Move c'tor
+Request::Request(Request &&request) noexcept
+{
+    *this = std::move(request);
+}
+
+/// Move assignment
+Request& Request::operator=(Request &&request) noexcept
+{
+    if (&request == this){return *this;}
+    pImpl = std::move(request.pImpl);
+    return *this;
+}
+
 /// Initializes the router
 void Request::initialize(const RequestOptions &options)
 {

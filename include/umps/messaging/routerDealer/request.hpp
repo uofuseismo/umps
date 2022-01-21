@@ -57,6 +57,22 @@ public:
     /// @brief Constructs a request socket with the given context and logger.
     Request(std::shared_ptr<zmq::context_t> &context,
             std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Move constructor.
+    /// @param[in,out] request  The requestor class from which to initialize
+    ///                         this class.  On exit, request's behavior is
+    ///                         undefined.
+    Request(Request &&request) noexcept;
+    /// @}
+
+    /// @name Operators
+    /// @{
+ 
+    /// @brief Move assignment operator.
+    /// @param[in,out] request  The request class whose memory will be moved
+    ///                         to this.  On exit, request's behavior is
+    ///                         undefined.
+    /// @result The memory from request moved to this.
+    Request& operator=(Request &&request) noexcept;
     /// @}
 
     /// @name Step 1: Initialization
@@ -109,9 +125,7 @@ public:
     /// @}
 
     Request(const Request &request) = delete;
-    Request(Request &&request) noexcept = delete;
     Request& operator=(const Request &request) = delete;
-    Request& operator=(Request &&request) noexcept = delete;
 private:
     class RequestImpl;
     std::unique_ptr<RequestImpl> pImpl;
