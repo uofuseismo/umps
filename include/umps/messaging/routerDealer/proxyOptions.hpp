@@ -35,7 +35,6 @@ public:
     /// @param[in,out] options  The class from which to initialize this class.
     ///                         On exit, options's behavior is undefined.  
     ProxyOptions(ProxyOptions &&options) noexcept;
-
     /// @}
 
     /// @name Operators
@@ -50,7 +49,6 @@ public:
     ///                         On exit, options's behavior is undefined.
     /// @result The memory moved from options to this.
     ProxyOptions& operator=(ProxyOptions &&options) noexcept;
-
     /// @}
 
     /// @name Router Options
@@ -74,7 +72,6 @@ public:
     void setFrontendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getFrontendHighWaterMark() const noexcept;
-
     /// @}
 
     /// @name Dealer Options
@@ -99,7 +96,6 @@ public:
     void setBackendHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getBackendHighWaterMark() const noexcept;
-
     /// @}
  
     /// @name ZeroMQ Authentication Protocol Options
@@ -111,7 +107,6 @@ public:
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
-
     /// @}
  
     /// @name Destructors
@@ -121,7 +116,6 @@ public:
     void clear() noexcept;
     /// @brief Destructor.
     ~ProxyOptions();
-
     /// @}
 private:
     class ProxyOptionsImpl;

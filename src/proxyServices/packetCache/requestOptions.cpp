@@ -1,23 +1,35 @@
 #include <map>
 #include <string>
 #include <chrono>
+#include "umps/proxyServices/packetCache/requestOptions.hpp"
+#include "umps/proxyServices/packetCache/dataResponse.hpp"
+#include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Messaging::RouterDealer;
+using namespace UMPS::ProxyServices::PacketCache;
 namespace UAuth = UMPS::Authentication;
 
 class RequestOptions::RequestOptionsImpl
 {
 public:
-    UMPS::MessageFormats::Messages mMessageFormats;
-    UAuth::ZAPOptions mZAPOptions;
-    std::string mEndPoint;
-    int mHighWaterMark = 0;
-    bool mHaveCallback = false;
+    RequestOptionsImpl()
+    {
+        mOptions.setHighWaterMark(512);
+        std::unique_ptr<UMPS::MessageFormats::IMessage> dataResponse
+            = std::make_unique<DataResponse<double>> ();
+        std::unique_ptr<UMPS::MessageFormats::IMessage> sensorResponse
+            = std::make_unique<SensorResponse> ();
+        UMPS::MessageFormats::Messages messageFormats;
+        messageFormats.add(dataResponse);
+        messageFormats.add(sensorResponse);
+        mOptions.setMessageFormats(messageFormats);
+
+    }
+    UMPS::Messaging::RouterDealer::RequestOptions mOptions;
 };
 
 /// C'tor
@@ -66,81 +78,44 @@ RequestOptions::~RequestOptions() = default;
 /// End point to bind to
 void RequestOptions::setEndPoint(const std::string &endPoint)
 {
-    if (isEmpty(endPoint))
-    {
-        throw std::invalid_argument("End point is empty");
-    }
-    pImpl->mEndPoint = endPoint;    
+    pImpl->mOptions.setEndPoint(endPoint);
 }
 
 std::string RequestOptions::getEndPoint() const
 {
-   if (!haveEndPoint()){throw std::runtime_error("End point not set");}
-   return pImpl->mEndPoint;
+   return pImpl->mOptions.getEndPoint();
 }
 
 bool RequestOptions::haveEndPoint() const noexcept
 {
-    return !pImpl->mEndPoint.empty();
+    return pImpl->mOptions.haveEndPoint();
 }
 
 /// ZAP Options
 void RequestOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
-    pImpl->mZAPOptions = options;
+    pImpl->mOptions.setZAPOptions(options);
 }
 
 UAuth::ZAPOptions RequestOptions::getZAPOptions() const noexcept
 {
-    return pImpl->mZAPOptions;
+    return pImpl->mOptions.getZAPOptions();
 }
 
 /// High water mark
 void RequestOptions::setHighWaterMark(const int highWaterMark)
 {
-    if (highWaterMark < 0)
-    {
-        throw std::invalid_argument("High water mark must be non-negative");
-    }
-    pImpl->mHighWaterMark = highWaterMark;
+    pImpl->mOptions.setHighWaterMark(highWaterMark);
 }
 
 int RequestOptions::getHighWaterMark() const noexcept
 {
-    return pImpl->mHighWaterMark;
+    return pImpl->mOptions.getHighWaterMark();
 }
 
-/*
-/// Add a message subscription
-void RequestOptions::addMessageFormat(
-    std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
+/// Request options
+UMPS::Messaging::RouterDealer::RequestOptions
+     RequestOptions::getRequestOptions() const noexcept
 {
-    if (message == nullptr){throw std::invalid_argument("Message is NULL");}
-    if (pImpl->mMessageFormats.contains(message)){return;}
-    pImpl->mMessageFormats.add(message);
-}
-*/
-
-void RequestOptions::setMessageFormats(
-    const UMPS::MessageFormats::Messages &messageFormats)
-{
-    if (messageFormats.empty())
-    {
-        throw std::invalid_argument("No message formats in container");
-    }
-    pImpl->mMessageFormats = messageFormats;
-}
-
-UMPS::MessageFormats::Messages RequestOptions::getMessageFormats() const
-{
-    if (!haveMessageFormats())
-    {
-        throw std::runtime_error("No message formats set");
-    }
-    return pImpl->mMessageFormats;
-}
-
-bool RequestOptions::haveMessageFormats() const noexcept
-{
-    return !pImpl->mMessageFormats.empty();
+    return pImpl->mOptions;
 }

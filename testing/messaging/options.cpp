@@ -162,10 +162,12 @@ TEST(Messaging, RouterDealerRequestOptions)
     zapOptions.setStrawhouseClient();
     std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
         = std::make_unique<UMPS::MessageFormats::Pick> (); 
+    UMPS::MessageFormats::Messages messageFormats;
+    messageFormats.add(pickMessage);
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setEndPoint(address));
-    EXPECT_NO_THROW(options.addMessageFormat(pickMessage));
+    EXPECT_NO_THROW(options.setMessageFormats(messageFormats));
         
     RouterDealer::RequestOptions optionsCopy(options); 
     EXPECT_EQ(options.getHighWaterMark(), hwm);

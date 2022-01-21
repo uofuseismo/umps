@@ -111,11 +111,11 @@ void Request::initialize(const RequestOptions &options)
     {
         throw std::invalid_argument("End point not set");
     }
-    pImpl->mMessageFormats = options.getMessageFormats();
-    if (pImpl->mMessageFormats.empty())
+    if (!options.haveMessageFormats())
     {
-        pImpl->mLogger->warn("No message types set in options");
+        throw std::invalid_argument("No message formats set");
     }
+    pImpl->mMessageFormats = options.getMessageFormats();
     pImpl->mOptions.clear();
     disconnect();
     pImpl->mOptions = options;

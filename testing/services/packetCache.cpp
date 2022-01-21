@@ -110,7 +110,6 @@ TEST(PacketCache, ProxyOptions)
     //const std::string topic = "testTopic";
     const int frontendHWM = 100;
     const int backendHWM = 200;
-    const int zero = 0;
     PC::ProxyOptions options;
     options.setFrontendAddress(frontendAddress);
     options.setFrontendHighWaterMark(frontendHWM);

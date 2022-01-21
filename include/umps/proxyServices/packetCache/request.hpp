@@ -1,5 +1,5 @@
-#ifndef UMPS_MESSAGING_ROUTERDEALER_REQUEST_HPP
-#define UMPS_MESSAGING_ROUTERDEALER_REQUEST_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REQUEST_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_REQUEST_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
@@ -17,7 +17,9 @@ namespace UMPS
  {
   class RequestOptions;
   class DataRequest;
+  template<class T> class DataResponse;
   class SensorRequest;
+  class SensorResponse;
  }
 }
 namespace UMPS::ProxyServices::PacketCache
@@ -31,8 +33,28 @@ public:
     /// @name Constructors
     /// @{
 
+    /// @brief Constructor.
     Request();
+    /// @brief Constructor with a given logger.
+    /// @param[in] logger  The logger.
+    explicit Request(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Move constructor.
+    /// @param[in,out] request  The request class from which to initialize
+    ///                         this class.  On exit, request's behavior is
+    ///                         undefined.
+    Request(Request &&request) noexcept;
     /// @}
+
+    /// @name Operators
+    /// @{
+
+    /// @brief Move assignment operator.
+    /// @param[in,out] request  The request class whose memory will be moved
+    ///                         to this.  On exit, request's behavior is
+    ///                         undefined.
+    Request& operator=(Request &&request) noexcept;
+    /// @result The memory from request moved to this.
+    /// @} 
 
     /// @name Step 1: Initialization
     /// @{
@@ -42,7 +64,7 @@ public:
     /// @throws std::invalid_argument if the endpoint.
     void initialize(const RequestOptions &options);
     /// @result True indicates the class is initialized.
-    [[nodiscard]] bool isInitialized() const noexcept; 
+    [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Request getSocketDetails() const;
@@ -51,14 +73,19 @@ public:
     /// @name Step 2: Request 
     /// @{
 
-    /// @brief Performs a blocking request of from the router.
-    /// @param[in] request  The request to make to the server via the router. 
-    /// @result The response to the request from the server via the
-    ///         router-dealer.
+    /// @brief Performs a blocking request for available sensors
+    ///        in the packet cache.
+    /// @param[in] request  The sensor request to make to the server via
+    ///                     the router. 
+    /// @result The response to the sensor request from the server.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]]
-    std::unique_ptr<UMPS::MessageFormats::IMessage> request(
-        const MessageFormats::IMessage &request);
+    [[nodiscard]] std::unique_ptr<SensorResponse> request(const SensorRequest &request);
+    /// @brief Performs a blocking request for data in the packet cache. 
+    /// @param[in] request  The data request to make to the server via the
+    ///                     router.
+    /// @result The response to the data request from the server.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::unique_ptr<DataResponse<double>> request(const DataRequest &request);
     /// @}
 
     /// @name Step 3: Disconnecting
@@ -77,9 +104,7 @@ public:
     /// @}
 
     Request(const Request &request) = delete;
-    Request(Request &&request) noexcept = delete;
     Request& operator=(const Request &request) = delete;
-    Request& operator=(Request &&request) noexcept = delete;
 private:
     class RequestImpl;
     std::unique_ptr<RequestImpl> pImpl;

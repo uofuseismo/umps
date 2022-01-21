@@ -37,7 +37,6 @@ public:
     ///                         this class.  On exit, options's behavior
     ///                         is undefined.
     RequestOptions(RequestOptions &&options) noexcept;
-
     /// @}
 
     /// @name Operators
@@ -53,7 +52,6 @@ public:
     ///                         undefined.
     /// @result The memory from options moved to this.
     RequestOptions& operator=(RequestOptions &&options) noexcept;
-
     /// @}
 
     /// @name End Point
@@ -68,7 +66,6 @@ public:
     [[nodiscard]] std::string getEndPoint() const;
     /// @result True indicates that the end point was set.
     [[nodiscard]] bool haveEndPoint() const noexcept;
-
     /// @}
 
     /// @name High Water Mark
@@ -81,7 +78,6 @@ public:
     void setHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0.
     [[nodiscard]] int getHighWaterMark() const noexcept;
-
     /// @}
 
     /// @name ZeroMQ Authentication Protocol
@@ -93,20 +89,23 @@ public:
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
-
     /// @}
 
-    /// @name Message types
+    /// @name Message Types
     /// @{
 
-    /// @brief Adds a message format that the request can receive from the
-    ///        ZeroMQ router.
-    /// @param[in] message  The message type.
-    void addMessageFormat(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
-    /// @result The types of messages that the router can receive via
-    ///         ZeroMQ.
-    /// @note If this is empty then the request will listen for all messages.
-    [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
+    /// @brief Sets the message types to which to subscriber.
+    /// @param[in] messageFormats  The message formats that the requestor will
+    ///                            be able to read and deserialize.
+    /// @note The requestor has to deserialize responses so these
+    ///       should be reply message formats. 
+    /// @throws std::invalid_argument if messageFormats.empty() is true.
+    void setMessageFormats(const UMPS::MessageFormats::Messages &messageFormats);
+    /// @result The message types to which to subscriber.
+    /// @throws std::runtime_error if \c haveMessageTypes() is false.
+    UMPS::MessageFormats::Messages getMessageFormats() const;
+    /// @result True indicates the message types have been set.
+    [[nodiscard]] bool haveMessageFormats() const noexcept;
     /// @}
 
     /// @name Destructors

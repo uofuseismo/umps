@@ -41,7 +41,6 @@ public:
     ///                         this class.  On exit, options's behavior
     ///                         is undefined.
     ReplyOptions(ReplyOptions &&options) noexcept;
-
     /// @}
 
     /// @name Operators
@@ -57,7 +56,6 @@ public:
     ///                         undefined.
     /// @result The memory from options moved to this.
     ReplyOptions& operator=(ReplyOptions &&options) noexcept;
-
     /// @}
 
     /// @name Endpoint (Required)
@@ -72,7 +70,6 @@ public:
     [[nodiscard]] std::string getEndPoint() const;
     /// @result True indicates that the end point was set.
     [[nodiscard]] bool haveEndPoint() const noexcept;
-
     /// @}
 
     /// @name Callback (Required)
@@ -100,7 +97,6 @@ public:
         (const std::string &messageType, const void *data, size_t length)> getCallback() const;
     /// @result True indicates the callback was set.
     [[nodiscard]] bool haveCallback() const noexcept;
-
     /// @}
 
     /// @name High Water Mark
@@ -113,7 +109,6 @@ public:
     void setHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0.
     [[nodiscard]] int getHighWaterMark() const noexcept;
-
     /// @}
 
     /// @name ZeroMQ Authentication Protocol
@@ -125,7 +120,6 @@ public:
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
-
     /// @}
 
     /// @name Message types
@@ -148,7 +142,6 @@ public:
     void clear() noexcept;
     /// @brief Destructor.
     ~ReplyOptions();
-
     /// @}
 private:
     class ReplyOptionsImpl;

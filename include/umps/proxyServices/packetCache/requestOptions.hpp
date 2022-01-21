@@ -98,7 +98,8 @@ public:
     /// @}
 
     /// @result The request options.
-    UMPS::Messaging::RouterDealer::ReplyOptions getRequestOptions const noexcept;
+    [[nodiscard]] UMPS::Messaging::RouterDealer::RequestOptions
+        getRequestOptions() const noexcept;
 
     /// @name Destructors
     /// @{

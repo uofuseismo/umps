@@ -115,7 +115,10 @@ void client(int id)
     RequestOptions options;
     options.setEndPoint(frontendAddress); 
     auto pickType = pick.createInstance();
-    options.addMessageFormat(pickType);
+    UMPS::MessageFormats::Messages messageFormats;
+    messageFormats.add(pickType);
+
+    options.setMessageFormats(messageFormats);
     Request client;
     EXPECT_NO_THROW(client.initialize(options));
     EXPECT_TRUE(client.isInitialized());
