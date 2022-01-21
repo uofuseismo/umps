@@ -15,6 +15,7 @@ class UserNameAndPassword
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     UserNameAndPassword();
     /// @brief Copy constructor.
@@ -30,6 +31,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @result A deep copy of the plainText credentials.
     /// @param[in] plainText  The certificate to copy to this.
     /// @result A deep copy of plainText.
@@ -44,6 +46,7 @@ public:
 
     /// @name User Name (Required)
     /// @{
+
     /// @brief Sets the user name.
     /// @param[in] userName  The user name.
     void setUserName(const std::string &userName) noexcept;
@@ -56,6 +59,7 @@ public:
 
     /// @name Password (Required)
     /// @{
+
     /// @brief Sets the password.
     /// @param[in] password   The password.
     void setPassword(const std::string &password) noexcept;
@@ -74,6 +78,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Releases all memory and resets the class.
     void clear() noexcept;
     /// @brief Destructor.
