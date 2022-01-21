@@ -192,14 +192,14 @@ TEST(Messaging, RouterDealerReplyOptions)
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setEndPoint(address));
-    EXPECT_NO_THROW(options.addMessageFormat(pickMessage));
+    //EXPECT_NO_THROW(options.addMessageFormat(pickMessage));
     
     RouterDealer::ReplyOptions optionsCopy(options); 
     EXPECT_EQ(options.getHighWaterMark(), hwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::STRAWHOUSE);
     EXPECT_EQ(options.getEndPoint(), address);
-    EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
+    //EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
 
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), 0);

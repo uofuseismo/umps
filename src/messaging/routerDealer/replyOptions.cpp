@@ -116,6 +116,7 @@ int ReplyOptions::getHighWaterMark() const noexcept
     return pImpl->mHighWaterMark;
 }
 
+/*
 /// Add a message subscription
 void ReplyOptions::addMessageFormat(
     std::unique_ptr<UMPS::MessageFormats::IMessage> &message)
@@ -130,6 +131,7 @@ UMPS::MessageFormats::Messages ReplyOptions::getMessageFormats() const noexcept
 {
     return pImpl->mMessageFormats;
 }
+*/
 
 /// Sets the callback
 void ReplyOptions::setCallback(
