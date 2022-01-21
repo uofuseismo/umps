@@ -1,6 +1,6 @@
 #include <iostream>
-#include "broadcasts/dataPacketSubscriber.hpp"
-#include "broadcasts/dataPacketSubscriberOptions.hpp"
+#include "proxyBroadcasts/dataPacketSubscriber.hpp"
+#include "proxyBroadcasts/dataPacketSubscriberOptions.hpp"
 #include "messageFormats/dataPacket.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"

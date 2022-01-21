@@ -1,6 +1,6 @@
 #include <chrono>
 #include <string>
-#include "broadcasts/dataPacketSubscriberOptions.hpp"
+#include "proxyBroadcasts/dataPacketSubscriberOptions.hpp"
 #include "authentication/zapOptions.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
