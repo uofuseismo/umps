@@ -212,7 +212,8 @@ public:
         std::lock_guard<std::mutex> lockGuard(mMutex);
         return mKeepRunning;
     }
-    /// @brief Processes data requests
+    /// @brief Processes data requests.
+    /// @result A response to the request.
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         processDataRequest(const std::string &messageType,
                            const void *messageContents, const size_t length)
@@ -309,10 +310,10 @@ public:
     mutable std::mutex mMutex;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
-    std::shared_ptr<UMPS::Messaging::RequestRouter::Router> mRequestRouter;
     std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>>
         mDataPacketSubscriber;
     std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
+    std::shared_ptr<UPacketCache::Reply> mResponder{nullptr};
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
     UPubSub::SubscriberOptions mSubscriberOptions;
     std::chrono::milliseconds mTimeOut{DEFAULT_TIMEOUT};

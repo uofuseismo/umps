@@ -13,9 +13,10 @@ namespace UMPS
  {
   class Reply;
  }
- namespace ProxyServices
+ namespace ProxyServices::PacketCache
  {
   class ReplyOptions;
+  template<class T> class CappedCollection;
  }
 }
 namespace UMPS::ProxyServices::PacketCache
