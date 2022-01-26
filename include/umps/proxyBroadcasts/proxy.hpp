@@ -1,38 +1,97 @@
 #ifndef UMPS_PROXYBROADCASTS_PROXY_HPP
 #define UMPS_PROXYBROADCASTS_PROXY_HPP
 #include <memory>
-#include <string>
-#include "umps/services/connectionInformation/details.hpp"
+namespace UMPS
+{
+ namespace MessageFormats
+ {
+  class IMessage;
+ }
+ namespace Logging
+ {
+  class ILog;
+ }
+ namespace Services::ConnectionInformation
+ {
+  class Details;
+ }
+ namespace ProxyBroadcasts
+ {
+  class ProxyOptions;
+ }
+ namespace Authentication
+ {
+  class IAuthenticator;
+ }
+}
 namespace UMPS::ProxyBroadcasts
 {
-/// @class IProxy "proxy.hpp" "umps/proxyBroadcasts/proxy.hpp"
-/// @brief This is the abstract base class which defines the proxy defining
-///        an xPub/xSub broadcast.  The xPub/xSub intermediary is a lightweight
-///        proxy that forwards messages from producers to a location that is
-///        accessible by clients.
+/// @class Proxy "proxy.hpp" "umps/proxyBroadcasts/proxy.hpp"
+/// @brief This defines the XPUB/XSUB proxy to data broadcasts.
+///        This is an intermediate message layer to which producers
+///        can publish messages to this XSUB socket and from which
+///        subscribers can receive content from this XPUB socket.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class IProxy
+class Proxy
 {
 public:
-    /// @brief Destructor.
-    virtual ~IProxy() = default;
-    /// @result Returns an instance of this broadcast.
-    //[[nodiscard]] virtual std::unique_ptr<IProxy> createInstance() const noexcept = 0;
-    /// @result True indicates that the publisher is initialized.
-    [[nodiscard]] virtual bool isInitialized() const noexcept = 0;
-    /// @result The name of the publisher.
+    /// @name Constructors
+    /// @{
+
+    /// @brief Constructs the XPUB/XSUB proxy.
+    Proxy();
+    /// @brief Constructs the XPUB/XSUB with a given logger.
+    explicit Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given logger and authenticator.
+    Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+          std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
+    /// @}
+
+    /// @brief Initializes the proxy.
+    /// @param[in] options  The proxy options.  At a minimum, this must 
+    ///                     contain the frontend and backend address.
+    /// @throws std::invalid_argument if the options are invalid.
+    void initialize(const ProxyOptions &options);
+
+    /// @name Initialization
+    /// @{
+
+    /// @result True indicates that the proxy is initialized.
+    [[nodiscard]] bool isInitialized() const noexcept;
+    /// @result The name of the proxy broadcast.
+    [[nodiscard]] std::string getName() const;
+    /// @result The connection details.
+    [[nodiscard]] Services::ConnectionInformation::Details getConnectionDetails() const;
+    /// @}
+
+    /// @name Starts the proxy.
+    /// @{
+    /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] virtual std::string getName() const = 0;
-    /// @result The connection details for connecting to the broadcast.
-    [[nodiscard]] virtual Services::ConnectionInformation::Details getConnectionDetails() const = 0;
-    /// @brief Starts the broadcast.
-    /// @note This will create background threads that manage the underlying
-    ///       proxy and authenticator service.
-    virtual void start() = 0;
-    /// @brief Stops the broadcast.
-    /// @note This will join the threads that manage the underlying proxy
-    ///       proxy and authenticator service. 
-    virtual void stop() = 0;
+    void start();
+    /// @result True indicates the proxy is running.
+    [[nodiscard]] bool isRunning() const noexcept;
+    /// @brief Stops the proxy.
+    void stop();
+    /// @}
+
+    /// @result An uninitialized instance of this class.
+    //[[nodiscard]] std::unique_ptr<IProxy> createInstance() const noexcept override final;
+
+    /// @name Destructors
+    /// @{
+
+    /// @brief Destructor.
+    ~Proxy();
+    /// @}
+
+    Proxy(const Proxy &proxy) = delete;
+    Proxy(Proxy &&proxy) noexcept = delete;
+    Proxy& operator=(const Proxy &proxy) = delete;
+    Proxy& operator=(Proxy &&proxy) noexcept = delete;
+private:
+    class ProxyImpl;
+    std::unique_ptr<ProxyImpl> pImpl;
 };
 }
 #endif

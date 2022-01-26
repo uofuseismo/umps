@@ -127,24 +127,26 @@ set(MODULES_LIBSRC
     src/services/incrementer/counter.cpp
     src/services/incrementer/parameters.cpp
     src/services/incrementer/service.cpp
+    src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
-    src/proxyBroadcasts/dataPacket/proxy.cpp
+    #src/proxyBroadcasts/dataPacket/proxy.cpp
     src/proxyBroadcasts/dataPacket/proxyOptions.cpp
     src/proxyBroadcasts/dataPacket/publisher.cpp
     src/proxyBroadcasts/dataPacket/publisherOptions.cpp
     src/proxyBroadcasts/dataPacket/subscriber.cpp
     src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
-    src/proxyBroadcasts/heartbeat/proxy.cpp
+    #src/proxyBroadcasts/heartbeat/proxy.cpp
     src/proxyBroadcasts/heartbeat/proxyOptions.cpp
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
     src/proxyBroadcasts/heartbeat/status.cpp
+    src/proxyServices/proxy.cpp
     src/proxyServices/proxyOptions.cpp
     src/proxyServices/packetCache/circularBuffer.cpp
     src/proxyServices/packetCache/cappedCollection.cpp
     src/proxyServices/packetCache/dataRequest.cpp
     src/proxyServices/packetCache/dataResponse.cpp
-    src/proxyServices/packetCache/proxy.cpp
+    #src/proxyServices/packetCache/proxy.cpp
     src/proxyServices/packetCache/proxyOptions.cpp
     src/proxyServices/packetCache/sensorRequest.cpp
     src/proxyServices/packetCache/sensorResponse.cpp

@@ -347,14 +347,14 @@ void Service::addConnection(const UMPS::Broadcasts::IBroadcast &broadcast)
 }
 
 /// Add (proxy broadcast) connection
-void Service::addConnection(const UMPS::ProxyBroadcasts::IProxy &proxy)
+void Service::addConnection(const UMPS::ProxyBroadcasts::Proxy &proxy)
 {
     auto details = proxy.getConnectionDetails();
     addConnection(details);
 }
 
 /// Add (proxy service) connection
-void Service::addConnection(const UMPS::ProxyServices::IProxy &proxy)
+void Service::addConnection(const UMPS::ProxyServices::Proxy &proxy)
 {
     auto details = proxy.getConnectionDetails();
     addConnection(details);

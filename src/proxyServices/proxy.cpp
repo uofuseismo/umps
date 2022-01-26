@@ -5,25 +5,25 @@
 #include <cassert>
 #endif
 #include <zmq.hpp>
-#include "umps/proxyBroadcasts/proxy.hpp"
-#include "umps/proxyBroadcasts/proxyOptions.hpp"
+#include "umps/proxyServices/proxy.hpp"
+#include "umps/proxyServices/proxyOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
-#include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
-#include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
+#include "umps/messaging/routerDealer/proxyOptions.hpp"
+#include "umps/messaging/routerDealer/proxy.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/authenticator.hpp"
 #include "umps/authentication/grasslands.hpp"
 #include "umps/authentication/service.hpp"
 #include "umps/logging/stdout.hpp"
 
-using namespace UMPS::ProxyBroadcasts;
+using namespace UMPS::ProxyServices;
 namespace UAuth = UMPS::Authentication;
-namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
+namespace URouterDealer = UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
 
 class Proxy::ProxyImpl
@@ -59,7 +59,7 @@ public:
         {
             mAuthenticator = authenticator;
         }
-        mProxy = std::make_unique<UXPubXSub::Proxy> (mContext, mLogger);
+        mProxy = std::make_unique<URouterDealer::Proxy> (mContext, mLogger);
         mAuthenticatorService = std::make_unique<UAuth::Service>
                                 (mContext, mLogger, mAuthenticator);
     }
@@ -78,7 +78,7 @@ public:
 #ifndef NDEBUG
         assert(mProxy->isInitialized());
 #endif
-        mProxyThread = std::thread(&UXPubXSub::Proxy::start,
+        mProxyThread = std::thread(&URouterDealer::Proxy::start,
                                    &*mProxy);
         mAuthenticatorThread = std::thread(&UAuth::Service::start,
                                            &*mAuthenticatorService);
@@ -91,14 +91,15 @@ public:
 ///private:
     std::shared_ptr<zmq::context_t> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::shared_ptr<UXPubXSub::Proxy> mProxy{nullptr};
+    std::shared_ptr<URouterDealer::Proxy> mProxy{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
-    UXPubXSub::ProxyOptions mProxyOptions;
+    UMPS::Messaging::RouterDealer::ProxyOptions mProxyOptions;
     ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
+    std::string mName;
     bool mInitialized = false;
 };
 
@@ -127,7 +128,7 @@ void Proxy::initialize(const ProxyOptions &parameters)
 {
     if (!parameters.haveName())
     {
-        throw std::invalid_argument("Proxy name not set");
+        throw std::invalid_argument("Name not set");
     }
     auto proxyOptions = parameters.getProxyOptions();
     if (!proxyOptions.haveFrontendAddress())
@@ -157,7 +158,7 @@ void Proxy::initialize(const ProxyOptions &parameters)
 void Proxy::start()
 {
     if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    pImpl->mLogger->info("Beginning " + getName() + " proxy broadcast...");
+    pImpl->mLogger->info("Beginning " + getName() + " proxy service...");
     pImpl->start();
 }
 
@@ -182,7 +183,6 @@ bool Proxy::isInitialized() const noexcept
 /// Gets the proxy name
 std::string Proxy::getName() const
 {
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
     return pImpl->mOptions.getName();
 }
 
@@ -191,7 +191,7 @@ UCI::Details Proxy::getConnectionDetails() const
 {
     if (!isInitialized())
     {
-        throw std::runtime_error("ProxyBroadcast " + getName()
+        throw std::runtime_error("ProxyService " + getName()
                                + " not initialized");
     }
     return pImpl->mConnectionDetails;

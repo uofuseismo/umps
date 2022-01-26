@@ -18,11 +18,11 @@ namespace UMPS
  }
  namespace ProxyBroadcasts
  {
-  class IProxy;
+  class Proxy;
  }
  namespace ProxyServices
  { 
-  class IProxy;
+  class Proxy;
  }
  namespace Authentication
  {
@@ -84,12 +84,12 @@ public:
     /// @param[in] proxy  The proxy broadcast whose connection information will
     ///                   be added.
     /// @throws std::runtime_error if the class is not initialized.
-    void addConnection(const UMPS::ProxyBroadcasts::IProxy &proxy);
+    void addConnection(const UMPS::ProxyBroadcasts::Proxy &proxy);
     /// @brief Adds a proxy service connection.
     /// @param[in] proxy  The proxy service whose connection information will
     ///                   be added.
     /// @throws std::runtime_error if the class is not initialized.
-    void addConnection(const UMPS::ProxyServices::IProxy &proxy); 
+    void addConnection(const UMPS::ProxyServices::Proxy &proxy); 
     /// @brief Adds a connection.
     /// @param[in] connectionDetails  Contains the name of the connection and the
     ///                               connection information.
