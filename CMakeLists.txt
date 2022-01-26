@@ -127,6 +127,7 @@ set(MODULES_LIBSRC
     src/services/incrementer/counter.cpp
     src/services/incrementer/parameters.cpp
     src/services/incrementer/service.cpp
+    src/proxyBroadcasts/proxyOptions.cpp
     src/proxyBroadcasts/dataPacket/proxy.cpp
     src/proxyBroadcasts/dataPacket/proxyOptions.cpp
     src/proxyBroadcasts/dataPacket/publisher.cpp
@@ -138,6 +139,7 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
     src/proxyBroadcasts/heartbeat/status.cpp
+    src/proxyServices/proxyOptions.cpp
     src/proxyServices/packetCache/circularBuffer.cpp
     src/proxyServices/packetCache/cappedCollection.cpp
     src/proxyServices/packetCache/dataRequest.cpp
@@ -268,8 +270,10 @@ set(TEST_SRC
     testing/messageFormats/dataPacket.cpp
     testing/messageFormats/text.cpp
     testing/messageFormats/heartbeat.cpp
+    testing/broadcasts/proxyOptions.cpp
     testing/broadcasts/dataPacket.cpp
     testing/broadcasts/heartbeat.cpp
+    testing/services/proxyOptions.cpp
     testing/services/packetCache.cpp
     testing/services/incrementer.cpp
     testing/services/connectionInformation.cpp

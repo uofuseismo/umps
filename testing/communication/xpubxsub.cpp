@@ -36,12 +36,12 @@ const double time = 5600;
 const uint64_t idBase = 100;
 const UMPS::MessageFormats::Pick::Polarity polarity = UMPS::MessageFormats::Pick::Polarity::UP;
 using namespace UMPS::Messaging::PublisherSubscriber;
-namespace XPUBSUB = UMPS::Messaging::XPublisherXSubscriber;
+namespace XPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UAuth = UMPS::Authentication;
 
 void proxy()
 {
-    XPUBSUB::ProxyOptions options;
+    XPubXSub::ProxyOptions options;
     UAuth::ZAPOptions zapOptions;
     options.setFrontendAddress(frontendAddress);
     options.setFrontendHighWaterMark(100);
@@ -55,10 +55,10 @@ void proxy()
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Initialize the server
-    XPUBSUB::Proxy proxy(loggerPtr);
+    XPubXSub::Proxy proxy(loggerPtr);
     proxy.initialize(options);
     // A thread runs the proxy
-    std::thread t1(&XPUBSUB::Proxy::start,
+    std::thread t1(&XPubXSub::Proxy::start,
                    &proxy);
     // Main thread waits...
     std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -103,9 +103,9 @@ void publisher(int id)
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
-    XPUBSUB::PublisherOptions options;
+    XPubXSub::PublisherOptions options;
     options.setAddress(frontendAddress); 
-    XPUBSUB::Publisher publisher;
+    XPubXSub::Publisher publisher;
     EXPECT_NO_THROW(publisher.initialize(options));
     EXPECT_TRUE(publisher.isInitialized());
     // Deal with the slow joiner problem

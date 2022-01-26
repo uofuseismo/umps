@@ -1,16 +1,24 @@
-#ifndef UMPS_PROXYSERVICES_DATAPACKET_PROXYOPTIONS_HPP
-#define UMPS_PROXYSERVICES_DATAPACKET_PROXYOPTIONS_HPP
+#ifndef UMPS_PROXYSERVICES_PROXYOPTIONS_HPP
+#define UMPS_PROXYSERVICES_PROXYOPTIONS_HPP
 #include <memory>
-namespace UMPS::Authentication
+namespace UMPS
 {
- class ZAPOptions;
+ namespace Authentication
+ {
+  class ZAPOptions;
+ }
+ namespace Messaging::RouterDealer
+ {
+  class ProxyOptions;
+ }
 }
-namespace UMPS::ProxyServices::PacketCache
+namespace UMPS::ProxyServices
 {
-/// @class ProxyOptions "proxyOptions.hpp" "umps/proxyServices/packetCache/proxyOptions.hpp"
+/// @class ProxyOptions "proxyOptions.hpp" "umps/proxyServices/proxyOptions.hpp"
 /// @brief Defines the options for the underlying proxy socket that enables
-///        the packet cache service.  Note the terminology - clients connect
-///        to the frontend and servers connect to the backend.
+///        the broadcast.  Note the terminology - publishers connect
+///        to the frontend and subscribers connect to the backend so that
+///        data flows from front to back.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ProxyOptions
 {
@@ -53,11 +61,6 @@ public:
     /// @param[in] address  The address of the frontend.
     /// @throws std::invalid_argument if this is empty.
     void setFrontendAddress(const std::string &address);
-    /// @result The frontend's IP address.
-    /// @throws std::runtime_error if \c haveFrontendAddress() is false.
-    [[nodiscard]] std::string getFrontendAddress() const; 
-    /// @result True indicates the frontend address was set.
-    [[nodiscard]] bool haveFrontendAddress() const noexcept;
 
     /// @brief Sets the backend's IP address.
     /// @param[in] address  The address of the backend.
@@ -70,6 +73,20 @@ public:
     [[nodiscard]] bool haveBackendAddress() const noexcept;
     /// @}  
 
+    /// @name Name of the Proxy
+    /// @{
+
+    /// @brief Sets the name of the proxy.
+    /// @param[in] name  The name of the proxy.
+    /// @throws std::invalid_argument if the name is empty.
+    void setName(const std::string &name);
+    /// @result The name of the proxy broadcast.
+    /// @throws std::invalid_argument if \c haveName() is false.      
+    [[nodiscard]] std::string getName() const;
+    /// @result True indicates the name was set.
+    [[nodiscard]] bool haveName() const noexcept;
+    /// @}
+
     /// @name High-Water Mark
     /// @{
 
@@ -79,8 +96,6 @@ public:
     ///                           this to 0 effectively makes it infinite.
     /// @throws std::invalid_argument if the high water mark is negative.
     void setFrontendHighWaterMark(int highWaterMark);
-    /// @result The high-water mark for the frontend.
-    [[nodiscard]] int getFrontendHighWaterMark() const noexcept;
 
     /// @brief Sets the backend's high water mark.
     /// @param[in] highWaterMark  The approximate number of messages that can
@@ -88,8 +103,6 @@ public:
     ///                           this to 0 effectively makes it infinite.
     /// @throws std::invalid_argument if the high water mark is negative.
     void setBackendHighWaterMark(int highWaterMark);
-    /// @result The high-water mark for the backend.
-    [[nodiscard]] int getBackendHighWaterMark() const noexcept;
     /// @}
 
     /// @name ZAP Options
@@ -98,30 +111,17 @@ public:
     /// @brief Sets the ZeroMQ Authentication Protocol options.
     /// @param[in] zapOptions  The ZAP options.
     void setZAPOptions(const UMPS::Authentication::ZAPOptions &zapOptions) noexcept;
-    /// @result The ZAP options.
-    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
+
+    /// @result The xPub/xSub proxy options.
+    [[nodiscard]] UMPS::Messaging::RouterDealer::ProxyOptions getProxyOptions() const noexcept;
  
-    /// @name Name
-    /// @{
-
-    /// @brief Sets the name of the packet cache proxy service.
-    /// @param[in] name  The name to set.
-    /// @throws std::invalid_argument if name is empty.
-    void setName(const std::string &name);
-    /// @result The name of the proxy service.
-    /// @throws std::runtime_error if the name was not set.
-    [[nodiscard]] std::string getName() const;
-    /// @result True indicates the name was set.
-    [[nodiscard]] bool haveName() const noexcept;
-    /// @}
-
     /// @brief Loads proxy options from an initialization file.
     /// @param[in] iniFile  The name of the initialization file.
     /// @param[in] section  The section of the ini file from which to
     ///                     read variables.
     void parseInitializationFile(const std::string &iniFile,
-                                 const std::string &section = "DataPacket");
+                                 const std::string &section);
     /// @name Destructors
     /// @{
 

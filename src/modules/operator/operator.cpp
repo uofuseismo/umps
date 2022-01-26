@@ -30,7 +30,8 @@
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/parameters.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
-#include "umps/proxyServices/proxy.hpp"
+#include "umps/proxyBroadcasts/proxy.hpp"
+#include "umps/proxyBroadcasts/proxyOptions.hpp"
 #include "umps/proxyBroadcasts/dataPacket/proxy.hpp"
 #include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/proxy.hpp"
@@ -47,6 +48,7 @@ struct ProgramOptions
 {
     std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
     std::vector<UMPS::ProxyServices::PacketCache::ProxyOptions> mPacketCacheOptions;
+    std::vector<UMPS::ProxyBroadcasts::ProxyOptions> mProxyBroadcastOptions;
     std::vector<std::pair<int, bool>> mAvailablePorts;
     UMPS::Services::ConnectionInformation::Parameters
         mConnectionInformationParameters;
@@ -803,7 +805,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     UMPS::ProxyBroadcasts::Heartbeat::ProxyOptions heartbeatOptions;
     try
     {
-        heartbeatOptions.parseInitializationFile(iniFile, "Broadcasts:Heartbeat");
+        heartbeatOptions.parseInitializationFile(iniFile, "ProxyBroadcasts:Heartbeat");
     }
     catch (const std::exception &e) 
     {   
