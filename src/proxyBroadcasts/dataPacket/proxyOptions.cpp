@@ -5,6 +5,7 @@
 #include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
+#include "private/isEmpty.hpp"
 
 using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UAuth = UMPS::Authentication;
@@ -16,9 +17,9 @@ public:
     {
         mProxyOptions.setFrontendHighWaterMark(2000);
         mProxyOptions.setBackendHighWaterMark(1000);
-        mProxyOptions.setTopic("DataPacket");
     }
     UMPS::Messaging::XPublisherXSubscriber::ProxyOptions mProxyOptions;
+    std::string mName;
 };
 
 /// Constructor
@@ -64,12 +65,6 @@ ProxyOptions::~ProxyOptions() = default;
 void ProxyOptions::clear() noexcept
 {
     pImpl = std::make_unique<ProxyOptionsImpl> ();
-}
-
-/// Broadcast name
-std::string ProxyOptions::getName() noexcept
-{
-    return "DataPacket";
 }
 
 /// Frontend highwater mark
@@ -137,6 +132,24 @@ UAuth::ZAPOptions ProxyOptions::getZAPOptions() const noexcept
     return pImpl->mProxyOptions.getZAPOptions();
 }
 
+/// The name of the proxy
+void ProxyOptions::setName(const std::string &name)
+{
+    if (isEmpty(name)){throw std::invalid_argument("Name is empty");}
+    pImpl->mName = name;
+}
+
+std::string ProxyOptions::getName() const
+{
+    if (!haveName()){throw std::runtime_error("Proxy name not set");}
+    return pImpl->mName;
+} 
+
+bool ProxyOptions::haveName() const noexcept
+{
+    return !pImpl->mName.empty();
+}
+
 /// Read proxy options from an ini file
 void ProxyOptions::parseInitializationFile(const std::string &iniFile,
                                            const std::string &section)
@@ -149,6 +162,10 @@ void ProxyOptions::parseInitializationFile(const std::string &iniFile,
     ProxyOptions options;
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
+
+    auto name
+        = propertyTree.get<std::string> (section + ".name", "DataPacket");
+    if (!name.empty()){options.setName(name);}
 
     auto frontendAddress
         = propertyTree.get<std::string> (section + ".frontendAddress",

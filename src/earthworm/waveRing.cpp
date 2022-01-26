@@ -46,6 +46,7 @@ std::array<char, 16> TYPE_TRACEBUF2{"TYPE_TRACEBUF2\0"};
 class WaveRing::WaveRingImpl
 {
 public:
+    WaveRingImpl() = delete;
     WaveRingImpl(std::shared_ptr<UMPS::Logging::ILog> logger) :
         mLogger(logger)
     {

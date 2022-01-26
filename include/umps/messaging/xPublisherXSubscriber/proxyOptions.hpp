@@ -98,23 +98,6 @@ public:
 
     /// @}
  
-    /// @name Topic
-    /// @{
-
-    /// @brief Sets the topic for inprocess communication.  The control
-    ///        will talk to the service via "inproc://" + topic + "_control"
-    ///        hence topic should be a unique name such as the broadcast name.
-    /// @param[in] topic   The topic.
-    /// @throws std::invalid_argument if topic is blank.
-    void setTopic(const std::string &topic);
-    /// @result The topic name.
-    /// @throws std::runtime_error if \c haveTopic() is false.
-    [[nodiscard]] std::string getTopic() const;
-    /// @result True indicates that the topic was set.
-    [[nodiscard]] bool haveTopic() const noexcept;
-
-    /// @}
-
     /// @name ZeroMQ Authentication Protocol Options
     /// @{
 

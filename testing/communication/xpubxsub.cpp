@@ -26,7 +26,7 @@ namespace
 const std::string frontendAddress = "tcp://127.0.0.1:5555";
 // Faces external network (pub)
 const std::string backendAddress = "tcp://127.0.0.1:5556";
-const std::string topic = "proxyTest";
+//const std::string topic = "proxyTest";
 const std::string network = "UU";
 const std::string station = "NOQ";
 const std::string channel = "EHZ";
@@ -47,7 +47,7 @@ void proxy()
     options.setFrontendHighWaterMark(100);
     options.setBackendAddress(backendAddress);
     options.setBackendHighWaterMark(200);
-    options.setTopic(topic);
+    //options.setTopic(topic);
     options.setZAPOptions(zapOptions);
     // Make a logger
     UMPS::Logging::StdOut logger;

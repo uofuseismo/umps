@@ -98,7 +98,6 @@ public:
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
-    const std::string mName = ProxyOptions::getName();
     bool mInitialized = false;
 };
 
@@ -161,6 +160,10 @@ Proxy::~Proxy() = default;
 /// Initialize the proxy
 void Proxy::initialize(const ProxyOptions &parameters)
 {
+    if (!parameters.haveName())
+    {
+        throw std::invalid_argument("Proxy name not set");
+    }
     if (!parameters.haveFrontendAddress())
     {
         throw std::invalid_argument("Frontend address not set");
@@ -179,11 +182,10 @@ void Proxy::initialize(const ProxyOptions &parameters)
         pImpl->mOptions.getFrontendHighWaterMark());
     options.setBackendHighWaterMark(
         pImpl->mOptions.getBackendHighWaterMark());
-    options.setTopic(getName());
     options.setZAPOptions(pImpl->mOptions.getZAPOptions());
     pImpl->mProxy->initialize(options);
     // Figure out the connection details
-    pImpl->mConnectionDetails.setName(getName());
+    pImpl->mConnectionDetails.setName(pImpl->mOptions.getName());
     pImpl->mConnectionDetails.setSocketDetails(
         pImpl->mProxy->getSocketDetails());
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::BROADCAST);
@@ -221,7 +223,8 @@ bool Proxy::isInitialized() const noexcept
 /// Gets the proxy name
 std::string Proxy::getName() const
 {
-    return pImpl->mName;
+    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
+    return pImpl->mOptions.getName();
 }
 
 /// Connection details

@@ -2,6 +2,7 @@
 #include <string>
 #include <array>
 #include <mutex>
+#include <chrono>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
@@ -33,10 +34,6 @@ void checkOptions(const ProxyOptions &options)
     {
         throw std::invalid_argument("Backend address not specified");
     } 
-    if (!options.haveTopic())
-    {
-        throw std::invalid_argument("Topic not specified");
-    }
 }
 
 }
@@ -44,40 +41,6 @@ void checkOptions(const ProxyOptions &options)
 class Proxy::ProxyImpl
 {
 public:
-/*
-    ProxyImpl() :
-        mContext(std::make_shared<zmq::context_t> (1)),
-        mControlContext(std::make_unique<zmq::context_t> (0)),
-        mFrontend(std::make_unique<zmq::socket_t> (*mContext,
-                                                   zmq::socket_type::xsub)),
-        mBackend( std::make_unique<zmq::socket_t> (*mContext, 
-                                                   zmq::socket_type::xpub)),
-        mControl( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::sub)),
-        mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::pub)),
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
-    {
-    }
-    explicit ProxyImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mContext(std::make_shared<zmq::context_t> (1)),
-        mControlContext(std::make_unique<zmq::context_t> (0)),
-        mFrontend(std::make_unique<zmq::socket_t> (*mContext,
-                                                   zmq::socket_type::xsub)),
-        mBackend( std::make_unique<zmq::socket_t> (*mContext, 
-                                                   zmq::socket_type::xpub)),
-        mControl( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::sub)),
-        mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::pub)),
-        mLogger(logger)
-    {
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-        }
-    }
-*/
     ProxyImpl(std::shared_ptr<zmq::context_t> context,
               std::shared_ptr<UMPS::Logging::ILog> logger) :
         mControlContext(std::make_unique<zmq::context_t> (0)),
@@ -213,8 +176,21 @@ public:
     }
     void connectControl()
     {
+        // This is very unlikely to generate a collision.
+        // Effectively the OS would have to overwrite this class's
+        // location in memory.
+        std::ostringstream address;
+        address << static_cast<void const *> (this);
+        auto nowMuSec = std::chrono::duration_cast<std::chrono::microseconds>
+                  (std::chrono::system_clock::now().time_since_epoch()).count();
+        mControlAddress = "inproc://"
+                        + std::to_string(nowMuSec)
+                        + " _" + address.str()
+                        + "_xpubxsub_control";
+        /*
         mControlAddress = "inproc://" + mOptions.getTopic()
                         + "_xpubxsub_control";
+        */
         // Connect the control
         try
         {
@@ -303,22 +279,6 @@ Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
     pImpl(std::make_unique<ProxyImpl> (context, logger))
 {
 }
-
-/*
-/// Move c'tor
-Proxy::Proxy(Proxy &&proxy) noexcept
-{
-    *this = std::move(proxy);
-}
-
-/// Move assignment
-Proxy& Proxy::operator=(Proxy &&proxy) noexcept
-{
-    if (&proxy == this){return *this;}
-    pImpl = std::move(proxy.pImpl);
-    return *this;
-}
-*/
 
 /// Setup the socket
 void Proxy::initialize(const ProxyOptions &options)
@@ -437,20 +397,6 @@ void Proxy::stop()
                               zmq::send_flags::none);
         pImpl->disconnectFrontend();
         pImpl->disconnectBackend();
-/*
-        if (pImpl->mHaveFrontend)
-        {
-            pImpl->mLogger->debug("Disconnecting from frontend");
-            pImpl->mFrontend->disconnect(pImpl->mFrontendAddress);
-            pImpl->mHaveFrontend = false;
-        }
-        if (pImpl->mHaveBackend)
-        {
-            pImpl->mLogger->debug("Disconnecting from backend");
-            pImpl->mBackend->disconnect(pImpl->mBackendAddress);
-            pImpl->mHaveBackend = false;
-        }
-*/
     }
     pImpl->mInitialized = false;
     pImpl->mStarted = false;

@@ -99,7 +99,6 @@ public:
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
-    const std::string mName = ProxyOptions::getName();
     bool mInitialized = false;
 };
 
@@ -157,16 +156,16 @@ void Proxy::initialize(const ProxyOptions &parameters)
     }
     stop();
     // Set the proxy options
+    pImpl->mOptions = parameters;
     UMPS::Messaging::XPublisherXSubscriber::ProxyOptions options;
     options.setFrontendAddress(parameters.getFrontendAddress());
     options.setBackendAddress(parameters.getBackendAddress());
     options.setFrontendHighWaterMark(parameters.getFrontendHighWaterMark());
     options.setBackendHighWaterMark(parameters.getBackendHighWaterMark());
-    options.setTopic(getName());
     options.setZAPOptions(parameters.getZAPOptions());
     pImpl->mProxy->initialize(options);
     // Figure out the connection details
-    pImpl->mConnectionDetails.setName(getName());
+    pImpl->mConnectionDetails.setName(pImpl->mOptions.getName());
     pImpl->mConnectionDetails.setSocketDetails(
         pImpl->mProxy->getSocketDetails());
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::BROADCAST);
@@ -206,7 +205,8 @@ bool Proxy::isInitialized() const noexcept
 /// Gets the broadcast name
 std::string Proxy::getName() const
 {
-    return pImpl->mName;
+    if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
+    return pImpl->mOptions.getName();
 }
 
 /// Connection details

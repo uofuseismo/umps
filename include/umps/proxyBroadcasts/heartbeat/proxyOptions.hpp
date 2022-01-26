@@ -103,8 +103,19 @@ public:
     [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
-    /// @result The name of the broadcast.
-    [[nodiscard]] static std::string getName() noexcept;
+    /// @name Name of the Proxy
+    /// @{
+
+    /// @brief Sets the name of the proxy.
+    /// @param[in] name  The name of the proxy.
+    /// @throws std::invalid_argument if the name is empty.
+    void setName(const std::string &name);
+    /// @result The name of the proxy broadcast.
+    /// @throws std::invalid_argument if \c haveName() is false.      
+    [[nodiscard]] std::string getName() const;
+    /// @result True indicates the name was set.
+    [[nodiscard]] bool haveName() const noexcept;
+    /// @}
 
     /// @brief Loads parameters from an initialization file.
     /// @param[in] iniFile  The name of the initialization file.

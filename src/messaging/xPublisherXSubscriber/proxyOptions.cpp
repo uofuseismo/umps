@@ -12,7 +12,6 @@ public:
     UAuth::ZAPOptions mZAPOptions;
     std::string mBackendAddress;
     std::string mFrontendAddress;
-    std::string mTopic;
     int mBackendHighWaterMark = 0;
     int mFrontendHighWaterMark = 0;
 };
@@ -130,24 +129,6 @@ std::string ProxyOptions::getBackendAddress() const
 bool ProxyOptions::haveBackendAddress() const noexcept
 {
     return !pImpl->mBackendAddress.empty();
-}
-
-/// Topic 
-void ProxyOptions::setTopic(const std::string &topic)
-{
-    if (isEmpty(topic)){throw std::invalid_argument("Topic is empty");}
-    pImpl->mTopic = topic;
-}
-
-std::string ProxyOptions::getTopic() const
-{
-    if (!haveTopic()){throw std::runtime_error("Topic not set");}
-    return pImpl->mTopic;
-}
-
-bool ProxyOptions::haveTopic() const noexcept
-{
-    return !pImpl->mTopic.empty();
 }
 
 /// ZAP options

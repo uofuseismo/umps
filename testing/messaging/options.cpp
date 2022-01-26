@@ -78,7 +78,7 @@ TEST(Messaging, XPubXSubProxyOptions)
 {
     const std::string frontendAddress = "tcp://127.0.0.1:5555";
     const std::string backendAddress = "tcp://127.0.0.2:5556";
-    const std::string topic = "testTopic";
+    //const std::string name = "testTopic";
     const int frontendHWM = 100;
     const int backendHWM = 200;
     const int zero = 0;
@@ -87,7 +87,7 @@ TEST(Messaging, XPubXSubProxyOptions)
     options.setFrontendHighWaterMark(frontendHWM);
     options.setBackendAddress(backendAddress);
     options.setBackendHighWaterMark(backendHWM);
-    options.setTopic(topic);
+    //options.setName(name);
   
     XPublisherXSubscriber::ProxyOptions optionsCopy(options);
 
@@ -95,7 +95,7 @@ TEST(Messaging, XPubXSubProxyOptions)
     EXPECT_EQ(optionsCopy.getBackendAddress(), backendAddress);
     EXPECT_EQ(optionsCopy.getFrontendHighWaterMark(), frontendHWM);
     EXPECT_EQ(optionsCopy.getBackendHighWaterMark(), backendHWM);
-    EXPECT_EQ(optionsCopy.getTopic(), topic);
+    //EXPECT_EQ(optionsCopy.getName(), name);
    
     options.clear();
     EXPECT_EQ(options.getFrontendHighWaterMark(), zero);
