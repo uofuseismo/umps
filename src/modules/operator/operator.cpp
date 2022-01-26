@@ -46,6 +46,7 @@ namespace UAuth = UMPS::Authentication;
 struct ProgramOptions
 {
     std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
+    std::vector<UMPS::ProxyServices::PacketCache::ProxyOptions> mPacketCacheOptions;
     std::vector<std::pair<int, bool>> mAvailablePorts;
     UMPS::Services::ConnectionInformation::Parameters
         mConnectionInformationParameters;
@@ -181,12 +182,14 @@ std::set<std::string>
 makePropertyList(const boost::property_tree::ptree &propertyTree,
                  const std::string &propertyName = "Counters")
 {
+std::cout << propertyName << std::endl;
     std::set<std::string> result;
     for (const auto &p : propertyTree)
     {
         if (p.first.find(propertyName) != std::string::npos)
         {
             auto item = p.first;
+std::cout << item << std::endl;
             if (result.contains(item))
             {
                 std::cerr << "Warning!  " << propertyName << ": " << item
@@ -342,6 +345,32 @@ int main(int argc, char *argv[])
         modules.mServices.insert(std::pair("Services::" + parameters.getName(),
                                            std::move(service)));
     }
+
+    for (const auto &parameters : options.mPacketCacheOptions)
+    {
+        auto modulesName = "proxyBroadcast_" + parameters.getName();
+        auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
+        UMPS::Logging::SpdLog logger;
+        logger.initialize(modulesName, logFileName,
+                          UMPS::Logging::Level::INFO, // parameters.getVerbosity(),
+                          hour, minute);
+        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+           = std::make_shared<UMPS::Logging::SpdLog> (logger);
+        auto service = std::make_unique<UMPS::ProxyServices::PacketCache::Proxy>
+                       (loggerPtr, authenticator);
+        try
+        {
+            service->initialize(parameters);
+        }
+        catch (const std::exception &e) 
+        {
+            std::cerr << "Failed to initialize packetcache service"
+                      << std::endl;
+        }
+        modules.mProxyServices.insert(std::pair("ProxyServices::" + parameters.getName(),
+                                           std::move(service)));
+
+    }
     // Start the connection information service
 //    std::vector<std::thread> threads;
 /*
@@ -373,7 +402,7 @@ int main(int argc, char *argv[])
                   << std::endl;
         return EXIT_FAILURE;
     }
-    // Now start the services - a thread per service
+    // Now start the services
     std::cout << "Starting incrementer services..." << std::endl;
     for (auto &module : modules.mServices)
     {
@@ -393,6 +422,14 @@ int main(int argc, char *argv[])
 */
         modules.mConnectionInformation->addConnection(*module.second);
     }
+    // Start the proxy services
+    std::cout << "Starting proxy services..." << std::endl;
+    for (auto &module : modules.mProxyServices)
+    {
+        module.second->start();
+        modules.mConnectionInformation->addConnection(*module.second);
+    } 
+
     // And start the broadcasts...
     try
     {
@@ -723,6 +760,11 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                     options.mAvailablePorts,
                                     options.mIPAddress,
                                     "tcp://");
+        UMPS::ProxyServices::PacketCache::ProxyOptions packetCacheProxyOptions;
+        packetCacheProxyOptions.setName(packetCache); 
+        packetCacheProxyOptions.setFrontendAddress(frontendAddress);
+        packetCacheProxyOptions.setBackendAddress(backendAddress);
+        options.mPacketCacheOptions.push_back(packetCacheProxyOptions);
     }
     // Parse the datapacket broadcast options 
     UMPS::ProxyBroadcasts::DataPacket::ProxyOptions dataPacketOptions;

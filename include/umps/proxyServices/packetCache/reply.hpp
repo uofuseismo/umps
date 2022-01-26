@@ -24,6 +24,7 @@ namespace UMPS::ProxyServices::PacketCache
 /// @class Reply "reply.hpp" "umps/proxyServices/packetCache/reply.hpp"
 /// @brief A ZeroMQ reply for mechanism for the server in the packet cache.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+template<class T = double>
 class Reply
 {
 public:
@@ -42,7 +43,8 @@ public:
     /// @brief Initializes the reply.
     /// @param[in] options   The reply options.
     /// @throws std::invalid_argument if the endpoint is not set.
-    void initialize(const ReplyOptions &options);
+    void initialize(const ReplyOptions &options,
+                    std::shared_ptr<CappedCollection<T>> &cappedCollection);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The details for connecting to this socket.

@@ -52,7 +52,8 @@ public:
 
     /// @brief Initializes the proxy.
     /// @param[in] options  The proxy options.  At a minimum, this must 
-    ///                     contain the frontend and backend address.
+    ///                     contain the frontend and backend address
+    ///                     as well as the service's name.
     /// @throws std::invalid_argument if the options are invalid.
     void initialize(const ProxyOptions &options);
 

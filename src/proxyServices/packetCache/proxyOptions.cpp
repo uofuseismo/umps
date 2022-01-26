@@ -5,6 +5,7 @@
 #include "umps/proxyServices/packetCache/proxyOptions.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
+#include "private/isEmpty.hpp"
 
 using namespace UMPS::ProxyServices::PacketCache;
 namespace UAuth = UMPS::Authentication;
@@ -19,6 +20,7 @@ public:
         //mProxyOptions.setTopic("PacketCache");
     }
     UMPS::Messaging::RouterDealer::ProxyOptions mProxyOptions;
+    std::string mName;
 };
 
 /// Constructor
@@ -67,9 +69,21 @@ void ProxyOptions::clear() noexcept
 }
 
 /// Proxy service name
-std::string ProxyOptions::getName() noexcept
+void ProxyOptions::setName(const std::string &name)
 {
-    return "PacketCache";
+    if (isEmpty(name)){throw std::invalid_argument("Name is empty");}
+    pImpl->mName = name;
+}
+
+std::string ProxyOptions::getName() const
+{
+    if (!haveName()){throw std::runtime_error("Name not yet set");}
+    return pImpl->mName;
+}
+
+bool ProxyOptions::haveName() const noexcept
+{
+    return !pImpl->mName.empty();
 }
 
 /// Frontend highwater mark

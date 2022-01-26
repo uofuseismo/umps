@@ -165,16 +165,6 @@ public:
         mLogger->debug("Queue to circular buffer thread starting...");
         while (keepRunning())
         {
-            /*
-            UMF::DataPacket<T> dataPacket;
-            mDataPacketQueue.wait_and_pop(&dataPacket);
-            if (!keepRunning()){break;}
-            // Add the packet to the queue
-            if (dataPacket.getNumberOfSamples() > 0)
-            {
-                mCappedCollection->addPacket(std::move(dataPacket));
-            }
-            */
             UMF::DataPacket<T> dataPacket;
             if (mDataPacketQueue.wait_until_and_pop(&dataPacket))
             {
@@ -196,14 +186,11 @@ public:
     }
     /// @brief Starts the service that receives and fulfills requests for
     ///        data packets from time t0 to time t1.
-    void startRequestReceive()
+    void startService()
     {
-        mLogger->debug("Request/response thread starting...");
-        while (keepRunning())
-        {
-           // auto request =  
-        }
-        mLogger->debug("Request/response thread has exited");
+        mLogger->debug("Reply thread starting...");
+        mReplier->start();
+        mLogger->debug("Rreply thread has exited");
     }
     /// @result True indicates the data packet subscriber should keep receiving
     ///         messages and putting the results in the circular buffer.
@@ -212,98 +199,12 @@ public:
         std::lock_guard<std::mutex> lockGuard(mMutex);
         return mKeepRunning;
     }
-    /// @brief Processes data requests.
-    /// @result A response to the request.
-    std::unique_ptr<UMPS::MessageFormats::IMessage>
-        processDataRequest(const std::string &messageType,
-                           const void *messageContents, const size_t length)
-    {
-        // Get data
-        UPacketCache::DataRequest dataRequest;
-        if (messageType == dataRequest.getMessageType())
-        {
-            // Deserialize the message
-            UPacketCache::DataResponse<T> response;
-            try
-            {
-                dataRequest.fromMessage(
-                    static_cast<const char *> (messageContents), length);
-                response.setIdentifier(dataRequest.getIdentifier());
-            }
-            catch (...)
-            {
-                response.setReturnCode(
-                   UPacketCache::ReturnCode::INVALID_MESSAGE);
-                return response.clone();
-            }
-            // Does this SNCL exist in the cache?
-            auto name = dataRequest.getNetwork() + "."
-                      + dataRequest.getStation() + "."
-                      + dataRequest.getChannel() + "."
-                      + dataRequest.getLocationCode();
-            auto haveSensor = mCappedCollection.haveSensor(name);
-            if (haveSensor)
-            {
-                auto [startTime, endTime] = dataRequest.getQueryTimes();
-                try
-                {
-                    auto packets = mCappedCollection.getPackets(
-                        name, startTime, endTime);
-                    response.setPackets(packets);
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error(e.what());
-                    response.setReturnCode(
-                       UPacketCache::ReturnCode::ALGORITHM_FAILURE);
-                }
-            }
-            else
-            {
-                response.setReturnCode(UPacketCache::ReturnCode::NO_SENSOR);
-                return response.clone();
-            }
-            return response.clone();
-        }
-        // Get sensors
-        UPacketCache::SensorRequest sensorRequest;
-        if (messageType == sensorRequest.getMessageType())
-        {
-            UPacketCache::SensorResponse response;
-            try
-            {
-                sensorRequest.fromMessage(
-                    static_cast<const char *> (messageContents), length);
-                response.setIdentifier(sensorRequest.getIdentifier());
-            }
-            catch (...)
-            {
-                response.setReturnCode(
-                    UPacketCache::ReturnCode::INVALID_MESSAGE);
-                return response.clone();
-            }
-            // Now get the result
-            try
-            {
-                response.setNames(mCappedCollection->getSensors());
-            }
-            catch (...)
-            {
-                response.setReturnCode(
-                    UPacketCache::ReturnCode::ALGORITHM_FAILURE);
-            }
-            return response.clone();
-        }
-        // Send something back so they don't wait forever
-        UPacketCache::SensorResponse response;
-        response.setReturnCode(UPacketCache::ReturnCode::INVALID_MESSAGE_TYPE);
-        return response.clone();
-    }
     /// @brief Stops the publisher threads.
     void stop()
     {
         mLogger->debug("Notifying threads to stop...");
         std::lock_guard<std::mutex> lockGuard(mMutex);
+        if (mReplier != nullptr){mReplier->stop();}
         mKeepRunning = false;
     }
 ///private:
@@ -313,9 +214,9 @@ public:
     std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>>
         mDataPacketSubscriber;
     std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
-    std::shared_ptr<UPacketCache::Reply> mResponder{nullptr};
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
     UPubSub::SubscriberOptions mSubscriberOptions;
+    std::shared_ptr<UPacketCache::Reply<T>> mReplier{nullptr};
     std::chrono::milliseconds mTimeOut{DEFAULT_TIMEOUT};
     int mMaxPackets = DEFAULT_MAXPACKETS;
     int mHighWaterMark = DEFAULT_HWM; 
@@ -441,6 +342,12 @@ int main(int argc, char *argv[])
 #ifndef NDEBUG
     assert(cappedCollection->isInitialized());
 #endif
+
+    // Create a replier
+    UPacketCache::ReplyOptions replyOptions;
+    //auto replier = std::make_shared<UPacketCache::Reply<double>> (loggerPtr);
+    //replier->initialize(replyOptions, cappedCollection);
+
     // Create the struct
     DataPacketSubscriber<double> dps(loggerPtr,
                                      dataPacketSubscriber,
@@ -455,7 +362,7 @@ int main(int argc, char *argv[])
         &DataPacketSubscriber<double>::startQueueToCircularBuffer,
         &dps);
     // Continually read from the dataPacket broadcast
-    for (int k = 0; k < 20; ++k)
+    for (int k = 0; k < 5; ++k)
     {
         // Get a good read on time so we wait a predictable amount
         auto startRead = std::chrono::high_resolution_clock::now();

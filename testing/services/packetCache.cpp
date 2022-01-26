@@ -114,12 +114,13 @@ TEST(PacketCache, ProxyOptions)
 {
     const std::string frontendAddress = "tcp://127.0.0.1:5555";
     const std::string backendAddress = "tcp://127.0.0.2:5556";
-    //const std::string topic = "testTopic";
+    const std::string name = "TestPacketCache";
     const int frontendHWM = 100;
     const int backendHWM = 200;
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseServer();
     PC::ProxyOptions options;
+    options.setName(name);
     options.setFrontendAddress(frontendAddress);
     options.setFrontendHighWaterMark(frontendHWM);
     options.setBackendAddress(backendAddress);
@@ -129,6 +130,7 @@ TEST(PacketCache, ProxyOptions)
   
     PC::ProxyOptions optionsCopy(options);
 
+    EXPECT_EQ(optionsCopy.getName(), name);
     EXPECT_EQ(optionsCopy.getFrontendAddress(), frontendAddress);
     EXPECT_EQ(optionsCopy.getBackendAddress(), backendAddress);
     EXPECT_EQ(optionsCopy.getFrontendHighWaterMark(), frontendHWM);

@@ -98,7 +98,7 @@ public:
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
-    const std::string mName = ProxyOptions::getName();
+    std::string mName;
     bool mInitialized = false;
 };
 
@@ -125,6 +125,10 @@ Proxy::~Proxy() = default;
 /// Initialize the proxy
 void Proxy::initialize(const ProxyOptions &parameters)
 {
+    if (!parameters.haveName())
+    {
+        throw std::invalid_argument("Name not set");
+    }
     if (!parameters.haveFrontendAddress())
     {
         throw std::invalid_argument("Frontend address not set");
@@ -185,7 +189,7 @@ bool Proxy::isInitialized() const noexcept
 /// Gets the proxy name
 std::string Proxy::getName() const
 {
-    return pImpl->mName;
+    return pImpl->mOptions.getName();
 }
 
 /// Connection details

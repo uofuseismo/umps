@@ -102,8 +102,19 @@ public:
     [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
+    /// @name Name
+    /// @{
+
+    /// @brief Sets the name of the packet cache proxy service.
+    /// @param[in] name  The name to set.
+    /// @throws std::invalid_argument if name is empty.
+    void setName(const std::string &name);
     /// @result The name of the proxy service.
-    [[nodiscard]] static std::string getName() noexcept;
+    /// @throws std::runtime_error if the name was not set.
+    [[nodiscard]] std::string getName() const;
+    /// @result True indicates the name was set.
+    [[nodiscard]] bool haveName() const noexcept;
+    /// @}
 
     /// @brief Loads proxy options from an initialization file.
     /// @param[in] iniFile  The name of the initialization file.
