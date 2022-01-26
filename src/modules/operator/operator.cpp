@@ -348,7 +348,7 @@ int main(int argc, char *argv[])
 
     for (const auto &parameters : options.mPacketCacheOptions)
     {
-        auto modulesName = "proxyBroadcast_" + parameters.getName();
+        auto modulesName = "proxyService_" + parameters.getName();
         auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
         UMPS::Logging::SpdLog logger;
         logger.initialize(modulesName, logFileName,

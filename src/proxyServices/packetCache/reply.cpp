@@ -12,17 +12,20 @@
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
+#include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::ProxyServices::PacketCache;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
+namespace UCI = UMPS::Services::ConnectionInformation;
 
-class Reply::ReplyImpl
+template<class T>
+class Reply<T>::ReplyImpl
 {
 public:
     // C'tor
     ReplyImpl(std::shared_ptr<zmq::context_t> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger)
+              std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (logger == nullptr)
         {
@@ -32,7 +35,7 @@ public:
         {
             mLogger = logger;
         }
-        mResponse = std::make_unique<URouterDealer::Reply> (context, mLogger);
+        mReplier= std::make_unique<URouterDealer::Reply> (context, mLogger);
     }
     // Respond to data requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -45,7 +48,7 @@ public:
         if (messageType == dataRequest.getMessageType())
         {
             // Deserialize the message
-            PacketCache::DataResponse<double> response;
+            PacketCache::DataResponse<T> response;
             try
             {
                 dataRequest.fromMessage(
@@ -134,23 +137,82 @@ public:
     }
 
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::unique_ptr<URouterDealer::Reply> mResponse{nullptr};
-    std::shared_ptr<CappedCollection<double>> mCappedCollection{nullptr};
+    std::unique_ptr<URouterDealer::Reply> mReplier{nullptr};
+    std::shared_ptr<CappedCollection<T>> mCappedCollection{nullptr};
     URouterDealer::ReplyOptions mReplyOptions;
     ReplyOptions mOptions;
+    bool mInitialized = false;
 };
 
 /// Constructor
-Reply::Reply() :
+template<class T>
+Reply<T>::Reply() :
     pImpl(std::make_unique<ReplyImpl> (nullptr, nullptr))
 {
 }
 
 /// C'tor
-Reply::Reply(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+template<class T>
+Reply<T>::Reply(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ReplyImpl> (nullptr, logger))
 {
 }
 
 /// Destructor
-Reply::~Reply() = default;
+template<class T>
+Reply<T>::~Reply() = default;
+
+/// Start the service
+template<class T>
+void Reply<T>::start()
+{
+    if (!isInitialized()){throw std::runtime_error("Reply not initialized");}
+    pImpl->mReplier->start();
+}
+
+/// Stop the service
+template<class T>
+void Reply<T>::stop()
+{
+    pImpl->mReplier->stop();
+}
+
+/// Initialize the class
+template<class T>
+void Reply<T>::initialize(
+    const ReplyOptions &options,
+    std::shared_ptr<CappedCollection<T>> &cappedCollection)
+{
+    if (!cappedCollection->isInitialized())
+    {
+        throw std::invalid_argument("Capped collection not initialized");
+    }
+    if (!options.haveEndPoint())
+    {
+        throw std::invalid_argument("End point not set");
+    } 
+    pImpl->mCappedCollection = cappedCollection;
+    pImpl->createReplyOptions(options);
+    pImpl->mReplier->initialize(pImpl->mReplyOptions);
+    pImpl->mInitialized = true;
+}
+
+/// Initialized?
+template<class T>
+bool Reply<T>::isInitialized() const noexcept
+{
+    return pImpl->mInitialized;
+}
+
+/// Connection information
+template<class T>
+UCI::SocketDetails::Reply Reply<T>::getSocketDetails() const
+{
+    return pImpl->mReplier->getSocketDetails();
+}
+
+///--------------------------------------------------------------------------///
+///                          Template Instantiation                          ///
+///--------------------------------------------------------------------------///
+template class UMPS::ProxyServices::PacketCache::Reply<double>;
+template class UMPS::ProxyServices::PacketCache::Reply<float>;
