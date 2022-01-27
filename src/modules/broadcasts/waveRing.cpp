@@ -188,7 +188,6 @@ int main(int argc, char *argv[])
             auto frontendSocketDetails
                 = proxySocketDetails.getXSubscriberFrontend();
             packetAddress = frontendSocketDetails.getAddress();
-std::cout << packetAddress << std::endl;
             break;
         }
     }
