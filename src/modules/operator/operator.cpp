@@ -29,8 +29,8 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
-#include "umps/services/incrementer/service.hpp"
-#include "umps/services/incrementer/parameters.hpp"
+//#include "umps/services/incrementer/service.hpp"
+//#include "umps/services/incrementer/parameters.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/proxyBroadcasts/proxy.hpp"
 #include "umps/proxyBroadcasts/proxyOptions.hpp"
@@ -49,7 +49,7 @@ namespace UAuth = UMPS::Authentication;
 
 struct ProgramOptions
 {
-    std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
+    //std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
     //std::vector<UMPS::ProxyServices::PacketCache::ProxyOptions> mPacketCacheOptions;
     std::vector<UMPS::ProxyServices::ProxyOptions> mProxyServiceOptions;
     std::vector<UMPS::ProxyBroadcasts::ProxyOptions> mProxyBroadcastOptions;
@@ -159,11 +159,19 @@ void printBroadcast(const UMPS::ProxyBroadcasts::Proxy &proxy)
 }
 
 std::string makeNextAvailableAddress(
+    const std::string &proposedAddress,
     std::vector<std::pair<int, bool>> &availablePorts,
     const std::string &ipAddress,
-    std::set<std::string> *usedAddresses,
+    const std::set<std::string> &usedAddresses,
     const std::string &connectionType = "tcp://")
 {
+    if (!proposedAddress.empty())
+    {
+        if (!usedAddresses.contains(proposedAddress))
+        {
+            return proposedAddress;
+        }
+    }
     std::string address;
     for (auto &availablePort : availablePorts)
     {
@@ -173,11 +181,11 @@ std::string makeNextAvailableAddress(
         {
             address = connectionType + ipAddress
                     + ":" + std::to_string(port);
-            if (usedAddresses->contains(address))
+            if (usedAddresses.contains(address))
             {
                 continue;
             }
-            usedAddresses->insert(address); 
+            //usedAddresses->insert(address); 
             availablePort = std::pair(port, false);
             break;
         }
@@ -188,7 +196,6 @@ std::string makeNextAvailableAddress(
     }
     return address;
 }
-
 
 std::set<std::string>
 makePropertyList(const boost::property_tree::ptree &propertyTree,
@@ -269,6 +276,7 @@ int main(int argc, char *argv[])
     }
     // Create the authenticator.  Both authenticators will typically say a
     // connection has been established and not much more.
+    std::cout << "Initializing connectionInformation service..." << std::endl;
     constexpr int hour = 0;
     constexpr int minute = 0;
     auto authenticatorLogFileName = options.mLogDirectory
@@ -306,173 +314,30 @@ int main(int argc, char *argv[])
         }
         authenticator = sqlite3; 
     }
-    //auto authenticatorContext = std::make_shared<zmq::context_t> (1);
-    //UAuth::Service authenticatorService(authenticatorContext,
-    //                                    authenticationLoggerPtr,
-    //                                    authenticator);
-    // Initialize the services
+    // Initialize the main connection information service
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
                                           + "connectionInformation.log";
     UMPS::Logging::SpdLog connectionInformationLogger;
     connectionInformationLogger.initialize("ConnectionInformation",
                                            connectionInformationLogFileName,
-                                           UMPS::Logging::Level::INFO, //options.mVerbosity,
+                                           UMPS::Logging::Level::INFO, //options.mVerbosity
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
-    ////auto connectionInformationContext = std::make_shared<zmq::context_t> (1);
-    ////UAuth::Service authenticatorService(connectionInformationContext,
-    ////                                    authenticationLoggerPtr,
-    ////                                    authenticator);
     auto connectionInformation
         = std::make_unique<UMPS::Services::ConnectionInformation::Service>
           (connectionInformationLoggerPtr, authenticator);
     connectionInformation->initialize(options.mConnectionInformationParameters);
     modules.mConnectionInformation = std::move(connectionInformation);
-
-    for (const auto &parameters : options.mIncrementerParameters)
-    {
-        auto modulesName = "incrementer_" + parameters.getName();
-        auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
-        UMPS::Logging::SpdLog logger;
-        logger.initialize(modulesName, logFileName,
-                          parameters.getVerbosity(), hour, minute);
-        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-           = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        auto service = std::make_unique<UMPS::Services::Incrementer::Service>
-                       (loggerPtr, authenticator);
-        //std::unique_ptr<UMPS::Services::Incrementer::Service> service(loggerPtr);
-        try
-        {
-            service->initialize(parameters);
-            modules.mServices.insert(std::pair("Services::" + parameters.getName(),
-                                               std::move(service)));
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Failed to initialize incrementer service"
-                      << std::endl;
-        }
-    }
-
-    for (const auto &proxyOptions : options.mProxyServiceOptions)
-    {
-        auto moduleName = proxyOptions.getName();
-        std::cout << "Starting " << moduleName
-                  << " proxy service" << std::endl;
-        auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
-        UMPS::Logging::SpdLog logger; 
-        logger.initialize(moduleName, logFileName,
-                          options.mVerbosity, hour, minute);
-        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-            = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        auto proxyService
-            = std::make_unique<UMPS::ProxyServices::Proxy>
-              (loggerPtr, authenticator);
-        proxyService->initialize(proxyOptions); 
-        auto serviceKey = "ProxyServices::" + moduleName;
-        modules.mProxyServices.insert(std::pair(serviceKey,
-                                                std::move(proxyService)));
-        modules.mProxyServices[serviceKey]->start();
-        modules.mConnectionInformation->addConnection(
-            *modules.mProxyServices[serviceKey]);
-    }
-    // Start the connection information service
-//    std::vector<std::thread> threads;
-/*
-    std::cout << "Starting the authenticator..." << std::endl;
-    try
-    {
-        std::thread t(&UAuth::Service::start,
-                      &authenticatorService);
-        threads.push_back(std::move(t));
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Failed to initialize authenticator service" << std::endl;
-        return EXIT_FAILURE;
-    }
-*/
-
-    std::cout << "Starting connection information service..." << std::endl;
-    try
-    {
-        modules.mConnectionInformation->start();
-        //std::thread t(&UMPS::Services::ConnectionInformation::Service::start,
-        //              &modules.mConnectionInformation); 
-        //threads.push_back(std::move(t));
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Failed to initialize connection information service"
-                  << std::endl;
-        return EXIT_FAILURE;
-    }
-    // Now start the services
-    std::cout << "Starting incrementer services..." << std::endl;
-    for (auto &module : modules.mServices)
-    {
-        module.second->start();
-/*
-        try
-        {
-            std::thread t(&UMPS::Services::IService::start, //Incrementer::Service::start,
-                          &*module);
-            threads.push_back(std::move(t));
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << e.what() << std::endl;
-            continue;
-        }
-*/
-        modules.mConnectionInformation->addConnection(*module.second);
-    }
-    // Start the proxy services
-/*
-    std::cout << "Starting proxy services..." << std::endl;
-    for (auto &module : modules.mProxyServices)
-    {
-        module.second->start();
-        modules.mConnectionInformation->addConnection(*module.second);
-    } 
-*/
-    // And start the broadcasts...
-/*
-    try
-    {
-        std::cout << "Starting data packet broadcast..." << std::endl;
-        auto modulesName = "dataPacket";
-        auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
-        UMPS::Logging::SpdLog logger;
-        logger.initialize(modulesName, logFileName,
-                          options.mVerbosity, hour, minute);
-        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-            = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        auto dataPacketBroadcast
-            = std::make_unique<UMPS::ProxyBroadcasts::DataPacket::Proxy>
-              (loggerPtr, authenticator);
-        dataPacketBroadcast->initialize(options.mDataPacketParameters);
-        modules.mProxyBroadcasts.insert(
-            std::pair("ProxyBroadcasts::DataPacket",
-                      std::move(dataPacketBroadcast)));
-        modules.mProxyBroadcasts["ProxyBroadcasts::DataPacket"]->start();
-        modules.mConnectionInformation->addConnection(
-            *modules.mProxyBroadcasts["ProxyBroadcasts::DataPacket"]);
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-*/
+    // Start the proxy broadcasts
     for (const auto &proxyOptions : options.mProxyBroadcastOptions)
     {
         auto moduleName = proxyOptions.getName();
         std::cout << "Starting " << moduleName
                   << " proxy broadcast" << std::endl;
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
-        UMPS::Logging::SpdLog logger;
+        UMPS::Logging::SpdLog logger; 
         logger.initialize(moduleName, logFileName,
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
@@ -480,7 +345,7 @@ int main(int argc, char *argv[])
         auto proxyBroadcast
             = std::make_unique<UMPS::ProxyBroadcasts::Proxy>
               (loggerPtr, authenticator);
-        proxyBroadcast->initialize(proxyOptions);
+        proxyBroadcast->initialize(proxyOptions); 
         auto broadcastKey = "ProxyBroadcasts::" + moduleName;
         modules.mProxyBroadcasts.insert(std::pair(broadcastKey,
                                                   std::move(proxyBroadcast)));
@@ -488,34 +353,41 @@ int main(int argc, char *argv[])
         modules.mConnectionInformation->addConnection(
             *modules.mProxyBroadcasts[broadcastKey]);
     }
-/*
-    try
+    // Start the proxy services
+    for (const auto &proxyOptions : options.mProxyServiceOptions)
     {
-        std::cout << "Starting heartbeat broadcast..." << std::endl;
-        auto modulesName = "heartbeat";
-        auto logFileName = options.mLogDirectory + "/" + modulesName + ".log";
+        auto moduleName = proxyOptions.getName();
+        std::cout << "Starting " << moduleName
+                  << " proxy service" << std::endl;
+        auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
         UMPS::Logging::SpdLog logger;
-        logger.initialize(modulesName, logFileName,
+        logger.initialize(moduleName, logFileName,
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
             = std::make_shared<UMPS::Logging::SpdLog> (logger);
-        auto heartbeatBroadcast
-            = std::make_unique<UMPS::ProxyBroadcasts::Heartbeat::Proxy>
+        auto proxyService
+            = std::make_unique<UMPS::ProxyServices::Proxy>
               (loggerPtr, authenticator);
-        heartbeatBroadcast->initialize(options.mHeartbeatParameters);
-        modules.mProxyBroadcasts.insert(
-            std::pair("ProxyBroadcasts::Heartbeat",
-                      std::move(heartbeatBroadcast)));
-        modules.mProxyBroadcasts["ProxyBroadcasts::Heartbeat"]->start();
+        proxyService->initialize(proxyOptions);
+        auto serviceKey = "ProxyServices::" + moduleName;
+        modules.mProxyServices.insert(std::pair(serviceKey,
+                                                std::move(proxyService)));
+        modules.mProxyServices[serviceKey]->start();
         modules.mConnectionInformation->addConnection(
-            *modules.mProxyBroadcasts["ProxyBroadcasts::Heartbeat"]);
-    }   
-    catch (const std::exception &e) 
-    {
-        std::cerr << e.what() << std::endl;
+            *modules.mProxyServices[serviceKey]);
     }
-*/
-
+    // Finally, start the connection service information 
+    std::cout << "Starting connection information service..." << std::endl;
+    try
+    {
+        modules.mConnectionInformation->start();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Failed to initialize connection information service"
+                  << std::endl;
+        return EXIT_FAILURE;
+    }
     // Main program loop
     while (true)
     {
@@ -569,9 +441,6 @@ int main(int argc, char *argv[])
                 }
                 std::cout << std::endl;
             }
-
-            //printBroadcast(*modules.mDataPacketBroadcast);
-            //printBroadcast(*modules.mHeartbeatBroadcast);
         }
         else
         {
@@ -748,6 +617,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     options.mConnectionInformationParameters.setClientAccessAddress(address);
     options.mAvailablePorts.at(0).second = false;
     // Next get all the counters
+/*
     auto counters = makePropertyList(propertyTree, "Counters");
     // Parse the options for each counter
     for (const auto &counter : counters)
@@ -778,6 +648,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         counterOptions.setZAPOptions(options.mZAPOptions);
         options.mIncrementerParameters.push_back(std::move(counterOptions));
     }
+*/
     // Parse the packetcache options
 /*
     auto packetCaches = makePropertyList(propertyTree, "PacketCaches");
@@ -800,52 +671,6 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         options.mPacketCacheOptions.push_back(packetCacheProxyOptions);
     }
 */
-    // Parse the proxyServices
-    auto proxyServices = makePropertyList(propertyTree, "ProxyServices");
-    for (const auto &proxyService : proxyServices)
-    {   
-        UMPS::ProxyServices::ProxyOptions proxyOptions;
-        proxyOptions.parseInitializationFile(iniFile, proxyService);
-        // Frontend address
-        bool makeAddress = false;
-        if (!proxyOptions.getProxyOptions().haveFrontendAddress())
-        {
-            makeAddress = true;
-        }
-        else
-        {
-            makeAddress = usedAddresses.contains(
-                proxyOptions.getProxyOptions().getFrontendAddress());
-        }
-        if (makeAddress)
-        {
-            auto address = makeNextAvailableAddress(options.mAvailablePorts,
-                                                    options.mIPAddress,
-                                                    &usedAddresses,
-                                                    "tcp://");
-            proxyOptions.setFrontendAddress(address);
-        }
-        // Backend address 
-        makeAddress = false;
-        if (!proxyOptions.getProxyOptions().haveBackendAddress())
-        {
-            makeAddress = true;
-        }
-        else
-        {
-            makeAddress = usedAddresses.contains(
-                proxyOptions.getProxyOptions().getBackendAddress());
-        }
-        if (makeAddress)
-        {
-            auto address = makeNextAvailableAddress(options.mAvailablePorts,
-                                                    options.mIPAddress,
-                                                    &usedAddresses,
-                                                    "tcp://");
-            proxyOptions.setBackendAddress(address);
-        }
-        options.mProxyServiceOptions.push_back(proxyOptions);
-    }
     // Parse the proxyBroadcasts
     auto proxyBroadcasts = makePropertyList(propertyTree, "ProxyBroadcasts");
     for (const auto &proxyBroadcast : proxyBroadcasts)
@@ -853,44 +678,76 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         UMPS::ProxyBroadcasts::ProxyOptions proxyOptions;
         proxyOptions.parseInitializationFile(iniFile, proxyBroadcast);
         // Frontend address
-        bool makeAddress = false;
-        if (!proxyOptions.getProxyOptions().haveFrontendAddress())
-        {
-            makeAddress = true;
+        std::string address;
+        if (proxyOptions.getProxyOptions().haveFrontendAddress())
+        {   
+            address = proxyOptions.getProxyOptions().getFrontendAddress();
         }
-        else
-        {
-            makeAddress = usedAddresses.contains(
-                proxyOptions.getProxyOptions().getFrontendAddress());
+        auto newAddress = makeNextAvailableAddress(address,
+                                                   options.mAvailablePorts,
+                                                   options.mIPAddress,
+                                                   usedAddresses,
+                                                   "tcp://");
+        if (newAddress != address)
+        {   
+            proxyOptions.setFrontendAddress(newAddress);
         }
-        if (makeAddress)
-        {
-            auto address = makeNextAvailableAddress(options.mAvailablePorts,
-                                                    options.mIPAddress,
-                                                    &usedAddresses,
-                                                    "tcp://");
-            proxyOptions.setFrontendAddress(address);
-        }
+        usedAddresses.insert(newAddress);
         // Backend address 
-        makeAddress = false;
-        if (!proxyOptions.getProxyOptions().haveBackendAddress())
+        if (proxyOptions.getProxyOptions().haveBackendAddress())
         {
-            makeAddress = true;
+            address = proxyOptions.getProxyOptions().getBackendAddress();
         }
-        else
+        newAddress = makeNextAvailableAddress(address,
+                                              options.mAvailablePorts,
+                                              options.mIPAddress,
+                                              usedAddresses,
+                                              "tcp://");
+        if (newAddress != address)
         {
-            makeAddress = usedAddresses.contains(
-                proxyOptions.getProxyOptions().getBackendAddress());
-        }
-        if (makeAddress)
-        {
-            auto address = makeNextAvailableAddress(options.mAvailablePorts,
-                                                    options.mIPAddress,
-                                                    &usedAddresses,
-                                                    "tcp://");
-            proxyOptions.setBackendAddress(address);
+            proxyOptions.setBackendAddress(newAddress);
         }
         options.mProxyBroadcastOptions.push_back(proxyOptions);
+        usedAddresses.insert(newAddress);
+    }
+    // Parse the proxyServices
+    auto proxyServices = makePropertyList(propertyTree, "ProxyServices");
+    for (const auto &proxyService : proxyServices)
+    {   
+        UMPS::ProxyServices::ProxyOptions proxyOptions;
+        proxyOptions.parseInitializationFile(iniFile, proxyService);
+        // Frontend address
+        std::string address;
+        if (proxyOptions.getProxyOptions().haveFrontendAddress())
+        {
+            address = proxyOptions.getProxyOptions().getFrontendAddress();
+        }
+        auto newAddress = makeNextAvailableAddress(address,
+                                                   options.mAvailablePorts,
+                                                   options.mIPAddress,
+                                                   usedAddresses,
+                                                   "tcp://");
+        if (newAddress != address)
+        {
+            proxyOptions.setFrontendAddress(newAddress);
+        }
+        usedAddresses.insert(newAddress);
+        // Backend address 
+        if (proxyOptions.getProxyOptions().haveBackendAddress())
+        {
+            address = proxyOptions.getProxyOptions().getBackendAddress();
+        }
+        newAddress = makeNextAvailableAddress(address,
+                                              options.mAvailablePorts,
+                                              options.mIPAddress,
+                                              usedAddresses,
+                                              "tcp://");
+        if (newAddress != address)
+        {
+            proxyOptions.setBackendAddress(newAddress);
+        }
+        options.mProxyServiceOptions.push_back(proxyOptions);
+        usedAddresses.insert(newAddress);
     }
 /*
     // Parse the datapacket broadcast options 

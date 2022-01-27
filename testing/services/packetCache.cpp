@@ -11,7 +11,7 @@
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
-#include "umps/proxyServices/packetCache/proxyOptions.hpp"
+//#include "umps/proxyServices/packetCache/proxyOptions.hpp"
 #include "umps/proxyServices/packetCache/requestOptions.hpp"
 #include "umps/proxyServices/packetCache/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -110,6 +110,7 @@ bool operator==(const MF::DataPacket<T> &lhs, const MF::DataPacket<T> &rhs)
     return true; 
 }
 
+/*
 TEST(PacketCache, ProxyOptions)
 {
     const std::string frontendAddress = "tcp://127.0.0.1:5555";
@@ -145,6 +146,7 @@ TEST(PacketCache, ProxyOptions)
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::GRASSLANDS);
 }
+*/
 
 TEST(PacketCache, RequestOptions)
 {

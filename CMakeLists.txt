@@ -130,13 +130,13 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
     #src/proxyBroadcasts/dataPacket/proxy.cpp
-    src/proxyBroadcasts/dataPacket/proxyOptions.cpp
+    #src/proxyBroadcasts/dataPacket/proxyOptions.cpp
     src/proxyBroadcasts/dataPacket/publisher.cpp
     src/proxyBroadcasts/dataPacket/publisherOptions.cpp
     src/proxyBroadcasts/dataPacket/subscriber.cpp
     src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
     #src/proxyBroadcasts/heartbeat/proxy.cpp
-    src/proxyBroadcasts/heartbeat/proxyOptions.cpp
+    #src/proxyBroadcasts/heartbeat/proxyOptions.cpp
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
     src/proxyBroadcasts/heartbeat/status.cpp
@@ -147,7 +147,7 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/dataRequest.cpp
     src/proxyServices/packetCache/dataResponse.cpp
     #src/proxyServices/packetCache/proxy.cpp
-    src/proxyServices/packetCache/proxyOptions.cpp
+    #src/proxyServices/packetCache/proxyOptions.cpp
     src/proxyServices/packetCache/sensorRequest.cpp
     src/proxyServices/packetCache/sensorResponse.cpp
     src/proxyServices/packetCache/reply.cpp
