@@ -16,6 +16,8 @@
 #include "umps/earthworm/waveRing.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
+//#include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
+//#include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
@@ -27,6 +29,10 @@
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "private/isEmpty.hpp"
+
+#include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
+#include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
+
 
 namespace UAuth = UMPS::Authentication;
 namespace UServices = UMPS::Services;
@@ -50,10 +56,10 @@ class BroadcastPackets
 {
 public:
     BroadcastPackets(
-        std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> &publisher,
+        std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> &packetPublisher,
         std::shared_ptr<UMPS::Earthworm::WaveRing> &waveRing,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mPublisher(publisher),
+        mPacketPublisher(packetPublisher),
         mWaveRing(waveRing),
         mLogger(logger)
     {
@@ -74,7 +80,7 @@ public:
         {
             throw std::runtime_error("Wave ring not yet connected");
         }
-        if (!mPublisher->isInitialized())
+        if (!mPacketPublisher->isInitialized())
         { 
             throw std::runtime_error("Publisher not yet initialized");
         }
@@ -97,7 +103,7 @@ public:
                 {
                     auto dataPacket
                         = traceBuf2MessagesPtr[iMessage].toDataPacket();
-                    mPublisher->send(dataPacket);
+                    mPacketPublisher->send(dataPacket);
                     nSent = nSent + 1;
                 }
                 catch (const std::exception &e)
@@ -118,7 +124,7 @@ public:
         mLogger->info("Broadcast thread is terminating");
     }
     mutable std::mutex mMutex;
-    std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> mPublisher;
+    std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> mPacketPublisher;
     std::shared_ptr<UMPS::Earthworm::WaveRing> mWaveRing;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     bool mKeepRunning = true;
@@ -180,6 +186,7 @@ int main(int argc, char *argv[])
     }
     // Connect so that I may publish to appropriate broadcast - e.g., DataPacket
     std::string packetAddress;
+    std::string heartbeatAddress;
     for (const auto &connectionDetail : connectionDetails)
     {
         if (connectionDetail.getName() == options.dataBroadcastName)
@@ -188,7 +195,13 @@ int main(int argc, char *argv[])
             auto frontendSocketDetails
                 = proxySocketDetails.getXSubscriberFrontend();
             packetAddress = frontendSocketDetails.getAddress();
-            break;
+        }
+        if (connectionDetail.getName() == options.heartbeatBroadcastName)
+        {
+            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
+            auto frontendSocketDetails
+                = proxySocketDetails.getXSubscriberFrontend();
+            heartbeatAddress = frontendSocketDetails.getAddress();
         }
     }
     if (packetAddress.empty())
@@ -211,6 +224,28 @@ int main(int argc, char *argv[])
 #ifndef NDEBUG
     assert(publisher->isInitialized());
 #endif
+UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions subscriberOptions;
+subscriberOptions.setAddress("tcp://155.98.50.104:5002");
+subscriberOptions.setZAPOptions(options.mZAPOptions);
+auto subscriber = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Subscriber<double>> (loggerPtr);
+subscriber->initialize(subscriberOptions);
+#ifndef NDEBUG
+assert(publisher->isInitialized());
+#endif
+
+/*
+    std::shared_ptr<UMPS::ProxyBroadcasts::Heartbeat::Publisher> heartbeatPublisher{nullptr};
+    if (!heartbeatAddress.empty())
+    {
+        logger.info("Will connect to " + options.heartbeatBroadcastName
+                  + " at " + heartbeatAddress);
+        UMPS::ProxyBroadcasts::Heartbeat::PublisherOptions heartbeatPublisherOptions;
+        heartbeatPublisherOptions.setAddress(heartbeatAddress);
+        heartbeatPublisherOptions.setZAPOptions(options.mZAPOptions);
+        heartbeatPublisher = std::make_shared<UMPS::ProxyBroadcasts::Heartbeat::Publisher> (loggerPtr);
+        heartbeatPublisher->initialize(heartbeatPublisherOptions);
+    } 
+*/
     // Attach to the wave ring
     logger.info("Attaching to earthworm ring: "
               + options.earthwormWaveRingName);
@@ -253,6 +288,15 @@ int main(int argc, char *argv[])
             std::cout << "  quit  Exits the program" << std::endl;
             std::cout << "  help  Prints this message" << std::endl;
         }
+auto message = subscriber->receive();
+if (message == nullptr)
+{
+std::cout << "none" << std::endl;
+}
+else
+{
+std::cout <<"something"<<std::endl;
+}
     }
 /*
     // Forward messages from earthworm to UMPS indefinitely

@@ -5,9 +5,6 @@
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/authentication/service.hpp"
-#include "umps/authentication/authenticator.hpp"
-#include "umps/authentication/grasslands.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -23,11 +20,9 @@ class Subscriber<T>::SubscriberImpl
 public:
     SubscriberImpl(std::shared_ptr<zmq::context_t> context,
                    std::shared_ptr<UMPS::Logging::ILog> logger)
-    //               std::shared_ptr<UAuth::IAuthenticator> authenticator)
     {
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
     }
-    //std::shared_ptr<UAuth::IAuthenticator> mAuthenticator;
     std::unique_ptr<UPubSub::Subscriber> mSubscriber;
     SubscriberOptions<T> mOptions;
 };
@@ -82,9 +77,9 @@ template<class T>
 void Subscriber<T>::initialize(const SubscriberOptions<T> &options)
 {
     if (!options.haveAddress()){throw std::runtime_error("Address not set");}
-    auto subscriberOptions = options.getSubscriberOptions();
-    pImpl->mSubscriber->initialize(subscriberOptions);
     pImpl->mOptions = options;
+    auto subscriberOptions = pImpl->mOptions.getSubscriberOptions();
+    pImpl->mSubscriber->initialize(subscriberOptions);
 }
 
 /// Initialized?

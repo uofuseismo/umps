@@ -38,7 +38,7 @@ public:
         }
         // Now make the socket
         mPublisher = std::make_unique<zmq::socket_t> (*mContext,
-                                                      zmq::socket_type::xpub);
+                                                      zmq::socket_type::pub);
     }
     void disconnect()
     {

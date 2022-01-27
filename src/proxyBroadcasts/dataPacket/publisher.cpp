@@ -1,12 +1,10 @@
+#include <iostream>
 #include <zmq.hpp>
 #include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
-#include "umps/authentication/service.hpp"
-#include "umps/authentication/authenticator.hpp"
-#include "umps/authentication/grasslands.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -107,6 +105,7 @@ Publisher::~Publisher() = default;
 template<typename U>
 void Publisher::send(const UMPS::MessageFormats::DataPacket<U> &message)
 {
+std::cout << message.getMessageType() << std::endl;
     pImpl->mPublisher->send(message); 
 }
 

@@ -61,7 +61,7 @@ TEST(BroadcastDataPacket, PublisherOptions)
     // Test defaults
     PublisherOptions options;
     std::chrono::milliseconds oneSecond{1000};
-    EXPECT_EQ(options.getHighWaterMark(), 512);
+    EXPECT_EQ(options.getHighWaterMark(), 8192);
     EXPECT_EQ(options.getTimeOut(), oneSecond);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::GRASSLANDS);

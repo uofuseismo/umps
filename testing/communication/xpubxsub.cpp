@@ -22,9 +22,9 @@ namespace
 
 //const std::string serverHost = "tcp://*:5555"; 
 //const std::string localHost  = "tcp://127.0.0.1:5555";
-// Faces internal network (sub)
+// Faces internal network (pub)
 const std::string frontendAddress = "tcp://127.0.0.1:5555";
-// Faces external network (pub)
+// Faces external network (sub)
 const std::string backendAddress = "tcp://127.0.0.1:5556";
 //const std::string topic = "proxyTest";
 const std::string network = "UU";

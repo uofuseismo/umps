@@ -12,7 +12,7 @@ class PublisherOptions::PublisherOptionsImpl
 public:
     PublisherOptionsImpl()
     {
-        mOptions.setHighWaterMark(512); // No point making this infinite
+        mOptions.setHighWaterMark(8192); // No point making this infinite
         mOptions.setTimeOut(std::chrono::milliseconds{1000}); 
     }
     UMPS::Messaging::XPublisherXSubscriber::PublisherOptions mOptions;

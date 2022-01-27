@@ -1,7 +1,7 @@
 #ifndef UMPS_PROXYBROADCASTS_DATAPACKET_PROXY_HPP
 #define UMPS_PROXYBROADCASTS_DATAPACKET_PROXY_HPP
 #include <memory>
-#include "umps/proxyBroadcasts/proxy.hpp"
+//#include "umps/proxyBroadcasts/proxy.hpp"
 namespace UMPS
 {
  namespace MessageFormats
@@ -33,7 +33,7 @@ namespace UMPS::ProxyBroadcasts::DataPacket
 ///        can publish messages to this XSUB socket and from which
 ///        subscribers can receive content from this XPUB socket.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Proxy : public IProxy
+class Proxy //: public IProxy
 {
 public:
     /// @name Constructors
@@ -58,23 +58,23 @@ public:
     /// @{
 
     /// @result True indicates that the proxy is initialized.
-    [[nodiscard]] bool isInitialized() const noexcept override final;
+    [[nodiscard]] bool isInitialized() const noexcept;// override final;
     /// @result The name of the proxy broadcast.
-    [[nodiscard]] std::string getName() const override final;
+    [[nodiscard]] std::string getName() const;// override final;
     /// @result The connection details.
     [[nodiscard]] Services::ConnectionInformation::Details
-        getConnectionDetails() const override final;
+        getConnectionDetails() const;// override final;
     /// @}
 
     /// @name Starts the proxy.
     /// @{
     /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    void start() override final;
+    void start();// override final;
     /// @result True indicates the proxy is running.
     bool isRunning() const noexcept;
     /// @brief Stops the proxy.
-    void stop() override final;
+    void stop();// override final;
     /// @}
 
     /// @result An uninitialized instance of this class.
@@ -84,7 +84,7 @@ public:
     /// @{
 
     /// @brief Destructor.
-    ~Proxy() override;
+    ~Proxy();// override;
     /// @}
 
     Proxy(const Proxy &proxy) = delete;

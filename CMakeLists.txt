@@ -129,8 +129,8 @@ set(MODULES_LIBSRC
     src/services/incrementer/service.cpp
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
-    #src/proxyBroadcasts/dataPacket/proxy.cpp
-    #src/proxyBroadcasts/dataPacket/proxyOptions.cpp
+    src/proxyBroadcasts/dataPacket/proxy.cpp
+    src/proxyBroadcasts/dataPacket/proxyOptions.cpp
     src/proxyBroadcasts/dataPacket/publisher.cpp
     src/proxyBroadcasts/dataPacket/publisherOptions.cpp
     src/proxyBroadcasts/dataPacket/subscriber.cpp
@@ -302,7 +302,8 @@ set(TEST_COMMUNICATION_SRC
     testing/communication/authentication.cpp
     testing/communication/requestRouter.cpp
     testing/communication/xpubxsub.cpp
-    testing/communication/routerDealer.cpp)
+    testing/communication/routerDealer.cpp
+    testing/communication/dataPacket.cpp)
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
 set_target_properties(commTests PROPERTIES
                       CXX_STANDARD 20
