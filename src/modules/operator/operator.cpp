@@ -677,6 +677,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     {
         UMPS::ProxyBroadcasts::ProxyOptions proxyOptions;
         proxyOptions.parseInitializationFile(iniFile, proxyBroadcast);
+        proxyOptions.setZAPOptions(options.mZAPOptions);
         // Frontend address
         std::string address;
         if (proxyOptions.getProxyOptions().haveFrontendAddress())
@@ -716,6 +717,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     {   
         UMPS::ProxyServices::ProxyOptions proxyOptions;
         proxyOptions.parseInitializationFile(iniFile, proxyService);
+        proxyOptions.setZAPOptions(options.mZAPOptions);
         // Frontend address
         std::string address;
         if (proxyOptions.getProxyOptions().haveFrontendAddress())

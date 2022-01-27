@@ -105,7 +105,7 @@ void subscriber()
             std::chrono::microseconds startTime{(t0 + nrecv)*1000000};
             EXPECT_EQ(message->getStartTime(), startTime);
             EXPECT_NEAR(message->getSamplingRate(), samplingRate, 1.e-10);
-            std::cout << startTime.count() << " " << message->getStartTime().count() << std::endl;
+            //std::cout << startTime.count() << " " << message->getStartTime().count() << std::endl;
             nrecv = nrecv + 1;
         }
     }   
