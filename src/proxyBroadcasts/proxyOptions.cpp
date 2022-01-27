@@ -17,8 +17,8 @@ class ProxyOptions::ProxyOptionsImpl
 public:
     ProxyOptionsImpl()
     {
-        mProxyOptions.setFrontendHighWaterMark(2000);
-        mProxyOptions.setBackendHighWaterMark(1000);
+        mProxyOptions.setFrontendHighWaterMark(4096);
+        mProxyOptions.setBackendHighWaterMark(4096);
     }
     UXPubXSub::ProxyOptions mProxyOptions;
     std::string mName;

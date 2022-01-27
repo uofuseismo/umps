@@ -53,10 +53,63 @@ void proxy()
     DataPacket::Proxy proxy;
     proxy.initialize(options);
     proxy.start();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds{100});
     EXPECT_TRUE(proxy.isRunning());
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     proxy.stop();
+}
+
+void publisher()
+{
+    DataPacket::PublisherOptions publisherOptions;
+    publisherOptions.setAddress(frontendAddress);
+    DataPacket::Publisher publisher; 
+    publisher.initialize(publisherOptions);
+    EXPECT_TRUE(publisher.isInitialized());
+    // Define the mesage to send
+    UMPS::MessageFormats::DataPacket<double> packet;
+    packet.setNetwork(network);
+    packet.setStation(station);
+    packet.setChannel(channel);
+    packet.setLocationCode(locationCode);
+    packet.setSamplingRate(samplingRate);
+    packet.setStartTime(t0);
+    packet.setData(timeSeries);
+
+    int t0 = 0;
+    for (int i = 0; i < nMessages; ++i)
+    {
+        //std::cout << "send it" << std::endl;
+        packet.setStartTime(t0 + i);
+        EXPECT_NO_THROW(publisher.send(packet));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+}
+
+void subscriber()
+{
+    DataPacket::SubscriberOptions subscriberOptions;
+    subscriberOptions.setAddress(backendAddress);
+    subscriberOptions.setTimeOut(std::chrono::milliseconds(100));
+    DataPacket::Subscriber subscriber;
+    subscriber.initialize(subscriberOptions);
+    EXPECT_TRUE(subscriber.isInitialized());
+    int nrecv = 0;
+    while (nrecv < nMessages) 
+    {
+        auto message = subscriber.receive();
+        if (message != nullptr)
+        {
+            EXPECT_EQ(message->getNetwork(), network);
+            EXPECT_EQ(message->getStation(), station);
+            std::chrono::microseconds startTime{(t0 + nrecv)*1000000};
+            EXPECT_EQ(message->getStartTime(), startTime);
+            EXPECT_NEAR(message->getSamplingRate(), samplingRate, 1.e-10);
+            std::cout << startTime.count() << " " << message->getStartTime().count() << std::endl;
+            nrecv = nrecv + 1;
+        }
+    }   
+
 }
 
 void baseProxy()
@@ -86,33 +139,6 @@ void baseProxy()
     t1.join();
 }
 
-void publisher()
-{
-    DataPacket::PublisherOptions publisherOptions;
-    publisherOptions.setAddress(frontendAddress);
-    DataPacket::Publisher publisher; 
-    publisher.initialize(publisherOptions);
-    EXPECT_TRUE(publisher.isInitialized());
-    // Define the mesage to send
-    UMPS::MessageFormats::DataPacket<double> packet;
-    packet.setNetwork(network);
-    packet.setStation(station);
-    packet.setChannel(channel);
-    packet.setLocationCode(locationCode);
-    packet.setSamplingRate(samplingRate);
-    packet.setStartTime(t0);
-    packet.setData(timeSeries);
-
-    int t0 = 0;
-    for (int i = 0; i < nMessages; ++i)
-    {
-std::cout << "sending" << std::endl;
-        packet.setStartTime(t0 + i);
-        EXPECT_NO_THROW(publisher.send(packet));
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
-}
-
 void basePublisher()
 {
     namespace XPubXSub = UMPS::Messaging::XPublisherXSubscriber;
@@ -138,12 +164,15 @@ void basePublisher()
     packet.setData(timeSeries);
     for (int i = 0; i < nMessages; ++i)
     {   
-        packet.setStartTime(t0 + i); 
+        //std::chrono::microseconds startTime{t0 + i};
+        double startTime = i;
+        packet.setStartTime(startTime);
         EXPECT_NO_THROW(publisher.send(packet));
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
+/*
 void baseSubscriber()
 {
     UMPS::Logging::StdOut logger;
@@ -162,79 +191,28 @@ void baseSubscriber()
     subscriber.initialize(options);
     for (int i = 0; i < nMessages; ++i)
     {
-std::cout << "Hey" << std::endl;
         auto message = subscriber.receive();
-std::cout << "got one!" << std::endl;
-    }
-}
-
-/*
-void baseSubscriber()
-{
-    UMPS::Messaging::PublisherSubscriber::SubscriberOptions subscriberOptions;
-    subscriberOptions.setAddress(backendAddress);
-    std::unique_ptr<UMPS::MessageFormats::IMessage> messageType = std::make_unique<UMPS::MessageFormats::DataPacket<double>> ();
-    UMPS::MessageFormats::Messages messages;
-    messages.add(messageType);
-    subscriberOptions.setMessageTypes(messages); 
-    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber;
-    subscriber.initialize(subscriberOptions);
-    EXPECT_TRUE(subscriber.isInitialized());
-    int nrecv = 0;
-    while (nrecv < 10)
-    {
-std::cout << "waiting" << std::endl;
-        auto message = subscriber.receive();
-std::cout << "hey" << std::endl;
-        auto dataMessage
-            = static_unique_pointer_cast<UMPS::MessageFormats::DataPacket<double>>
-              (std::move(message));
-        if (dataMessage != nullptr)
-        {
-            nrecv = nrecv + 1;
-            std::cout << dataMessage->getNetwork() << std::endl;
-        }
     }
 }
 */
-
-void subscriber()
-{
-    DataPacket::SubscriberOptions subscriberOptions;
-    subscriberOptions.setAddress(backendAddress);
-    DataPacket::Subscriber subscriber;
-    subscriber.initialize(subscriberOptions);
-    EXPECT_TRUE(subscriber.isInitialized());
-    int nrecv = 0;
-    while (nrecv < 10) 
-    {
-        auto message = subscriber.receive();
-        if (message != nullptr)
-        {
-            nrecv = nrecv + 1;
-            std::cout << message->getNetwork() << std::endl;
-        }   
-    }
-
-}
 
 TEST(Communication, DataPacket)
 {
     auto proxyThread = std::thread(proxy);
     //auto proxyThread = std::thread(baseProxy);
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    //std::this_thread::sleep_for(std::chrono::milliseconds(500));
     auto subThread = std::thread(subscriber);
     //auto subThread = std::thread(baseSubscriber);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    //auto pubThread = std::thread(publisher);
-    auto pubThread = std::thread(basePublisher);
+    std::this_thread::sleep_for(std::chrono::milliseconds(700));
+    auto pubThread = std::thread(publisher);
+    //auto pubThread = std::thread(basePublisher);
     
     proxyThread.join();
-    std::cout << "proxy thread joined" << std::endl;
+    //std::cout << "proxy thread joined" << std::endl;
     subThread.join();
-    std::cout << "Sub thread joined" << std::endl;
+    //std::cout << "Sub thread joined" << std::endl;
     pubThread.join();
-    std::cout << "Pub thread joined" << std::endl;
+    //std::cout << "Pub thread joined" << std::endl;
 }
 
 }

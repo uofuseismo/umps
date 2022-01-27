@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <zmq.hpp>
 #include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
@@ -70,7 +71,14 @@ void Publisher::initialize(const PublisherOptions &options)
 {
     if (!options.haveAddress()){throw std::runtime_error("Address not set");}
     auto publisherOptions = options.getPublisherOptions();
+    //UXPubXSub::PublisherOptions publisherOptions;
+    //publisherOptions.setAddress(options.getPublisherOptions().getAddress());
     pImpl->mPublisher->initialize(publisherOptions);
+#ifndef NDEBUG
+    assert(pImpl->mPublisher->isInitialized());
+#endif
+    // Slow joiner problem
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     pImpl->mOptions = options;
 }
 
@@ -105,7 +113,6 @@ Publisher::~Publisher() = default;
 template<typename U>
 void Publisher::send(const UMPS::MessageFormats::DataPacket<U> &message)
 {
-std::cout << message.getMessageType() << std::endl;
     pImpl->mPublisher->send(message); 
 }
 
