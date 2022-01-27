@@ -104,6 +104,7 @@ public:
                     auto dataPacket
                         = traceBuf2MessagesPtr[iMessage].toDataPacket();
                     mPacketPublisher->send(dataPacket);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
                     nSent = nSent + 1;
                 }
                 catch (const std::exception &e)
@@ -224,15 +225,6 @@ int main(int argc, char *argv[])
 #ifndef NDEBUG
     assert(publisher->isInitialized());
 #endif
-UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions subscriberOptions;
-subscriberOptions.setAddress("tcp://155.98.50.104:5002");
-subscriberOptions.setZAPOptions(options.mZAPOptions);
-auto subscriber = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Subscriber<double>> (loggerPtr);
-subscriber->initialize(subscriberOptions);
-#ifndef NDEBUG
-assert(publisher->isInitialized());
-#endif
-
 /*
     std::shared_ptr<UMPS::ProxyBroadcasts::Heartbeat::Publisher> heartbeatPublisher{nullptr};
     if (!heartbeatAddress.empty())
@@ -288,15 +280,6 @@ assert(publisher->isInitialized());
             std::cout << "  quit  Exits the program" << std::endl;
             std::cout << "  help  Prints this message" << std::endl;
         }
-auto message = subscriber->receive();
-if (message == nullptr)
-{
-std::cout << "none" << std::endl;
-}
-else
-{
-std::cout <<"something"<<std::endl;
-}
     }
 /*
     // Forward messages from earthworm to UMPS indefinitely

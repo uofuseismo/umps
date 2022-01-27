@@ -13,7 +13,7 @@ public:
     PublisherOptionsImpl()
     {
         mOptions.setHighWaterMark(8192); // No point making this infinite
-        mOptions.setTimeOut(std::chrono::milliseconds{5000}); 
+        mOptions.setTimeOut(std::chrono::milliseconds{1000}); 
     }
     UMPS::Messaging::XPublisherXSubscriber::PublisherOptions mOptions;
 };
