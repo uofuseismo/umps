@@ -176,6 +176,7 @@ target_include_directories(umps
                            PRIVATE spdlog::spdlog
                            PRIVATE ${cppzmq_INCLUDE_DIR}
                            PRIVATE ${SQLite3_INCLUDE_DIRS}
+                           PRIVATE Boost::program_options
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
                            PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
 if (${BUILD_TBB})
