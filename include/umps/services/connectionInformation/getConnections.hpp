@@ -17,7 +17,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @result The connection details.
 /// @throws std::runtime_error if the connection fails.
 /// @note This works for the grasslands or strawhouse security paradigms.
-std::vector<Details> getConnections(const std::string &endPoint);
+[[deprecated]] [[nodiscard]] std::vector<Details> getConnections(const std::string &endPoint);
 /// @brief Convenience function to request all the available connections.
 /// @param[in] endPoint    The address of the operator's ConnectionDetails
 ///                        service. 
@@ -28,6 +28,7 @@ std::vector<Details> getConnections(const std::string &endPoint);
 ///                        public and private key as well as the server
 ///                        private key.
 /// @throws std::runtime_error if the connection fails.
+[[deprecated]] [[nodiscard]]
 std::vector<Details> getConnections(
     const std::string &endPoint,
     const UMPS::Authentication::ZAPOptions &zapOptions);

@@ -18,9 +18,12 @@
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 //#include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
 //#include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
-#include "umps/services/connectionInformation/getConnections.hpp"
+#include "umps/services/connectionInformation/requestOptions.hpp"
+#include "umps/services/connectionInformation/request.hpp"
+//#include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
@@ -36,9 +39,11 @@
 
 namespace UAuth = UMPS::Authentication;
 namespace UServices = UMPS::Services;
+namespace UCI = UMPS::Services::ConnectionInformation;
 
 struct ProgramOptions
 {
+    UCI::RequestOptions mConnectionInformationRequestOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::string earthwormParametersDirectory
         = "/opt/earthworm/run_working/params/";
@@ -172,6 +177,24 @@ int main(int argc, char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (logger);
     // Get the connection details
+    UCI::Request request;
+    request.initialize(options.mConnectionInformationRequestOptions);
+    auto connectionDetails = request.getAllConnectionDetails();
+    // Throws since we need this address
+    auto packetAddress = request.getProxyBroadcastFrontendDetails(
+                               options.dataBroadcastName).getAddress();
+    std::string heartbeatAddress;
+    try
+    {
+        heartbeatAddress = request.getProxyBroadcastFrontendDetails(
+                               options.heartbeatBroadcastName).getAddress();
+    }
+    catch (const std::exception &e)
+    {
+        logger.info(e.what());
+    }  
+
+/*
     logger.info("Getting available services...");
     std::vector<UServices::ConnectionInformation::Details> connectionDetails;
     try
@@ -216,6 +239,7 @@ int main(int argc, char *argv[])
         logger.info("Will connect to " + options.dataBroadcastName
                   + " at " + packetAddress); 
     }
+*/
     // Connect to proxy
     UMPS::ProxyBroadcasts::DataPacket::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
@@ -380,6 +404,13 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
         }
     }
     //------------------------------ Operator --------------------------------//
+    UCI::RequestOptions requestOptions;
+    requestOptions.parseInitializationFile(iniFile);
+    options.mConnectionInformationRequestOptions = requestOptions;
+    options.operatorAddress = requestOptions.getRequestOptions().getEndPoint();
+    options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();
+
+/*
     options.operatorAddress = propertyTree.get<std::string>
         ("uOperator.ipAddress", options.operatorAddress);
     if (isEmpty(options.operatorAddress))
@@ -388,6 +419,7 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     } 
     options.mZAPOptions
         = UMPS::Modules::Operator::readZAPClientOptions(propertyTree);
+*/
 /*
     // Security level
     auto securityLevel = static_cast<UAuth::SecurityLevel>

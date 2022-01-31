@@ -5,10 +5,16 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
+#include "umps/services/connectionInformation/socketDetails/proxy.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
+#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
+#include "private/isEmpty.hpp"
 
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 using namespace UMPS::Services::ConnectionInformation;
@@ -78,7 +84,7 @@ bool Request::isInitialized() const noexcept
 } 
 
 /// Get all connection details
-std::vector<Details> Request::getDetails() const
+std::vector<Details> Request::getAllConnectionDetails() const
 {
     if (!isInitialized())
     {
@@ -87,13 +93,12 @@ std::vector<Details> Request::getDetails() const
     std::vector<Details> result;
     AvailableConnectionsRequest requestMessage;
     auto message = pImpl->mRequestor->request(requestMessage);
-    if (message == nullptr)
+    if (message != nullptr)
     {
         auto detailsMessage
             = static_unique_pointer_cast<AvailableConnectionsResponse>
               (std::move(message));
-    //    return detailsMessage->getDetails();
- 
+        result = std::move(detailsMessage->getDetails());
     }
     else
     {
@@ -103,6 +108,84 @@ std::vector<Details> Request::getDetails() const
 }
 
 /// Get proxyBroadcast frontend 
+SocketDetails::XSubscriber
+Request::getProxyBroadcastFrontendDetails(const std::string &name) const
+{
+    if (isEmpty(name))
+    {
+        throw std::invalid_argument("Proxy broadcast name is empty");
+    }
+    auto connectionDetails = getAllConnectionDetails();
+    for (const auto &connectionDetail : connectionDetails)
+    {
+        if (connectionDetail.getName() == name)
+        {
+            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
+            return proxySocketDetails.getXSubscriberFrontend();
+        }
+    }
+    throw std::runtime_error("No details found for: " + name);
+}
+
+/// Get proxyBroadcast frontend 
+SocketDetails::XPublisher
+Request::getProxyBroadcastBackendDetails(const std::string &name) const
+{
+    if (isEmpty(name))
+    {
+        throw std::invalid_argument("Proxy broadcast name is empty");
+    }
+    auto connectionDetails = getAllConnectionDetails();
+    for (const auto &connectionDetail : connectionDetails)
+    {
+        if (connectionDetail.getName() == name)
+        {
+            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
+            return proxySocketDetails.getXPublisherBackend();
+        }
+    }
+    throw std::runtime_error("No details found for: " + name);
+}
+
+/// Get proxyService frontend
+SocketDetails::Router
+Request::getProxyServiceFrontendDetails(const std::string &name) const
+{
+    if (isEmpty(name))
+    {
+        throw std::invalid_argument("Proxy service name is empty");
+    }
+    auto connectionDetails = getAllConnectionDetails();
+    for (const auto &connectionDetail : connectionDetails)
+    {
+        if (connectionDetail.getName() == name)
+        {
+            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
+            return proxySocketDetails.getRouterFrontend();
+        }
+    }
+    throw std::runtime_error("No details found for: " + name);
+}
+
+/// Get proxyService backend
+SocketDetails::Dealer
+Request::getProxyServiceBackendDetails(const std::string &name) const
+{
+    if (isEmpty(name))
+    {
+        throw std::invalid_argument("Proxy service name is empty");
+    }
+    auto connectionDetails = getAllConnectionDetails();
+    for (const auto &connectionDetail : connectionDetails)
+    {
+        if (connectionDetail.getName() == name)
+        {
+            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
+            return proxySocketDetails.getDealerBackend();
+        }
+    }
+    throw std::runtime_error("No details found for: " + name);
+}
 
 /// Disconnect
 void Request::disconnect()

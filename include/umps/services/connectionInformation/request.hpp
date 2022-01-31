@@ -13,7 +13,10 @@ namespace UMPS
   class Details;
   namespace SocketDetails
   {
-  //class 
+   class XPublisher;
+   class XSubscriber;
+   class Router;
+   class Dealer;
   }
  }
 }
@@ -47,7 +50,7 @@ public:
     Request& operator=(Request &&request) noexcept;
     /// @}
 
-    /// @name Step 1: Initialization
+    /// @name Initialization
     /// @{
 
     /// @brief Initializes the requestor.
@@ -57,11 +60,42 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}
 
-    /// @name Step 2: Querying the Service
+    /// @name Query All Connections
     /// @{
+
+    /// @brief Gets the connection details for all availble connections.
     /// @result The connection details for all services.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    std::vector<Details> getDetails() const;
+    [[nodiscard]] std::vector<Details> getAllConnectionDetails() const;
+
+    /// @name Query Proxy Broadcasts
+    /// @{
+
+    /// @brief Gets the socket details to which data publishers will connect.
+    /// @param[in] name  The name of the proxy broadcast.
+    /// @throws std::runtime_error if the proxy broadcast name does not
+    ///         exist or the \c isInitialized() is false.
+    [[nodiscard]] SocketDetails::XSubscriber getProxyBroadcastFrontendDetails(const std::string &name) const;
+    /// @brief Gets the socket details to which data consumers will connect.
+    /// @param[in] name  The name of the proxy broadcast.
+    /// @throws std::runtime_error if the proxy broadcast name does not
+    ///         exist or the \c isInitialized() is false.
+    [[nodiscard]] SocketDetails::XPublisher  getProxyBroadcastBackendDetails(const std::string &name) const;
+    /// @}
+
+    /// @name Query Proxy Services
+    /// @{
+ 
+    /// @brief Gets the socket details to which clients will connect.
+    /// @param[in] name  The name of the proxy service.
+    /// @throws std::runtime_error if the proxy service name does not exist
+    ///         or the \c isInitialized() is false.
+    [[nodiscard]] SocketDetails::Router getProxyServiceFrontendDetails(const std::string &name) const;
+    /// @brief Gets the socket details to which servers will connect.
+    /// @param[in] name  The name of the proxy service.
+    /// @throws std::runtime_error if the proxy service name does not exist
+    ///         or the \c isInitialized() is false.
+    [[nodiscard]] SocketDetails::Dealer getProxyServiceBackendDetails(const std::string &name) const; 
     /// @}
 
     /// @name Destructors

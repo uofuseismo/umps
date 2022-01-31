@@ -23,9 +23,13 @@
 #include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/request.hpp"
+#include "umps/services/connectionInformation/requestOptions.hpp"
 #include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
+#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/logging/spdlog.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/threadSafeQueue.hpp"
@@ -35,6 +39,7 @@
 namespace UPacketCache = UMPS::ProxyServices::PacketCache;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 namespace UAuth = UMPS::Authentication;
+namespace UCI = UMPS::Services::ConnectionInformation;
 
 #define DEFAULT_HWM 4096
 #define DEFAULT_TIMEOUT std::chrono::milliseconds{10}
@@ -42,6 +47,7 @@ namespace UAuth = UMPS::Authentication;
 
 struct ProgramOptions
 {
+    UCI::RequestOptions mConnectionInformationRequestOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
@@ -264,6 +270,16 @@ int main(int argc, char *argv[])
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
     logger.info("Getting available services...");
+    // Get the connection details
+    //std::cout << "Getting available services..." << std::endl;
+    UCI::Request connectionInformation;
+    connectionInformation.initialize(
+        options.mConnectionInformationRequestOptions);
+    auto dataPacketAddress
+        = connectionInformation.getProxyBroadcastBackendDetails(
+             options.dataBroadcastName).getAddress();
+
+/*
     namespace UCI = UMPS::Services::ConnectionInformation;
     std::vector<UCI::Details> connectionDetails;
     try
@@ -301,6 +317,7 @@ int main(int argc, char *argv[])
         logger.info("Will connect to " + options.dataBroadcastName
                   + " at " + dataPacketAddress); 
     }
+*/
 
 /*
     // Now connect to the publisher
@@ -441,6 +458,12 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     options.maxPackets = propertyTree.get<int> ("PacketCache.maxPackets",
                                                 options.maxPackets);
     //------------------------------ Operator --------------------------------//
+    UCI::RequestOptions requestOptions;
+    requestOptions.parseInitializationFile(iniFile);
+    options.mConnectionInformationRequestOptions = requestOptions;
+    options.operatorAddress = requestOptions.getRequestOptions().getEndPoint();
+    options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();
+/*
     options.operatorAddress = propertyTree.get<std::string>
         ("uOperator.ipAddress", options.operatorAddress);
     if (isEmpty(options.operatorAddress))
@@ -449,5 +472,6 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     }
     options.mZAPOptions
         = UMPS::Modules::Operator::readZAPClientOptions(propertyTree);
+*/
     return options;
 }
