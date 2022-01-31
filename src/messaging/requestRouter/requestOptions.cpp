@@ -16,6 +16,7 @@ public:
     UMPS::MessageFormats::Messages mMessageFormats;
     UAuth::ZAPOptions mZAPOptions;
     std::string mEndPoint;
+    std::chrono::milliseconds mTimeOut{-1};
     int mHighWaterMark = 0;
     bool mHaveCallback = false;
 };
@@ -123,4 +124,24 @@ void RequestOptions::addMessageFormat(
 UMPS::MessageFormats::Messages RequestOptions::getMessageFormats() const noexcept
 {
     return pImpl->mMessageFormats;
+}
+
+/// Timeout
+void RequestOptions::setTimeOut(
+    const std::chrono::milliseconds timeOut) noexcept
+{
+    constexpr std::chrono::milliseconds zero{0};
+    if (timeOut >= zero)
+    {
+        pImpl->mTimeOut = timeOut;
+    }
+    else
+    {
+        pImpl->mTimeOut = std::chrono::milliseconds{-1};
+    }
+}
+
+std::chrono::milliseconds RequestOptions::getTimeOut() const noexcept
+{   
+    return pImpl->mTimeOut;
 }

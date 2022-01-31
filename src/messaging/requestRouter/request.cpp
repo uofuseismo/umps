@@ -111,12 +111,18 @@ void Request::initialize(const RequestOptions &options)
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     auto highWaterMark = pImpl->mOptions.getHighWaterMark();
     auto endPoint = pImpl->mOptions.getEndPoint();
+    auto timeOut = static_cast<int> (options.getTimeOut().count());
     // Set the ZAP options
     zapOptions.setSocketOptions(&*pImpl->mClient);
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
     // Set the high water mark
     pImpl->mClient->set(zmq::sockopt::rcvhwm, highWaterMark);
     //pImpl->mClient->set(zmq::sockopt::sndhwm, highWaterMark); 
+    // Set the timeout
+    if (timeOut >= 0)
+    {
+        pImpl->mClient->set(zmq::sockopt::rcvtimeo, timeOut);
+    }
     // Bind
     pImpl->mLogger->debug("Attempting to connect to: " + endPoint);
     pImpl->mClient->connect(endPoint);

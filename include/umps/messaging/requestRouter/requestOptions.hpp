@@ -104,6 +104,22 @@ public:
     [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const noexcept;
     /// @}
 
+    /// @name Time Out
+    /// @{
+
+    /// @brief If the requests waits the timeOut length of time before
+    ///        receiving a response then it will return without a message.
+    ///        This is useful when the requestor thread has other
+    ///        responsibilities.
+    /// @param[in] timeOut   The time out duration in milliseconds.  If this is
+    ///                      zero then the requestor will immediately return.
+    ///                      If this is negative then the requestor will wait
+    ///                      indefinitely until a message is received.
+    void setTimeOut(const std::chrono::milliseconds timeOut) noexcept;
+    /// @result The time out duration in milliseconds.
+    [[nodiscard]] std::chrono::milliseconds getTimeOut() const noexcept;
+    /// @}
+
     /// @name Destructors
     /// @{
 

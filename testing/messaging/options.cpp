@@ -4,6 +4,7 @@
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
@@ -125,6 +126,38 @@ TEST(Messaging, XPubXSubPublisherOptions)
     EXPECT_EQ(options.getTimeOut(), negativeOne);
 }
 
+TEST(Messaging, RequestRouterRequestOptions)
+{
+    RequestRouter::RequestOptions options;
+    int hwm = 240;
+    const std::string address = "tcp://127.0.0.2:5556";
+    const std::chrono::milliseconds timeOut{120};
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
+        = std::make_unique<UMPS::MessageFormats::Pick> (); 
+    //UMPS::MessageFormats::Messages messageFormats;
+    //messageFormats.add(pickMessage);
+    EXPECT_NO_THROW(options.setHighWaterMark(hwm));
+    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+    EXPECT_NO_THROW(options.setEndPoint(address));
+    EXPECT_NO_THROW(options.setTimeOut(timeOut));
+    EXPECT_NO_THROW(options.addMessageFormat(pickMessage));//messageFormats));
+    
+    RequestRouter::RequestOptions optionsCopy(options); 
+    EXPECT_EQ(options.getHighWaterMark(), hwm);
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              UAuth::SecurityLevel::STRAWHOUSE);
+    EXPECT_EQ(options.getEndPoint(), address);
+    EXPECT_EQ(options.getTimeOut(), timeOut);
+    EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
+
+    options.clear();
+    EXPECT_EQ(options.getHighWaterMark(), 0); 
+    const std::chrono::milliseconds negativeOne{-1};
+    EXPECT_EQ(options.getTimeOut(), negativeOne);
+}
+
 TEST(Messaging, RouterDealerProxyOptions)
 {
     const std::string frontendAddress = "tcp://127.0.0.1:5555";
@@ -158,6 +191,7 @@ TEST(Messaging, RouterDealerRequestOptions)
     RouterDealer::RequestOptions options;
     int hwm = 240;
     const std::string address = "tcp://127.0.0.2:5556";
+    //const std::chrono::milliseconds timeOut{120};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
     std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
@@ -167,6 +201,7 @@ TEST(Messaging, RouterDealerRequestOptions)
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setEndPoint(address));
+    //EXPECT_NO_THROW(options.setTimeOut(timeOut));
     EXPECT_NO_THROW(options.setMessageFormats(messageFormats));
         
     RouterDealer::RequestOptions optionsCopy(options); 
@@ -174,10 +209,13 @@ TEST(Messaging, RouterDealerRequestOptions)
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::STRAWHOUSE);
     EXPECT_EQ(options.getEndPoint(), address);
+    //EXPECT_EQ(options.getTimeOut(), timeOut);
     EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
 
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), 0); 
+    //const std::chrono::milliseconds negativeOne{-1};
+    //EXPECT_EQ(options.getTimeOut(), negativeOne);
 }
 
 TEST(Messaging, RouterDealerReplyOptions)

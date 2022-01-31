@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/requestOptions.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/services/connectionInformation/socketDetails/dealer.hpp"
@@ -13,6 +14,8 @@
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -20,6 +23,29 @@ namespace
 
 using namespace UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
+
+TEST(Messaging, RequestOptions)
+{
+    RequestOptions options;
+    const std::string address = "tcp://127.0.0.2:5556";
+    const std::chrono::milliseconds timeOut{120};
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+    EXPECT_NO_THROW(options.setEndPoint(address));
+    EXPECT_NO_THROW(options.setTimeOut(timeOut));
+    
+    RequestOptions optionsCopy(options); 
+    auto optionsBase = optionsCopy.getRequestOptions();
+    EXPECT_EQ(optionsBase.getZAPOptions().getSecurityLevel(),
+              UAuth::SecurityLevel::STRAWHOUSE);
+    EXPECT_EQ(optionsBase.getEndPoint(), address);
+    EXPECT_EQ(optionsBase.getTimeOut(), timeOut);
+
+    options.clear();
+    optionsBase = options.getRequestOptions();
+    EXPECT_EQ(optionsBase.getTimeOut(), std::chrono::seconds{5});
+}
 
 TEST(ConnectionInformation, SocketDetails)
 {

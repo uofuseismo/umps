@@ -110,6 +110,8 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/availableConnectionsRequest.cpp
     src/services/connectionInformation/availableConnectionsResponse.cpp
     src/services/connectionInformation/getConnections.cpp
+    src/services/connectionInformation/requestOptions.cpp
+    src/services/connectionInformation/request.cpp
     src/services/connectionInformation/service.cpp
     src/services/connectionInformation/parameters.cpp
     src/services/connectionInformation/socketDetails/dealer.cpp
