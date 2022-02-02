@@ -1,6 +1,7 @@
 #ifndef UMPS_SERVICES_CONNECTIONINFORMATION_REQUEST_HPP
 #define UMPS_SERVICES_CONNECTIONINFORMATION_REQUEST_HPP
 #include <memory>
+#include <vector>
 namespace UMPS
 {
  namespace Logging
@@ -33,6 +34,8 @@ public:
 
     /// @brief Constructor
     Request();
+    /// @brief Constructs the class with a given logger.
+    explicit Request(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] request  The request class from which to initialize
     ///                         this class.  On exit, request's behavior is

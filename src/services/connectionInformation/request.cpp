@@ -49,6 +49,12 @@ Request::Request() :
 {
 }
 
+/// C'tor with logger
+Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RequestImpl> (nullptr,  logger))
+{
+}
+
 /// Move c'tor
 Request::Request(Request &&request) noexcept
 {
