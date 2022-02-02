@@ -112,6 +112,7 @@ void subscriber()
 
 }
 
+/*
 void baseProxy()
 {
     namespace XPubXSub = UMPS::Messaging::XPublisherXSubscriber;
@@ -138,7 +139,9 @@ void baseProxy()
     proxy.stop();
     t1.join();
 }
+*/
 
+/*
 void basePublisher()
 {
     namespace XPubXSub = UMPS::Messaging::XPublisherXSubscriber;
@@ -171,6 +174,7 @@ void basePublisher()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
+*/
 
 /*
 void baseSubscriber()
