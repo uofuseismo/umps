@@ -74,15 +74,15 @@ public:
        std::scoped_lock lock(mMutex);
        if (mBound)
        {
-           mServer->disconnect(mEndPoint);
-           mEndPoint.clear();
+           mServer->disconnect(mAddress);
+           mAddress.clear();
            mBound = false;
        }
     }
     /// Update socket details
     void updateSocketDetails()
     {
-        mSocketDetails.setAddress(mEndPoint);
+        mSocketDetails.setAddress(mAddress);
         mSocketDetails.setSecurityLevel(mSecurityLevel);
         mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
     }
@@ -103,7 +103,7 @@ public:
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{10};
     mutable std::mutex mMutex;
-    std::string mEndPoint;
+    std::string mAddress;
     int mHighWaterMark = 100; 
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
     bool mBound = false;
@@ -157,23 +157,6 @@ Router& Router::operator=(Router &&router) noexcept
 /// Destructor
 Router::~Router() = default;
 
-//void Router::initialize(const std::string &endPoint,
-/*
-void Router::setCallback(
-    const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
-                        (const std::string &, const void *, size_t)>
-                        &callback)
-{
-    pImpl->mCallback = callback;
-    pImpl->mHaveCallback = true;
-}
-
-bool Router::haveCallback() const noexcept
-{
-    return pImpl->mHaveCallback;
-}
-*/
-
 /// Initialized?
 bool Router::isInitialized() const noexcept
 {
@@ -183,9 +166,9 @@ bool Router::isInitialized() const noexcept
 /// Initializes the router
 void Router::initialize(const RouterOptions &options)
 {
-    if (!options.haveEndPoint())
+    if (!options.haveAddress())
     {
-        throw std::invalid_argument("End point not set");
+        throw std::invalid_argument("Address not set");
     }
     if (!options.haveCallback())
     {
@@ -203,7 +186,7 @@ void Router::initialize(const RouterOptions &options)
     //  
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     auto highWaterMark = pImpl->mOptions.getHighWaterMark();
-    auto endPoint = pImpl->mOptions.getEndPoint();
+    auto address = pImpl->mOptions.getAddress();
     // Set the ZAP options
     zapOptions.setSocketOptions(&*pImpl->mServer);
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
@@ -214,13 +197,13 @@ void Router::initialize(const RouterOptions &options)
     pImpl->mCallback = pImpl->mOptions.getCallback(); 
     pImpl->mHaveCallback = true;
     // Bind
-    pImpl->mServer->bind(endPoint);
+    pImpl->mServer->bind(address);
     // Resolve end point
-    pImpl->mEndPoint = endPoint;
-    if (endPoint.find("tcp") != std::string::npos ||
-        endPoint.find("ipc") != std::string::npos)
+    pImpl->mAddress = address;
+    if (address.find("tcp") != std::string::npos ||
+        address.find("ipc") != std::string::npos)
     {
-        pImpl->mEndPoint = pImpl->mServer->get(zmq::sockopt::last_endpoint);
+        pImpl->mAddress = pImpl->mServer->get(zmq::sockopt::last_endpoint);
     }
     pImpl->updateSocketDetails();
     pImpl->mBound = true;
@@ -344,10 +327,10 @@ void Router::operator()()
 }
 
 /// Access address
-std::string Router::getEndPoint() const
+std::string Router::getAddress() const
 {
     if (!isInitialized()){throw std::runtime_error("Router not initialized");}
-    return pImpl->mEndPoint;
+    return pImpl->mAddress;
 }
 
 /// Connection information

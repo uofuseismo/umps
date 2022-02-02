@@ -55,7 +55,7 @@ public:
     ///        information service.
     /// @param[in] address  The client access address.
     /// @throws std::invalid_argument if the address is empty.
-    void setEndPoint(const std::string &address);
+    void setAddress(const std::string &address);
     /// @brief Sets the ZeroMQ authentication protocol options.
     void setZAPOptions(const UMPS::Authentication::ZAPOptions &options);
     /// @brief Sets the request time out.  This is useful when the

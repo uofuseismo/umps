@@ -156,13 +156,13 @@ TEST(PacketCache, RequestOptions)
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
     PC::RequestOptions options;
-    options.setEndPoint(frontendAddress);
+    options.setAddress(frontendAddress);
     options.setHighWaterMark(hwm);
     options.setZAPOptions(zapOptions);
 
     PC::RequestOptions optionsCopy(options);
 
-    EXPECT_EQ(optionsCopy.getEndPoint(), frontendAddress);
+    EXPECT_EQ(optionsCopy.getAddress(), frontendAddress);
     EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
     EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
               zapOptions.getSecurityLevel());

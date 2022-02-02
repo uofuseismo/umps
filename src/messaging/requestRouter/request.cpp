@@ -50,7 +50,7 @@ public:
     /// Update socket details
     void updateSocketDetails()
     {   
-        mSocketDetails.setAddress(mEndPoint);
+        mSocketDetails.setAddress(mAddress);
         mSocketDetails.setSecurityLevel(mSecurityLevel);
         mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
     }
@@ -62,7 +62,7 @@ public:
     std::shared_ptr<zmq::context_t> mContext = nullptr;
     std::unique_ptr<zmq::socket_t> mClient;
     std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
-    std::string mEndPoint;
+    std::string mAddress;
     UCI::SocketDetails::Request mSocketDetails;
     int mHighWaterMark = 200;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
@@ -95,7 +95,7 @@ Request::Request(std::shared_ptr<zmq::context_t> &context,
 /// Initializes the router
 void Request::initialize(const RequestOptions &options)
 {
-    if (!options.haveEndPoint())
+    if (!options.haveAddress())
     {
         throw std::invalid_argument("End point not set");
     }
@@ -110,7 +110,7 @@ void Request::initialize(const RequestOptions &options)
     //  
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     auto highWaterMark = pImpl->mOptions.getHighWaterMark();
-    auto endPoint = pImpl->mOptions.getEndPoint();
+    auto address = pImpl->mOptions.getAddress();
     auto timeOut = static_cast<int> (options.getTimeOut().count());
     // Set the ZAP options
     zapOptions.setSocketOptions(&*pImpl->mClient);
@@ -124,15 +124,15 @@ void Request::initialize(const RequestOptions &options)
         pImpl->mClient->set(zmq::sockopt::rcvtimeo, timeOut);
     }
     // Bind
-    pImpl->mLogger->debug("Attempting to connect to: " + endPoint);
-    pImpl->mClient->connect(endPoint);
-    pImpl->mLogger->debug("Connected to: " + endPoint + "!");
+    pImpl->mLogger->debug("Attempting to connect to: " + address);
+    pImpl->mClient->connect(address);
+    pImpl->mLogger->debug("Connected to: " + address + "!");
     // Resolve end point
-    pImpl->mEndPoint = endPoint;
-    if (endPoint.find("tcp") != std::string::npos ||
-        endPoint.find("ipc") != std::string::npos)
+    pImpl->mAddress = address;
+    if (address.find("tcp") != std::string::npos ||
+        address.find("ipc") != std::string::npos)
     {
-        pImpl->mEndPoint = pImpl->mClient->get(zmq::sockopt::last_endpoint);
+        pImpl->mAddress = pImpl->mClient->get(zmq::sockopt::last_endpoint);
     }
     pImpl->updateSocketDetails();
     pImpl->mConnected = true;
@@ -233,9 +233,9 @@ void Request::disconnect()
 {
     if (pImpl->mConnected)
     {
-        pImpl->mLogger->debug("Disconnecting from " + pImpl->mEndPoint);
-        pImpl->mClient->disconnect(pImpl->mEndPoint);
-        pImpl->mEndPoint.clear();
+        pImpl->mLogger->debug("Disconnecting from " + pImpl->mAddress);
+        pImpl->mClient->disconnect(pImpl->mAddress);
+        pImpl->mAddress.clear();
         pImpl->mSocketDetails.clear();
         pImpl->mConnected = false;
     }

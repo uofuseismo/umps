@@ -21,7 +21,7 @@ public:
         (const std::string &messageType, const void *contents,
          const size_t length)
     > mCallback;
-    std::string mEndPoint;
+    std::string mAddress;
     int mHighWaterMark = 0;
     bool mHaveCallback = false;
 };
@@ -70,24 +70,24 @@ void ReplyOptions::clear() noexcept
 ReplyOptions::~ReplyOptions() = default;
 
 /// End point to bind to
-void ReplyOptions::setEndPoint(const std::string &endPoint)
+void ReplyOptions::setAddress(const std::string &address)
 {
-    if (isEmpty(endPoint))
+    if (isEmpty(address))
     {
-        throw std::invalid_argument("End point is empty");
+        throw std::invalid_argument("Address is empty");
     }
-    pImpl->mEndPoint = endPoint;    
+    pImpl->mAddress = address;
 }
 
-std::string ReplyOptions::getEndPoint() const
+std::string ReplyOptions::getAddress() const
 {
-   if (!haveEndPoint()){throw std::runtime_error("End point not set");}
-   return pImpl->mEndPoint;
+   if (!haveAddress()){throw std::runtime_error("Address not set");}
+   return pImpl->mAddress;
 }
 
-bool ReplyOptions::haveEndPoint() const noexcept
+bool ReplyOptions::haveAddress() const noexcept
 {
-    return !pImpl->mEndPoint.empty();
+    return !pImpl->mAddress.empty();
 }
 
 /// ZAP Options

@@ -67,7 +67,7 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result Gets the connection string.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
+    [[deprecated]] [[nodiscard]] std::string getAddress() const;
     /// @result the connection details.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Router getSocketDetails() const;

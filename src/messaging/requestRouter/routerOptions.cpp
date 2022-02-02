@@ -15,7 +15,7 @@ class RouterOptions::RouterOptionsImpl
 public:
     //UMPS::MessageFormats::Messages mMessageFormats;
     UAuth::ZAPOptions mZAPOptions;
-    std::string mEndPoint;
+    std::string mAddress;
     std::function<
         std::unique_ptr<UMPS::MessageFormats::IMessage>
         (const std::string &messageType, const void *contents,
@@ -70,24 +70,24 @@ void RouterOptions::clear() noexcept
 RouterOptions::~RouterOptions() = default;
 
 /// End point to bind to
-void RouterOptions::setEndPoint(const std::string &endPoint)
+void RouterOptions::setAddress(const std::string &address)
 {
-    if (isEmpty(endPoint))
+    if (isEmpty(address))
     {
-        throw std::invalid_argument("End point is empty");
+        throw std::invalid_argument("Address is empty");
     }
-    pImpl->mEndPoint = endPoint;    
+    pImpl->mAddress = address;
 }
 
-std::string RouterOptions::getEndPoint() const
+std::string RouterOptions::getAddress() const
 {
-   if (!haveEndPoint()){throw std::runtime_error("End point not set");}
-   return pImpl->mEndPoint;
+   if (!haveAddress()){throw std::runtime_error("Address not set");}
+   return pImpl->mAddress;
 }
 
-bool RouterOptions::haveEndPoint() const noexcept
+bool RouterOptions::haveAddress() const noexcept
 {
-    return !pImpl->mEndPoint.empty();
+    return !pImpl->mAddress.empty();
 }
 
 /// ZAP Options

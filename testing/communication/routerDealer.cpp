@@ -113,7 +113,7 @@ void client(int id)
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     RequestOptions options;
-    options.setEndPoint(frontendAddress); 
+    options.setAddress(frontendAddress); 
     auto pickType = pick.createInstance();
     UMPS::MessageFormats::Messages messageFormats;
     messageFormats.add(pickType);
@@ -165,7 +165,7 @@ void server()
     ProcessData pStruct;
     // Initialize the server
     ReplyOptions options;
-    options.setEndPoint(backendAddress);
+    options.setAddress(backendAddress);
     options.setCallback(std::bind(&ProcessData::process,
                         &pStruct, //process,
                         std::placeholders::_1,

@@ -140,7 +140,7 @@ TEST(Messaging, RequestRouterRequestOptions)
     //messageFormats.add(pickMessage);
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
-    EXPECT_NO_THROW(options.setEndPoint(address));
+    EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setTimeOut(timeOut));
     EXPECT_NO_THROW(options.addMessageFormat(pickMessage));//messageFormats));
     
@@ -148,7 +148,7 @@ TEST(Messaging, RequestRouterRequestOptions)
     EXPECT_EQ(options.getHighWaterMark(), hwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::STRAWHOUSE);
-    EXPECT_EQ(options.getEndPoint(), address);
+    EXPECT_EQ(options.getAddress(), address);
     EXPECT_EQ(options.getTimeOut(), timeOut);
     EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
 
@@ -200,7 +200,7 @@ TEST(Messaging, RouterDealerRequestOptions)
     messageFormats.add(pickMessage);
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
-    EXPECT_NO_THROW(options.setEndPoint(address));
+    EXPECT_NO_THROW(options.setAddress(address));
     //EXPECT_NO_THROW(options.setTimeOut(timeOut));
     EXPECT_NO_THROW(options.setMessageFormats(messageFormats));
         
@@ -208,7 +208,7 @@ TEST(Messaging, RouterDealerRequestOptions)
     EXPECT_EQ(options.getHighWaterMark(), hwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::STRAWHOUSE);
-    EXPECT_EQ(options.getEndPoint(), address);
+    EXPECT_EQ(options.getAddress(), address);
     //EXPECT_EQ(options.getTimeOut(), timeOut);
     EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
 
@@ -229,14 +229,14 @@ TEST(Messaging, RouterDealerReplyOptions)
         = std::make_unique<UMPS::MessageFormats::Pick> ();
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
-    EXPECT_NO_THROW(options.setEndPoint(address));
+    EXPECT_NO_THROW(options.setAddress(address));
     //EXPECT_NO_THROW(options.addMessageFormat(pickMessage));
     
     RouterDealer::ReplyOptions optionsCopy(options); 
     EXPECT_EQ(options.getHighWaterMark(), hwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::STRAWHOUSE);
-    EXPECT_EQ(options.getEndPoint(), address);
+    EXPECT_EQ(options.getAddress(), address);
     //EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
 
     options.clear();

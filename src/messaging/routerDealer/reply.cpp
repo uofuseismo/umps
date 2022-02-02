@@ -71,8 +71,8 @@ public:
        std::scoped_lock lock(mMutex);
        if (mConnected)
        {
-           mServer->disconnect(mEndPoint);
-           mEndPoint.clear();
+           mServer->disconnect(mAddress);
+           mAddress.clear();
            mSocketDetails.clear();
            mConnected = false;
        }
@@ -80,7 +80,7 @@ public:
     /// Update socket details
     void updateSocketDetails()
     {   
-        mSocketDetails.setAddress(mEndPoint);
+        mSocketDetails.setAddress(mAddress);
         mSocketDetails.setSecurityLevel(mSecurityLevel);
         mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
     }
@@ -96,7 +96,7 @@ public:
     > mCallback;
     ReplyOptions mOptions;
     UCI::SocketDetails::Reply mSocketDetails;
-    std::string mEndPoint;
+    std::string mAddress;
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{10};
@@ -142,7 +142,7 @@ void Reply::initialize(const ReplyOptions &options)
     {
         throw std::invalid_argument("Callback not set");
     }
-    if (!options.haveEndPoint())
+    if (!options.haveAddress())
     {
         throw std::invalid_argument("End point not set");
     }
@@ -153,7 +153,7 @@ void Reply::initialize(const ReplyOptions &options)
     // Get zap options
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     auto highWaterMark = pImpl->mOptions.getHighWaterMark();
-    auto endPoint = pImpl->mOptions.getEndPoint();
+    auto address = pImpl->mOptions.getAddress();
     // Set the ZAP options
     zapOptions.setSocketOptions(&*pImpl->mServer);
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
@@ -164,13 +164,13 @@ void Reply::initialize(const ReplyOptions &options)
     pImpl->mCallback = pImpl->mOptions.getCallback();
     pImpl->mHaveCallback = true;
     // Connect 
-    pImpl->mServer->connect(endPoint);
+    pImpl->mServer->connect(address);
     // Resolve end point
-    pImpl->mEndPoint = endPoint;
-    if (endPoint.find("tcp") != std::string::npos ||
-        endPoint.find("ipc") != std::string::npos)
+    pImpl->mAddress = address;
+    if (address.find("tcp") != std::string::npos ||
+        address.find("ipc") != std::string::npos)
     {   
-        pImpl->mEndPoint = pImpl->mServer->get(zmq::sockopt::last_endpoint);
+        pImpl->mAddress = pImpl->mServer->get(zmq::sockopt::last_endpoint);
     }
     pImpl->mConnected = true; 
     pImpl->updateSocketDetails();

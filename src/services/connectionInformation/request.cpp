@@ -76,7 +76,7 @@ Request& Request::operator=(Request &&request) noexcept
 void Request::initialize(const RequestOptions &requestOptions)
 {
     auto options = requestOptions.getRequestOptions();
-    if (!options.haveEndPoint())
+    if (!options.haveAddress())
     {
         throw std::invalid_argument("End point not set");
     } 

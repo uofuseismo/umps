@@ -79,9 +79,9 @@ Request::~Request() = default;
 /// Initialize
 void Request::initialize(const RequestOptions &options)
 {
-    if (!options.haveEndPoint())
+    if (!options.haveAddress())
     {
-        throw std::invalid_argument("End point not set");
+        throw std::invalid_argument("Address not set");
     }
     pImpl->mRequestOptions = options;
     pImpl->mRequestor->initialize(pImpl->mRequestOptions.getRequestOptions());

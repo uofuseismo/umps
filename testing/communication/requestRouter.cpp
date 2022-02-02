@@ -92,7 +92,7 @@ void server()
     ProcessData pStruct;
     // Initialize the server
     UMPS::Messaging::RequestRouter::RouterOptions routerOptions;
-    routerOptions.setEndPoint(serverHost);
+    routerOptions.setAddress(serverHost);
     routerOptions.setCallback(std::bind(&ProcessData::process,
                               &pStruct, //process,
                               std::placeholders::_1,
@@ -143,7 +143,7 @@ void client(int base)
     UMPS::Services::Incrementer::Request request;
     std::unique_ptr<UMPS::MessageFormats::IMessage> responseType
         = std::make_unique<UMPS::Services::Incrementer::Response> (); 
-    requestOptions.setEndPoint(localHost);
+    requestOptions.setAddress(localHost);
     requestOptions.addMessageFormat(responseType);
 /*
     client.setResponse(responseType);

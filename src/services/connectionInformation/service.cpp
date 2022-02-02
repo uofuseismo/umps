@@ -243,7 +243,7 @@ void Service::initialize(const Parameters &parameters)
     pImpl->mRouterOptions.clear();
     // Initialize the socket - Step 1: Initialize options
     auto clientAccessAddress = parameters.getClientAccessAddress();
-    pImpl->mRouterOptions.setEndPoint(clientAccessAddress);
+    pImpl->mRouterOptions.setAddress(clientAccessAddress);
     pImpl->mRouterOptions.setCallback(std::bind(&ServiceImpl::callback,
                                                 &*this->pImpl,
                                                 std::placeholders::_1,

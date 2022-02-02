@@ -218,7 +218,7 @@ void Service::initialize(const Parameters &parameters)
     Messaging::RequestRouter::RouterOptions routerOptions;
     auto clientAccessAddress = parameters.getClientAccessAddress();
     routerOptions.setZAPOptions(parameters.getZAPOptions());
-    routerOptions.setEndPoint(clientAccessAddress);
+    routerOptions.setAddress(clientAccessAddress);
     routerOptions.setCallback(std::bind(&ServiceImpl::callback,
                                         &*this->pImpl,
                                         std::placeholders::_1,

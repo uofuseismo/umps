@@ -76,19 +76,19 @@ void RequestOptions::clear() noexcept
 RequestOptions::~RequestOptions() = default;
 
 /// End point to bind to
-void RequestOptions::setEndPoint(const std::string &endPoint)
+void RequestOptions::setAddress(const std::string &address)
 {
-    pImpl->mOptions.setEndPoint(endPoint);
+    pImpl->mOptions.setAddress(address);
 }
 
-std::string RequestOptions::getEndPoint() const
+std::string RequestOptions::getAddress() const
 {
-   return pImpl->mOptions.getEndPoint();
+   return pImpl->mOptions.getAddress();
 }
 
-bool RequestOptions::haveEndPoint() const noexcept
+bool RequestOptions::haveAddress() const noexcept
 {
-    return pImpl->mOptions.haveEndPoint();
+    return pImpl->mOptions.haveAddress();
 }
 
 /// ZAP Options

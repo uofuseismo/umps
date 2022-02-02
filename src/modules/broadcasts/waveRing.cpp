@@ -407,7 +407,7 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     UCI::RequestOptions requestOptions;
     requestOptions.parseInitializationFile(iniFile);
     options.mConnectionInformationRequestOptions = requestOptions;
-    options.operatorAddress = requestOptions.getRequestOptions().getEndPoint();
+    options.operatorAddress = requestOptions.getRequestOptions().getAddress();
     options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();
 
 /*

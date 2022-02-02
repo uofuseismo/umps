@@ -60,19 +60,19 @@ void ReplyOptions::clear() noexcept
 ReplyOptions::~ReplyOptions() = default;
 
 /// End point to bind to
-void ReplyOptions::setEndPoint(const std::string &endPoint)
+void ReplyOptions::setAddress(const std::string &address)
 {
-    pImpl->mOptions.setEndPoint(endPoint);
+    pImpl->mOptions.setAddress(address);
 }
 
-std::string ReplyOptions::getEndPoint() const
+std::string ReplyOptions::getAddress() const
 {
-    return pImpl->mOptions.getEndPoint();
+    return pImpl->mOptions.getAddress();
 }
 
-bool ReplyOptions::haveEndPoint() const noexcept
+bool ReplyOptions::haveAddress() const noexcept
 {
-    return pImpl->mOptions.haveEndPoint();
+    return pImpl->mOptions.haveAddress();
 }
 
 /// ZAP Options

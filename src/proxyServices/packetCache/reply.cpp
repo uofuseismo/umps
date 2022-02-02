@@ -194,9 +194,9 @@ void Reply<T>::initialize(
     {
         throw std::invalid_argument("Capped collection not initialized");
     }
-    if (!options.haveEndPoint())
+    if (!options.haveAddress())
     {
-        throw std::invalid_argument("End point not set");
+        throw std::invalid_argument("Address not set");
     } 
     pImpl->mCappedCollection = cappedCollection;
     pImpl->createReplyOptions(options);

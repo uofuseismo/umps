@@ -73,9 +73,9 @@ void RequestOptions::clear() noexcept
 }
 
 /// End point
-void RequestOptions::setEndPoint(const std::string &endPoint)
+void RequestOptions::setAddress(const std::string &address)
 {
-    pImpl->mRequestOptions.setEndPoint(endPoint);
+    pImpl->mRequestOptions.setAddress(address);
 }
 
 /// ZAP options
@@ -116,7 +116,7 @@ void RequestOptions::parseInitializationFile(const std::string &iniFile)
         throw std::runtime_error("Operator address not set");
     }
     RequestOptions options;
-    options.setEndPoint(operatorAddress);
+    options.setAddress(operatorAddress);
     // Load the ZAP options
     auto zapOptions
          = UMPS::Modules::Operator::readZAPClientOptions(propertyTree);

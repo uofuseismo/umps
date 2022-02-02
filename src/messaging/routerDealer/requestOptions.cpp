@@ -15,7 +15,7 @@ class RequestOptions::RequestOptionsImpl
 public:
     UMPS::MessageFormats::Messages mMessageFormats;
     UAuth::ZAPOptions mZAPOptions;
-    std::string mEndPoint;
+    std::string mAddress;
     int mHighWaterMark = 0;
     bool mHaveCallback = false;
 };
@@ -64,24 +64,24 @@ void RequestOptions::clear() noexcept
 RequestOptions::~RequestOptions() = default;
 
 /// End point to bind to
-void RequestOptions::setEndPoint(const std::string &endPoint)
+void RequestOptions::setAddress(const std::string &address)
 {
-    if (isEmpty(endPoint))
+    if (isEmpty(address))
     {
         throw std::invalid_argument("End point is empty");
     }
-    pImpl->mEndPoint = endPoint;    
+    pImpl->mAddress = address;    
 }
 
-std::string RequestOptions::getEndPoint() const
+std::string RequestOptions::getAddress() const
 {
-   if (!haveEndPoint()){throw std::runtime_error("End point not set");}
-   return pImpl->mEndPoint;
+   if (!haveAddress()){throw std::runtime_error("Address not set");}
+   return pImpl->mAddress;
 }
 
-bool RequestOptions::haveEndPoint() const noexcept
+bool RequestOptions::haveAddress() const noexcept
 {
-    return !pImpl->mEndPoint.empty();
+    return !pImpl->mAddress.empty();
 }
 
 /// ZAP Options

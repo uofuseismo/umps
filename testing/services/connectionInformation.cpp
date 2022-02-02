@@ -32,14 +32,14 @@ TEST(Messaging, RequestOptions)
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
-    EXPECT_NO_THROW(options.setEndPoint(address));
+    EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setTimeOut(timeOut));
     
     RequestOptions optionsCopy(options); 
     auto optionsBase = optionsCopy.getRequestOptions();
     EXPECT_EQ(optionsBase.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::STRAWHOUSE);
-    EXPECT_EQ(optionsBase.getEndPoint(), address);
+    EXPECT_EQ(optionsBase.getAddress(), address);
     EXPECT_EQ(optionsBase.getTimeOut(), timeOut);
 
     options.clear();

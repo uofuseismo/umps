@@ -72,19 +72,19 @@ public:
 
     /// @}
 
-    /// @name Endpoint (Required)
+    /// @name Address (Required)
     /// @{
 
-    /// @param[in] endPoint  The endpoint on which to accept connections.
-    ///                      For example, "tcp://127.0.0.1:5555".
-    /// @throws std::invalid_argument if endPoint is blank.
-    void setEndPoint(const std::string &endPoint);
-    /// @result The endpoint to which clients will connect.
-    /// @throws std::runtime_error if \c haveEndPoint() is false.
-    [[nodiscard]] std::string getEndPoint() const;
-    /// @result True indicates that the end point was set.
-    [[nodiscard]] bool haveEndPoint() const noexcept;
-
+    /// @brief The address of the router to which the clients will connect.
+    /// @param[in] address  The address to which requests will be
+    ///                     received and from which replies will be sent.
+    /// @throws std::invalid_argument if address is blank.
+    void setAddress(const std::string &address);
+    /// @result The address to of the router.
+    /// @throws std::runtime_error if \c haveAddress() is false.
+    [[nodiscard]] std::string getAddress() const;
+    /// @result True indicates that the address was set.
+    [[nodiscard]] bool haveAddress() const noexcept;
     /// @}
 
     /// @name Callback (Required)

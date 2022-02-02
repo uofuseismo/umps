@@ -28,6 +28,7 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/logging/spdlog.hpp"
 #include "umps/logging/stdout.hpp"
@@ -50,6 +51,7 @@ struct ProgramOptions
     UAuth::ZAPOptions mZAPOptions;
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
+    std::string proxyServiceName;
     std::chrono::milliseconds dataPacketTimeOut{10};
     int maxPackets = 100;
     int dataPacketHighWaterMark = static_cast<int> (DEFAULT_HWM);
@@ -187,20 +189,6 @@ public:
         }
         mLogger->debug("Queue to circular buffer thread has exited");
     }
-/*
-    void startQueueToCircularBuffer()
-    {
-        mQueueToCircularBufferThread
-           = std::thread(&DataPacketSubscriber::queueToCircularBuffer, this);
-    }
-    /// @brief Starts the service that reads from the data packet feed and
-    ///        puts them into the queue for another thread to process.  
-    void startDataPacketSubscriber()
-    {
-        mDataPacketSubscriberThread
-           = std::thread(&DataPacketSubscriber::getPackets, this);
-    }
-*/
     /// @brief Starts the service
     void start()
     {
@@ -212,70 +200,7 @@ public:
            = std::thread(&DataPacketSubscriber::queueToPacketCache, this);
         // Start thread to read / respond to messages
         if (mReplier != nullptr){mReplier->start();}
-//        mResponseThread
-//           = std::thread(&DataPacketSubscriber::, this);
     }
-/*
-        namespace UMF = UMPS::MessageFormats;
-        mLogger->debug("Subscriber thread starting...");
-        while (keepRunning())
-        {
-            // Read latest message
-            //std::unique_ptr<UMPS::MessageFormats::IMessage> message = mSubscriber->receive();
-            //if (message == nullptr){continue;} // Possible to timeout
-            //auto dataPacket
-            //    = static_unique_pointer_cast<UMF::DataPacket<T>> (std::move(message));
-            //auto dataPacket = static_unique_pointer_cast<UMF::DataPacket<T>>
-            //                  (mSubscriber->receive());
-            auto dataPacket = mDataPacketSubscriber->receive();
-            if (dataPacket == nullptr){continue;}
-            // Push it onto the queue
-            mDataPacketQueue.push(std::move(*dataPacket));
-        }
-        // Put one last message in the queue so the other thread can unlock
-        // and quit its for loop 
-        mLogger->debug("Data packet subscriber thread has exited");
-        //UMF::DataPacket<T> lastPacket;
-        //mDataPacketQueue.push(lastPacket);
-    }
-*/
-/*
-    /// @brief Starts the service that takes a packet from the queue
-    ///        and into the packedCollection.
-    void startQueueToCircularBuffer()
-    {
-        namespace UMF = UMPS::MessageFormats;
-        mLogger->debug("Queue to circular buffer thread starting...");
-        while (keepRunning())
-        {
-            UMF::DataPacket<T> dataPacket;
-            if (mDataPacketQueue.wait_until_and_pop(&dataPacket))
-            {
-                if (dataPacket.getNumberOfSamples() > 0)
-                {
-                    try
-                    {
-                        mCappedCollection->addPacket(std::move(dataPacket)); 
-                    }
-                    catch (const std::exception &e)
-                    {
-                        mLogger->error("Failed to add packet:\n"
-                                     + std::string{e.what()});
-                    }
-                }
-            }
-        }
-        mLogger->debug("Queue to circular buffer thread has exited");
-    }
-    /// @brief Starts the service that receives and fulfills requests for
-    ///        data packets from time t0 to time t1.
-    void startService()
-    {
-        mLogger->debug("Reply thread starting...");
-        mReplier->start();
-        mLogger->debug("Reply thread has exited");
-    }
-*/
     /// @result True indicates the data packet subscriber should keep receiving
     ///         messages and putting the results in the circular buffer.
     [[nodiscard]] bool keepRunning() const
@@ -371,76 +296,16 @@ int main(int argc, char *argv[])
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
     logger.info("Getting available services...");
-    // Get the connection details
-    //std::cout << "Getting available services..." << std::endl;
     UCI::Request connectionInformation;
     connectionInformation.initialize(
         options.mConnectionInformationRequestOptions);
     auto dataPacketAddress
         = connectionInformation.getProxyBroadcastBackendDetails(
              options.dataBroadcastName).getAddress();
-
-/*
-    namespace UCI = UMPS::Services::ConnectionInformation;
-    std::vector<UCI::Details> connectionDetails;
-    try
-    {
-        connectionDetails = UCI::getConnections(options.operatorAddress,
-                                                options.mZAPOptions);
-    }
-    catch (const std::exception &e)
-    {
-        logger.error("Error getting services: " + std::string(e.what()));
-        return EXIT_FAILURE;
-    }
-    // Connect so that I may read from the appropriate broadcast
-    // - e.g., DataPacket
-    std::string dataPacketAddress;
-    for (const auto &connectionDetail : connectionDetails)
-    {
-        if (connectionDetail.getName() == options.dataBroadcastName)
-        {
-            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
-            auto backendSocketDetails
-                = proxySocketDetails.getXPublisherBackend();
-            dataPacketAddress = backendSocketDetails.getAddress();
-            break;
-        }
-    }
-    if (dataPacketAddress.empty())
-    {
-        logger.error("Failed to find " + options.dataBroadcastName 
-                   + " broadcast");
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        logger.info("Will connect to " + options.dataBroadcastName
-                  + " at " + dataPacketAddress); 
-    }
-*/
-
-/*
-    // Now connect to the publisher
-    std::unique_ptr<UMPS::MessageFormats::IMessage> messageType
-        = std::make_unique<UMPS::MessageFormats::DataPacket<double>> ();
-    UMPS::Messaging::PublisherSubscriber::SubscriberOptions subscriberOptions;
-    UMPS::MessageFormats::Messages messageTypes;
-    messageTypes.add(messageType);
-
-    subscriberOptions.setAddress(dataPacketAddress);
-    subscriberOptions.setHighWaterMark(options.dataPacketHighWaterMark);
-    subscriberOptions.setTimeOut(options.dataPacketTimeOut);
-    subscriberOptions.setMessageTypes(messageTypes);
-    subscriberOptions.setZAPOptions(zapOptions);
-
-    auto subscriber = std::make_shared<UPubSub::Subscriber> (loggerPtr);
-    subscriber->initialize(subscriberOptions);
-#ifndef NDEBUG
-    assert(subscriber->isInitialized());
-#endif
-*/
-
+    auto proxyServiceAddress
+        = connectionInformation.getProxyServiceBackendDetails(
+             options.proxyServiceName).getAddress();
+    // Now connect to datapacket broadcast backend 
     UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>
         dataPacketSubscriberOptions;
     dataPacketSubscriberOptions.setAddress(dataPacketAddress);
@@ -463,8 +328,9 @@ int main(int argc, char *argv[])
 
     // Create a replier
     UPacketCache::ReplyOptions replyOptions;
-    //auto replier = std::make_shared<UPacketCache::Reply<double>> (loggerPtr);
-    //replier->initialize(replyOptions, cappedCollection);
+    replyOptions.setAddress(proxyServiceAddress);
+    auto replier = std::make_shared<UPacketCache::Reply<double>> (loggerPtr);
+    replier->initialize(replyOptions, cappedCollection);
 
     // Create the struct
     DataPacketSubscriber<double> dps(loggerPtr,
@@ -566,14 +432,22 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
     //------------------------------------------------------------------------//
+    options.proxyServiceName = propertyTree.get<std::string>
+                               ("PacketCache.proxyServiceName", "");
+    if (options.proxyServiceName.empty())
+    {
+        throw std::invalid_argument("proxyServiceName not set");
+    }
     options.maxPackets = propertyTree.get<int> ("PacketCache.maxPackets",
                                                 options.maxPackets);
     //------------------------------ Operator --------------------------------//
     UCI::RequestOptions requestOptions;
     requestOptions.parseInitializationFile(iniFile);
     options.mConnectionInformationRequestOptions = requestOptions;
-    options.operatorAddress = requestOptions.getRequestOptions().getEndPoint();
+    options.operatorAddress = requestOptions.getRequestOptions().getAddress();
     options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();
+    //------------------------------- Options ---------------------------------//
+    
 /*
     options.operatorAddress = propertyTree.get<std::string>
         ("uOperator.ipAddress", options.operatorAddress);
