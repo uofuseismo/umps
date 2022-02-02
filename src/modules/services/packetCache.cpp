@@ -25,7 +25,6 @@
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/request.hpp"
 #include "umps/services/connectionInformation/requestOptions.hpp"
-#include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
@@ -137,10 +136,86 @@ public:
         mCappedCollection(cappedCollection)
     {
     }
+    ~DataPacketSubscriber()
+    {
+        stop();
+    }
+    /// @brief A thread running this function will read messages off the queue
+    ///        and put them into the queue.
+    void getPackets()
+    {
+        while (keepRunning())
+        {
+            try
+            {
+                auto dataPacket = mDataPacketSubscriber->receive();
+                if (dataPacket == nullptr){continue;} // Time out
+                mDataPacketQueue.push(std::move(*dataPacket));
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Error receiving packet: "
+                             + std::string(e.what()));
+                continue;
+            }
+        }
+        mLogger->debug("Broadcast to queue thread has exited");
+    }
+    /// @brief A thread running this function will read messages from the queue
+    ///        and put them into the circular buffer.
+    void queueToPacketCache()
+    {
+        namespace UMF = UMPS::MessageFormats;
+        while (keepRunning())
+        {
+            UMF::DataPacket<T> dataPacket;
+            if (mDataPacketQueue.wait_until_and_pop(&dataPacket))
+            {
+                if (dataPacket.getNumberOfSamples() > 0)
+                {
+                    try
+                    {
+                        mCappedCollection->addPacket(std::move(dataPacket)); 
+                    }
+                    catch (const std::exception &e) 
+                    {
+                        mLogger->error("Failed to add packet:\n"
+                                     + std::string{e.what()});
+                    }
+                }
+            }
+        }
+        mLogger->debug("Queue to circular buffer thread has exited");
+    }
+/*
+    void startQueueToCircularBuffer()
+    {
+        mQueueToCircularBufferThread
+           = std::thread(&DataPacketSubscriber::queueToCircularBuffer, this);
+    }
     /// @brief Starts the service that reads from the data packet feed and
     ///        puts them into the queue for another thread to process.  
-    void startSubscriber()
+    void startDataPacketSubscriber()
     {
+        mDataPacketSubscriberThread
+           = std::thread(&DataPacketSubscriber::getPackets, this);
+    }
+*/
+    /// @brief Starts the service
+    void start()
+    {
+        // Start thread to read messages from broadcast and put into queue
+        mDataPacketSubscriberThread
+           = std::thread(&DataPacketSubscriber::getPackets, this);
+        // Start thread to read messages from queue and put into packetCache 
+        mQueueToPacketCacheThread
+           = std::thread(&DataPacketSubscriber::queueToPacketCache, this);
+        // Start thread to read / respond to messages
+        if (mReplier != nullptr){mReplier->start();}
+//        mResponseThread
+//           = std::thread(&DataPacketSubscriber::, this);
+    }
+/*
         namespace UMF = UMPS::MessageFormats;
         mLogger->debug("Subscriber thread starting...");
         while (keepRunning())
@@ -163,6 +238,8 @@ public:
         //UMF::DataPacket<T> lastPacket;
         //mDataPacketQueue.push(lastPacket);
     }
+*/
+/*
     /// @brief Starts the service that takes a packet from the queue
     ///        and into the packedCollection.
     void startQueueToCircularBuffer()
@@ -196,8 +273,9 @@ public:
     {
         mLogger->debug("Reply thread starting...");
         mReplier->start();
-        mLogger->debug("Rreply thread has exited");
+        mLogger->debug("Reply thread has exited");
     }
+*/
     /// @result True indicates the data packet subscriber should keep receiving
     ///         messages and putting the results in the circular buffer.
     [[nodiscard]] bool keepRunning() const
@@ -205,16 +283,39 @@ public:
         std::lock_guard<std::mutex> lockGuard(mMutex);
         return mKeepRunning;
     }
+    /// 
+    void setRunning(const bool running)
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mKeepRunning = false;
+    }
     /// @brief Stops the publisher threads.
     void stop()
     {
-        mLogger->debug("Notifying threads to stop...");
-        std::lock_guard<std::mutex> lockGuard(mMutex);
-        if (mReplier != nullptr){mReplier->stop();}
-        mKeepRunning = false;
+        setRunning(false);
+        if (mLogger != nullptr){mLogger->debug("Notifying threads to stop...");}
+        if (mReplier != nullptr)
+        {
+            if (mReplier->isRunning()){mReplier->stop();}
+        }
+        if (mDataPacketSubscriberThread.joinable())
+        {
+            mDataPacketSubscriberThread.join();
+        }
+        if (mQueueToPacketCacheThread.joinable())
+        {
+            mQueueToPacketCacheThread.join();
+        }
+        if (mResponseThread.joinable())
+        {
+            mResponseThread.join();
+        }
     }
 ///private:
     mutable std::mutex mMutex;
+    std::thread mDataPacketSubscriberThread;
+    std::thread mQueueToPacketCacheThread;
+    std::thread mResponseThread;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
     std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>>
@@ -373,12 +474,21 @@ int main(int argc, char *argv[])
 
 //DataPacketSubscriber<double> dps(nullptr, loggerPtr, subscriberOptions, cappedCollection);
 
-    std::thread subscriberToQueueThread(
-        &DataPacketSubscriber<double>::startSubscriber, &dps);
-    std::thread queueToCircularBufferThread(
-        &DataPacketSubscriber<double>::startQueueToCircularBuffer,
-        &dps);
-    // Continually read from the dataPacket broadcast
+    //std::thread subscriberToQueueThread(
+    //    &DataPacketSubscriber<double>::startSubscriber, &dps);
+    //std::thread queueToCircularBufferThread(
+    //    &DataPacketSubscriber<double>::startQueueToCircularBuffer,
+    //    &dps);
+    //dps.startDataPacketSubscriber();
+    //dps.startQueueToCircularBuffer();
+    logger.info("Starting the service...");
+    dps.start();
+    // Monitor commands from stdin
+    while (true)
+    {
+
+    }
+/*
     for (int k = 0; k < 5; ++k)
     {
         // Get a good read on time so we wait a predictable amount
@@ -399,14 +509,15 @@ int main(int argc, char *argv[])
 //std::cout << packet.toJSON(4) << std::endl;
 //break;
     }
+*/
     logger.info("Number of packets in capped collection: "
         + std::to_string(dps.mCappedCollection->getTotalNumberOfPackets()));
     logger.info("Final packet queue size is: "
               + std::to_string(dps.mDataPacketQueue.size()));
     logger.info("Stopping services...");
     dps.stop();
-    subscriberToQueueThread.join();
-    queueToCircularBufferThread.join();
+    //subscriberToQueueThread.join();
+    //queueToCircularBufferThread.join();
     logger.info("Program finished");
 //std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }

@@ -170,6 +170,13 @@ void Reply<T>::start()
     pImpl->mReplier->start();
 }
 
+/// Is it running?
+template<class T>
+bool Reply<T>::isRunning() const noexcept
+{
+    return pImpl->mReplier->isRunning();
+}
+
 /// Stop the service
 template<class T>
 void Reply<T>::stop()
