@@ -60,6 +60,8 @@ public:
     ///        and return the result to the dealer to propagate via the router
     ///        back to the client. 
     /// @throws std::runtime_error if \c isInitialized() is false.
+    /// @note This will spin off a thread that runs in the background so it
+    ///       is important to \c stop() the service.
     void start();
 
     /// @result True indicates that the reply service is running.

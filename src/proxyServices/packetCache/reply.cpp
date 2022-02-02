@@ -1,6 +1,7 @@
 #include <set>
 #include <vector>
 #include <functional>
+#include <thread>
 #include <zmq.hpp>
 #include "umps/proxyServices/packetCache/reply.hpp"
 #include "umps/proxyServices/packetCache/replyOptions.hpp"
@@ -36,6 +37,11 @@ public:
             mLogger = logger;
         }
         mReplier= std::make_unique<URouterDealer::Reply> (context, mLogger);
+    }
+    /// Destructor
+    ~ReplyImpl()
+    {
+       stop();
     }
     // Respond to data requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -135,10 +141,23 @@ public:
                                             std::placeholders::_3));
        
     }
+    /// Stops the reply service
+    void stop()
+    {
+        if (mReplier != nullptr){mReplier->stop();}
+        if (mReplierThread.joinable()){mReplierThread.join();}
+    }
+    /// Starts the reply service
+    void start()
+    {
+        stop();
+        mReplierThread = std::thread(&URouterDealer::Reply::start, &*mReplier);
+    }
 
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<URouterDealer::Reply> mReplier{nullptr};
     std::shared_ptr<CappedCollection<T>> mCappedCollection{nullptr};
+    std::thread mReplierThread;
     URouterDealer::ReplyOptions mReplyOptions;
     ReplyOptions mOptions;
     bool mInitialized = false;
@@ -167,7 +186,7 @@ template<class T>
 void Reply<T>::start()
 {
     if (!isInitialized()){throw std::runtime_error("Reply not initialized");}
-    pImpl->mReplier->start();
+    pImpl->start(); //mReplier->start();
 }
 
 /// Is it running?
@@ -181,7 +200,7 @@ bool Reply<T>::isRunning() const noexcept
 template<class T>
 void Reply<T>::stop()
 {
-    pImpl->mReplier->stop();
+    pImpl->stop(); //mReplier->stop();
 }
 
 /// Initialize the class

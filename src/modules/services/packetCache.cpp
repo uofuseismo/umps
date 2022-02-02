@@ -128,16 +128,19 @@ public:
 #endif
     }
 */
-    /// C'tor
+    /// @brief C'tor
     DataPacketSubscriber(
         std::shared_ptr<UMPS::Logging::ILog> &logger,
         std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>> &subscriber,
-        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection) :
+        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection,
+        std::shared_ptr<UPacketCache::Reply<T>> &replier) :
         mLogger(logger),
         mDataPacketSubscriber(subscriber),
-        mCappedCollection(cappedCollection)
+        mCappedCollection(cappedCollection),
+        mPacketCacheReplier(replier)
     {
     }
+    /// @brief Destructor
     ~DataPacketSubscriber()
     {
         stop();
@@ -199,7 +202,10 @@ public:
         mQueueToPacketCacheThread
            = std::thread(&DataPacketSubscriber::queueToPacketCache, this);
         // Start thread to read / respond to messages
-        if (mReplier != nullptr){mReplier->start();}
+        if (mPacketCacheReplier != nullptr)
+        {
+            mPacketCacheReplier->start();
+        }
     }
     /// @result True indicates the data packet subscriber should keep receiving
     ///         messages and putting the results in the circular buffer.
@@ -208,7 +214,7 @@ public:
         std::lock_guard<std::mutex> lockGuard(mMutex);
         return mKeepRunning;
     }
-    /// 
+    /// @brief Toggles this as running or not running
     void setRunning(const bool running)
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
@@ -219,9 +225,9 @@ public:
     {
         setRunning(false);
         if (mLogger != nullptr){mLogger->debug("Notifying threads to stop...");}
-        if (mReplier != nullptr)
+        if (mPacketCacheReplier != nullptr)
         {
-            if (mReplier->isRunning()){mReplier->stop();}
+            if (mPacketCacheReplier->isRunning()){mPacketCacheReplier->stop();}
         }
         if (mDataPacketSubscriberThread.joinable())
         {
@@ -248,7 +254,7 @@ public:
     std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
     UPubSub::SubscriberOptions mSubscriberOptions;
-    std::shared_ptr<UPacketCache::Reply<T>> mReplier{nullptr};
+    std::shared_ptr<UPacketCache::Reply<T>> mPacketCacheReplier{nullptr};
     std::chrono::milliseconds mTimeOut{DEFAULT_TIMEOUT};
     int mMaxPackets = DEFAULT_MAXPACKETS;
     int mHighWaterMark = DEFAULT_HWM; 
@@ -295,7 +301,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
-    logger.info("Getting available services...");
+    logger.debug("Getting available services...");
     UCI::Request connectionInformation;
     connectionInformation.initialize(
         options.mConnectionInformationRequestOptions);
@@ -316,7 +322,7 @@ int main(int argc, char *argv[])
     auto dataPacketSubscriber
         = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Subscriber<double>> ();
     dataPacketSubscriber->initialize(dataPacketSubscriberOptions);
-    logger.info("Connected!");
+    logger.debug("Connected!");
 
     // Create a collection of circular buffers
     auto cappedCollection
@@ -335,7 +341,8 @@ int main(int argc, char *argv[])
     // Create the struct
     DataPacketSubscriber<double> dps(loggerPtr,
                                      dataPacketSubscriber,
-                                     cappedCollection);
+                                     cappedCollection,
+                                     replier);
 
 
 //DataPacketSubscriber<double> dps(nullptr, loggerPtr, subscriberOptions, cappedCollection);
@@ -347,45 +354,38 @@ int main(int argc, char *argv[])
     //    &dps);
     //dps.startDataPacketSubscriber();
     //dps.startQueueToCircularBuffer();
-    logger.info("Starting the service...");
+    logger.debug("Starting the service...");
     dps.start();
     // Monitor commands from stdin
     while (true)
     {
-
-    }
-/*
-    for (int k = 0; k < 5; ++k)
-    {
-        // Get a good read on time so we wait a predictable amount
-        auto startRead = std::chrono::high_resolution_clock::now();
-        auto endRead = std::chrono::high_resolution_clock::now();
-        auto elapsedTime
-            = std::chrono::duration<double> (endRead - startRead).count();
-        //logger.debug("Read and update took: "
-        //           + std::to_string(elapsedTime) + " (s)");
-//        logger.debug("Throughput (packets/second): "
-//                   + std::to_string(traceBuf2Messages.size()/elapsedTime));
-        //sleep(1);
-        auto sleepTime = static_cast<int> (1000 - elapsedTime*1000);
-        if (sleepTime > 0)
+        std::string command;
+        std::cout << "packetCache$";
+        std::cin >> command;
+        if (command == "quit")
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+            break;
         }
-//std::cout << packet.toJSON(4) << std::endl;
-//break;
+        else
+        {
+            std::cout << std::endl;
+            if (command != "help")
+            {
+                std::cout << "Unknown command: " << command << std::endl;
+                std::cout << std::endl;
+            }
+            std::cout << "Commands: " << std::endl;
+            std::cout << "  quit  Exits the program" << std::endl;
+            std::cout << "  help  Prints this message" << std::endl;
+        }
     }
-*/
-    logger.info("Number of packets in capped collection: "
+    logger.debug("Number of packets in capped collection: "
         + std::to_string(dps.mCappedCollection->getTotalNumberOfPackets()));
-    logger.info("Final packet queue size is: "
-              + std::to_string(dps.mDataPacketQueue.size()));
-    logger.info("Stopping services...");
+    logger.debug("Final packet queue size is: "
+               + std::to_string(dps.mDataPacketQueue.size()));
+    logger.debug("Stopping services...");
     dps.stop();
-    //subscriberToQueueThread.join();
-    //queueToCircularBufferThread.join();
-    logger.info("Program finished");
-//std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    logger.debug("Program finished");
 }
 
 ///--------------------------------------------------------------------------///
