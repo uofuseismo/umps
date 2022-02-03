@@ -42,6 +42,7 @@ const int t0 = 0;
 
 using namespace UMPS::ProxyBroadcasts;
 
+/*
 void proxy()
 {
     DataPacket::ProxyOptions options;
@@ -51,6 +52,24 @@ void proxy()
     options.setFrontendAddress(frontendAddress);
     options.setBackendAddress(backendAddress);
     DataPacket::Proxy proxy;
+    proxy.initialize(options);
+    proxy.start();
+    std::this_thread::sleep_for(std::chrono::milliseconds{100});
+    EXPECT_TRUE(proxy.isRunning());
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    proxy.stop();
+}
+*/
+
+void proxy()
+{
+    ProxyOptions options;
+    options.setName("DataPacket");
+    options.setFrontendHighWaterMark(0);
+    options.setBackendHighWaterMark(0);
+    options.setFrontendAddress(frontendAddress);
+    options.setBackendAddress(backendAddress);
+    Proxy proxy;
     proxy.initialize(options);
     proxy.start();
     std::this_thread::sleep_for(std::chrono::milliseconds{100});

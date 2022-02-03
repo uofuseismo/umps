@@ -48,6 +48,7 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 struct ProgramOptions
 {
     UCI::RequestOptions mConnectionInformationRequestOptions;
+    UPacketCache::ReplyOptions mPacketCacheReplyOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
@@ -250,11 +251,12 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
     std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>>
-        mDataPacketSubscriber;
-    std::shared_ptr<UPacketCache::CappedCollection<T>> mCappedCollection; 
+        mDataPacketSubscriber{nullptr};
+    std::shared_ptr<UPacketCache::CappedCollection<T>>
+        mCappedCollection{nullptr}; 
+    std::shared_ptr<UPacketCache::Reply<T>> mPacketCacheReplier{nullptr};
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
     UPubSub::SubscriberOptions mSubscriberOptions;
-    std::shared_ptr<UPacketCache::Reply<T>> mPacketCacheReplier{nullptr};
     std::chrono::milliseconds mTimeOut{DEFAULT_TIMEOUT};
     int mMaxPackets = DEFAULT_MAXPACKETS;
     int mHighWaterMark = DEFAULT_HWM; 
@@ -333,11 +335,13 @@ int main(int argc, char *argv[])
 #endif
 
     // Create a replier
-    UPacketCache::ReplyOptions replyOptions;
-    replyOptions.setAddress(proxyServiceAddress);
-    auto replier = std::make_shared<UPacketCache::Reply<double>> (loggerPtr);
-    replier->initialize(replyOptions, cappedCollection);
-
+    options.mPacketCacheReplyOptions.setAddress(proxyServiceAddress);
+    UMPS::Logging::StdOut replyLogger;
+    replyLogger.setLevel(UMPS::Logging::Level::DEBUG);
+    std::shared_ptr<UMPS::Logging::ILog> replyLoggerPtr
+        = std::make_shared<UMPS::Logging::StdOut> (replyLogger);
+    auto replier = std::make_shared<UPacketCache::Reply<double>> (replyLoggerPtr);
+    replier->initialize(options.mPacketCacheReplyOptions, cappedCollection);
     // Create the struct
     DataPacketSubscriber<double> dps(loggerPtr,
                                      dataPacketSubscriber,
