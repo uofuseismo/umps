@@ -1,3 +1,4 @@
+#include <iostream>
 #include <set>
 #include <vector>
 #include <functional>
@@ -41,18 +42,19 @@ public:
     /// Destructor
     ~ReplyImpl()
     {
-       stop();
+        stop();
     }
     // Respond to data requests
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
-        process(const std::string &messageType,
-                const void *messageContents,
-                const size_t length)
+        callback(const std::string &messageType,
+                 const void *messageContents, const size_t length) noexcept
     {
+        mLogger->debug("Received request");
         // Get data
         DataRequest dataRequest;
         if (messageType == dataRequest.getMessageType())
         {
+            mLogger->debug("Data request received");
             // Deserialize the message
             PacketCache::DataResponse<T> response;
             try
@@ -99,6 +101,7 @@ public:
         SensorRequest sensorRequest;
         if (messageType == sensorRequest.getMessageType())
         {
+            mLogger->debug("Sensor request received");
             SensorResponse response;
             try
             {
@@ -125,22 +128,25 @@ public:
             return response.clone();
         }
         // Send something back so they don't wait forever
+        mLogger->error("Unhandled message type: " + messageType);
         SensorResponse response;
         response.setReturnCode(ReturnCode::INVALID_MESSAGE_TYPE);
         return response.clone();
     }
     // Create the reply options
+/*
     void createReplyOptions(const ReplyOptions &options)
     {
         mOptions = options;
         mReplyOptions = mOptions.getReplyOptions();
-        mReplyOptions.setCallback(std::bind(&ReplyImpl::process,   
+        mReplyOptions.setCallback(std::bind(&ReplyImpl::callback,
                                             &*this,
                                             std::placeholders::_1,
                                             std::placeholders::_2,
                                             std::placeholders::_3));
        
     }
+*/
     /// Stops the reply service
     void stop()
     {
@@ -218,7 +224,14 @@ void Reply<T>::initialize(
         throw std::invalid_argument("Address not set");
     } 
     pImpl->mCappedCollection = cappedCollection;
-    pImpl->createReplyOptions(options);
+    pImpl->mOptions = options;
+    pImpl->mReplyOptions = pImpl->mOptions.getReplyOptions();
+    pImpl->mReplyOptions.setCallback(std::bind(&ReplyImpl::callback,
+                                               &*this->pImpl,
+                                               std::placeholders::_1,
+                                               std::placeholders::_2,
+                                               std::placeholders::_3));
+    //pImpl->createReplyOptions(options);
     pImpl->mReplier->initialize(pImpl->mReplyOptions);
     pImpl->mInitialized = true;
 }

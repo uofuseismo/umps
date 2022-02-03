@@ -48,17 +48,19 @@ public:
                                                    zmq::socket_type::rep);
     }
     /// Indicate that the service is started/running
-    void start()
+    void setRunning(const bool running = true)
     {
         std::scoped_lock lock(mMutex);
-        mRunning = true;
+        mRunning = running;
     }
     /// Indicate that the service is stopped/not running
+/*
     void stop()
     {
         std::scoped_lock lock(mMutex);
         mRunning = false;
     }
+*/
     /// Determines if the service was started
     bool isRunning() const noexcept
     {
@@ -197,7 +199,7 @@ void Reply::start()
     {
         {pImpl->mServer->handle(), 0, ZMQ_POLLIN, 0}
     };  
-    pImpl->start();
+    pImpl->setRunning(true);
     while (isRunning()) 
     {   
         auto logLevel = pImpl->mLogger->getLevel();
@@ -257,7 +259,7 @@ bool Reply::isRunning() const noexcept
 /// Stop
 void Reply::stop()
 {
-    pImpl->stop();
+    pImpl->setRunning(false);
 }
 
 /// Connection details

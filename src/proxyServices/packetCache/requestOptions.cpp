@@ -18,7 +18,7 @@ class RequestOptions::RequestOptionsImpl
 public:
     RequestOptionsImpl()
     {
-        mOptions.setHighWaterMark(512);
+        mOptions.setHighWaterMark(1024);
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataResponse
             = std::make_unique<DataResponse<double>> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> sensorResponse

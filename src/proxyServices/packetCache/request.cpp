@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <zmq.hpp>
 #include "umps/proxyServices/packetCache/request.hpp"

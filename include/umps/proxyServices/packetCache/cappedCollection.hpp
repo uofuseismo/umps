@@ -19,7 +19,7 @@ namespace UMPS::ProxyServices::PacketCache
 /// @brief This is a thread-safe fixed-size collection of trace-packets for a
 ///        unique sensor (network, station, channel, location code).
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-template<class T>
+template<class T = double>
 class CappedCollection
 {
 public:

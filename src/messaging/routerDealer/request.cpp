@@ -129,6 +129,7 @@ void Request::initialize(const RequestOptions &options)
     // Set the high water mark
     pImpl->mClient->set(zmq::sockopt::rcvhwm, highWaterMark);
     //pImpl->mClient->set(zmq::sockopt::sndhwm, highWaterMark); 
+    //pImpl->mClient->set(zmq::sockopt::rcvtimeo, 100);
     // Bind
     pImpl->mLogger->debug("Attempting to connect to: " + address);
     pImpl->mClient->connect(address);
@@ -179,6 +180,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     pImpl->mLogger->debug("Blocking for response...");
     // Receive all parts of the message
     zmq::multipart_t responseReceived(*pImpl->mClient);
+    if (responseReceived.empty()){return nullptr;} // Timeout
 #ifndef NDEBUG
     assert(responseReceived.size() == 2);
 #else
