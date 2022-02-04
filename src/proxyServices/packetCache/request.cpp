@@ -111,12 +111,17 @@ std::unique_ptr<SensorResponse> Request::request(const SensorRequest &request)
 }
 
 /// Request data
-/*
-std::unique_ptr<DataResponse> Request::request(const DataResponse &request)
+std::unique_ptr<DataResponse<double>> Request::request(const DataRequest &request)
 {
+    if (!request.haveNetwork()){throw std::invalid_argument("Network not set");}
+    if (!request.haveStation()){throw std::invalid_argument("Station not set");}
+    if (!request.haveChannel()){throw std::invalid_argument("Channel not set");}
+    if (!request.haveLocationCode())
+    {
+        throw std::invalid_argument("Location code not set");
+    }
     auto response 
-        = static_unique_pointer_cast<DataResponse>
+        = static_unique_pointer_cast<DataResponse<double>>
           (pImpl->mRequestor->request(request));
     return response;
 }
-*/

@@ -50,10 +50,11 @@ public:
                  const void *messageContents, const size_t length) noexcept
     {
         // Get data
+mLogger->info("request received");
         DataRequest dataRequest;
         if (messageType == dataRequest.getMessageType())
         {
-            mLogger->info("Data request received");
+            mLogger->debug("Data request received");
             // Deserialize the message
             PacketCache::DataResponse<T> response;
             try
@@ -100,7 +101,7 @@ public:
         SensorRequest sensorRequest;
         if (messageType == sensorRequest.getMessageType())
         {
-            mLogger->info("Sensor request received");
+            mLogger->debug("Sensor request received");
             SensorResponse response;
             try
             {
@@ -117,9 +118,7 @@ public:
             // Now get the result
             try
             {
-std::cout << "getting names" << std::endl;
                 response.setNames(mCappedCollection->getSensorNames());
-std::cout << "Got names" << std::endl;
             }
             catch (...)
             {

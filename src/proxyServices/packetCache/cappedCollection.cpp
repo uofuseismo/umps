@@ -333,7 +333,9 @@ std::vector<UMPS::MessageFormats::DataPacket<T>>
     }
     if (t1 <= t0)
     {
-        throw std::invalid_argument("t0 must be less than t1");
+        throw std::invalid_argument("t0 = " + std::to_string(t0.count())
+                                  + " must be less than t1 = "
+                                  + std::to_string(t1.count()));
     }
     return pImpl->getPackets(name, t0, t1);
 }

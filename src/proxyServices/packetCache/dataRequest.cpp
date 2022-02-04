@@ -74,8 +74,9 @@ public:
     std::string mChannel;
     std::string mLocationCode;
     uint64_t mIdentifier = 0;
+    const double mMaxTime = static_cast<double> (std::numeric_limits<int64_t>::max());
     double mStartTime = std::numeric_limits<double>::lowest();
-    double mEndTime = std::numeric_limits<double>::max();
+    double mEndTime = mMaxTime; //16725225600; // Year 2500 is 16725225600
 };
 
 /// C'tor
@@ -218,13 +219,13 @@ void DataRequest::setQueryTimes(const std::pair<double, double> &times)
 
 void DataRequest::setQueryTime(const double time)
 {
-    if (time == std::numeric_limits<double>::max())
+    if (time >= pImpl->mMaxTime)
     {
         throw std::invalid_argument(
-            "Query start time can't be set to max double");
+            "Query start time can't exceed " + std::to_string(pImpl->mMaxTime));
     }
     setQueryTimes(
-        std::pair<double, double> (time, std::numeric_limits<double>::max()));
+        std::pair<double, double> (time, std::numeric_limits<int64_t>::max()));
 }
 
 std::pair<double, double> DataRequest::getQueryTimes() const noexcept
