@@ -180,7 +180,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     pImpl->mLogger->debug("Blocking for response...");
     // Receive all parts of the message
     zmq::multipart_t responseReceived(*pImpl->mClient);
-    //if (responseReceived.empty()){return nullptr;} // Timeout
+    if (responseReceived.empty()){return nullptr;} // Timeout
 #ifndef NDEBUG
     assert(responseReceived.size() == 2);
 #else

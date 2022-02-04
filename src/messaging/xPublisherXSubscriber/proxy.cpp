@@ -360,7 +360,7 @@ void Proxy::start()
             }
             catch (const std::exception &e)
             {
-                auto errorMsg = "Failed to start proxy.  ZeroMQ failed with:\n"
+                auto errorMsg = "xPub/xSub proxy error.  ZeroMQ failed with:\n"
                               + std::string(e.what());
                 pImpl->mLogger->error(errorMsg);
                 throw std::runtime_error(errorMsg);
