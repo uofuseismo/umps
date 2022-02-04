@@ -80,7 +80,7 @@ public:
                          + " with length: " + std::to_string(length)
                          + " bytes was received.  Processing...");
         }
-        auto response = std::make_unique<AvailableConnectionsResponse> ();
+        AvailableConnectionsResponse response;
         AvailableConnectionsRequest request;
         if (messageType == request.getMessageType())
         {
@@ -94,7 +94,8 @@ public:
             {
                 mLogger->error("Request serialization failed with: "
                              + std::string(e.what()));
-                response->setReturnCode(ReturnCode::ALGORITHM_FAILURE);
+                response.setReturnCode(ReturnCode::ALGORITHM_FAILURE);
+                return response.clone();
             }
         }
         else
@@ -102,8 +103,8 @@ public:
             mLogger->error("Received message type: " + messageType
                          + " but received can only process "
                          + request.getMessageType());
-            response->setReturnCode(ReturnCode::INVALID_MESSAGE);
-            return response;
+            response.setReturnCode(ReturnCode::INVALID_MESSAGE);
+            return response.clone();
         }
         // Response to the message
         try
@@ -114,17 +115,17 @@ public:
             {
                 details.push_back(connection.second);
             }
-            response->setDetails(details);
-            response->setReturnCode(ReturnCode::SUCCESS);
+            response.setDetails(details);
+            response.setReturnCode(ReturnCode::SUCCESS);
         }
         catch (const std::exception &e)
         {
             mLogger->error("Failed to create message: "
-                         + response->getMessageType() + " because " 
+                         + response.getMessageType() + " because " 
                          + e.what());
-            response->setReturnCode(ReturnCode::ALGORITHM_FAILURE);
-        } 
-        return response;
+            response.setReturnCode(ReturnCode::ALGORITHM_FAILURE);
+        }
+        return response.clone();
     }
     /// Stops the proxy and authenticator and joins threads
     void stop()
@@ -251,8 +252,8 @@ void Service::initialize(const Parameters &parameters)
                                                 std::placeholders::_3));
     pImpl->mRouterOptions.setZAPOptions(parameters.getZAPOptions());
     // Add the message types
-    std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
-        = std::make_unique<AvailableConnectionsRequest> (); 
+    //std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
+    //    = std::make_unique<AvailableConnectionsRequest> (); 
     //pImpl->mRouterOptions.addMessageFormat(requestType);
     pImpl->mRouter->initialize(pImpl->mRouterOptions); 
     // Create the connection details

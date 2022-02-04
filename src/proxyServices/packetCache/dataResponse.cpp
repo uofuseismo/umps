@@ -316,9 +316,11 @@ std::string DataResponse<T>::getMessageType() const noexcept
 template<class T>
 std::string DataResponse<T>::toCBOR() const
 {
+//std::cout << "cbor'ing" << std::endl;
     auto obj = toJSONObject(*this);
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
+//std::cout << "cbor out" << result.size() <<  std::endl;
     return result;
 }
 

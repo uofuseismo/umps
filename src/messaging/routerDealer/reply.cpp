@@ -208,7 +208,7 @@ void Reply::start()
         {
             // Get the next message
             zmq::multipart_t messagesReceived(*pImpl->mServer);
-            if (messagesReceived.empty()){continue;}
+            //if (messagesReceived.empty()){continue;}
             if (logLevel >= UMPS::Logging::Level::DEBUG)
             {
                 pImpl->mLogger->debug("Reply received message!");
