@@ -50,11 +50,11 @@ public:
                  const void *messageContents, const size_t length) noexcept
     {
         // Get data
-mLogger->info("request received");
+        mLogger->info("request received");
         DataRequest dataRequest;
         if (messageType == dataRequest.getMessageType())
         {
-            mLogger->debug("Data request received");
+            mLogger->info("Data request received");
             // Deserialize the message
             PacketCache::DataResponse<T> response;
             try
@@ -65,6 +65,7 @@ mLogger->info("request received");
             }
             catch (...)
             {
+                mLogger->error("Received invalid data request");
                 response.setReturnCode(ReturnCode::INVALID_MESSAGE);
                 return response.clone();
             }
@@ -86,8 +87,10 @@ mLogger->info("request received");
                 }
                 catch (const std::exception &e)
                 {
+                    mLogger->error("Query failed");
                     mLogger->error(e.what());
                     response.setReturnCode(ReturnCode::ALGORITHM_FAILURE);
+                    return response.clone();
                 }
             }
             else
@@ -101,7 +104,7 @@ mLogger->info("request received");
         SensorRequest sensorRequest;
         if (messageType == sensorRequest.getMessageType())
         {
-            mLogger->debug("Sensor request received");
+            mLogger->info("Sensor request received");
             SensorResponse response;
             try
             {
@@ -111,6 +114,7 @@ mLogger->info("request received");
             }
             catch (...)
             {
+                mLogger->error("Received invalid sensor request");
                 response.setReturnCode(
                     PacketCache::ReturnCode::INVALID_MESSAGE);
                 return response.clone();
@@ -122,6 +126,7 @@ mLogger->info("request received");
             }
             catch (...)
             {
+                mLogger->error("Failed to set sensor names");
                 response.setReturnCode(
                     PacketCache::ReturnCode::ALGORITHM_FAILURE);
             }

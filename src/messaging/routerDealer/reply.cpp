@@ -226,18 +226,36 @@ void Reply::start()
             auto messageContents = reinterpret_cast<const void *>
                                    (messagesReceived.at(1).data());
             auto messageSize = messagesReceived.at(1).size();
-            auto response = pImpl->mCallback(messageType,
-                                             messageContents, messageSize);
-            // Send the response back
-            auto responseMessageType = response->getMessageType();
-            auto responseMessage = response->toMessage();
-            if (responseMessage.empty())
+            std::string responseMessageType{""};
+            std::string responseMessage{""};
+            try
             {
-                pImpl->mLogger->warn("Reply received empty message");
+                auto response = pImpl->mCallback(messageType,
+                                                 messageContents, messageSize);
+                if (response != nullptr)
+                {
+                    // Serialize the response
+                    responseMessageType = response->getMessageType();
+                    responseMessage = response->toMessage();
+                    if (responseMessage.empty())
+                    {
+                        pImpl->mLogger->warn("Reply received empty message");
+                    }
+                }
+                else
+                {
+                    pImpl->mLogger->warn("Response is NULL check calllback");
+                }
+            }
+            catch (const std::exception &e)
+            {
+                pImpl->mLogger->error("Error in callback/serialization: "
+                                   + std::string(e.what()));
             }
             if (logLevel >= UMPS::Logging::Level::DEBUG)
             {
                 pImpl->mLogger->debug("Replying...");
+                
             }
             zmq::const_buffer header{responseMessageType.data(),
                                      responseMessageType.size()};
