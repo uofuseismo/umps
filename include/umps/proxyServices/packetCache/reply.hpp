@@ -19,6 +19,10 @@ namespace UMPS
   template<class T> class CappedCollection;
  }
 }
+namespace zmq
+{
+ class context_t;
+}
 namespace UMPS::ProxyServices::PacketCache
 {
 /// @class Reply "reply.hpp" "umps/proxyServices/packetCache/reply.hpp"
@@ -35,6 +39,9 @@ public:
     /// @brief Constructs a request socket with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
     explicit Reply(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructs a request socket with a given logger and context.
+    Reply(std::shared_ptr<zmq::context_t> &context,
+          std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @name Step 1: Initialization

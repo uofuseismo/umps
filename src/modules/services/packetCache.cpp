@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
+#include "umps/proxyServices/packetCache/service.hpp"
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
@@ -54,215 +55,9 @@ struct ProgramOptions
     std::string dataBroadcastName = "DataPacket";
     std::string proxyServiceName;
     std::chrono::milliseconds dataPacketTimeOut{10};
-    int maxPackets = 100;
+    int maxPackets = 400;
     int dataPacketHighWaterMark = static_cast<int> (DEFAULT_HWM);
 };
-
-template<class T = double>
-class DataPacketSubscriber
-{
-public:
-/*
-    /// C'tor
-    DataPacketSubscriber(
-        std::shared_ptr<zmq::context_t> context,
-        std::shared_ptr<UMPS::Logging::ILog> logger,
-        std::shared_ptr<UPacketCache::CappedCollection<T>> cappedCollection) :
-        mLogger(logger),
-        mCappedCollection(cappedCollection)
-    {
-        mDataPacketSubscriber = std::make_shared<UPubSub::Subscriber> (context, logger); 
-
-        std::unique_ptr<UMPS::MessageFormats::IMessage> messageType
-            = std::make_unique<UMPS::MessageFormats::DataPacket<T>> (); 
-        UMPS::MessageFormats::Messages messageTypes;
-        messageTypes.add(messageType);
-        mSubscriberOptions.setMessageTypes(messageTypes);
-        mSubscriberOptions.setHighWaterMark(mHighWaterMark);
-        mSubscriberOptions.setTimeOut(mTimeOut);
-    }
-    DataPacketSubscriber(
-        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection)
-    {
-        DataPacketSubscriber(nullptr, nullptr, cappedCollection);
-    }
-    DataPacketSubscriber(
-        std::shared_ptr<zmq::context_t> &context,
-        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection)
-    {
-        DataPacketSubscriber(context, nullptr, cappedCollection);
-    }
-    DataPacketSubscriber(
-        std::shared_ptr<UMPS::Logging::ILog> &logger,
-        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection)
-    {
-        DataPacketSubscriber(nullptr, logger, cappedCollection);
-    }
-    void setDataPacketFeedAddress(const std::string &address)
-    {
-        mSubscriberOptions.setAddress(address);
-    }
-    void setZAPOptions(const UAuth::ZAPOptions &options)
-    {
-        mSubscriberOptions.setZAPOptions(options);
-    }
-    void setTimeOut(const std::chrono::milliseconds &timeOut)
-    {
-        mSubscriberOptions.setTimeOut(timeOut);
-    }
-    void setHighWaterMark(const int hwm)
-    {
-        mSubscriberOptions.setHighWaterMark(hwm);
-    }
-    void setMaximumNumberOfPackets(const int maxPackets)
-    {
-    }
-    void initialize()
-    {
-        if (mSubscriber->isInitialized())
-        {
-            mLogger->warn("Subscriber already initialized");
-        }
-        mSubscriber->initialize(mSubscriberOptions);
-#ifndef NDEBUG
-        assert(mSubscriber->isInitialized());
-#endif
-    }
-*/
-    /// @brief C'tor
-    DataPacketSubscriber(
-        std::shared_ptr<UMPS::Logging::ILog> &logger,
-        std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>> &subscriber,
-        std::shared_ptr<UPacketCache::CappedCollection<T>> &cappedCollection,
-        std::shared_ptr<UPacketCache::Reply<T>> &replier) :
-        mLogger(logger),
-        mDataPacketSubscriber(subscriber),
-        mCappedCollection(cappedCollection),
-        mPacketCacheReplier(replier)
-    {
-    }
-    /// @brief Destructor
-    ~DataPacketSubscriber()
-    {
-        stop();
-    }
-    /// @brief A thread running this function will read messages off the queue
-    ///        and put them into the queue.
-    void getPackets()
-    {
-        while (keepRunning())
-        {
-            try
-            {
-                auto dataPacket = mDataPacketSubscriber->receive();
-                if (dataPacket == nullptr){continue;} // Time out
-                mDataPacketQueue.push(std::move(*dataPacket));
-            }
-            catch (const std::exception &e)
-            {
-                mLogger->error("Error receiving packet: "
-                             + std::string(e.what()));
-                continue;
-            }
-        }
-        mLogger->debug("Broadcast to queue thread has exited");
-    }
-    /// @brief A thread running this function will read messages from the queue
-    ///        and put them into the circular buffer.
-    void queueToPacketCache()
-    {
-        namespace UMF = UMPS::MessageFormats;
-        while (keepRunning())
-        {
-            UMF::DataPacket<T> dataPacket;
-            if (mDataPacketQueue.wait_until_and_pop(&dataPacket))
-            {
-                if (dataPacket.getNumberOfSamples() > 0)
-                {
-                    try
-                    {
-                        mCappedCollection->addPacket(std::move(dataPacket)); 
-                    }
-                    catch (const std::exception &e) 
-                    {
-                        mLogger->error("Failed to add packet:\n"
-                                     + std::string{e.what()});
-                    }
-                }
-            }
-        }
-        mLogger->debug("Queue to circular buffer thread has exited");
-    }
-    /// @brief Starts the service
-    void start()
-    {
-        // Start thread to read messages from broadcast and put into queue
-        mDataPacketSubscriberThread
-           = std::thread(&DataPacketSubscriber::getPackets, this);
-        // Start thread to read messages from queue and put into packetCache 
-        mQueueToPacketCacheThread
-           = std::thread(&DataPacketSubscriber::queueToPacketCache, this);
-        // Start thread to read / respond to messages
-        if (mPacketCacheReplier != nullptr)
-        {
-            mPacketCacheReplier->start();
-        }
-    }
-    /// @result True indicates the data packet subscriber should keep receiving
-    ///         messages and putting the results in the circular buffer.
-    [[nodiscard]] bool keepRunning() const
-    {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
-        return mKeepRunning;
-    }
-    /// @brief Toggles this as running or not running
-    void setRunning(const bool running)
-    {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
-        mKeepRunning = false;
-    }
-    /// @brief Stops the publisher threads.
-    void stop()
-    {
-        setRunning(false);
-        if (mLogger != nullptr){mLogger->debug("Notifying threads to stop...");}
-        if (mPacketCacheReplier != nullptr)
-        {
-            if (mPacketCacheReplier->isRunning()){mPacketCacheReplier->stop();}
-        }
-        if (mDataPacketSubscriberThread.joinable())
-        {
-            mDataPacketSubscriberThread.join();
-        }
-        if (mQueueToPacketCacheThread.joinable())
-        {
-            mQueueToPacketCacheThread.join();
-        }
-        if (mResponseThread.joinable())
-        {
-            mResponseThread.join();
-        }
-    }
-///private:
-    mutable std::mutex mMutex;
-    std::thread mDataPacketSubscriberThread;
-    std::thread mQueueToPacketCacheThread;
-    std::thread mResponseThread;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    //std::shared_ptr<UPubSub::Subscriber> mSubscriber;
-    std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Subscriber<T>>
-        mDataPacketSubscriber{nullptr};
-    std::shared_ptr<UPacketCache::CappedCollection<T>>
-        mCappedCollection{nullptr}; 
-    std::shared_ptr<UPacketCache::Reply<T>> mPacketCacheReplier{nullptr};
-    ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
-    UPubSub::SubscriberOptions mSubscriberOptions;
-    std::chrono::milliseconds mTimeOut{DEFAULT_TIMEOUT};
-    int mMaxPackets = DEFAULT_MAXPACKETS;
-    int mHighWaterMark = DEFAULT_HWM; 
-    bool mKeepRunning = true;
-    //bool mRunning = false;
-}; 
 
 /// Parses the command line options
 [[nodiscard]] std::string parseOptions(int argc, char *argv[]);
@@ -313,6 +108,24 @@ int main(int argc, char *argv[])
     auto proxyServiceAddress
         = connectionInformation.getProxyServiceBackendDetails(
              options.proxyServiceName).getAddress();
+    // Set the broadcast connection details
+    UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>
+        dataPacketSubscriberOptions;
+    dataPacketSubscriberOptions.setAddress(dataPacketAddress);
+    dataPacketSubscriberOptions.setHighWaterMark(
+        options.dataPacketHighWaterMark);
+    dataPacketSubscriberOptions.setTimeOut(options.dataPacketTimeOut);
+    dataPacketSubscriberOptions.setZAPOptions(zapOptions);
+    // Set the reply options service
+    options.mPacketCacheReplyOptions.setAddress(proxyServiceAddress);
+    options.mPacketCacheReplyOptions.setZAPOptions(zapOptions);
+
+    // Initialize the service
+    UPacketCache::Service<double> service(loggerPtr);
+    service.initialize(options.maxPackets,
+                       dataPacketSubscriberOptions,
+                       options.mPacketCacheReplyOptions);
+/*
     // Now connect to datapacket broadcast backend 
     UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>
         dataPacketSubscriberOptions;
@@ -347,19 +160,19 @@ int main(int argc, char *argv[])
                                      dataPacketSubscriber,
                                      cappedCollection,
                                      replier);
+*/
 
-
-//DataPacketSubscriber<double> dps(nullptr, loggerPtr, subscriberOptions, cappedCollection);
-
-    //std::thread subscriberToQueueThread(
-    //    &DataPacketSubscriber<double>::startSubscriber, &dps);
-    //std::thread queueToCircularBufferThread(
-    //    &DataPacketSubscriber<double>::startQueueToCircularBuffer,
-    //    &dps);
-    //dps.startDataPacketSubscriber();
-    //dps.startQueueToCircularBuffer();
-    logger.debug("Starting the service...");
-    dps.start();
+    try
+    {
+        logger.debug("Starting the service...");
+        service.start();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Failed to start service.  Failed with: " 
+                  << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
     // Monitor commands from stdin
     while (true)
     {
@@ -370,6 +183,11 @@ int main(int argc, char *argv[])
         {
             break;
         }
+        else if (command == "cacheSize")
+        {
+            std::cout << "Total number of packets in packet cache: "
+                      << service.getTotalNumberOfPackets() << std::endl;
+        }
         else
         {
             std::cout << std::endl;
@@ -379,16 +197,17 @@ int main(int argc, char *argv[])
                 std::cout << std::endl;
             }
             std::cout << "Commands: " << std::endl;
-            std::cout << "  quit  Exits the program" << std::endl;
-            std::cout << "  help  Prints this message" << std::endl;
+            std::cout << "  quit      Exits the program" << std::endl;
+            std::cout << "  cacheSize Total number of packets in cache" << std::endl;
+            std::cout << "  help      Prints this message" << std::endl;
         }
     }
-    logger.debug("Number of packets in capped collection: "
-        + std::to_string(dps.mCappedCollection->getTotalNumberOfPackets()));
-    logger.debug("Final packet queue size is: "
-               + std::to_string(dps.mDataPacketQueue.size()));
+    //logger.debug("Number of packets in capped collection: "
+    //    + std::to_string(packetCache.getTotalNumberOfPackets()));
+    //logger.debug("Final packet queue size is: "
+    //           + std::to_string(dps.mDataPacketQueue.size()));
     logger.debug("Stopping services...");
-    dps.stop();
+    service.stop();
     logger.debug("Program finished");
 }
 
@@ -447,11 +266,13 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     //------------------------------ Operator --------------------------------//
     UCI::RequestOptions requestOptions;
     requestOptions.parseInitializationFile(iniFile);
-    options.mConnectionInformationRequestOptions = requestOptions;
     options.operatorAddress = requestOptions.getRequestOptions().getAddress();
     options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();
+    options.mConnectionInformationRequestOptions = requestOptions;
+    options.mConnectionInformationRequestOptions.setZAPOptions(
+        options.mZAPOptions);
     //------------------------------- Options ---------------------------------//
-    
+    options.mPacketCacheReplyOptions.setZAPOptions(options.mZAPOptions);    
 /*
     options.operatorAddress = propertyTree.get<std::string>
         ("uOperator.ipAddress", options.operatorAddress);

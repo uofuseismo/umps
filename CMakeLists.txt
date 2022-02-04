@@ -152,6 +152,7 @@ set(MODULES_LIBSRC
     #src/proxyServices/packetCache/proxyOptions.cpp
     src/proxyServices/packetCache/sensorRequest.cpp
     src/proxyServices/packetCache/sensorResponse.cpp
+    src/proxyServices/packetCache/service.cpp
     src/proxyServices/packetCache/reply.cpp
     src/proxyServices/packetCache/replyOptions.cpp
     src/proxyServices/packetCache/request.cpp

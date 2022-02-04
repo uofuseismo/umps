@@ -49,12 +49,11 @@ public:
         callback(const std::string &messageType,
                  const void *messageContents, const size_t length) noexcept
     {
-        mLogger->debug("Received request");
         // Get data
         DataRequest dataRequest;
         if (messageType == dataRequest.getMessageType())
         {
-            mLogger->debug("Data request received");
+            mLogger->info("Data request received");
             // Deserialize the message
             PacketCache::DataResponse<T> response;
             try
@@ -101,7 +100,7 @@ public:
         SensorRequest sensorRequest;
         if (messageType == sensorRequest.getMessageType())
         {
-            mLogger->debug("Sensor request received");
+            mLogger->info("Sensor request received");
             SensorResponse response;
             try
             {
@@ -118,7 +117,9 @@ public:
             // Now get the result
             try
             {
+std::cout << "getting names" << std::endl;
                 response.setNames(mCappedCollection->getSensorNames());
+std::cout << "Got names" << std::endl;
             }
             catch (...)
             {
@@ -180,6 +181,14 @@ Reply<T>::Reply() :
 template<class T>
 Reply<T>::Reply(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ReplyImpl> (nullptr, logger))
+{
+}
+
+/// C'tor
+template<class T>
+Reply<T>::Reply(std::shared_ptr<zmq::context_t> &context,
+                std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ReplyImpl> (context, logger))
 {
 }
 

@@ -95,7 +95,16 @@ public:
         {
             auto startClock = std::chrono::high_resolution_clock::now();
             // Read from the earthworm ring
-            mWaveRing->read();
+            try
+            {
+                mWaveRing->read();
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed reading wave ring:\n"
+                             + std::string(e.what()));
+                continue;
+            }
             auto nMessages = mWaveRing->getNumberOfTraceBuf2Messages();
             auto traceBuf2MessagesPtr
                 = mWaveRing->getTraceBuf2MessagesPointer();

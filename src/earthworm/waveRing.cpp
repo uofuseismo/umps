@@ -297,7 +297,7 @@ void WaveRing::read()
         if (returnCode == TERMINATE)
         {
             auto error = "Receiving kill signal from ring: " + pImpl->mRingName
-                       + "\nDisconneting from ring...";
+                       + "\nDisconnecting from ring...";
             pImpl->mLogger->error(error);
             disconnect();
             throw std::runtime_error(error);
