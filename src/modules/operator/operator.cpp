@@ -372,7 +372,14 @@ int main(int argc, char *argv[])
         auto serviceKey = "ProxyServices::" + moduleName;
         modules.mProxyServices.insert(std::pair(serviceKey,
                                                 std::move(proxyService)));
+try
+{
         modules.mProxyServices[serviceKey]->start();
+}
+catch (const std::exception &e)
+{
+ std::cerr << e.what() << std::endl;
+}
         modules.mConnectionInformation->addConnection(
             *modules.mProxyServices[serviceKey]);
     }
