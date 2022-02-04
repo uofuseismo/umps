@@ -68,6 +68,7 @@ public:
             response->setAlgorithm(newAlgorithm); // Change the algorithm
             nResponses = nResponses + 1;
         }
+if (response == nullptr){std::cerr << "fuck" << std::endl;}
         return response;
     }   
     int getNumberOfResponses() const
