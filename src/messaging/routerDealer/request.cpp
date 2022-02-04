@@ -129,7 +129,7 @@ void Request::initialize(const RequestOptions &options)
     // Set the high water mark
     pImpl->mClient->set(zmq::sockopt::rcvhwm, highWaterMark);
     //pImpl->mClient->set(zmq::sockopt::sndhwm, highWaterMark); 
-    //pImpl->mClient->set(zmq::sockopt::rcvtimeo, 100);
+    pImpl->mClient->set(zmq::sockopt::rcvtimeo, -1);//100);
     // Bind
     pImpl->mLogger->debug("Attempting to connect to: " + address);
     pImpl->mClient->connect(address);

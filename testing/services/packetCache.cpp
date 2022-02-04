@@ -250,7 +250,7 @@ TEST(PacketCache, DataRequest)
     request.setQueryTime(t0); 
     auto [qTimeStart, qTimeEnd] = request.getQueryTimes();
     EXPECT_NEAR(qTimeStart, t0, 1.e-5);
-    EXPECT_EQ(qTimeEnd, std::numeric_limits<double>::max());
+    EXPECT_EQ(qTimeEnd, std::numeric_limits<int64_t>::max()); //double>::max());
     EXPECT_NO_THROW(request.setQueryTimes(std::pair(t0, t1)));
 
     auto message = request.toMessage();

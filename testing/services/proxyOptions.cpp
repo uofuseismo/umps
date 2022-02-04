@@ -43,8 +43,8 @@ TEST(ProxyServices, ProxyOptions)
               zapOptions.getSecurityLevel());
 
     options.clear();
-    EXPECT_EQ(options.getProxyOptions().getFrontendHighWaterMark(), 2000);
-    EXPECT_EQ(options.getProxyOptions().getBackendHighWaterMark(),  1000);
+    EXPECT_EQ(options.getProxyOptions().getFrontendHighWaterMark(), 8192);//2000);
+    EXPECT_EQ(options.getProxyOptions().getBackendHighWaterMark(),  0);//1000);
     EXPECT_EQ(options.getProxyOptions().getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::GRASSLANDS);
 }

@@ -17,8 +17,8 @@ class ProxyOptions::ProxyOptionsImpl
 public:
     ProxyOptionsImpl()
     {
-        mProxyOptions.setFrontendHighWaterMark(2000);
-        mProxyOptions.setBackendHighWaterMark(1000);
+        mProxyOptions.setFrontendHighWaterMark(8192); //2000);
+        mProxyOptions.setBackendHighWaterMark(0); //8192); //1000);
     }
     RouterDealer::ProxyOptions mProxyOptions;
     std::string mName;
