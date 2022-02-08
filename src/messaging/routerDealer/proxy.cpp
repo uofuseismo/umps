@@ -109,7 +109,7 @@ public:
                          + mBackendAddress);
             mBackend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getBackendHighWaterMark();
-            if (hwm > 0)
+            if (hwm >= 0)
             {
                 mBackend->set(zmq::sockopt::sndhwm, hwm);
                 mBackend->set(zmq::sockopt::rcvhwm, hwm);

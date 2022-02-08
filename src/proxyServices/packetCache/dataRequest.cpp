@@ -26,7 +26,6 @@ nlohmann::json toJSONObject(const DataRequest &request)
     obj["LocationCode"] = request.getLocationCode();
     // Other stuff (times and identifier)
     auto [startTime, endTime] = request.getQueryTimes();
-std::cout << startTime << " " << endTime << std::endl;
     obj["StartTime"] = startTime;
     obj["EndTime"] = endTime;
     obj["Identifier"] = request.getIdentifier();
