@@ -96,13 +96,13 @@ void proxy()
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Initialize the server
     Proxy proxy(loggerPtr);
-    proxy.initialize(options);
+    EXPECT_NO_THROW(proxy.initialize(options));
     // A thread runs the proxy
     std::thread t1(&Proxy::start, &proxy);
     // Main thread waits...
     std::this_thread::sleep_for(std::chrono::seconds(3));
     /// Main thread tells proxy to stop
-    proxy.stop();
+    EXPECT_NO_THROW(proxy.stop());
     t1.join();
 }
 
