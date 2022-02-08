@@ -321,7 +321,21 @@ void Proxy::start()
                 auto errorMsg = "Router/dealer proxy error.  ZeroMQ failed with:\n"
                               + std::string(e.what());
                 pImpl->mLogger->error(errorMsg);
-                throw std::runtime_error(errorMsg);
+                try
+                {
+                    pImpl->disconnectControl();
+                    pImpl->disconnectBackend();
+                    pImpl->disconnectFrontend();
+                    pImpl->bindBackend();
+                    pImpl->bindFrontend();
+                    pImpl->connectControl();
+                    pImpl->updateSocketDetails();
+                    pImpl->setStarted(false);
+                }
+                catch (const std::exception &e)
+                {
+                    throw std::runtime_error(errorMsg);
+                }
             }   
         }   
     }   
