@@ -121,9 +121,10 @@ public:
         {
             mLogger->debug("Attempting to bind to backend: "
                          + mBackendAddress);
-            mBackend->bind(mBackendAddress);
+            mBackend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getBackendHighWaterMark();
             if (hwm > 0){mBackend->set(zmq::sockopt::sndhwm, hwm);}
+            mBackend->bind(mBackendAddress);
             mHaveBackend = true;
         }
         catch (const std::exception &e)
@@ -151,9 +152,10 @@ public:
         {
             mLogger->debug("Attempting to bind to frontend: "
                          + mFrontendAddress);
-            mFrontend->bind(mFrontendAddress);
+            mFrontend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getFrontendHighWaterMark();
             if (hwm > 0){mFrontend->set(zmq::sockopt::rcvhwm, hwm);}
+            mFrontend->bind(mFrontendAddress);
             mHaveFrontend = true;
         }
         catch (const std::exception &e)

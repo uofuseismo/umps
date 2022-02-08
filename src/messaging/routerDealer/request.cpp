@@ -129,7 +129,7 @@ void Request::initialize(const RequestOptions &options)
     // Set the high water mark
     pImpl->mClient->set(zmq::sockopt::rcvhwm, highWaterMark);
     //pImpl->mClient->set(zmq::sockopt::sndhwm, highWaterMark); 
-    pImpl->mClient->set(zmq::sockopt::rcvtimeo, -1);//100);
+    pImpl->mClient->set(zmq::sockopt::rcvtimeo, 1000);
     // Bind
     pImpl->mLogger->debug("Attempting to connect to: " + address);
     pImpl->mClient->connect(address);
@@ -185,7 +185,7 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     assert(responseReceived.size() == 2);
 #else
     if (responseReceived.size() != 2)
-    {   
+    {
         pImpl->mLogger->error("Only 2-part messages handled");
         throw std::runtime_error("Only 2-part messages handled");
     }
