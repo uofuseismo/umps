@@ -202,6 +202,7 @@ public:
             // The command will issue simple commands without topics so listen
             // to `everything.' 
             mControl->set(zmq::sockopt::subscribe, std::string(""));
+            mControl->set(zmq::sockopt::linger, 1);
             mCommand->bind(mControlAddress);
             mHaveControl = true;
         }
