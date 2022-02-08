@@ -26,6 +26,7 @@ nlohmann::json toJSONObject(const DataRequest &request)
     obj["LocationCode"] = request.getLocationCode();
     // Other stuff (times and identifier)
     auto [startTime, endTime] = request.getQueryTimes();
+std::cout << startTime << " " << endTime << std::endl;
     obj["StartTime"] = startTime;
     obj["EndTime"] = endTime;
     obj["Identifier"] = request.getIdentifier();
@@ -74,7 +75,8 @@ public:
     std::string mChannel;
     std::string mLocationCode;
     uint64_t mIdentifier = 0;
-    const double mMaxTime = static_cast<double> (std::numeric_limits<int64_t>::max());
+    const double mMaxTime
+        = static_cast<double> (std::numeric_limits<uint32_t>::max());
     double mStartTime = std::numeric_limits<double>::lowest();
     double mEndTime = mMaxTime; //16725225600; // Year 2500 is 16725225600
 };
@@ -224,8 +226,8 @@ void DataRequest::setQueryTime(const double time)
         throw std::invalid_argument(
             "Query start time can't exceed " + std::to_string(pImpl->mMaxTime));
     }
-    setQueryTimes(
-        std::pair<double, double> (time, std::numeric_limits<int64_t>::max()));
+    double t1 = static_cast<double> (std::numeric_limits<uint32_t>::max());
+    setQueryTimes(std::pair<double, double> (time, t1));
 }
 
 std::pair<double, double> DataRequest::getQueryTimes() const noexcept
