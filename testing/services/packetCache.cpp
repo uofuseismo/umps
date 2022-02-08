@@ -175,7 +175,7 @@ TEST(PacketCache, RequestOptions)
     
 
     options.clear();
-    EXPECT_EQ(options.getHighWaterMark(), 1024);
+    EXPECT_EQ(options.getHighWaterMark(), 2048);//1024);
 }
 
 TEST(PacketCache, SensorRequest)
