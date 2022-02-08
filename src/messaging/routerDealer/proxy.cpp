@@ -48,6 +48,7 @@ public:
         // Now make the sockets
         mFrontend = std::make_unique<zmq::socket_t> (*mContext,
                                                      zmq::socket_type::router);
+        mFrontend->set(zmq::sockopt::router_mandatory, 1);
         mBackend = std::make_unique<zmq::socket_t> (*mContext,
                                                     zmq::socket_type::dealer);
     }
@@ -371,6 +372,7 @@ void Proxy::stop()
                               zmq::send_flags::none);
         pImpl->disconnectFrontend();
         pImpl->disconnectBackend();
+        //pImpl->disconnectControl();
     }   
     pImpl->mInitialized = false;
     pImpl->setStarted(false);
