@@ -157,6 +157,7 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/replyOptions.cpp
     src/proxyServices/packetCache/request.cpp
     src/proxyServices/packetCache/requestOptions.cpp
+    src/proxyServices/packetCache/weightedAverageSlopes.cpp
     src/modules/operator/readZAPOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
@@ -268,6 +269,7 @@ endif()
 ##########################################################################################
 #                                         Unit Tests                                     #
 ##########################################################################################
+file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 set(TEST_SRC
     testing/main.cpp
     testing/messageFormats/messages.cpp

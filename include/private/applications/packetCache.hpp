@@ -4,6 +4,11 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <numeric>
+#include <vector>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "private/isEmpty.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 namespace

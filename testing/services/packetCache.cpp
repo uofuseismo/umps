@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 #include <cmath>
@@ -19,6 +20,7 @@
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
+#include "private/applications/wiggins.hpp"
 #include <gtest/gtest.h>
 namespace
 {
@@ -147,6 +149,48 @@ TEST(PacketCache, ProxyOptions)
               UAuth::SecurityLevel::GRASSLANDS);
 }
 */
+TEST(PacketCache, Wiggins)
+{
+    const double samplingRate = 200;
+    const double targetSamplingRate = 250;
+    auto infl = std::ifstream("data/gse2.txt");
+    std::vector<double> t;
+    std::vector<double> x;
+    t.reserve(12000);
+    x.reserve(12000);
+    std::string line;
+    while (std::getline(infl, line))
+    {
+        t.push_back(t.size()/samplingRate);
+        x.push_back(std::stod(line));
+    }
+    infl.close();
+    EXPECT_EQ(x.size(), 12000);
+    std::vector<double> newTimes;
+    std::vector<double> yRef;
+    newTimes.reserve(14999);
+    yRef.reserve(14999);
+    infl = std::ifstream("data/wigint.txt");
+    while (std::getline(infl, line))
+    {
+        double t, yi;
+        sscanf(line.c_str(), "%lf,%lf\n", &t, &yi);
+        newTimes.push_back(t);
+        yRef.push_back(yi);
+    }
+    infl.close();
+    EXPECT_EQ(yRef.size(), 14999);
+    // Interpolate this
+    auto yi = weightedAverageSlopes(t, x, newTimes.front(),
+                                    newTimes.back(), targetSamplingRate);
+    EXPECT_EQ(yi.size(), yRef.size());
+    double yDiff = 0;
+    for (int i = 0; i < yi.size(); ++i)
+    {
+        yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
+    }
+    EXPECT_NEAR(yDiff, 0, 1.e-8);
+}
 
 TEST(PacketCache, RequestOptions)
 {
