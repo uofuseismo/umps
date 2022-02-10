@@ -10,6 +10,7 @@
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
+#include "umps/proxyServices/packetCache/interpolate.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 //#include "umps/proxyServices/packetCache/proxyOptions.hpp"
@@ -185,11 +186,37 @@ TEST(PacketCache, Wiggins)
                                     newTimes.back(), targetSamplingRate);
     EXPECT_EQ(yi.size(), yRef.size());
     double yDiff = 0;
-    for (int i = 0; i < yi.size(); ++i)
+    for (int i = 0; i < static_cast<int> (yi.size()); ++i)
     {
         yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
     }
     EXPECT_NEAR(yDiff, 0, 1.e-8);
+    // Packetize this data
+    auto n = static_cast<int> (x.size());
+    std::vector<UMPS::MessageFormats::DataPacket<double>> packets;
+    int packetSize = 100;
+    int i0 = 0;
+    double t0 = 1644516968;
+    for (int i = 0; i < n; ++i)
+    {
+        UMPS::MessageFormats::DataPacket<double> packet;
+        auto i1 = std::min(i0 + packetSize, n);
+        auto nCopy = i1 - i0;
+        packet.setNetwork("UU");
+        packet.setStation("GH2");
+        packet.setChannel("EHZ");
+        packet.setLocationCode("01");
+        packet.setStartTime(t0 + i0/samplingRate);
+        packet.setSamplingRate(samplingRate);
+        packet.setData(nCopy, &x[i0]);
+        packets.push_back(std::move(packet));
+        i0 = i1;
+        if (i0 == n){break;}
+    }
+    // Interpolate it
+PC::interpolate(packets);
+//getchar();
+    // Add some duplicate packets (really wherever)
 }
 
 TEST(PacketCache, RequestOptions)

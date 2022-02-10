@@ -13,6 +13,73 @@
 #include "umps/messageFormats/dataPacket.hpp"
 namespace
 {
+/// Argsort
+template<typename T>
+[[nodiscard]] [[maybe_unused]]
+std::vector<int> argsort(const std::vector<T> &v)
+{
+    std::vector<int> indices(v.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    std::sort(indices.begin(), indices.end(), 
+             [&v](const int left, const int right)
+    {
+        return v[left] < v[right];
+    });
+    return indices;
+}
+/// Permute
+template<typename T>
+[[nodiscard]] [[maybe_unused]]
+std::vector<T> permute(const std::vector<T> &x,
+                       const std::vector<int> &indices)
+{
+    auto n = static_cast<int> (x.size());
+    std::vector<T> result(n + 1);
+    T *__restrict__ resultPtr = result.data();
+    const T *__restrict__ xPtr = x.data();
+    const int *__restrict__ indicesPtr = indices.data();
+    for (int i = 0; i < n; ++i)
+    {   
+        resultPtr[i] = x[indicesPtr[i]];
+    }
+    // Make the `last' element clearly wrong
+    result[n] = result[0] - 1;
+    return result;
+}
+/// Count unique elements
+template<typename T, typename U>
+[[maybe_unused]]
+void copyUnique(std::vector<U> *xOut,
+                std::vector<T> *yOut,
+                const std::vector<U> &x,
+                const std::vector<T> &y)
+{
+    auto n = static_cast<int> (x.size()) - 1; // Last element is dumby
+    // Count unique elements
+    int nUnique = 0;
+    for (int i = 0; i < n; ++i)
+    {
+        if (x[i] != x[i+1]){nUnique = nUnique + 1;}
+    }
+    // Now copy them
+    xOut->resize(nUnique);
+    yOut->resize(nUnique);
+    auto xOutPtr = xOut->data();
+    auto yOutPtr = yOut->data();
+    int iUnique = 0;
+    for (int i = 0; i < n; ++i)
+    {
+        if (x[i] != x[i+1])
+        {
+           xOutPtr[iUnique] = x[i];
+           yOutPtr[iUnique] = y[i];
+           iUnique = iUnique + 1;
+        }
+    }
+#ifndef NDEBUG
+    assert(iUnique == nUnique);
+#endif
+}
 /// @brief Utility routine for computing term in Wiggins interpolation
 ///        spline coefficients.
 template<typename T>
@@ -268,6 +335,68 @@ void evaluate(std::vector<T> *yv,
         }
     }
 }
+/// @brief Weighted average slope interpolation
+template<typename U, typename T>
+[[nodiscard]] [[maybe_unused]]
+std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
+                                     const std::vector<T> &values,
+                                     const std::vector<U> &timesToEvaluate,
+                                     const bool checkSorting = true)
+{
+    if (timesToEvaluate.empty())
+    {   
+        throw std::invalid_argument("No points at which to evaluate");
+    }   
+    if (times.size() != values.size())
+    {   
+        throw std::invalid_argument("times.size() != values.size()");
+    }   
+    std::vector<double> x;
+    std::vector<double> y;
+    // Note, duplicate times will return false
+    if (checkSorting)
+    {
+        if (std::is_sorted(times.begin(), times.end()))
+        {
+            x = times;
+            y = values;
+        }
+        else
+        {
+            auto indices = argsort(times);
+            // Note the size of xWork and yWork is times.size() + 1
+            auto xWork = permute(times,  indices);
+            auto yWork = permute(values, indices);
+            // Copy unique elements
+            copyUnique(&x, &y, xWork, yWork);
+        }   
+    }
+    else
+    {
+        x = times;
+        y = values;
+    }
+    // Initialize output
+    auto nInt = static_cast<int> (timesToEvaluate.size());
+    std::vector<T> yInt;
+    auto nx = static_cast<int> (x.size());
+    if (nx < 1){return yInt;}
+    auto tMin = x[0];
+    auto tMax = x[nx - 1]; 
+    auto yFirst = y[0];
+    auto yLast  = y[nx - 1]; 
+    // Create spline and evaluate it
+    auto splineCoefficients = computeNonUniformSlopes(x.size(),
+                                                      x.data(),
+                                                      y.data());
+    std::vector<T> yHat;
+    evaluate<T>(&yHat,
+                timesToEvaluate.size(),
+                timesToEvaluate.data(),
+                times.size(), times.data(),
+                splineCoefficients.data());
+    return yHat;
+}
 /// @brief Performs the weighted average slopes interpolation.
 template<typename T>
 std::vector<T> weightedAverageSlopes(const std::vector<T> &times,
@@ -311,6 +440,9 @@ std::vector<T> weightedAverageSlopes(const std::vector<T> &times,
     {
         timesToEvaluate.push_back(t1);
     }
+    constexpr bool checkSorting = false;
+    return weightedAverageSlopes(times, values, timesToEvaluate, checkSorting);
+/*
     // Now interpolate
     auto splineCoefficients = computeNonUniformSlopes(times.size(),
                                                       times.data(),
@@ -322,6 +454,7 @@ std::vector<T> weightedAverageSlopes(const std::vector<T> &times,
                 times.size(), times.data(),
                 splineCoefficients.data());
     return yHat;
+*/
 }
 }
 #endif

@@ -148,6 +148,7 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/cappedCollection.cpp
     src/proxyServices/packetCache/dataRequest.cpp
     src/proxyServices/packetCache/dataResponse.cpp
+    src/proxyServices/packetCache/interpolate.cpp
     #src/proxyServices/packetCache/proxy.cpp
     #src/proxyServices/packetCache/proxyOptions.cpp
     src/proxyServices/packetCache/sensorRequest.cpp
@@ -157,7 +158,6 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/replyOptions.cpp
     src/proxyServices/packetCache/request.cpp
     src/proxyServices/packetCache/requestOptions.cpp
-    src/proxyServices/packetCache/weightedAverageSlopes.cpp
     src/modules/operator/readZAPOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
