@@ -8,7 +8,9 @@
 
 # Compiling
 
-Prior to attempting to compile the software you must clear the following dependencies
+Currently, the software has only been used on Ubuntu20.  I anticipate there will be no issues for using later flavors of Ubuntu.  However, you may find it difficult to switch to other operating systems since they may have minimal to non-existant C++20 support.  For these instances I recommend installing and using the latest LLVM compiler suite.
+
+Regardless, prior to attempting to compile the software you must clear the following dependencies
 
 ## Prerequisites
 
