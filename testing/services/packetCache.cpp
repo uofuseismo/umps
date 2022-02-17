@@ -228,12 +228,12 @@ TEST(PacketCache, Wiggins)
     packets.push_back(packets[0]);
     packets.push_back(packets[1]);
     // And change the order
+    std::srand(500582);
     std::random_shuffle(packets.begin(), packets.end());
     EXPECT_NO_THROW(interpolatedPacket
         = PC::interpolate(packets, targetSamplingRate));
     EXPECT_EQ(interpolatedPacket.getNumberOfSamples(),
               static_cast<int> (newTimes.size()));
-/*
     yi = interpolatedPacket.getData();
     yDiff = 0;
     for (int i = 0; i < static_cast<int> (yi.size()); ++i)
@@ -241,7 +241,6 @@ TEST(PacketCache, Wiggins)
         yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
     }
     EXPECT_NEAR(yDiff, 0, 1.e-8);
-*/
 }
 
 TEST(PacketCache, RequestOptions)

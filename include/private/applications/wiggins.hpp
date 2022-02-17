@@ -15,7 +15,7 @@ namespace
 {
 /// Argsort
 template<typename T>
-[[nodiscard]] [[maybe_unused]]
+[[nodiscard]]
 std::vector<int> argsort(const std::vector<T> &v)
 {
     std::vector<int> indices(v.size());
@@ -29,7 +29,7 @@ std::vector<int> argsort(const std::vector<T> &v)
 }
 /// Permute
 template<typename T>
-[[nodiscard]] [[maybe_unused]]
+[[nodiscard]]
 std::vector<T> permute(const std::vector<T> &x,
                        const std::vector<int> &indices)
 {
@@ -48,7 +48,6 @@ std::vector<T> permute(const std::vector<T> &x,
 }
 /// Count unique elements
 template<typename T, typename U, typename V>
-[[maybe_unused]]
 void copyUnique(std::vector<T> *xOut,
                 std::vector<T> *yOut,
                 const std::vector<U> &x,
@@ -106,7 +105,7 @@ void computeWiWiMi(const T mi, T *wi, T *wimi)
 /// @brief Implements first equation in Wiggins' Interpolation fo Digitized
 ///        Curves pg. 2077
 template<typename U, typename T>
-[[maybe_unused]] [[nodiscard]]
+[[nodiscard]]
 std::vector<double> computeNonUniformSlopes(const int n,
                                             const U *__restrict__ x,
                                             const T *__restrict__ y)
@@ -156,11 +155,11 @@ std::vector<double> computeNonUniformSlopes(const int n,
 }
 /// @brief Locates the appropriate bin for spline evaluation.
 /// @result The bin such that \f$ xi[bin] \le x < xi[bin+1] \f$.
-template<typename T>
-[[maybe_unused]] [[nodiscard]]
+template<typename T, typename U>
+[[nodiscard]]
 int locate(const T x,
            const int n,
-           const T *__restrict__ xi,
+           const U *__restrict__ xi,
            const int binHint)
 {
     // First try searching the previous bin or next bin
@@ -288,11 +287,11 @@ double evaluate(T x,
 /// @param[in] xi   The abscissas.  This is an array whose dimension is [nxi].
 /// @param[in] splineCoefficients  The spline coefficients.  This is an
 ///                                array whose dimension is [4*(nxi - 1)]
-template<typename U, typename T>
+template<typename U, typename T, typename V>
 [[maybe_unused]]
 void evaluate(std::vector<T> *yv,
               const int n, const U *__restrict__ x,
-              const int nxi, const U *__restrict__ xi,
+              const int nxi, const V *__restrict__ xi,
               const double *__restrict__ splineCoeffs)
 {
     yv->resize(n, 0);
@@ -350,7 +349,8 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     if (times.size() != values.size())
     {   
         throw std::invalid_argument("times.size() != values.size()");
-    }   
+    }
+    std::vector<U> xWork;
     std::vector<double> x;
     std::vector<double> y;
     // Note, duplicate times will return false
@@ -364,6 +364,7 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     }
     if (straightCopy)
     {
+        xWork = times;
         x.resize(times.size());
         std::copy(times.begin(), times.end(), x.begin());
         y.resize(values.size());
@@ -373,7 +374,7 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     {
         auto indices = argsort(times);
         // Note the size of xWork and yWork is times.size() + 1
-        auto xWork = permute(times,  indices);
+        xWork = permute(times,  indices);
         auto yWork = permute(values, indices);
         // Copy unique elements
         copyUnique(&x, &y, xWork, yWork);
@@ -393,7 +394,7 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     std::vector<T> yHat;
     evaluate(&yHat,
              timesToEvaluate.size(), timesToEvaluate.data(),
-             times.size(), times.data(),
+             x.size(), x.data(),
              splineCoefficients.data());
     return yHat;
 }
@@ -442,19 +443,6 @@ std::vector<T> weightedAverageSlopes(const std::vector<T> &times,
     }
     constexpr bool checkSorting = false;
     return weightedAverageSlopes(times, values, timesToEvaluate, checkSorting);
-/*
-    // Now interpolate
-    auto splineCoefficients = computeNonUniformSlopes(times.size(),
-                                                      times.data(),
-                                                      values.data());
-    std::vector<T> yHat;
-    evaluate<T>(&yHat,
-                timesToEvaluate.size(),
-                timesToEvaluate.data(),
-                times.size(), times.data(),
-                splineCoefficients.data());
-    return yHat;
-*/
 }
 }
 #endif
