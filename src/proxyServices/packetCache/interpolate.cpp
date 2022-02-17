@@ -94,8 +94,6 @@ UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
     }
     auto targetSamplingPeriodMicroSeconds
         = static_cast<int64_t> (std::round(1000000./targetSamplingRate));
-    auto iTargetSamplingRate
-        = static_cast<int64_t> (std::round(1./targetSamplingPeriodMicroSeconds));
     auto spaceEstimate
         = static_cast<int>
           (std::round((time1 - time0)
