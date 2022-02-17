@@ -80,8 +80,18 @@ UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
         }
     }
     // Create the interpolation times
-    auto time0 = times.front();
-    auto time1 = times.back();
+    int64_t time0, time1;
+    if (isSorted)
+    {
+        time0 = times.front();
+        time1 = times.back();
+    }
+    else
+    {
+        auto tMinMax = std::minmax_element(times.begin(), times.end());
+        time0 = *tMinMax.first;
+        time1 = *tMinMax.second;
+    }
     auto targetSamplingPeriodMicroSeconds
         = static_cast<int64_t> (std::round(1000000./targetSamplingRate));
     auto iTargetSamplingRate
@@ -102,11 +112,14 @@ UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
     }
     // Package into the result
     auto checkSorting = !isSorted;
-    auto interpolatedSignal =
-          weightedAverageSlopes(times, data, timesToEvaluate, checkSorting);
-    result.setData(std::move(interpolatedSignal));
-    result.setSamplingRate(targetSamplingRate); 
+    result.setSamplingRate(targetSamplingRate);
     result.setStartTime(static_cast<double> (time0)/1000000);
+    auto interpolatedSignal =
+        weightedAverageSlopes(times, data, timesToEvaluate, checkSorting);
+    if (!interpolatedSignal.empty())
+    {
+        result.setData(std::move(interpolatedSignal));
+    }
     return result;
 }
 
@@ -115,9 +128,7 @@ UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
 ///--------------------------------------------------------------------------///
 template UMF::DataPacket<double> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<double>> &packets, double samplingRate);
-/*
 template UMF::DataPacket<float> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<float>> &packets, double samplingRate);
 template UMF::DataPacket<int> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<int>> &packets, double samplingRate);
-*/

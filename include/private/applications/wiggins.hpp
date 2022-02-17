@@ -47,12 +47,12 @@ std::vector<T> permute(const std::vector<T> &x,
     return result;
 }
 /// Count unique elements
-template<typename T, typename U>
+template<typename T, typename U, typename V>
 [[maybe_unused]]
 void copyUnique(std::vector<T> *xOut,
                 std::vector<T> *yOut,
                 const std::vector<U> &x,
-                const std::vector<T> &y)
+                const std::vector<V> &y)
 {
     auto n = static_cast<int> (x.size()) - 1; // Last element is dumby
     // Count unique elements
@@ -354,31 +354,33 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     std::vector<double> x;
     std::vector<double> y;
     // Note, duplicate times will return false
+    bool straightCopy = true;
     if (checkSorting)
     {
-        if (std::is_sorted(times.begin(), times.end()))
+        if (!std::is_sorted(times.begin(), times.end()))
         {
-            x.resize(times.size());
-            std::copy(times.begin(), times.end(), x.begin());
-            y.resize(values.size());
-            std::copy(values.begin(), values.end(), y.begin());
+            straightCopy = false;
         }
-        else
-        {
-            auto indices = argsort(times);
-            // Note the size of xWork and yWork is times.size() + 1
-            auto xWork = permute(times,  indices);
-            auto yWork = permute(values, indices);
-            // Copy unique elements
-            copyUnique(&x, &y, xWork, yWork);
-        }   
     }
-    else
+    if (straightCopy)
     {
         x.resize(times.size());
         std::copy(times.begin(), times.end(), x.begin());
         y.resize(values.size());
         std::copy(values.begin(), values.end(), y.begin());
+    }
+    else
+    {
+        auto indices = argsort(times);
+        // Note the size of xWork and yWork is times.size() + 1
+        auto xWork = permute(times,  indices);
+        auto yWork = permute(values, indices);
+        // Copy unique elements
+        copyUnique(&x, &y, xWork, yWork);
+        if (x.size() < 2)
+        {
+            throw std::invalid_argument("At least 2 unique values needed");
+        }
     }
     // Initialize output
     auto nInt = static_cast<int> (timesToEvaluate.size());
