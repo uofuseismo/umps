@@ -40,7 +40,7 @@ std::vector<T> permute(const std::vector<T> &x,
     const int *__restrict__ indicesPtr = indices.data();
     for (int i = 0; i < n; ++i)
     {   
-        resultPtr[i] = x[indicesPtr[i]];
+        resultPtr[i] = xPtr[indicesPtr[i]];
     }
     // Make the `last' element clearly wrong
     result[n] = result[0] - 1;
@@ -383,7 +383,6 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
         }
     }
     // Initialize output
-    auto nInt = static_cast<int> (timesToEvaluate.size());
     std::vector<T> yInt;
     auto nx = static_cast<int> (x.size());
     if (nx < 1){return yInt;}
