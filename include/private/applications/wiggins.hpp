@@ -49,7 +49,7 @@ std::vector<T> permute(const std::vector<T> &x,
 /// Count unique elements
 template<typename T, typename U>
 [[maybe_unused]]
-void copyUnique(std::vector<U> *xOut,
+void copyUnique(std::vector<T> *xOut,
                 std::vector<T> *yOut,
                 const std::vector<U> &x,
                 const std::vector<T> &y)
@@ -358,8 +358,10 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     {
         if (std::is_sorted(times.begin(), times.end()))
         {
-            x = times;
-            y = values;
+            x.resize(times.size());
+            std::copy(times.begin(), times.end(), x.begin());
+            y.resize(values.size());
+            std::copy(values.begin(), values.end(), y.begin());
         }
         else
         {
@@ -373,8 +375,10 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     }
     else
     {
-        x = times;
-        y = values;
+        x.resize(times.size());
+        std::copy(times.begin(), times.end(), x.begin());
+        y.resize(values.size());
+        std::copy(values.begin(), values.end(), y.begin());
     }
     // Initialize output
     auto nInt = static_cast<int> (timesToEvaluate.size());
@@ -390,11 +394,10 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
                                                       x.data(),
                                                       y.data());
     std::vector<T> yHat;
-    evaluate<T>(&yHat,
-                timesToEvaluate.size(),
-                timesToEvaluate.data(),
-                times.size(), times.data(),
-                splineCoefficients.data());
+    evaluate(&yHat,
+             timesToEvaluate.size(), timesToEvaluate.data(),
+             times.size(), times.data(),
+             splineCoefficients.data());
     return yHat;
 }
 /// @brief Performs the weighted average slopes interpolation.

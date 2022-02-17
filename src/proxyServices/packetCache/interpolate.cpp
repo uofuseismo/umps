@@ -9,7 +9,7 @@ using namespace UMPS::ProxyServices::PacketCache;
 namespace UMF = UMPS::MessageFormats;
 
 template<typename T>
-void UMPS::ProxyServices::PacketCache::interpolate(
+UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<T>> &packets,
     const double targetSamplingRate)
 {
@@ -20,6 +20,7 @@ void UMPS::ProxyServices::PacketCache::interpolate(
     }
     // Is there data?
     if (packets.empty()){throw std::invalid_argument("No data packets");}
+    // Do all packets have sampling rates
     for (const auto &packet : packets)
     {
         if (!packet.haveSamplingRate())
@@ -28,15 +29,16 @@ void UMPS::ProxyServices::PacketCache::interpolate(
                "Sampling rate must be set for all packets");
         }
     }
+    UMF::DataPacket<T> result;
     // Is there data?
     auto nPackets = static_cast<int> (packets.size());
     std::vector<int> packetSamplePtr(nPackets + 1);
     int nSamples = 0;
     packetSamplePtr[0] = 0;
-    for (int i = 0; i < nPackets; ++i)
+    for (int iPacket = 0; iPacket < nPackets; ++iPacket)
     {
-        nSamples = nSamples + packets[i].getNumberOfSamples();
-        packetSamplePtr[i + 1] = nSamples;
+        nSamples = nSamples + packets[iPacket].getNumberOfSamples();
+        packetSamplePtr[iPacket + 1] = nSamples;
     }
     if (nSamples < 1)
     {
@@ -46,48 +48,76 @@ void UMPS::ProxyServices::PacketCache::interpolate(
     {
         throw std::invalid_argument("At least two samples required");
     } 
-    // Create data
+    // Are the packets in order?
+    auto isSorted
+        = std::is_sorted(packets.begin(), packets.end(), 
+                         [](const UMF::DataPacket<T> &lhs, 
+                            const UMF::DataPacket<T> &rhs)
+                         {
+                            return lhs.getEndTime() < rhs.getStartTime();
+                         });
+    // Create abscissas and values at abscissas
     std::vector<T> data(nSamples);
     std::vector<int64_t> times(nSamples);
-    for (int i = 0; i < nPackets; ++i)
+    for (int iPacket = 0; iPacket < nPackets; ++iPacket)
     {
-        const T *__restrict__ dataPtr = packets[i].getDataPointer();
-        auto i0 = packetSamplePtr[i];
-        auto i1 = packetSamplePtr[i + 1]; // Exclusive
+        const T *__restrict__ dataPtr = packets[iPacket].getDataPointer();
+        auto i0 = packetSamplePtr[iPacket];
+        auto i1 = packetSamplePtr[iPacket + 1]; // Exclusive
         auto nSamplesInPacket = i1 - i0;
         if (nSamplesInPacket > 0)
         {
             std::copy(dataPtr, dataPtr + nSamplesInPacket, &data[i0]);
-            auto samplingRate = packets[i].getSamplingRate();
-            auto samplingRateMicroHertz
-                = static_cast<int64_t> (std::round(samplingRate*1000000));
-            auto t0 = packets[i].getStartTime().count();
+            auto samplingRate = packets[iPacket].getSamplingRate();
+            auto samplingPeriodMicroSeconds
+                = static_cast<double> (1000000./samplingRate);
+            auto t0 = packets[iPacket].getStartTime().count();
             auto *__restrict__ timesPtr = &times[i0];
-            for (int i = 0; i < nSamplesInPacket; ++i) 
+            for (int i = 0; i < nSamplesInPacket; ++i)
             {
-                timesPtr[i] = t0 + i*samplingRateMicroHertz;
+                timesPtr[i] = t0 + i*samplingPeriodMicroSeconds;
             }
         }
     }
-    // Interpolate
-    int64_t time0 = times.front();
-    int64_t time1 = times.back();
-    auto iTargetSamplingRate = static_cast<int64_t> (std::round(targetSamplingRate*1000000));
-    std::vector<int64_t> interpTimes;
+    // Create the interpolation times
+    auto time0 = times.front();
+    auto time1 = times.back();
+    auto targetSamplingPeriodMicroSeconds
+        = static_cast<int64_t> (std::round(1000000./targetSamplingRate));
+    auto iTargetSamplingRate
+        = static_cast<int64_t> (std::round(1./targetSamplingPeriodMicroSeconds));
+    auto spaceEstimate
+        = static_cast<int>
+          (std::round((time1 - time0)
+                     /static_cast<double> (targetSamplingPeriodMicroSeconds)));
+    std::vector<int64_t> timesToEvaluate;
+    timesToEvaluate.reserve(std::max(1, spaceEstimate));
     int i = 0;
     while (true)
     {
-       auto timeInterp = time0 + i*iTargetSamplingRate; 
-       if (timeInterp > time1){break;}
-       interpTimes.push_back(timeInterp);
+       auto interpolationTime = time0 + i*targetSamplingPeriodMicroSeconds; 
+       if (interpolationTime > time1){break;}
+       timesToEvaluate.push_back(interpolationTime);
        i = i + 1;
     }
-   
+    // Package into the result
+    auto checkSorting = !isSorted;
+    auto interpolatedSignal =
+          weightedAverageSlopes(times, data, timesToEvaluate, checkSorting);
+    result.setData(std::move(interpolatedSignal));
+    result.setSamplingRate(targetSamplingRate); 
+    result.setStartTime(static_cast<double> (time0)/1000000);
+    return result;
 }
 
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
-///--------------------------------------------------------------------------////
-template void UMPS::ProxyServices::PacketCache::interpolate(const std::vector<UMF::DataPacket<double>> &packets, double samplingRate);
-template void UMPS::ProxyServices::PacketCache::interpolate(const std::vector<UMF::DataPacket<float>> &packets, double samplingRate);
-template void UMPS::ProxyServices::PacketCache::interpolate(const std::vector<UMF::DataPacket<int>> &packets, double samplingRate);
+///--------------------------------------------------------------------------///
+template UMF::DataPacket<double> UMPS::ProxyServices::PacketCache::interpolate(
+    const std::vector<UMF::DataPacket<double>> &packets, double samplingRate);
+/*
+template UMF::DataPacket<float> UMPS::ProxyServices::PacketCache::interpolate(
+    const std::vector<UMF::DataPacket<float>> &packets, double samplingRate);
+template UMF::DataPacket<int> UMPS::ProxyServices::PacketCache::interpolate(
+    const std::vector<UMF::DataPacket<int>> &packets, double samplingRate);
+*/

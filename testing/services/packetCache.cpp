@@ -214,8 +214,16 @@ TEST(PacketCache, Wiggins)
         if (i0 == n){break;}
     }
     // Interpolate it
-PC::interpolate(packets);
-//getchar();
+    auto interpolatedPacket = PC::interpolate(packets, targetSamplingRate);
+    EXPECT_EQ(interpolatedPacket.getNumberOfSamples(),
+              static_cast<int> (newTimes.size()));
+    yi = interpolatedPacket.getData();
+    yDiff = 0;
+    for (int i = 0; i < static_cast<int> (yi.size()); ++i)
+    {
+        yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
+    }
+    EXPECT_NEAR(yDiff, 0, 1.e-8);
     // Add some duplicate packets (really wherever)
 }
 
