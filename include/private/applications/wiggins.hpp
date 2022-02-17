@@ -387,10 +387,6 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     std::vector<T> yInt;
     auto nx = static_cast<int> (x.size());
     if (nx < 1){return yInt;}
-    auto tMin = x[0];
-    auto tMax = x[nx - 1]; 
-    auto yFirst = y[0];
-    auto yLast  = y[nx - 1]; 
     // Create spline and evaluate it
     auto splineCoefficients = computeNonUniformSlopes(x.size(),
                                                       x.data(),
