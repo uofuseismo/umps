@@ -1,5 +1,6 @@
 #ifndef PRIVATE_APPLICATIONS_PACKETCACHE_WIGGINS_HPP
 #define PRIVATE_APPLICATIONS_PACKETCACHE_WIGGINS_HPP
+#include <iomanip>
 #include <string>
 #include <algorithm>
 #include <chrono>
@@ -230,6 +231,18 @@ int locate(const T x,
     }
 #ifndef NDEBUG
     assert(bin < n - 1);
+    if (x < xi[bin])
+    {
+        std::cerr << std::setprecision(16)
+                  << "x = " << x << " < xi[" << bin << "] = "
+                  << xi[bin] << std::endl;
+    }
+    if (x >= xi[bin+1])
+    {
+        std::cerr << std::setprecision(16)
+                  << "x = " << x << " >= xi[" << bin + 1 << "] = "
+                  << xi[bin + 1] << std::endl;
+    }
     assert(x >= xi[bin] && x < xi[bin + 1]);
 #endif
     return bin;
@@ -307,7 +320,7 @@ void evaluate(std::vector<T> *yv,
             bins[i] =-1;
             yPtr[i] = splineCoeffs[0];
         }
-        else if (x[i] > xi[nxi - 1]) 
+        else if (x[i] >= xi[nxi - 1]) 
         {
             binHint = n - 2;
             bins[i] =-2;
