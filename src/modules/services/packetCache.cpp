@@ -44,7 +44,7 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 
 #define DEFAULT_HWM 4096
 #define DEFAULT_TIMEOUT std::chrono::milliseconds{10}
-#define DEFAULT_MAXPACKETS 100
+#define DEFAULT_MAXPACKETS 200
 
 struct ProgramOptions
 {
@@ -55,7 +55,7 @@ struct ProgramOptions
     std::string dataBroadcastName = "DataPacket";
     std::string proxyServiceName;
     std::chrono::milliseconds dataPacketTimeOut{10};
-    int maxPackets = 400;
+    int maxPackets = DEFAULT_MAXPACKETS;
     int dataPacketHighWaterMark = static_cast<int> (DEFAULT_HWM);
 };
 

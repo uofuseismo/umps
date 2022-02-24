@@ -214,10 +214,18 @@ TEST(PacketCache, Wiggins)
         if (i0 == n){break;}
     }
     // Interpolate it
+    PC::WigginsInterpolator interpolator;
+    EXPECT_NO_THROW(interpolator.setTargetSamplingRate(targetSamplingRate));
+    EXPECT_NO_THROW(interpolator.interpolate(packets));
+    EXPECT_EQ(interpolator.getNumberOfSamples(), 
+              static_cast<int> (newTimes.size()));
+    yi = interpolator.getSignal();
+/*
     auto interpolatedPacket = PC::interpolate(packets, targetSamplingRate);
     EXPECT_EQ(interpolatedPacket.getNumberOfSamples(),
               static_cast<int> (newTimes.size()));
     yi = interpolatedPacket.getData();
+*/
     yDiff = 0;
     for (int i = 0; i < static_cast<int> (yi.size()); ++i)
     {
@@ -230,11 +238,17 @@ TEST(PacketCache, Wiggins)
     // And change the order
     std::srand(500582);
     std::random_shuffle(packets.begin(), packets.end());
+    EXPECT_NO_THROW(interpolator.interpolate(packets));
+    EXPECT_EQ(interpolator.getNumberOfSamples(),
+              static_cast<int> (newTimes.size()));
+    yi = interpolator.getSignal();
+/*
     EXPECT_NO_THROW(interpolatedPacket
         = PC::interpolate(packets, targetSamplingRate));
     EXPECT_EQ(interpolatedPacket.getNumberOfSamples(),
               static_cast<int> (newTimes.size()));
     yi = interpolatedPacket.getData();
+*/
     yDiff = 0;
     for (int i = 0; i < static_cast<int> (yi.size()); ++i)
     {
