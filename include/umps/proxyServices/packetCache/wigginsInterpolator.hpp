@@ -101,6 +101,11 @@ public:
     ///         sample in the interpolated signal was within a packet (false) or
     ///         between packets (true) - i.e., extrapolated.
     [[nodiscard]] const int8_t *getGapIndicatorPointer() const noexcept;
+
+    /// @result The start time of the interpolated signal.
+    [[nodiscard]] std::chrono::microseconds getStartTime() const noexcept;
+    /// @result The end time of the interpolated signal.
+    [[nodiscard]] std::chrono::microseconds getEndTime() const noexcept;
     /// @}
 
     /// @name Destructors
@@ -134,6 +139,7 @@ public:
 ///       that reason there can be a significant loss of precision if
 ///       using the integer template variant.
 template<typename T>
+[[deprecated]]
 [[nodiscard]]
 MessageFormats::DataPacket<T>
 interpolate(const std::vector<MessageFormats::DataPacket<T>> &packets,

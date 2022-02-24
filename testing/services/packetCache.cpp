@@ -10,7 +10,7 @@
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
-#include "umps/proxyServices/packetCache/interpolate.hpp"
+#include "umps/proxyServices/packetCache/wigginsInterpolator.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 //#include "umps/proxyServices/packetCache/proxyOptions.hpp"
@@ -154,6 +154,7 @@ TEST(PacketCache, Wiggins)
 {
     const double samplingRate = 200;
     const double targetSamplingRate = 250;
+    const double targetSamplingPeriod = 1/targetSamplingRate;
     auto infl = std::ifstream("data/gse2.txt");
     std::vector<double> t;
     std::vector<double> x;
@@ -197,6 +198,9 @@ TEST(PacketCache, Wiggins)
     int packetSize = 100;
     int i0 = 0;
     double t0 = 1644516968;
+    std::chrono::microseconds t0MuSec{static_cast<int64_t> (std::round(t0*1000000))};
+    double t1 = t0 + (yRef.size() - 1)*targetSamplingPeriod;
+    std::chrono::microseconds t1MuSec{static_cast<int64_t> (std::round(t1*1000000))}; 
     for (int i = 0; i < n; ++i)
     {
         UMPS::MessageFormats::DataPacket<double> packet;
@@ -217,6 +221,8 @@ TEST(PacketCache, Wiggins)
     PC::WigginsInterpolator interpolator;
     EXPECT_NO_THROW(interpolator.setTargetSamplingRate(targetSamplingRate));
     EXPECT_NO_THROW(interpolator.interpolate(packets));
+    EXPECT_EQ(interpolator.getStartTime(), t0MuSec);
+    EXPECT_EQ(interpolator.getEndTime(), t1MuSec);
     EXPECT_EQ(interpolator.getNumberOfSamples(), 
               static_cast<int> (newTimes.size()));
     yi = interpolator.getSignal();
@@ -239,6 +245,8 @@ TEST(PacketCache, Wiggins)
     std::srand(500582);
     std::random_shuffle(packets.begin(), packets.end());
     EXPECT_NO_THROW(interpolator.interpolate(packets));
+    EXPECT_EQ(interpolator.getStartTime(), t0MuSec);
+    EXPECT_EQ(interpolator.getEndTime(), t1MuSec);
     EXPECT_EQ(interpolator.getNumberOfSamples(),
               static_cast<int> (newTimes.size()));
     yi = interpolator.getSignal();
