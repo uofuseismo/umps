@@ -2,7 +2,7 @@
 #include <chrono>
 #include <cstdbool>
 #include <algorithm>
-#include "umps/proxyServices/packetCache/interpolate.hpp"
+#include "umps/proxyServices/packetCache/wigginsInterpolator.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "private/applications/wiggins.hpp"
 
@@ -17,6 +17,7 @@ public:
     double mTargetSamplingRate = 100;
     std::chrono::microseconds mGapTolerance{50000};
     std::chrono::microseconds mStartTime{0};
+    std::chrono::microseconds mEndTime{0};
 };
 
 /// C'tor
@@ -99,6 +100,7 @@ void WigginsInterpolator::interpolate(
     pImpl->mSignal.clear();
     pImpl->mGapIndicator.clear();
     pImpl->mStartTime = std::chrono::microseconds {0};
+    pImpl->mEndTime = std::chrono::microseconds {0};
     // Is there data?
     if (packets.empty()){throw std::invalid_argument("No data packets");}
     // Do all packets have sampling rates
@@ -202,6 +204,7 @@ void WigginsInterpolator::interpolate(
     if (!pImpl->mSignal.empty())
     {
         pImpl->mStartTime = std::chrono::microseconds{time0};
+        pImpl->mEndTime = std::chrono::microseconds{timesToEvaluate.back()}; 
         pImpl->mGapIndicator.resize(pImpl->mSignal.size(), 0);
     }
 }
@@ -228,6 +231,19 @@ const int8_t *WigginsInterpolator::getGapIndicatorPointer() const noexcept
     return pImpl->mGapIndicator.data();
 }
 
+/// Start time
+std::chrono::microseconds WigginsInterpolator::getStartTime() const noexcept
+{
+    return pImpl->mStartTime;
+}
+
+/// End time
+std::chrono::microseconds WigginsInterpolator::getEndTime() const noexcept
+{
+    return pImpl->mEndTime;
+}
+
+/*
 template<typename T>
 UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<T>> &packets,
@@ -359,7 +375,7 @@ UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
     }
     return result;
 }
-
+*/
 
 ///--------------------------------------------------------------------------///
 ///                           Template Instantiation                         ///
@@ -367,9 +383,11 @@ UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
 template
 void UMPS::ProxyServices::PacketCache::WigginsInterpolator::interpolate(
     const std::vector<UMF::DataPacket<double>> &packets);
+/*
 template UMF::DataPacket<double> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<double>> &packets, double samplingRate);
 template UMF::DataPacket<float> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<float>> &packets, double samplingRate);
 template UMF::DataPacket<int> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<int>> &packets, double samplingRate);
+*/
