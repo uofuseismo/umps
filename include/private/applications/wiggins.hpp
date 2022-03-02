@@ -350,10 +350,10 @@ void evaluate(std::vector<T> *yv,
 /// @brief Weighted average slope interpolation
 template<typename U, typename T>
 [[nodiscard]] [[maybe_unused]]
-std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
-                                     const std::vector<T> &values,
-                                     const std::vector<U> &timesToEvaluate,
-                                     const bool checkSorting = true)
+std::vector<double> weightedAverageSlopes(const std::vector<U> &times,
+                                          const std::vector<T> &values,
+                                          const std::vector<U> &timesToEvaluate,
+                                          const bool checkSorting = true)
 {
     if (timesToEvaluate.empty())
     {   
@@ -397,14 +397,13 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
         }
     }
     // Initialize output
-    std::vector<T> yInt;
+    std::vector<double> yHat;
     auto nx = static_cast<int> (x.size());
-    if (nx < 1){return yInt;}
+    if (nx < 1){return yHat;}
     // Create spline and evaluate it
     auto splineCoefficients = computeNonUniformSlopes(x.size(),
                                                       x.data(),
                                                       y.data());
-    std::vector<T> yHat;
     evaluate(&yHat,
              timesToEvaluate.size(), timesToEvaluate.data(),
              x.size(), x.data(),
@@ -412,11 +411,11 @@ std::vector<T> weightedAverageSlopes(const std::vector<U> &times,
     return yHat;
 }
 /// @brief Performs the weighted average slopes interpolation.
-template<typename T>
-std::vector<T> weightedAverageSlopes(const std::vector<T> &times,
-                                     const std::vector<T> &values,
-                                     const double t0, const double t1,
-                                     const double samplingRate = 100)
+template<typename T, typename U>
+std::vector<double> weightedAverageSlopes(const std::vector<U> &times,
+                                          const std::vector<T> &values,
+                                          const double t0, const double t1,
+                                          const double samplingRate = 100)
 {
     if (samplingRate <= 0)
     {

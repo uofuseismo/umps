@@ -383,6 +383,9 @@ UMF::DataPacket<T> UMPS::ProxyServices::PacketCache::interpolate(
 template
 void UMPS::ProxyServices::PacketCache::WigginsInterpolator::interpolate(
     const std::vector<UMF::DataPacket<double>> &packets);
+template
+void UMPS::ProxyServices::PacketCache::WigginsInterpolator::interpolate(
+    const std::vector<UMF::DataPacket<float>> &packets);
 /*
 template UMF::DataPacket<double> UMPS::ProxyServices::PacketCache::interpolate(
     const std::vector<UMF::DataPacket<double>> &packets, double samplingRate);

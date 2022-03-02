@@ -14,6 +14,7 @@ class ThreadSafeQueue
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     ThreadSafeQueue() = default;
     /// @brief Copy constructor.
@@ -164,6 +165,13 @@ public:
     }
     /// @name Constructors
     /// @{
+
+    /// @brief Empties the queue.
+    void clear() noexcept
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mDataQueue.clear();
+    }
     /// @brief Destructor.
     ~ThreadSafeQueue() = default;
     /// @}
