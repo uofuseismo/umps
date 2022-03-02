@@ -167,11 +167,11 @@ public:
     /// @{
 
     /// @brief Empties the queue.
-    void clear() noexcept
-    {
-        std::lock_guard<std::mutex> lockGuard(mMutex);
-        mDataQueue.clear();
-    }
+    //void clear() noexcept
+    //{
+    //    std::lock_guard<std::mutex> lockGuard(mMutex);
+    //    mDataQueue.clear();
+    //}
     /// @brief Destructor.
     ~ThreadSafeQueue() = default;
     /// @}

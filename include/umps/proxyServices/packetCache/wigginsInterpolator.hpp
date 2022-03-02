@@ -68,7 +68,7 @@ public:
     void setGapTolerance(const std::chrono::microseconds &tolerance) noexcept;
     /// @result The gap tolerance.  By default this is 30000 (0.03 seconds)
     ///         or 3 samples at the nominal sampling rate of 100 Hz.
-    std::chrono::microseconds getGapTolerance() const noexcept;
+    [[nodiscard]] std::chrono::microseconds getGapTolerance() const noexcept;
     /// @}
 
     /// @name Interpolate
