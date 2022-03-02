@@ -112,7 +112,11 @@ public:
     /// @{
 
     /// @brief Resets the class and releases all memory.
-    void clear();
+    void clear() noexcept;
+    /// @brief Resets the start/end time to zero and releases memory of the
+    ///        gap pointer and signal.  This will modify the gap tolerance or
+    ///        target sampling rate.
+    void clearSignal() noexcept; 
     /// @brief Destructor.
     ~WigginsInterpolator();
     /// @}

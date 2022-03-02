@@ -155,6 +155,7 @@ TEST(PacketCache, Wiggins)
     const double samplingRate = 200;
     const double targetSamplingRate = 250;
     const double targetSamplingPeriod = 1/targetSamplingRate;
+    std::chrono::microseconds gapTolerance{55000};
     auto infl = std::ifstream("data/gse2.txt");
     std::vector<double> t;
     std::vector<double> x;
@@ -220,6 +221,7 @@ TEST(PacketCache, Wiggins)
     // Interpolate it
     PC::WigginsInterpolator interpolator;
     EXPECT_NO_THROW(interpolator.setTargetSamplingRate(targetSamplingRate));
+    EXPECT_NO_THROW(interpolator.setGapTolerance(gapTolerance));
     EXPECT_NO_THROW(interpolator.interpolate(packets));
     EXPECT_EQ(interpolator.getStartTime(), t0MuSec);
     EXPECT_EQ(interpolator.getEndTime(), t1MuSec);
@@ -238,6 +240,13 @@ TEST(PacketCache, Wiggins)
         yDiff = std::max(yDiff, std::abs(yi.at(i) - yRef.at(i)));
     }
     EXPECT_NEAR(yDiff, 0, 1.e-8);
+    // Try clearing the signal
+    interpolator.clearSignal();
+    EXPECT_NEAR(interpolator.getTargetSamplingRate(),
+                targetSamplingRate, 1.e-14);
+    EXPECT_EQ(interpolator.getNumberOfSamples(), 0);
+    EXPECT_EQ(interpolator.getGapTolerance(), gapTolerance);
+
     // Add some duplicate packets (really wherever)
     packets.push_back(packets[0]);
     packets.push_back(packets[1]);

@@ -12,6 +12,13 @@ namespace UMF = UMPS::MessageFormats;
 class WigginsInterpolator::WigginsInterpolatorImpl
 {
 public:
+    void clearSignal() noexcept
+    {
+        mSignal.clear();
+        mGapIndicator.clear();
+        mStartTime = std::chrono::microseconds{0};
+        mEndTime = std::chrono::microseconds{0};
+    }
     std::vector<double> mSignal;
     std::vector<int8_t> mGapIndicator;
     double mTargetSamplingRate = 100;
@@ -92,15 +99,24 @@ int WigginsInterpolator::getNumberOfSamples() const noexcept
     return static_cast<int> (pImpl->mSignal.size());
 }
 
+/// Clear signal
+void WigginsInterpolator::clearSignal() noexcept
+{
+    pImpl->clearSignal();
+}
+
+/// Reset class
+void WigginsInterpolator::clear() noexcept
+{
+    pImpl = std::make_unique<WigginsInterpolatorImpl> ();
+}
+
 /// Interpolate
 template<typename T>
 void WigginsInterpolator::interpolate(
     const std::vector<UMF::DataPacket<T>> &packets)
 {
-    pImpl->mSignal.clear();
-    pImpl->mGapIndicator.clear();
-    pImpl->mStartTime = std::chrono::microseconds {0};
-    pImpl->mEndTime = std::chrono::microseconds {0};
+    clearSignal();
     // Is there data?
     if (packets.empty()){throw std::invalid_argument("No data packets");}
     // Do all packets have sampling rates
