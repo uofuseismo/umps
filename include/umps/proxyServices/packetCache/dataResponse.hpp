@@ -111,8 +111,6 @@ public:
     virtual void fromMessage(const char *data, size_t length) override final;
     /// @result A message type indicating this is a pick message.
     [[nodiscard]] virtual std::string getMessageType() const noexcept override final;
-    /// @name Clone Functions
-    /// @{
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An uninitialized instance of this class. 
