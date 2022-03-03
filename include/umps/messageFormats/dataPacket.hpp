@@ -83,7 +83,6 @@ public:
     [[nodiscard]] std::string getLocationCode() const;
     /// @result True indicates that the location code was set.
     [[nodiscard]] bool haveLocationCode() const noexcept;
-    /// @}
 
     /// @brief Sets the sampling rate for data in the packet.
     /// @param[in] samplingRate  The sampling rate in Hz.
@@ -112,10 +111,11 @@ public:
     /// @throws std::runtime_error if \c haveSamplingRate() is false or
     ///         \c getNumberOfSamples() is 0.
     [[nodiscard]] std::chrono::microseconds getEndTime() const;
-    //[[nodiscard]] int64_t getEndTime() const;
+    /// @}
 
     /// @name Data
     /// @{
+
     /// @brief Sets the time series data in this packet.
     /// @param[in] data  The time series data.
     template<typename U>
