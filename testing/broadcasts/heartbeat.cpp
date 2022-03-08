@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/subscriberOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
@@ -46,6 +47,34 @@ TEST(BroadcastsHeartbeat, SubscriberOptions)
     messageTypes = optionsCopy.getSubscriberOptions().getMessageTypes();
     EXPECT_EQ(messageTypes.size(), 1); 
     EXPECT_TRUE(messageTypes.contains(status));
+}
+
+TEST(BroadcastDataPacket, PublisherOptions)
+{
+    // Test defaults
+    PublisherOptions options;
+    std::chrono::milliseconds oneSecond{1000};
+    EXPECT_EQ(options.getHighWaterMark(), 8192);
+    EXPECT_EQ(options.getTimeOut(), oneSecond);
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              UAuth::SecurityLevel::GRASSLANDS);
+    // Test facade
+    const std::string frontEnd = "tcp://127.0.0.1:8082";
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    int hwm = 1024;
+    std::chrono::milliseconds twoSeconds{2000};
+    EXPECT_NO_THROW(options.setAddress(frontEnd));
+    EXPECT_NO_THROW(options.setHighWaterMark(hwm));
+    options.setTimeOut(twoSeconds);
+    EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
+
+    PublisherOptions optionsCopy(options);
+    EXPECT_EQ(optionsCopy.getAddress(), frontEnd);
+    EXPECT_EQ(optionsCopy.getTimeOut(), twoSeconds);
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
+    EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
 }
 
 }

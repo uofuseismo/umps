@@ -139,6 +139,7 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
     #src/proxyBroadcasts/heartbeat/proxy.cpp
     #src/proxyBroadcasts/heartbeat/proxyOptions.cpp
+    src/proxyBroadcasts/heartbeat/publisherOptions.cpp
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
     src/proxyBroadcasts/heartbeat/status.cpp
@@ -371,6 +372,8 @@ else()
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
+install(DIRECTORY ${PUBLIC_HEADER_DIRECTORIES}/umps
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 ##########################################################################################
 #                                     CPACK Packaging                                    #
 ##########################################################################################
@@ -379,8 +382,27 @@ set(CPACK_PACKAGE_VENDOR "UUSS")
 set(CPACK_PACKAGE_CONTACT "ben.baker@utah.edu")
 set(CPACK_PACKAGE_LICENSE "MIT")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "University of Utah Seismograph Stations Messaging Passing System")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
+set(CPACK_VERBATIM_VARIABLES YES)
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_COMPONENTS_ALL libraries headers)
+if (WIN32)
+    set(CPACK_GENERATOR ZIP WIX)
+elseif (APPLE)
+    set(CPACK_GENERATOR TGZ productbuild)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CPACK_GENERATOR TGZ RPM)
+else()
+    set(CPACK_GENERATOR TGZ)
+endif()
+set(CPACK_SOURCE_IGNORE_FILES
+  /\\.git/
+  \\.swp
+  \\.orig
+  /CMakeLists\\.txt\\.user
+  /private/
+)
 include(CPack) # Put this last!
