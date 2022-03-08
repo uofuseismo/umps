@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <boost/asio.hpp>
 #include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/subscriberOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/status.hpp"
@@ -49,7 +50,7 @@ TEST(BroadcastsHeartbeat, SubscriberOptions)
     EXPECT_TRUE(messageTypes.contains(status));
 }
 
-TEST(BroadcastDataPacket, PublisherOptions)
+TEST(BroadcastHeartbeat, PublisherOptions)
 {
     // Test defaults
     PublisherOptions options;
@@ -75,6 +76,35 @@ TEST(BroadcastDataPacket, PublisherOptions)
     EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
     EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
               zapOptions.getSecurityLevel());
+}
+
+TEST(BroadcastHeartbeat, Status)
+{
+    Status status;
+    const std::string module = "testModule";
+    const std::string hostName = "testComputer";
+    const ModuleStatus moduleStatus = ModuleStatus::ALIVE;
+    std::string referenceHostName = boost::asio::ip::host_name();
+    std::string timeStamp{"2022-11-01T00:01:02.300"}; 
+
+    EXPECT_NO_THROW(status.setModule(module));
+    EXPECT_NO_THROW(status.setModuleStatus(moduleStatus));
+    EXPECT_NO_THROW(status.setHostName(hostName));
+    EXPECT_NO_THROW(status.setTimeStamp(timeStamp));
+
+    auto message = status.toMessage();
+    Status statusCopy;
+    statusCopy.fromMessage(message.data(), message.size());
+
+    EXPECT_EQ(statusCopy.getModule(), module);
+    EXPECT_EQ(statusCopy.getModuleStatus(), moduleStatus);
+    EXPECT_EQ(statusCopy.getHostName(), hostName);
+    EXPECT_EQ(statusCopy.getTimeStamp(), timeStamp);
+    
+    // Check defaults
+    status.clear();
+    EXPECT_EQ(status.getModuleStatus(), ModuleStatus::UNKNOWN);
+    EXPECT_EQ(status.getHostName(), referenceHostName);
 }
 
 }
