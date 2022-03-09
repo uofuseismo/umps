@@ -304,6 +304,7 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userNameOr
         rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
         if (rc != SQLITE_OK)
         {
+            std::cerr << "Failed to prepare query" << std::endl;
             return users;
         }
         users.reserve(1024);
@@ -321,6 +322,7 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userNameOr
         rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
         if (rc != SQLITE_OK)
         {
+            std::cerr << "Failed to prepare query" << std::endl; 
             return users;
         }
         rc = sqlite3_bind_text(result, 1, userNameOrKey.c_str(),
