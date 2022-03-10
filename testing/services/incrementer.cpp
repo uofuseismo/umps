@@ -110,8 +110,6 @@ TEST(Incrementer, Counter)
     std::string tableName = "tables/counter.sqlite3";
     bool deleteIfExists = true;
     const std::string item = "test";
-    const uint64_t initialCount = 5;
-    const uint64_t interval = 10;
     std::map<std::string, std::pair<int64_t, int32_t>> items;
 
     items.insert( std::pair("pick", std::pair(5, 10)) );

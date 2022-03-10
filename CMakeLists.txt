@@ -127,6 +127,7 @@ set(MODULES_LIBSRC
     src/services/incrementer/counter.cpp
     src/services/incrementer/incrementRequest.cpp
     src/services/incrementer/incrementResponse.cpp
+    src/services/incrementer/itemsRequest.cpp
     src/services/incrementer/options.cpp
     #src/services/incrementer/service.cpp
     src/proxyBroadcasts/proxy.cpp
