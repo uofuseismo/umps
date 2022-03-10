@@ -1,12 +1,15 @@
 #ifndef UMPS_SERVICES_INCREMENTER_COUNTER_HPP
 #define UMPS_SERVICES_INCREMENTER_COUNTER_HPP
 #include <memory>
+#include <map>
+#include <string>
+#include <set>
 namespace UMPS::Services::Incrementer
 {
 /// @class Counter counter.hpp "umps/services/incrementer/counter.hpp"
-/// @brief This thread-safe class is responsible for incrementing the specified
-///        item's value.  This class is a simple way to assign unique 
-///        identifiers to an item of interest - e.g., a pick or event identifier
+/// @brief This thread-safe class is responsible for incrementing item values.
+///        This class is a simple way to assign unique identifiers to an item
+///        of interest - e.g., a pick or event identifier
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Counter
 {
@@ -33,61 +36,88 @@ public:
 
     /// @name Step 1: Initialization
     /// @{
-    /// @brief Initializes the class.
-    /// @param[in] item          The item name.
-    /// @param[in] initialValue  The item's initial value.
-    /// @param[in] increment     The item's increment.
-    /// @throws std::invalid_argument if the item name is blank or the increment
-    ///         is not positive.
-    void initialize(const std::string &item,
-                    const uint64_t initialValue = 0,
-                    const uint64_t increment = 1);
+
+    /// @param[in] fileName        The name of the sqlite3 file.
+    /// @param[in] deleteIfExists  If true then the should the sqlite3 file
+    ///                            exist then the underlying table will be 
+    ///                            dropped.
+    /// @note All items must be added with \c addItem().
+    /// @throws std::invalid_argument if there are errors encountered while
+    ///         opening the sqlite3 file.
+    void initialize(const std::string &fileName,
+                    bool deleteIfExists = false);
+    /// @param[in] fileName  The name of the sqlite3 file.
+    /// @param[in] items     A list of items to increment.  Here, the key is the 
+    ///                      item's name and the values are the initial value
+    ///                      and increment.  If the increment is not-positive
+    ///                      then an error will be thrown.
+    /// @param[in] deleteIfExists  If true then the should the sqlite3 file
+    ///                            exist then the underlying table will be 
+    ///                            dropped.
+    /// @throws std::invalid_argument if there are errors encountered while
+    ///         opening the sqlite3 file.
+    /// @note Items can still be added with \c addItem().
+    void initialize(const std::string &fileName,
+                    const std::map<std::string, std::pair<int64_t, int32_t>> &items,
+                    bool deleteIfExists = false);
     /// @result True indicates that the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result Gets the increment for the counter.
-    /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] uint64_t getIncrement() const; 
-    /// @result The item name that is being counted.
-    /// @throws std::runtime_error if \c isInitialized() is false. 
-    [[nodiscard]] std::string getName() const;
-    /// @result The counter's initial value.
-    [[nodiscard]] uint64_t getInitialValue() const;
+     
+    /// @param[in] item          The item's name.
+    /// @param[in] initialValue  The initial value of the item.
+    /// @param[in] increment     The amount to add to the item when updated.
+    /// @throws std::invalid_argument if the increment is not positive
+    ///         or \c haveItem(item) is true. 
+    void addItem(const std::string &item,
+                 int64_t initialValue = 0,
+                 int32_t increment = 1);
+    /// @param[in] item   The item name to check for existence.
+    /// @result True indicates the item was set. 
+    [[nodiscard]] bool haveItem(const std::string &item) const;
     /// @}
 
-    /// @name Step 2: Typical Usage
+    /// @name Step 3: Typical Usage
     /// @{
+
+    /// @result The items being incremented. 
+    std::set<std::string> getItems() const noexcept;
 
     /// @brief This function is intended to provide the next available
     ///        unique identifier for the item of interest.
+    /// @param[in] item  The item to increment.
     /// @result The next available value in the increment.
     /// @throws std::runtime_error if \c isInitialized() is false or, 
     ///         if by some miracle, your application would exceed the
-    ///         largest 64 bit unsigned integer.
-    [[nodiscard]] uint64_t getNextValue();
+    ///         largest 64 bit nsigned integer.
+    /// @throws std::invalid_argument if \c haveItem() is false.
+    [[nodiscard]] int64_t getNextValue(const std::string &item);
 
     /// @result The current value of the counter.
+    /// @param[in] item   The item whose current value will be ascertained.
     /// @throws std::runtime_error if \c isInitialized() is false.
     /// @note This is likely not a unique identifier.  Sure, the creation of
     ///       this item with this value may have failed and it doesn't exist but
     ///       it would be dangerous to assume that in a distributed environment.
     ///       This is function merely for your information.
-    [[nodiscard]] uint64_t getCurrentValue() const;
+    /// @throws std::invalid_argument if \c haveItem() is false.
+    [[nodiscard]] int64_t getCurrentValue(const std::string &item) const;
 
-    /// @brief Resets the counter to the initial value.
+    /// @brief Resets a specific item.
+    /// @param[in] item  The name of the item to reset.
+    /// @throws std::invalid_argument if \c haveItem() is false or if
+    ///         \c isInitialized() is false.
+    void reset(const std::string &item);
+
+    /// @brief Resets all the counters to their initial value.
     /// @throws std::runtime_error if \c isInitialized() is false.
     /// @note This function can cause duplicates identifiers.  Use it with care.
     void reset();
     /// @}
 
+
     /// @name Destructors
     /// @{
 
-    /// @brief Resets the class to an uninitialized state. 
-    /// @note If you intend to re-initialize the class it would be smart
-    ///       to get the current value and increment it by some non-zero value
-    ///       or simply get the next value.  You would then set this as the
-    ///       initial value on re-initialization.
-    void clear() noexcept;
     /// @brief Destructor.
     ~Counter();
     /// @}

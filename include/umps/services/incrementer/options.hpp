@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_INCREMENTER_PARAMETERS_HPP
-#define UMPS_SERVICES_INCREMENTER_PARAMETERS_HPP
+#ifndef UMPS_SERVICES_INCREMENTER_OPTIONS_HPP
+#define UMPS_SERVICES_INCREMENTER_OPTIONS_HPP
 #include <memory>
 #include "umps/logging/level.hpp"
 namespace UMPS::Authentication
@@ -8,44 +8,44 @@ namespace UMPS::Authentication
 }
 namespace UMPS::Services::Incrementer
 {
-/// @class Parameters "parameters.hpp" "umps/services/incrementer/parameters.hpp"
-/// @brief The parameters for controlling the item incrementer.
+/// @class Options "options.hpp" "umps/services/incrementer/options.hpp"
+/// @brief The options for controlling the incrementer.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Parameters
+class Options
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    Parameters();
+    Options();
     /// @brief Copy constructor.
-    /// @param[in] parameters  The parameters from which to initialize
+    /// @param[in] options  The options from which to initialize
     ///                        this class. 
-    Parameters(const Parameters &parameters);
+    Options(const Options &options);
     /// @brief Move constructor.
-    /// @param[in] parameters  The parameters from which to initialize this
-    ///                        class.  On exit, parameter's behavior is
+    /// @param[in] options  The options from which to initialize this
+    ///                        class.  On exit, option's behavior is
     ///                        undefined. 
-    Parameters(Parameters &&parameters) noexcept;
+    Options(Options &&options) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment.
-    /// @param[in] parameters   The parameters class to copy to this.
-    /// @result A deep copy of parameters.
-    Parameters& operator=(const Parameters &parameters);
+    /// @param[in] options   The options class to copy to this.
+    /// @result A deep copy of options.
+    Options& operator=(const Options &options);
     /// @brief Move assignment.
-    /// @param[in,out] parameters  The parameters whose memory will be moved to
-    ///                            this.  On exit, parameters's behavior is
+    /// @param[in,out] options  The options whose memory will be moved to
+    ///                            this.  On exit, options's behavior is
     ///                            undefined.
-    /// @result The memory from parameters moved to this.
-    Parameters& operator=(Parameters &&parameters) noexcept;
+    /// @result The memory from options moved to this.
+    Options& operator=(Options &&options) noexcept;
     /// @}
 
-    /// @brief Loads the parameters from an initialization file.
+    /// @brief Loads the options from an initialization file.
     /// @param[in] fileName   The name of the initialization file.
     /// @param[in] section    The section of the initialization file with the
     ///                       information to be parsed.  This will likely
@@ -58,17 +58,8 @@ public:
     void parseInitializationFile(const std::string &fileName,
                                  const std::string &section);
 
-    /// @name Required Parameters
+    /// @name Required Options
     /// @{
-
-    /// @brief Sets the name of the item to be incremented.
-    /// @param[in] name  The name of the item we are incrementing.
-    /// @throws std::invalid_argument if name is empty.
-    void setName(const std::string &name);
-    /// @result The name of the item which we are incrementing.
-    [[nodiscard]] std::string getName() const;
-    /// @result True indicates that the name was set.
-    [[nodiscard]] bool haveName() const noexcept;
 
     /// @brief Sets the proxy's address from which the server will connect.
     /// @param[in] address  The address from which the server connect to this
@@ -92,21 +83,28 @@ public:
     [[nodiscard]] bool haveClientAccessAddress() const noexcept;
     /// @}
 
-    /// @name Optional Parameters
+    /// @name Optional Options
     /// @{
 
-    /// @brief Sets the increment.
+    /// @brief Sets the sqlite3 file name.
+    /// @param[in] fileName  The name of the sqlite3 file.
+    void setSqlite3FileName(const std::string &fileName);
+    /// @result The sqlite3 file containing the items to be incremented.
+    [[nodiscard]] std::string getSqlite3FileName() const noexcept;
+
+    /// @brief Sets the increment for all items.
     /// @param[in] increment  The amount by which to increment the counter.
     /// @throws std::invalid_argument if increment is not positive.
     void setIncrement(int increment);
     /// @result The increment.
-    [[nodiscard]] uint64_t getIncrement() const noexcept;
+    [[nodiscard]] int getIncrement() const noexcept;
 
-    /// @param[in] initialValue   The initial value of the incrementer.
+    /// @param[in] initialValue   The initial value for all items to be
+    ///                           incremented.
     /// @note The next value returned will be this plus the increment.
-    void setInitialValue(uint32_t initialValue) noexcept;
+    void setInitialValue(int32_t initialValue) noexcept;
     /// @result The initial value of the incrementer.
-    [[nodiscard]] uint64_t getInitialValue() const noexcept;
+    [[nodiscard]] int64_t getInitialValue() const noexcept;
 
     /// @brief Sets the verbosity. 
     /// @param[in] verbosity   The verbosity.
@@ -129,11 +127,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~Parameters();
+    ~Options();
     /// @}
 private:
-    class ParametersImpl;
-    std::unique_ptr<ParametersImpl> pImpl;    
+    class OptionsImpl;
+    std::unique_ptr<OptionsImpl> pImpl;    
 };
 }
 #endif

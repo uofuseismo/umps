@@ -6,8 +6,8 @@
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
-#include "umps/services/incrementer/request.hpp"
-#include "umps/services/incrementer/response.hpp"
+#include "umps/services/incrementer/incrementRequest.hpp"
+#include "umps/services/incrementer/incrementResponse.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
@@ -26,9 +26,9 @@ public:
         process(const std::string &messageType,
                 const void *messageContents, const size_t length)
     {
-        UMPS::Services::Incrementer::Request request;
+        UMPS::Services::Incrementer::IncrementRequest request;
         auto response
-            = std::make_unique<UMPS::Services::Incrementer::Response> ();
+            = std::make_unique<UMPS::Services::Incrementer::IncrementResponse> ();
         //std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
         if (messageType == request.getMessageType())
         {
@@ -99,7 +99,7 @@ void server()
                               std::placeholders::_2,
                               std::placeholders::_3));
     std::unique_ptr<UMPS::MessageFormats::IMessage> messageSubscriptionType
-        = std::make_unique<UMPS::Services::Incrementer::Request> (); 
+        = std::make_unique<UMPS::Services::Incrementer::IncrementRequest> ();
     //routerOptions.addMessageFormat(messageSubscriptionType);
 
     UMPS::Messaging::RequestRouter::Router server(loggerPtr);
@@ -140,9 +140,9 @@ void client(int base)
         = std::make_shared<UMPS::Logging::StdOut> (logger);
 
     UMPS::Messaging::RequestRouter::RequestOptions requestOptions;
-    UMPS::Services::Incrementer::Request request;
+    UMPS::Services::Incrementer::IncrementRequest request;
     std::unique_ptr<UMPS::MessageFormats::IMessage> responseType
-        = std::make_unique<UMPS::Services::Incrementer::Response> (); 
+        = std::make_unique<UMPS::Services::Incrementer::IncrementResponse> (); 
     requestOptions.setAddress(localHost);
     requestOptions.addMessageFormat(responseType);
 /*
@@ -161,7 +161,7 @@ void client(int base)
         request.setIdentifier(base + i);
         auto message = client.request(request);
         auto response
-        = static_unique_pointer_cast<UMPS::Services::Incrementer::Response>
+        = static_unique_pointer_cast<UMPS::Services::Incrementer::IncrementResponse>
           (std::move(message));
         EXPECT_EQ(request.getIdentifier(), response->getIdentifier());
         //std::cout << request.getIdentifier() << " " << response->getIdentifier() << std::endl;//Identifier() << std::endl;

@@ -124,11 +124,11 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/socketDetails/xPublisher.cpp
     src/services/connectionInformation/socketDetails/xSubscriber.cpp
     src/services/connectionInformation/details.cpp
-    src/services/incrementer/request.cpp
-    src/services/incrementer/response.cpp
     src/services/incrementer/counter.cpp
-    src/services/incrementer/parameters.cpp
-    src/services/incrementer/service.cpp
+    src/services/incrementer/incrementRequest.cpp
+    src/services/incrementer/incrementResponse.cpp
+    src/services/incrementer/options.cpp
+    #src/services/incrementer/service.cpp
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
     #src/proxyBroadcasts/dataPacket/proxy.cpp
@@ -139,6 +139,7 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
     #src/proxyBroadcasts/heartbeat/proxy.cpp
     #src/proxyBroadcasts/heartbeat/proxyOptions.cpp
+    src/proxyBroadcasts/heartbeat/publisher.cpp
     src/proxyBroadcasts/heartbeat/publisherOptions.cpp
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp

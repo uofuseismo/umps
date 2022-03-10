@@ -5,17 +5,17 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/incrementer/request.hpp"
+#include "umps/services/incrementer/incrementRequest.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Incrementer::Request"
+#define MESSAGE_TYPE "UMPS::Services::Incrementer::IncrementRequest"
 
 using namespace UMPS::Services::Incrementer;
 
 namespace
 {
 
-nlohmann::json toJSONObject(const Request &request)
+nlohmann::json toJSONObject(const IncrementRequest &request)
 {
     nlohmann::json obj;
     // Essential stuff (this will throw): 
@@ -26,9 +26,9 @@ nlohmann::json toJSONObject(const Request &request)
     return obj;
 }
 
-Request objectToRequest(const nlohmann::json &obj)
+IncrementRequest objectToRequest(const nlohmann::json &obj)
 {
-    Request request;
+    IncrementRequest request;
     // Essential stuff
     if (obj["MessageType"] != request.getMessageType())
     {
@@ -40,13 +40,13 @@ Request objectToRequest(const nlohmann::json &obj)
     return request;
 }
 
-Request fromJSONMessage(const std::string &message)
+IncrementRequest fromJSONMessage(const std::string &message)
 {
     auto obj = nlohmann::json::parse(message);
     return objectToRequest(obj);
 }
 
-Request fromCBORMessage(const uint8_t *message, const size_t length)
+IncrementRequest fromCBORMessage(const uint8_t *message, const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
     return objectToRequest(obj);
@@ -54,7 +54,7 @@ Request fromCBORMessage(const uint8_t *message, const size_t length)
 
 }
 
-class Request::RequestImpl
+class IncrementRequest::IncrementRequestImpl
 {
 public:
     std::string mItem;
@@ -62,33 +62,33 @@ public:
 };
 
 /// C'tor
-Request::Request() :
-    pImpl(std::make_unique<RequestImpl> ())
+IncrementRequest::IncrementRequest() :
+    pImpl(std::make_unique<IncrementRequestImpl> ())
 {
 }
 
 /// Copy c'tor
-Request::Request(const Request &request)
+IncrementRequest::IncrementRequest(const IncrementRequest &request)
 {
     *this = request;
 }
 
 /// Move c'tor
-Request::Request(Request &&request) noexcept
+IncrementRequest::IncrementRequest(IncrementRequest &&request) noexcept
 {
     *this = std::move(request);
 }
 
 /// Copy assignment
-Request& Request::operator=(const Request &request)
+IncrementRequest& IncrementRequest::operator=(const IncrementRequest &request)
 {
     if (&request == this){return *this;}
-    pImpl = std::make_unique<RequestImpl> (*request.pImpl);
+    pImpl = std::make_unique<IncrementRequestImpl> (*request.pImpl);
     return *this;
 }
 
 /// Move assignment
-Request& Request::operator=(Request &&request) noexcept
+IncrementRequest& IncrementRequest::operator=(IncrementRequest &&request) noexcept
 {
     if (&request == this){return *this;}
     pImpl = std::move(request.pImpl);
@@ -96,22 +96,22 @@ Request& Request::operator=(Request &&request) noexcept
 }
 
 /// Destructor
-Request::~Request() = default;
+IncrementRequest::~IncrementRequest() = default;
 
 /// Clear
-void Request::clear() noexcept
+void IncrementRequest::clear() noexcept
 {
-    pImpl = std::make_unique<RequestImpl> ();
+    pImpl = std::make_unique<IncrementRequestImpl> ();
 }
 
 /// Item 
-void Request::setItem(const std::string &item)
+void IncrementRequest::setItem(const std::string &item)
 {
     if (isEmpty(item)){throw std::invalid_argument("Item is empty");}
     pImpl->mItem = item;
 }
 
-void Request::setItem(const Item item) noexcept
+void IncrementRequest::setItem(const Item item) noexcept
 {
    if (item == Item::PHASE_PICK)
    {
@@ -139,37 +139,37 @@ void Request::setItem(const Item item) noexcept
    }
 }
 
-std::string Request::getItem() const
+std::string IncrementRequest::getItem() const
 {
     if (!haveItem()){throw std::runtime_error("Item not set");}
     return pImpl->mItem;
 }
 
-bool Request::haveItem() const noexcept
+bool IncrementRequest::haveItem() const noexcept
 {
     return !(pImpl->mItem.empty());
 }
 
 /// Identifier
-void Request::setIdentifier(const uint64_t identifier) noexcept
+void IncrementRequest::setIdentifier(const uint64_t identifier) noexcept
 {
     pImpl->mIdentifier = identifier;
 }
 
-uint64_t Request::getIdentifier() const noexcept
+uint64_t IncrementRequest::getIdentifier() const noexcept
 {
     return pImpl->mIdentifier;
 }
 
 /// Create JSON
-std::string Request::toJSON(const int nIndent) const
+std::string IncrementRequest::toJSON(const int nIndent) const
 {
     auto obj = toJSONObject(*this);
     return obj.dump(nIndent);
 }
 
 /// Create CBOR
-std::string Request::toCBOR() const
+std::string IncrementRequest::toCBOR() const
 {
     auto obj = toJSONObject(*this);
     auto v = nlohmann::json::to_cbor(obj);
@@ -178,18 +178,18 @@ std::string Request::toCBOR() const
 }
 
 /// From JSON
-void Request::fromJSON(const std::string &message)
+void IncrementRequest::fromJSON(const std::string &message)
 {
     *this = fromJSONMessage(message);
 }
 
 /// From CBOR
-void Request::fromCBOR(const std::string &data)
+void IncrementRequest::fromCBOR(const std::string &data)
 {
     fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
 }
 
-void Request::fromCBOR(const uint8_t *data, const size_t length)
+void IncrementRequest::fromCBOR(const uint8_t *data, const size_t length)
 {
     if (length == 0){throw std::invalid_argument("No data");}
     if (data == nullptr)
@@ -200,36 +200,36 @@ void Request::fromCBOR(const uint8_t *data, const size_t length)
 }
 
 ///  Convert message
-std::string Request::toMessage() const
+std::string IncrementRequest::toMessage() const
 {
     return toCBOR();
 }
 
-void Request::fromMessage(const char *messageIn, const size_t length)
+void IncrementRequest::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
     fromCBOR(message, length);
 }
 
 /// Copy this class
-std::unique_ptr<UMPS::MessageFormats::IMessage> Request::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> IncrementRequest::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<Request> (*this);
+        = std::make_unique<IncrementRequest> (*this);
     return result;
 }
 
 /// Create an instance of this class 
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    Request::createInstance() const noexcept
+    IncrementRequest::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<Request> ();
+        = std::make_unique<IncrementRequest> ();
     return result;
 }
 
 /// Message type
-std::string Request::getMessageType() const noexcept
+std::string IncrementRequest::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
