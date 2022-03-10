@@ -8,6 +8,7 @@
 #include <numeric>
 #include "umps/services/incrementer/incrementResponse.hpp"
 #include "umps/services/incrementer/incrementRequest.hpp"
+#include "umps/services/incrementer/itemsRequest.hpp"
 #include "umps/services/incrementer/counter.hpp"
 #include "umps/services/incrementer/options.hpp"
 #include <gtest/gtest.h>
@@ -58,6 +59,24 @@ TEST(Incrementer, IncrementRequest)
     request.clear();
     EXPECT_FALSE(request.haveItem()); 
     EXPECT_EQ(request.getMessageType(), "UMPS::Services::Incrementer::IncrementRequest");
+}
+
+TEST(Incrementer, ItemsRequest)
+{
+    UMPSIC::ItemsRequest request;
+    uint64_t id = 253;
+    const std::string item = "def";
+
+    request.setIdentifier(id);
+    EXPECT_EQ(request.getIdentifier(), id);
+
+    auto msg = request.toMessage();
+    UMPSIC::ItemsRequest rCopy;
+    rCopy.fromMessage(msg.data(), msg.size());
+    EXPECT_EQ(rCopy.getIdentifier(), id);
+
+    request.clear();
+    EXPECT_EQ(request.getMessageType(), "UMPS::Services::Incrementer::ItemsRequest");
 }
 
 TEST(Incrementer, IncrementResponse)
