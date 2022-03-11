@@ -7,6 +7,7 @@ namespace UMPS::MessageFormats
 /// @class Pick "pick.hpp" "umps/messageFormats/pick.hpp"
 /// @brief Defines a pick message.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Messages_MessageFormats
 class Pick : public IMessage
 {
 public:

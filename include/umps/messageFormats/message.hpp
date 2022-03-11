@@ -6,6 +6,7 @@ namespace UMPS::MessageFormats
 /// @brief An abstract base class defining the base requirements a message
 ///        format must satisfy.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Messages_BaseClass
 class IMessage
 {
 public:

@@ -8,6 +8,7 @@ namespace UMPS::MessageFormats
 /// @brief Defines a text-based message.  For example, this class would allow
 ///        you to send the contents of a text file.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Messages_MessageFormats
 class Text : public IMessage
 {
 public:

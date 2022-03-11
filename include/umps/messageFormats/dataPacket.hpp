@@ -6,9 +6,10 @@
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::MessageFormats
 {
-/// @class Pick "pick.hpp" "umps/messageFormats/dataPacket.hpp"
+/// @class DataPacket "dataPacket.hpp" "umps/messageFormats/dataPacket.hpp"
 /// @brief Defines a packet of seismic data (a data packet).
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Messages_MessageFormats
 template<class T>
 class DataPacket : public IMessage
 {

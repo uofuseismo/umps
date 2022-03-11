@@ -11,6 +11,7 @@ namespace UMPS::MessageFormats
 /// @class Messages "messages.hpp" "umps/messageFormats/messages.hpp"
 /// @brief This is a container for holding multiple (unique) message formats.
 /// @copyright Ben Baker (University of Utah)
+/// @ingroup Messages_MessageFormats
 class Messages
 {
 public:
