@@ -94,7 +94,7 @@ public:
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     virtual void fromMessage(const char *data, size_t length) override final;
     /// @result The message type.
-    [[nodiscard]] std::string getMessageType() const noexcept final;
+    [[nodiscard]] virtual std::string getMessageType() const noexcept final;
     /// @}
 
     /// @name Debugging Utilities
