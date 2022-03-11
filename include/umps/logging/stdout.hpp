@@ -30,7 +30,7 @@ public:
     StdOut &operator=(StdOut &&logger) noexcept;
 
     /// @brief Destructor.
-    virtual ~StdOut();
+    ~StdOut() override;
 
     /// @brief Sets the logging level.
     /// @param[in] level  The logging level.

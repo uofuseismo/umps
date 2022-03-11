@@ -28,7 +28,7 @@ public:
     SpdLog &operator=(SpdLog &&spdlog) noexcept;
 
     /// @brief Destructor.
-    virtual ~SpdLog();
+    ~SpdLog() override;
 
     /// @brief Initializes the logger.
     /// @param[in] loggerName  The logger name.  For example,

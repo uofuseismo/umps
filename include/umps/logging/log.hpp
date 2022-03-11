@@ -10,7 +10,7 @@ namespace UMPS::Logging
 class ILog
 {
 public:
-    ~ILog() = default;
+    virtual ~ILog() = default;
     /// @result The logging level.
     [[nodiscard]] virtual Level getLevel() const noexcept = 0;
     /// @brief Writes an error message.
