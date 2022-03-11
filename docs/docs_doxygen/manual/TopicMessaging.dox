@@ -1,17 +1,54 @@
 namespace UMPS
 {
-/**
+/*!
 \page TopicMessaging Messaging
 \ingroup MessagingPatterns_chapter
 
-In this section, we will get into the weeds of messaging. The messaging patterns are build atop ZeroMQ; a light-weight, high-performance messaging library. While I suggest everyone read the ZeroMQ Guide this section should be enough for most users. We will mainly concern ourselves with two types of communication patterns. The first is the Publish-Subscribe pattern. The second is the Request-Reply pattern.
+In this section, we will get more into the details of messaging and messaging patterns.  This part of the documentation is intended to benefit developers who wish to define their own services and broadcasts.  Most other users are encouraged to use the higher-level tools.  
+
+For those who wish to continue, we recommend reading the <a href="https://zguide.zeromq.org/">ZeroMQ Guide</a> as this will contain more detailed explanations to forthcoming terms.  In short, ZeroMQ is a light-weight, high-performance messaging system.  While ZeroMQ allows for more patterns, we will mainly concern ourselves with two types of communication patterns. The first is the Publish-Subscribe pattern. The second is the Request-Reply pattern.
+
 */
 
-/**
-\page TopicMessaging_PubSub Publish Subscribe
+/*!
+\page TopicMessaging_PubSub Publisher Subscriber
 \ingroup MessagingPatterns_PubSub
 
 This pattern can be thought of as listening to the radio. The radio (publisher) will broadcast its content. The listener (subscriber) will then tune-in to hear the content. This conceptually simple pattern provides excellent one-to-many scalability. However, the subscriber will miss all content if it is not connected to the data feed. One caveat is that communication is a one-way street in that the publisher broadcasts and the subscriber listens. If your use-case requires the subscriber send information to the publisher then this messaging pattern will not work.
+
+*/
+
+/*!
+\page TopicMessaging_PubSub_PubSub Publisher Subscriber
+\ingroup MessagingPatterns_PubSub_PubSub
+\section Topic_Messaging_PubSub_Overview Overview
+
+This is the most naive messaging strategy available in UMPS.  All that happens are that messages are sent from a producer to a consumer.  This pattern exists for educational and testing purposes and should not be used in production code.
+
+\subsection TopicMessaging_PubSub_Example An Example:
+\ingroup Topic_Messaging_PubSub_Overview
+ 
+In this example, let us define a simple publisher that sends a handful of text messages to a subscriber.
+
+\subsection TopicMessaging_PubSub_ExamplePublisher The Publisher:
+\ingroup Topic_Messaging_PubSub_Overview
+
+The important points are that the publisher \em binds to an endpoint, defines a message to send, then sends the message in a non-blocking way.  Note, the publisher does not care whether or not the subscriber receives the messages.  
+
+\include pubSub/publisher.cpp
+
+\subsection TopicMessaging_PubSub_ExampleSubscriber The Subscriber:
+\ingroup Topic_Messaging_PubSub_Overview
+
+The important points are that the subscriber \em connects to an endpoint, receives a pre-agreed upon number of messages, and returns.  It is important to consider the blocking behavior of the subscriber.  If the default is to block (wait) indefinitely a message is received then in this example the program may hang.  For this reason, we actually connect the subscriber to the publisher before the publisher is created.  You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket.  
+
+\include pubSub/subscriber.cpp
+
+\subsection TopicMessaging_PubSub_ExampleDriver The Driver:
+\ingroup Topic_Messaging_PubSub_Overview
+
+Here is the example driver code that launches this example.  We create two threads - a publisher and a subscriber.  The subscriber connects first then will block until a message is received.  The publisher is then started after waiting some time.  This mitigates the slow joiner problem.  
+
 */
 
 /**
@@ -19,6 +56,7 @@ This pattern can be thought of as listening to the radio. The radio (publisher) 
 \ingroup MessagingPatterns_ReqRep
 
 The request-reply mechanism is extremely important to UMPS and it is one of UMPS's major improvements over existing seismic processing systems.  Suppose, you are running two instances of a detector - say a P and S-detector - on different machines. The P-detector triggers and a pick is made. How then should you give this pick a unique identification? One solution is to make a request from a service whose entire purpose is to provide unique identifiers. This service could be a database or a standalone program. It does not matter. All that matters is the request can be made by both detectors and the request will be fulfilled by the server.
+
 */
 
 }

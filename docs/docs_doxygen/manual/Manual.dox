@@ -5,6 +5,7 @@ namespace UMPS {
 
 
 /** \page UserManual_Generalities General Topics
+  - \subpage TopicMessages
   - \subpage TopicMessaging
   - \subpage TopicMessageFormats
   - \subpage UserManual_UMPS
@@ -16,6 +17,16 @@ namespace UMPS {
   - \subpage TopicInsideUMPS
   - \subpage TopicClassHierarchy
 */
+
+/** \defgroup Messages_chapter Messages */
+
+/** \defgroup Messages_BaseClass Abstract Message Base Class
+    \brief The most important class for those who wish to make their own messages.
+    \ingroup Messages_chapter */
+/** \defgroup Messages_MessageFormats Message Formats
+    \brief Some commonly used message formats that exist for convenience.
+    \ingroup Messages_chapter */
+
 
 /** \defgroup MessagingPatterns_chapter Messaging Patterns */
 

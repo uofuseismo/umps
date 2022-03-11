@@ -1,0 +1,35 @@
+namespace UMPS
+{
+/*!
+\page TopicMessages Messages
+\ingroup Messages_chapter
+
+Messages are a fundamental item in UMPS as they are the things that ultimately get passed around.  Messages are both items that are transmitted via messaging protocols (e.g., tcp) and data structures (classes).  Consequently, there must exist a mechanism that goes from a bytes-based format to a class and vice-versa - a process known as (de)serialization.
+
+<br>
+
+To begin, let's consider the byte-based representation of a message.  In this case, we view a message as a collection of item-value pairs.  The item-value pairs can be expressed in plain-text format (e.g., <a href="https://www.json.org/json-en.html">JSON</a> or <a href="https://www.xml.com/">XML</a>) or binary format (e.g., <a href="https://cbor.io/">CBOR</a> or <a href="https://bsonspec.org/">BSON</a>).  Incidentally, UMPS messages use CBOR since they tend to result in smaller message sizes than BSON.  But all that is truly required of someone creating their own class is being able to convert the message to a string or byte-stream format and being able to convert a string or byte-stream format to a class.   
+
+<br>
+
+As programmers, what is important is that a message is also a class.  This is because classes are the natural way by which we define and manipulate objects in C++ (or any object-oriented language).  The link between these two representations is the message abstract base class.
+
+\include umps/messageFormats/message.hpp
+
+As a user defining your own message type you must derive from this class and implement the following functions.  Since this is so critical, let's define each item:
+  - toMessage
+    - This converts the class to a string or byte-stream message.  We use a dirty trick with C++ that the std::string is a container that can contain binary data.  This does not matter to ZeroMQ as all it is concerned with is sending bytes.
+  - fromMessage
+    - This reconstitutes a class from the a byte-stream or string message.
+  - getMessageType
+    - This allows the library to figure out which class it is supposed to create.  This value must be unique for your applications as naming collisions will create unforseen problems during deserialization.  Your serialized message should embed this information somewhere.  For our CBOR messages there is a item-value pair called MessageType.
+    - The message type is also passed onto ZeroMQ.  Loosely speaking, our messages are like emails in that they contain a subject and a body.  Specifically, the message type is the subject and the body is the serialized payload.  Reading the only subjects allows certain components of ZeroMQ to not have to read entire messages off the wire in certain communication paradigms.
+  - createInstance
+    - This is the first part of magic.  The UMPS interfaces to ZeroMQ return abstract-base message classes.  But those classes really have to correspond to a specific type of message class.
+  - clone
+    - This is the second part of magic.  The abstract-base message classes being returned from our ZeroMQ interfaces need to have the correct content and not be unpopulated classes.
+
+Though it may be difficult to imagine on the first read-through, this abstract base class is the reason you or I can create arbitrary messages, send those messages to and from different computers with UMPS, and, upon receipt of those messages, interact with them as normal classes in our applications.  No more arcane Earthworm messages.  No more being a slave to QuakeML.  Define the messages your application requires then send them.
+
+*/
+}
