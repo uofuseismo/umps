@@ -1,0 +1,42 @@
+
+// This file strutures pages and modules into a convenient hierarchical structure.
+
+namespace UMPS {
+
+
+/** \page UserManual_Generalities General Topics
+  - \subpage TopicMessaging
+  - \subpage TopicMessageFormats
+  - \subpage UserManual_UMPS
+  - \subpage TopicNetworking
+*/
+
+
+/** \page UserManual_UMPS Understanding UMPS
+  - \subpage TopicInsideUMPS
+  - \subpage TopicClassHierarchy
+*/
+
+/** \defgroup MessagingPatterns_chapter Messaging Patterns */
+
+/** \defgroup MessagingPatterns_PubSub Publisher-Subscriber 
+    \ingroup MessagingPatterns_chapter */
+/** \defgroup MessagingPatterns_ReqRep Request-Reply
+    \ingroup MessagingPatterns_chapter */
+
+/** \addtogroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
+    \brief The simplest communication mechanism.  This pattern is not recommended for real applications.
+    \ingroup MessagingPatterns_PubSub */
+/** \addtogroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
+    \brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
+    \ingroup MessagingPatterns_PubSub */
+/** \addtogroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
+    \brief A fully asynchronous request-reply mechanism.  This is commonly termed a message queue.
+    \ingroup MessagingPatterns_ReqRep */
+/** \addtogroup MessagingPatterns_ReqRep_RequestRouter Request-Router
+    \brief Individual clients submit requests to an asynchronous server.
+    \ingroup MessagingPatterns_ReqRep */
+
+/** \defgroup Authentication_chapter Authentication */
+
+}
