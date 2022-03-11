@@ -31,6 +31,7 @@ namespace UMPS::Messaging::PublisherSubscriber
 /// @class Subscriber "subscriber.hpp" "umps/messaging/publisherSubscriber/subscriber.hpp"
 /// @brief The subscriber in a publisher/subscriber messaging pattern.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_PubSub
 class Subscriber
 {
 public:

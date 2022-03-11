@@ -34,11 +34,13 @@ namespace UMPS::Messaging::RequestRouter
 ///          asynchronous server that can talk to multiple request clients
 ///          at the same time.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RequestRouter
 class Router
 {
 public:
     /// @name Constructors
     /// @{
+
     Router();
     /// @brief Constructs a router with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
@@ -56,6 +58,8 @@ public:
     /// @}
  
     /// @name Step 1: Initialization
+    /// @{
+
     /// @brief Initializes the router.
     /// @param[in] options   The router options.
     /// @throws std::invalid_argument if the endpoint or callback is not set. 
@@ -75,6 +79,7 @@ public:
 
     /// @name Step 2: Start the Router
     /// @{
+
     /// @brief Starts the router.  The router will receive requests,
     ///        process the reqeusts, and return an answer.  The processing
     ///        is defined by the callback.
@@ -86,12 +91,15 @@ public:
 
     /// @name Step 3: Stop the Router
     /// @{
+
     /// @brief Interrupts the thread running the router.
     void stop();
     /// @}
 
     /// @name Destructors
     /// @{
+
+    ///  @brief Destructor
     ~Router();
     /// @}
 

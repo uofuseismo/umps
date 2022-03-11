@@ -34,6 +34,7 @@ namespace UMPS::Messaging::RouterDealer
 ///          asynchronous communication between servers and clients.
 ///          This class represents the server.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RouterDealer
 class Reply
 {
 public:

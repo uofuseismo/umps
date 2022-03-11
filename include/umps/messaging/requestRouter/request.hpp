@@ -34,6 +34,7 @@ namespace UMPS::Messaging::RequestRouter
 ///          asynchronous server that can talk to multiple request clients
 ///          at the same time.  This class represents the client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RequestRouter
 class Request
 {
 public:

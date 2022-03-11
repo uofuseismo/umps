@@ -38,6 +38,7 @@ namespace UMPS::Messaging::PublisherSubscriber
 ///          However, if you tune in late or turn off your radio then
 ///          you'll miss those sections of the broadcast.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_PubSub
 class Publisher
 {
 public:

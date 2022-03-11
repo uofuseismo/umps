@@ -37,6 +37,7 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 ///          pub/sub pattern publishers will connect to the frontend and
 ///          subscribers will connect to the backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_XPubXSub
 class Proxy
 {
 public:

@@ -43,7 +43,7 @@ public:
     /// @{
 
     /// @brief Move assignment operator.
-    /// @param[in,out] authentciator  The authenticator class whose memory will
+    /// @param[in,out] authenticator  The authenticator class whose memory will
     ///                               be moved to this.  On exit,
     ///                               authenticator's behavior is undefined.
     /// @result The memory from authenticator moved to this.

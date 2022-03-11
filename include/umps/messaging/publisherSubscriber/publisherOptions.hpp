@@ -14,6 +14,7 @@ namespace UMPS::Messaging::PublisherSubscriber
 /// @details The publisher sends content and it is up to the subscriber to
 ///          be listening.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_PubSub
 class PublisherOptions
 {
 public:

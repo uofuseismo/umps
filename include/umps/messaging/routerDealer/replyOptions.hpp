@@ -24,6 +24,7 @@ namespace UMPS::Messaging::RouterDealer
 ///          callback function defined in this class to reply to the request.
 ///          It is important that the callback not throw or fail.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RouterDealer
 class ReplyOptions
 {
 public:

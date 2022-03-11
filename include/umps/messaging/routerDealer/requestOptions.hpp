@@ -20,6 +20,7 @@ namespace UMPS::Messaging::RouterDealer
 /// @class RequestOptions "requestOptions.hpp" "umps/messaging/routerDealer/requestOptions.hpp"
 /// @brief Defines the request socket options.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RouterDealer
 class RequestOptions
 {
 public:

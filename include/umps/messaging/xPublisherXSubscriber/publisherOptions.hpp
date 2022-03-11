@@ -15,6 +15,7 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 ///          messages to the proxy which will then forward those messages to
 ///          subscribers.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_XPubXSub
 class PublisherOptions
 {
 public:

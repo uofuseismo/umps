@@ -36,6 +36,7 @@ namespace UMPS::Messaging::RequestRouter
 ///            }
 ///        }
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RequestRouter
 class RouterOptions
 {
 public:

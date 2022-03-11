@@ -37,6 +37,7 @@ namespace UMPS::Messaging::RouterDealer
 ///          process.  The servers return the result to the ROUTER/DEALER
 ///          which then forwards the reply to the approprirate client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RouterDealer
 class Proxy
 {
 public:

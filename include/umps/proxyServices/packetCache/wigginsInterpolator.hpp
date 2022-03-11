@@ -31,7 +31,7 @@ public:
     /// @param[in,out] wiggins  The interpolator from which to initialize this
     ///                         class.  On exit, wiggins's behavior is
     ///                         undefined.
-    WigginsInterpolator(WigginsInterpolator &&interpolate) noexcept;
+    WigginsInterpolator(WigginsInterpolator &&wiggins) noexcept;
     /// @}
 
     /// @name Operators

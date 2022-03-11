@@ -16,6 +16,7 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 ///          messages of desired type from the proxy without having to know
 ///          all of the individual publisher connection information. 
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_XPubXSub
 class ProxyOptions
 {
 public:

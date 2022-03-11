@@ -166,7 +166,7 @@ if (${BUILD_EW})
    set(EARTHWORM_SRC 
        src/earthworm/traceBuf2.cpp
        src/earthworm/waveRing.cpp
-       #src/logging/logit.cpp
+       src/logging/logit.cpp
        )
 endif()
 

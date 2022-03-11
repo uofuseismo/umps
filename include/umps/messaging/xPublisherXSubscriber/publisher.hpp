@@ -39,6 +39,7 @@ namespace UMPS::Messaging::XPublisherXSubscriber
 ///          the traditional pub/sub you bind to a socke and allow subscribers
 ///          to connect to you.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_XPubXSub
 class Publisher
 {
 public:

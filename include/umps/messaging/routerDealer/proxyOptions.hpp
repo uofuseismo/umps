@@ -20,6 +20,7 @@ namespace UMPS::Messaging::RouterDealer
 ///          ultimately the router returns the appropriate requests to the
 ///          original clients.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RouterDealer
 class ProxyOptions
 {
 public:

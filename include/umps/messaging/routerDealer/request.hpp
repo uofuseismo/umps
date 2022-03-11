@@ -37,6 +37,7 @@ namespace UMPS::Messaging::RouterDealer
 ///          servers processing the requests of multiple clients asynchronously.
 ///          This class represents the client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RouterDealer
 class Request
 {
 public:

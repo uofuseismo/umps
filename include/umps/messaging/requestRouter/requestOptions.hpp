@@ -21,6 +21,7 @@ namespace UMPS::Messaging::RequestRouter
 /// @class RequestOptions "requestOptions.hpp" "umps/messaging/requestRouter/requestOptions.hpp"
 /// @brief Defines the request socket options.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_ReqRep_RequestRouter
 class RequestOptions
 {
 public:

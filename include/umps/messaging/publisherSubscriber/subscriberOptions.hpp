@@ -18,6 +18,7 @@ namespace UMPS::Messaging::PublisherSubscriber
 /// @brief Options for initializing the subscriber in the PUB/SUB pattern.
 /// @details The subscriber receives content from a publisher.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_PubSub_PubSub
 class SubscriberOptions
 {
 public:
