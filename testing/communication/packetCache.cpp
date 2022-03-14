@@ -10,10 +10,10 @@
 #include "umps/proxyServices/proxy.hpp"
 #include "umps/proxyServices/proxyOptions.hpp"
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
-#include "umps/proxyServices/packetCache/reply.hpp"
-#include "umps/proxyServices/packetCache/replyOptions.hpp"
-#include "umps/proxyServices/packetCache/request.hpp"
-#include "umps/proxyServices/packetCache/requestOptions.hpp"
+#include "umps/proxyServices/packetCache/replier.hpp"
+#include "umps/proxyServices/packetCache/replierOptions.hpp"
+#include "umps/proxyServices/packetCache/requestor.hpp"
+#include "umps/proxyServices/packetCache/requestorOptions.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
@@ -76,9 +76,9 @@ void proxy()
 
 void client()
 {
-    PacketCache::RequestOptions options;
+    PacketCache::RequestorOptions options;
     options.setAddress(frontendAddress);
-    PacketCache::Request client;
+    PacketCache::Requestor client;
     EXPECT_NO_THROW(client.initialize(options));
     EXPECT_TRUE(client.isInitialized());
     PacketCache::SensorRequest sensorRequest;
@@ -119,9 +119,9 @@ void service()
     packet.setChannel(northChannel);
     cappedCollection->addPacket(packet);
     // Make the server
-    PacketCache::ReplyOptions options;
+    PacketCache::ReplierOptions options;
     EXPECT_NO_THROW(options.setAddress(backendAddress));
-    PacketCache::Reply server;
+    PacketCache::Replier server;
     EXPECT_NO_THROW(server.initialize(options, cappedCollection));
     EXPECT_NO_THROW(server.start());
     std::this_thread::sleep_for(std::chrono::seconds(2));

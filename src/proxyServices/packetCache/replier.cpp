@@ -4,8 +4,8 @@
 #include <functional>
 #include <thread>
 #include <zmq.hpp>
-#include "umps/proxyServices/packetCache/reply.hpp"
-#include "umps/proxyServices/packetCache/replyOptions.hpp"
+#include "umps/proxyServices/packetCache/replier.hpp"
+#include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
@@ -22,12 +22,12 @@ namespace URouterDealer = UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
 
 template<class T>
-class Reply<T>::ReplyImpl
+class Replier<T>::ReplierImpl
 {
 public:
     // C'tor
-    ReplyImpl(std::shared_ptr<zmq::context_t> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger)
+    ReplierImpl(std::shared_ptr<zmq::context_t> context,
+                std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (logger == nullptr)
         {
@@ -40,7 +40,7 @@ public:
         mReplier= std::make_unique<URouterDealer::Reply> (context, mLogger);
     }
     /// Destructor
-    ~ReplyImpl()
+    ~ReplierImpl()
     {
         stop();
     }
@@ -172,62 +172,62 @@ public:
     std::shared_ptr<CappedCollection<T>> mCappedCollection{nullptr};
     std::thread mReplierThread;
     URouterDealer::ReplyOptions mReplyOptions;
-    ReplyOptions mOptions;
+    ReplierOptions mOptions;
     bool mInitialized = false;
 };
 
 /// Constructor
 template<class T>
-Reply<T>::Reply() :
-    pImpl(std::make_unique<ReplyImpl> (nullptr, nullptr))
+Replier<T>::Replier() :
+    pImpl(std::make_unique<ReplierImpl> (nullptr, nullptr))
 {
 }
 
 /// C'tor
 template<class T>
-Reply<T>::Reply(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ReplyImpl> (nullptr, logger))
+Replier<T>::Replier(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ReplierImpl> (nullptr, logger))
 {
 }
 
 /// C'tor
 template<class T>
-Reply<T>::Reply(std::shared_ptr<zmq::context_t> &context,
-                std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ReplyImpl> (context, logger))
+Replier<T>::Replier(std::shared_ptr<zmq::context_t> &context,
+                    std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ReplierImpl> (context, logger))
 {
 }
 
 /// Destructor
 template<class T>
-Reply<T>::~Reply() = default;
+Replier<T>::~Replier() = default;
 
 /// Start the service
 template<class T>
-void Reply<T>::start()
+void Replier<T>::start()
 {
-    if (!isInitialized()){throw std::runtime_error("Reply not initialized");}
+    if (!isInitialized()){throw std::runtime_error("Replier not initialized");}
     pImpl->start(); //mReplier->start();
 }
 
 /// Is it running?
 template<class T>
-bool Reply<T>::isRunning() const noexcept
+bool Replier<T>::isRunning() const noexcept
 {
     return pImpl->mReplier->isRunning();
 }
 
 /// Stop the service
 template<class T>
-void Reply<T>::stop()
+void Replier<T>::stop()
 {
     pImpl->stop(); //mReplier->stop();
 }
 
 /// Initialize the class
 template<class T>
-void Reply<T>::initialize(
-    const ReplyOptions &options,
+void Replier<T>::initialize(
+    const ReplierOptions &options,
     std::shared_ptr<CappedCollection<T>> &cappedCollection)
 {
     if (!cappedCollection->isInitialized())
@@ -241,7 +241,7 @@ void Reply<T>::initialize(
     pImpl->mCappedCollection = cappedCollection;
     pImpl->mOptions = options;
     pImpl->mReplyOptions = pImpl->mOptions.getReplyOptions();
-    pImpl->mReplyOptions.setCallback(std::bind(&ReplyImpl::callback,
+    pImpl->mReplyOptions.setCallback(std::bind(&ReplierImpl::callback,
                                                &*this->pImpl,
                                                std::placeholders::_1,
                                                std::placeholders::_2,
@@ -253,14 +253,14 @@ void Reply<T>::initialize(
 
 /// Initialized?
 template<class T>
-bool Reply<T>::isInitialized() const noexcept
+bool Replier<T>::isInitialized() const noexcept
 {
     return pImpl->mInitialized;
 }
 
 /// Connection information
 template<class T>
-UCI::SocketDetails::Reply Reply<T>::getSocketDetails() const
+UCI::SocketDetails::Reply Replier<T>::getSocketDetails() const
 {
     return pImpl->mReplier->getSocketDetails();
 }
@@ -268,5 +268,5 @@ UCI::SocketDetails::Reply Reply<T>::getSocketDetails() const
 ///--------------------------------------------------------------------------///
 ///                          Template Instantiation                          ///
 ///--------------------------------------------------------------------------///
-template class UMPS::ProxyServices::PacketCache::Reply<double>;
-template class UMPS::ProxyServices::PacketCache::Reply<float>;
+template class UMPS::ProxyServices::PacketCache::Replier<double>;
+template class UMPS::ProxyServices::PacketCache::Replier<float>;

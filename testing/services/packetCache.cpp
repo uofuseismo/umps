@@ -14,8 +14,8 @@
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 //#include "umps/proxyServices/packetCache/proxyOptions.hpp"
-#include "umps/proxyServices/packetCache/requestOptions.hpp"
-#include "umps/proxyServices/packetCache/replyOptions.hpp"
+#include "umps/proxyServices/packetCache/requestorOptions.hpp"
+#include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
@@ -281,12 +281,12 @@ TEST(PacketCache, RequestOptions)
     const int hwm = 100;
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
-    PC::RequestOptions options;
+    PC::RequestorOptions options;
     options.setAddress(frontendAddress);
     options.setHighWaterMark(hwm);
     options.setZAPOptions(zapOptions);
 
-    PC::RequestOptions optionsCopy(options);
+    PC::RequestorOptions optionsCopy(options);
 
     EXPECT_EQ(optionsCopy.getAddress(), frontendAddress);
     EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);

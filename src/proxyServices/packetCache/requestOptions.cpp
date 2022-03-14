@@ -1,7 +1,7 @@
 #include <map>
 #include <string>
 #include <chrono>
-#include "umps/proxyServices/packetCache/requestOptions.hpp"
+#include "umps/proxyServices/packetCache/requestorOptions.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
@@ -13,10 +13,10 @@
 using namespace UMPS::ProxyServices::PacketCache;
 namespace UAuth = UMPS::Authentication;
 
-class RequestOptions::RequestOptionsImpl
+class RequestorOptions::RequestorOptionsImpl
 {
 public:
-    RequestOptionsImpl()
+    RequestorOptionsImpl()
     {
         mOptions.setHighWaterMark(2048);
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataResponse
@@ -33,33 +33,34 @@ public:
 };
 
 /// C'tor
-RequestOptions::RequestOptions() :
-    pImpl(std::make_unique<RequestOptionsImpl> ())
+RequestorOptions::RequestorOptions() :
+    pImpl(std::make_unique<RequestorOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-RequestOptions::RequestOptions(const RequestOptions &options)
+RequestorOptions::RequestorOptions(const RequestorOptions &options)
 {
     *this = options;
 }
 
 /// Move c'tor
-RequestOptions::RequestOptions(RequestOptions &&options) noexcept
+RequestorOptions::RequestorOptions(RequestorOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Copy assignment
-RequestOptions& RequestOptions::operator=(const RequestOptions &options)
+RequestorOptions& RequestorOptions::operator=(const RequestorOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<RequestOptionsImpl> (*options.pImpl);
+    pImpl = std::make_unique<RequestorOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-RequestOptions& RequestOptions::operator=(RequestOptions &&options) noexcept
+RequestorOptions& 
+    RequestorOptions::operator=(RequestorOptions &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -67,55 +68,55 @@ RequestOptions& RequestOptions::operator=(RequestOptions &&options) noexcept
 }
 
 /// Reset class
-void RequestOptions::clear() noexcept
+void RequestorOptions::clear() noexcept
 {
-    pImpl = std::make_unique<RequestOptionsImpl> ();
+    pImpl = std::make_unique<RequestorOptionsImpl> ();
 }
 
 /// Destructor
-RequestOptions::~RequestOptions() = default;
+RequestorOptions::~RequestorOptions() = default;
 
 /// End point to bind to
-void RequestOptions::setAddress(const std::string &address)
+void RequestorOptions::setAddress(const std::string &address)
 {
     pImpl->mOptions.setAddress(address);
 }
 
-std::string RequestOptions::getAddress() const
+std::string RequestorOptions::getAddress() const
 {
    return pImpl->mOptions.getAddress();
 }
 
-bool RequestOptions::haveAddress() const noexcept
+bool RequestorOptions::haveAddress() const noexcept
 {
     return pImpl->mOptions.haveAddress();
 }
 
 /// ZAP Options
-void RequestOptions::setZAPOptions(const UAuth::ZAPOptions &options)
+void RequestorOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mOptions.setZAPOptions(options);
 }
 
-UAuth::ZAPOptions RequestOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions RequestorOptions::getZAPOptions() const noexcept
 {
     return pImpl->mOptions.getZAPOptions();
 }
 
 /// High water mark
-void RequestOptions::setHighWaterMark(const int highWaterMark)
+void RequestorOptions::setHighWaterMark(const int highWaterMark)
 {
     pImpl->mOptions.setHighWaterMark(highWaterMark);
 }
 
-int RequestOptions::getHighWaterMark() const noexcept
+int RequestorOptions::getHighWaterMark() const noexcept
 {
     return pImpl->mOptions.getHighWaterMark();
 }
 
 /// Request options
 UMPS::Messaging::RouterDealer::RequestOptions
-     RequestOptions::getRequestOptions() const noexcept
+     RequestorOptions::getRequestOptions() const noexcept
 {
     return pImpl->mOptions;
 }

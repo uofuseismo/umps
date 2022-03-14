@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOPTIONS_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOPTIONS_HPP
+#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOROPTIONS_HPP
+#define UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOROPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS
@@ -15,26 +15,26 @@ namespace UMPS
 }
 namespace UMPS::Services::ConnectionInformation
 {
-/// @class RequestOptions "requestOptions.hpp" "umps/services/connectionInformation/requestOptions.hpp"
+/// @class RequestorOptions "requestorOptions.hpp" "umps/services/connectionInformation/requestorOptions.hpp"
 /// @brief This defines the options for the connection information client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RequestOptions
+class RequestorOptions
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor
-    RequestOptions();
+    RequestorOptions();
     /// @brief Copy constructor.
     /// @param[in] options  The request options from which to initialize
     ///                     this class.
-    RequestOptions(const RequestOptions &options);
+    RequestorOptions(const RequestorOptions &options);
     /// @brief Move constructor.
     /// @param[in,out] options  The request options from which to initialize
     ///                         this class.  On exit, options's behavior is
     ///                         undefined.
-    RequestOptions(RequestOptions &&options) noexcept;
+    RequestorOptions(RequestorOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -42,13 +42,13 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of the options.
-    RequestOptions& operator=(const RequestOptions &options);
+    RequestorOptions& operator=(const RequestorOptions &options);
     /// @brief Move assignment operator.
     /// @param[in,out] options  The options class whose memory will be moved 
     ///                         to this.  On exit, options's behavior is
     ///                         undefined.
     /// @result The memory from moved from options to this.
-    RequestOptions& operator=(RequestOptions &&options) noexcept;
+    RequestorOptions& operator=(RequestorOptions &&options) noexcept;
     /// @}
 
     /// @brief Sets the client access address of the uOperator's connection
@@ -79,11 +79,11 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RequestOptions();
+    ~RequestorOptions();
     /// @}
 private:
-    class RequestOptionsImpl;
-    std::unique_ptr<RequestOptionsImpl> pImpl;
+    class RequestorOptionsImpl;
+    std::unique_ptr<RequestorOptionsImpl> pImpl;
 };
 }
 #endif

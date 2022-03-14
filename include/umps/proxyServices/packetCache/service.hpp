@@ -15,7 +15,7 @@ namespace UMPS
  }
  namespace ProxyServices::PacketCache
  {
-  class ReplyOptions;
+  class ReplierOptions;
  } 
 }
 namespace UMPS::ProxyServices::PacketCache
@@ -44,7 +44,7 @@ public:
     /// @brief Initializes the class.
     void initialize(int maxPackets,
                     const ProxyBroadcasts::DataPacket::SubscriberOptions<T> &subscriberOptions,
-                    const ReplyOptions &replyOptions);
+                    const ReplierOptions &replyOptions);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}

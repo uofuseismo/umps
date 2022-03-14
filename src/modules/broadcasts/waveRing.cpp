@@ -18,8 +18,8 @@
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
 //#include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
 //#include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
-#include "umps/services/connectionInformation/requestOptions.hpp"
-#include "umps/services/connectionInformation/request.hpp"
+#include "umps/services/connectionInformation/requestorOptions.hpp"
+#include "umps/services/connectionInformation/requestor.hpp"
 //#include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
@@ -43,7 +43,7 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 
 struct ProgramOptions
 {
-    UCI::RequestOptions mConnectionInformationRequestOptions;
+    UCI::RequestorOptions mConnectionInformationRequestOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::string earthwormParametersDirectory
         = "/opt/earthworm/run_working/params/";
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (logger);
     // Get the connection details
-    UCI::Request request;
+    UCI::Requestor request;
     request.initialize(options.mConnectionInformationRequestOptions);
     auto connectionDetails = request.getAllConnectionDetails();
     // Throws since we need this address
@@ -413,7 +413,7 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
         }
     }
     //------------------------------ Operator --------------------------------//
-    UCI::RequestOptions requestOptions;
+    UCI::RequestorOptions requestOptions;
     requestOptions.parseInitializationFile(iniFile);
     options.mConnectionInformationRequestOptions = requestOptions;
     options.operatorAddress = requestOptions.getRequestOptions().getAddress();

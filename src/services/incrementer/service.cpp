@@ -6,6 +6,12 @@
 #endif
 #include <zmq.hpp>
 #include "umps/services/incrementer/service.hpp"
+#include "umps/services/incrementer/options.hpp"
+#include "umps/services/incrementer/counter.hpp"
+#include "umps/services/incrementer/incrementerReuest.hpp"
+#include "umps/services/incrementer/incrementerResponse.hpp"
+#include "umps/services/incrementer/itemRequest.hpp"
+#include "umps/services/incrementer/itemResponse.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -31,8 +37,7 @@ public:
     /// Constructors
     ServiceImpl() = delete;
     ServiceImpl(std::shared_ptr<zmq::context_t> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger,
-                std::shared_ptr<UAuth::IAuthenticator> authenticator)
+                std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (context == nullptr)
         {
@@ -50,18 +55,8 @@ public:
         {
             mLogger = logger;
         }
-        if (authenticator == nullptr)
-        {
-            mAuthenticator = std::make_shared<UAuth::Grasslands> (mLogger);
-        }
-        else
-        {
-            mAuthenticator = authenticator;
-        }
         mRouter = std::make_unique<URequestRouter::Router> (mContext, mLogger);
-        mAuthenticatorService
-            = std::make_unique<UAuth::Service>
-              (mContext, mLogger, mAuthenticator);
+        mReplier = std::make_unique<Reply<T>> (mContext, mLogger);
     }
     /// The callback to handle incrementer requests
     std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -76,8 +71,9 @@ public:
                          + " bytes was received.  Processing...");
         }
         auto response = std::make_unique<Response> ();
-        Request request;
-        if (messageType == request.getMessageType())
+        ItemRequest itemRequest;
+        IncrementerRequest incrementRequest;
+        if (messageType == itemRequest.getMessageType())
         {
             // Unpack the request
             try
@@ -108,6 +104,7 @@ public:
                 response->setReturnCode(ReturnCode::ALGORITHM_FAILURE);
             }
         }
+        else if (messageType == 
         else
         {
             mLogger->error("Expecting message type: " + request.getMessageType()
@@ -164,36 +161,20 @@ public:
 
 /// C'tor
 Service::Service() :
-    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr, nullptr))
+    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr))
 {
 }
 
 Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ServiceImpl> (nullptr, logger, nullptr))
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger))
 {
 }
 
 Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
                  std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
-    pImpl(std::make_unique<ServiceImpl> (nullptr, logger, authenticator))
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger))
 {
 }
-
-/*
-/// Move c'tor
-Service::Service(Service &&service) noexcept
-{
-    *this = std::move(service);
-}
-
-/// Move assignment
-Service& Service::operator=(Service &&service) noexcept
-{
-    if (&service == this){return *this;}
-    pImpl = std::move(service.pImpl);
-    return *this;
-}
-*/
 
 /// Destructor
 Service::~Service() = default;
@@ -256,8 +237,6 @@ void Service::start()
     }
     pImpl->mLogger->debug("Beginning service " + pImpl->mName + "...");
     pImpl->start();
-    //pImpl->mRouter->start(); // This should hang until the service is stopped
-    //pImpl->mLogger->debug("Thread exiting service " + pImpl->mName);
 }
 
 /// Gets the service name

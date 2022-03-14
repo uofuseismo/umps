@@ -4,7 +4,7 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "umps/services/connectionInformation/requestOptions.hpp"
+#include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
@@ -15,10 +15,10 @@ using namespace UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 
-class RequestOptions::RequestOptionsImpl
+class RequestorOptions::RequestorOptionsImpl
 {
 public:
-    RequestOptionsImpl()
+    RequestorOptionsImpl()
     {
         // Tell request types of messages we can unpack 
         std::unique_ptr<UMPS::MessageFormats::IMessage> responseMessage
@@ -30,33 +30,33 @@ public:
 };
 
 /// C'tor
-RequestOptions::RequestOptions() :
-    pImpl(std::make_unique<RequestOptionsImpl> ())
+RequestorOptions::RequestorOptions() :
+    pImpl(std::make_unique<RequestorOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-RequestOptions::RequestOptions(const RequestOptions &options)
+RequestorOptions::RequestorOptions(const RequestorOptions &options)
 {
     *this = options;
 }
 
 /// Move c'tor
-RequestOptions::RequestOptions(RequestOptions &&options) noexcept
+RequestorOptions::RequestorOptions(RequestorOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Copy assignment
-RequestOptions& RequestOptions::operator=(const RequestOptions &options)
+RequestorOptions& RequestorOptions::operator=(const RequestorOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<RequestOptionsImpl> (*options.pImpl);
+    pImpl = std::make_unique<RequestorOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-RequestOptions& RequestOptions::operator=(RequestOptions &&options) noexcept
+RequestorOptions& RequestorOptions::operator=(RequestorOptions &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -64,28 +64,28 @@ RequestOptions& RequestOptions::operator=(RequestOptions &&options) noexcept
 }
 
 /// Destructor
-RequestOptions::~RequestOptions() = default;
+RequestorOptions::~RequestorOptions() = default;
 
 /// Reset class
-void RequestOptions::clear() noexcept
+void RequestorOptions::clear() noexcept
 {
-    pImpl = std::make_unique<RequestOptionsImpl> ();
+    pImpl = std::make_unique<RequestorOptionsImpl> ();
 }
 
 /// End point
-void RequestOptions::setAddress(const std::string &address)
+void RequestorOptions::setAddress(const std::string &address)
 {
     pImpl->mRequestOptions.setAddress(address);
 }
 
 /// ZAP options
-void RequestOptions::setZAPOptions(const UAuth::ZAPOptions &zapOptions)
+void RequestorOptions::setZAPOptions(const UAuth::ZAPOptions &zapOptions)
 {
     pImpl->mRequestOptions.setZAPOptions(zapOptions);
 }
 
 /// Time out
-void RequestOptions::setTimeOut(
+void RequestorOptions::setTimeOut(
     const std::chrono::milliseconds timeOut) noexcept
 {
     pImpl->mRequestOptions.setTimeOut(timeOut);
@@ -93,13 +93,13 @@ void RequestOptions::setTimeOut(
 
 /// Native class options
 URequestRouter::RequestOptions
-RequestOptions::getRequestOptions() const noexcept
+RequestorOptions::getRequestOptions() const noexcept
 {
     return pImpl->mRequestOptions;
 }
 
 /// Load from ini file
-void RequestOptions::parseInitializationFile(const std::string &iniFile)
+void RequestorOptions::parseInitializationFile(const std::string &iniFile)
 {
     if (!std::filesystem::exists(iniFile))
     {
@@ -115,7 +115,7 @@ void RequestOptions::parseInitializationFile(const std::string &iniFile)
     {
         throw std::runtime_error("Operator address not set");
     }
-    RequestOptions options;
+    RequestorOptions options;
     options.setAddress(operatorAddress);
     // Load the ZAP options
     auto zapOptions

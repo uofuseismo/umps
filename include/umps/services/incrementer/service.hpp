@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_INCREMENTER_SERVICE_HPP
-#define UMPS_SERVICES_INCREMENTER_SERVICE_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_SERVICE_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_SERVICE_HPP
 #include <memory>
 #include "umps/services/service.hpp"
 namespace UMPS
@@ -17,7 +17,7 @@ namespace UMPS::Services::Incrementer
 {
 class Parameters;
 /// @class Service service.hpp "umps/services/incrementer/service.hpp"
-/// @brief Implements the server-side incrementer service.
+/// @brief Implements the incrementer service.
 /// @copyright Ben Baker (Univeristy of Utah) distributed under the MIT license.
 class Service : public UMPS::Services::IService
 {

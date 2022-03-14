@@ -3,8 +3,8 @@
 #include <thread>
 #include <zmq.hpp>
 #include "umps/proxyServices/packetCache/service.hpp"
-#include "umps/proxyServices/packetCache/reply.hpp"
-#include "umps/proxyServices/packetCache/replyOptions.hpp"
+#include "umps/proxyServices/packetCache/replier.hpp"
+#include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
@@ -34,7 +34,7 @@ public:
         mDataPacketSubscriber = std::make_unique<UDataPacket::Subscriber<T>>
                                 (mContext, mLogger);
         mCappedCollection = std::make_shared<CappedCollection<T>> (mLogger);
-        mPacketCacheReplier = std::make_unique<Reply<T>> (mContext, mLogger);
+        mPacketCacheReplier = std::make_unique<Replier<T>> (mContext, mLogger);
     }
     /// @brief A thread running this function will read messages off the queue
     ///        and put them into the queue.
@@ -146,7 +146,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     std::unique_ptr<UDataPacket::Subscriber<T>> mDataPacketSubscriber{nullptr};
     std::shared_ptr<CappedCollection<T>> mCappedCollection{nullptr};
-    std::unique_ptr<Reply<T>> mPacketCacheReplier{nullptr};
+    std::unique_ptr<Replier<T>> mPacketCacheReplier{nullptr};
     ThreadSafeQueue<UMPS::MessageFormats::DataPacket<T>> mDataPacketQueue;
     bool mKeepRunning = true;
     bool mInitialized = false;
@@ -175,7 +175,7 @@ template<class T>
 void Service<T>::initialize(
     const int maxPackets,
     const UDataPacket::SubscriberOptions<T> &dataPacketSubscriberOptions,
-    const ReplyOptions &packetCacheReplyOptions)
+    const ReplierOptions &packetCacheReplierOptions)
 {
     if (maxPackets <= 0)
     {
@@ -183,7 +183,7 @@ void Service<T>::initialize(
     }
     pImpl->mDataPacketSubscriber->initialize(dataPacketSubscriberOptions);
     pImpl->mCappedCollection->initialize(maxPackets);
-    pImpl->mPacketCacheReplier->initialize(packetCacheReplyOptions,
+    pImpl->mPacketCacheReplier->initialize(packetCacheReplierOptions,
                                            pImpl->mCappedCollection);
     pImpl->mInitialized = pImpl->mDataPacketSubscriber->isInitialized() &&
                           pImpl->mPacketCacheReplier->isInitialized() &&

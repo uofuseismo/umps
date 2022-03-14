@@ -1,6 +1,7 @@
-#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REQUESTOPTIONS_HPP
-#define UMPS_PROXYSERVICES_PACKETCACHE_REQUESTOPTIONS_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REPLIEROPTIONS_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_REPLIEROPTIONS_HPP
 #include <memory>
+#include <functional>
 #include <chrono>
 // Forward declarations
 namespace UMPS
@@ -12,7 +13,7 @@ namespace UMPS
  }
  namespace Messaging::RouterDealer
  {
-  class RequestOptions;
+  class ReplyOptions;
  }
  namespace Authentication
  {
@@ -21,27 +22,26 @@ namespace UMPS
 }
 namespace UMPS::ProxyServices::PacketCache
 {
-/// @class RequestOptions "requestOptions.hpp" "umps/proxyServices/packetCache/requestOptions.hpp"
-/// @brief Defines the options for the packet cache requestor.
+/// @class ReplierOptions "replierOptions.hpp" "umps/proxyServices/packetCache/replierOptions.hpp"
+/// @brief Defines the options for the packet cache's replier mechanism.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RequestOptions
+class ReplierOptions
 {
 public:
     /// @name Constructor
     /// @{
 
     /// @brief Constructor.
-    RequestOptions();
+    ReplierOptions();
     /// @brief Copy constructor.
     /// @param[in] options  The options class from which to initialize
     ///                     this class.
-    RequestOptions(const RequestOptions &options);
+    ReplierOptions(const ReplierOptions &options);
     /// @brief Move constructor.
     /// @param[in,out] options  The options class from which to initialize
     ///                         this class.  On exit, options's behavior
     ///                         is undefined.
-    RequestOptions(RequestOptions &&options) noexcept;
-
+    ReplierOptions(ReplierOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -50,25 +50,24 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of options.
-    RequestOptions& operator=(const RequestOptions &options);
+    ReplierOptions& operator=(const ReplierOptions &options);
     /// @brief Move assignment operator.
     /// @param[in,out] options  The options class whose memory will be moved
     ///                         to this.  On exit, options's behavior is
     ///                         undefined.
     /// @result The memory from options moved to this.
-    RequestOptions& operator=(RequestOptions &&options) noexcept;
-
+    ReplierOptions& operator=(ReplierOptions &&options) noexcept;
     /// @}
 
-    /// @name Address 
+    /// @name Address (Required)
     /// @{
 
-    /// @brief Sets the address of the router to which requests will be
-    ///        submitted and from which replies will be received.
-    /// @param[in] address  The address of the router.
+    /// @brief Sets the address of the dealer from which request will be
+    ///        received and to which replies will be sent.
+    /// @param[in] address  The address of the dealer to which to connect.
     /// @throws std::invalid_argument if address is blank.
     void setAddress(const std::string &address);
-    /// @result The address to of the router.
+    /// @result The address to which to connect this service.
     /// @throws std::runtime_error if \c haveAddress() is false.
     [[nodiscard]] std::string getAddress() const;
     /// @result True indicates that the address was set.
@@ -98,9 +97,8 @@ public:
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
-    /// @result The request options.
-    [[nodiscard]] UMPS::Messaging::RouterDealer::RequestOptions
-        getRequestOptions() const noexcept;
+    /// @result The reply options.
+    [[nodiscard]] UMPS::Messaging::RouterDealer::ReplyOptions getReplyOptions() const noexcept;
 
     /// @name Destructors
     /// @{
@@ -108,11 +106,11 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RequestOptions();
+    ~ReplierOptions();
     /// @}
 private:
-    class RequestOptionsImpl;
-    std::unique_ptr<RequestOptionsImpl> pImpl;
+    class ReplierOptionsImpl;
+    std::unique_ptr<ReplierOptionsImpl> pImpl;
 };
 }
 #endif

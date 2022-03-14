@@ -12,8 +12,8 @@
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
-#include "umps/proxyServices/packetCache/reply.hpp"
-#include "umps/proxyServices/packetCache/replyOptions.hpp"
+#include "umps/proxyServices/packetCache/replier.hpp"
+#include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
@@ -24,8 +24,8 @@
 #include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
-#include "umps/services/connectionInformation/request.hpp"
-#include "umps/services/connectionInformation/requestOptions.hpp"
+#include "umps/services/connectionInformation/requestor.hpp"
+#include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
@@ -48,8 +48,8 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 
 struct ProgramOptions
 {
-    UCI::RequestOptions mConnectionInformationRequestOptions;
-    UPacketCache::ReplyOptions mPacketCacheReplyOptions;
+    UCI::RequestorOptions mConnectionInformationRequestOptions;
+    UPacketCache::ReplierOptions mPacketCacheReplyOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
     logger.debug("Getting available services...");
-    UCI::Request connectionInformation;
+    UCI::Requestor connectionInformation;
     connectionInformation.initialize(
         options.mConnectionInformationRequestOptions);
     auto dataPacketAddress
@@ -264,7 +264,7 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     options.maxPackets = propertyTree.get<int> ("PacketCache.maxPackets",
                                                 options.maxPackets);
     //------------------------------ Operator --------------------------------//
-    UCI::RequestOptions requestOptions;
+    UCI::RequestorOptions requestOptions;
     requestOptions.parseInitializationFile(iniFile);
     options.operatorAddress = requestOptions.getRequestOptions().getAddress();
     options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();

@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include "umps/services/connectionInformation/details.hpp"
-#include "umps/services/connectionInformation/requestOptions.hpp"
+#include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/services/connectionInformation/socketDetails/dealer.hpp"
@@ -24,9 +24,9 @@ namespace
 using namespace UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
-TEST(Messaging, RequestOptions)
+TEST(Messaging, RequestorOptions)
 {
-    RequestOptions options;
+    RequestorOptions options;
     const std::string address = "tcp://127.0.0.2:5556";
     const std::chrono::milliseconds timeOut{120};
     UAuth::ZAPOptions zapOptions;
@@ -35,7 +35,7 @@ TEST(Messaging, RequestOptions)
     EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setTimeOut(timeOut));
     
-    RequestOptions optionsCopy(options); 
+    RequestorOptions optionsCopy(options); 
     auto optionsBase = optionsCopy.getRequestOptions();
     EXPECT_EQ(optionsBase.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::STRAWHOUSE);

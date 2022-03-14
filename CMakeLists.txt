@@ -110,8 +110,8 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/availableConnectionsRequest.cpp
     src/services/connectionInformation/availableConnectionsResponse.cpp
     #src/services/connectionInformation/getConnections.cpp
-    src/services/connectionInformation/requestOptions.cpp
-    src/services/connectionInformation/request.cpp
+    src/services/connectionInformation/requestorOptions.cpp
+    src/services/connectionInformation/requestor.cpp
     src/services/connectionInformation/service.cpp
     src/services/connectionInformation/parameters.cpp
     src/services/connectionInformation/socketDetails/dealer.cpp
@@ -157,8 +157,8 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/sensorRequest.cpp
     src/proxyServices/packetCache/sensorResponse.cpp
     src/proxyServices/packetCache/service.cpp
-    src/proxyServices/packetCache/reply.cpp
-    src/proxyServices/packetCache/replyOptions.cpp
+    src/proxyServices/packetCache/replier.cpp
+    src/proxyServices/packetCache/replierOptions.cpp
     src/proxyServices/packetCache/request.cpp
     src/proxyServices/packetCache/requestOptions.cpp
     src/modules/operator/readZAPOptions.cpp)

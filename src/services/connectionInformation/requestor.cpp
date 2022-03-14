@@ -1,7 +1,7 @@
 #include <vector>
 #include <zmq.hpp>
-#include "umps/services/connectionInformation/request.hpp"
-#include "umps/services/connectionInformation/requestOptions.hpp"
+#include "umps/services/connectionInformation/requestor.hpp"
+#include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
@@ -19,13 +19,13 @@
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 using namespace UMPS::Services::ConnectionInformation;
 
-class Request::RequestImpl
+class Requestor::RequestorImpl
 {
 public:
     /// Constructors
-    RequestImpl() = delete;
-    RequestImpl(std::shared_ptr<zmq::context_t> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger)
+    RequestorImpl() = delete;
+    RequestorImpl(std::shared_ptr<zmq::context_t> context,
+                  std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (logger == nullptr)
         {
@@ -40,32 +40,32 @@ public:
     }
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     std::unique_ptr<URequestRouter::Request> mRequestor;
-    RequestOptions mOptions;
+    RequestorOptions mOptions;
 };
 
 /// C'tor
-Request::Request() :
-    pImpl(std::make_unique<RequestImpl> (nullptr, nullptr))
+Requestor::Requestor() :
+    pImpl(std::make_unique<RequestorImpl> (nullptr, nullptr))
 {
 }
 
 /// C'tor with logger
-Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RequestImpl> (nullptr,  logger))
+Requestor::Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RequestorImpl> (nullptr,  logger))
 {
 }
 
 /// Move c'tor
-Request::Request(Request &&request) noexcept
+Requestor::Requestor(Requestor &&request) noexcept
 {
     *this = std::move(request);
 }
 
 /// Destructor
-Request::~Request() = default;
+Requestor::~Requestor() = default;
 
 /// Move assignment
-Request& Request::operator=(Request &&request) noexcept
+Requestor& Requestor::operator=(Requestor &&request) noexcept
 {
     if (&request == this){return *this;}
     pImpl = std::move(request.pImpl);
@@ -73,7 +73,7 @@ Request& Request::operator=(Request &&request) noexcept
 }
 
 /// Initialize
-void Request::initialize(const RequestOptions &requestOptions)
+void Requestor::initialize(const RequestorOptions &requestOptions)
 {
     auto options = requestOptions.getRequestOptions();
     if (!options.haveAddress())
@@ -84,17 +84,17 @@ void Request::initialize(const RequestOptions &requestOptions)
 }
 
 /// Initialized?
-bool Request::isInitialized() const noexcept
+bool Requestor::isInitialized() const noexcept
 {
     return pImpl->mRequestor->isInitialized();
 } 
 
 /// Get all connection details
-std::vector<Details> Request::getAllConnectionDetails() const
+std::vector<Details> Requestor::getAllConnectionDetails() const
 {
     if (!isInitialized())
     {
-        throw std::runtime_error("Request client not initialized");
+        throw std::runtime_error("Requestor client not initialized");
     }
     std::vector<Details> result;
     AvailableConnectionsRequest requestMessage;
@@ -115,7 +115,7 @@ std::vector<Details> Request::getAllConnectionDetails() const
 
 /// Get proxyBroadcast frontend 
 SocketDetails::XSubscriber
-Request::getProxyBroadcastFrontendDetails(const std::string &name) const
+Requestor::getProxyBroadcastFrontendDetails(const std::string &name) const
 {
     if (isEmpty(name))
     {
@@ -135,7 +135,7 @@ Request::getProxyBroadcastFrontendDetails(const std::string &name) const
 
 /// Get proxyBroadcast frontend 
 SocketDetails::XPublisher
-Request::getProxyBroadcastBackendDetails(const std::string &name) const
+Requestor::getProxyBroadcastBackendDetails(const std::string &name) const
 {
     if (isEmpty(name))
     {
@@ -155,7 +155,7 @@ Request::getProxyBroadcastBackendDetails(const std::string &name) const
 
 /// Get proxyService frontend
 SocketDetails::Router
-Request::getProxyServiceFrontendDetails(const std::string &name) const
+Requestor::getProxyServiceFrontendDetails(const std::string &name) const
 {
     if (isEmpty(name))
     {
@@ -175,7 +175,7 @@ Request::getProxyServiceFrontendDetails(const std::string &name) const
 
 /// Get proxyService backend
 SocketDetails::Dealer
-Request::getProxyServiceBackendDetails(const std::string &name) const
+Requestor::getProxyServiceBackendDetails(const std::string &name) const
 {
     if (isEmpty(name))
     {
@@ -194,7 +194,7 @@ Request::getProxyServiceBackendDetails(const std::string &name) const
 }
 
 /// Disconnect
-void Request::disconnect()
+void Requestor::disconnect()
 {
     pImpl->mRequestor->disconnect();
 }

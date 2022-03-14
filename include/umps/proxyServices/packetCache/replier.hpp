@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REPLY_HPP
-#define UMPS_PROXYSERVICES_PACKETCACHE_REPLY_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REPLIER_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_REPLIER_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
@@ -15,7 +15,7 @@ namespace UMPS
  }
  namespace ProxyServices::PacketCache
  {
-  class ReplyOptions;
+  class ReplierOptions;
   template<class T> class CappedCollection;
  }
 }
@@ -25,23 +25,23 @@ namespace zmq
 }
 namespace UMPS::ProxyServices::PacketCache
 {
-/// @class Reply "reply.hpp" "umps/proxyServices/packetCache/reply.hpp"
-/// @brief A ZeroMQ reply for mechanism for the server in the packet cache.
+/// @class Replier "replier.hpp" "umps/proxyServices/packetCache/replier.hpp"
+/// @brief A replier mechanism for the server in the packet cache.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 template<class T = double>
-class Reply
+class Replier
 {
 public:
     /// @name Constructors
     /// @{
 
-    Reply();
+    Replier();
     /// @brief Constructs a request socket with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
-    explicit Reply(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Replier(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructs a request socket with a given logger and context.
-    Reply(std::shared_ptr<zmq::context_t> &context,
-          std::shared_ptr<UMPS::Logging::ILog> &logger);
+    Replier(std::shared_ptr<zmq::context_t> &context,
+            std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @name Step 1: Initialization
@@ -50,7 +50,7 @@ public:
     /// @brief Initializes the reply.
     /// @param[in] options   The reply options.
     /// @throws std::invalid_argument if the endpoint is not set.
-    void initialize(const ReplyOptions &options,
+    void initialize(const ReplierOptions &options,
                     std::shared_ptr<CappedCollection<T>> &cappedCollection);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
@@ -59,7 +59,7 @@ public:
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Reply getSocketDetails() const;
     /// @}
 
-    /// @name Step 2: Start the Reply Service
+    /// @name Step 2: Start the Replier Service
     /// @{
 
     /// @brief Starts the reply service.  The service will poll on messages
@@ -75,7 +75,7 @@ public:
     [[nodiscard]] bool isRunning() const noexcept;
     /// @}
 
-    /// @name Step 3: Stop the Reply Service
+    /// @name Step 3: Stop the Replier Service
     /// @{
 
     /// @brief This will stop the reply service.
@@ -86,16 +86,16 @@ public:
     /// @{
 
     /// @brief Destructor.
-    ~Reply();
+    ~Replier();
     /// @}
 
-    Reply(const Reply &reply) = delete;
-    Reply(Reply &&reply) noexcept = delete;
-    Reply& operator=(const Reply &reply) = delete;
-    Reply& operator=(Reply &&reply) noexcept = delete;
+    Replier(const Replier &reply) = delete;
+    Replier(Replier &&reply) noexcept = delete;
+    Replier& operator=(const Replier &reply) = delete;
+    Replier& operator=(Replier &&reply) noexcept = delete;
 private:
-    class ReplyImpl;
-    std::unique_ptr<ReplyImpl> pImpl;
+    class ReplierImpl;
+    std::unique_ptr<ReplierImpl> pImpl;
 };
 }
 #endif

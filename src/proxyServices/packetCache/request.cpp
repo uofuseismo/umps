@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include <zmq.hpp>
-#include "umps/proxyServices/packetCache/request.hpp"
-#include "umps/proxyServices/packetCache/requestOptions.hpp"
+#include "umps/proxyServices/packetCache/requestor.hpp"
+#include "umps/proxyServices/packetCache/requestorOptions.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
@@ -18,31 +18,31 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 
-class Request::RequestImpl
+class Requestor::RequestorImpl
 {
 public:
-    RequestImpl(std::shared_ptr<zmq::context_t> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger)
+    RequestorImpl(std::shared_ptr<zmq::context_t> context,
+                  std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mRequestor = std::make_unique<URouterDealer::Request> (context, logger);
     }
     std::unique_ptr<URouterDealer::Request> mRequestor;
-    RequestOptions mRequestOptions;
+    RequestorOptions mRequestOptions;
 };
 
 /// C'tor
-Request::Request() :
-    pImpl(std::make_unique<RequestImpl> (nullptr, nullptr))
+Requestor::Requestor() :
+    pImpl(std::make_unique<RequestorImpl> (nullptr, nullptr))
 {
 }
 
-Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RequestImpl> (nullptr, logger))
+Requestor::Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RequestorImpl> (nullptr, logger))
 {
 }
 
 /// Connection information
-UCI::SocketDetails::Request Request::getSocketDetails() const
+UCI::SocketDetails::Request Requestor::getSocketDetails() const
 {
     return pImpl->mRequestor->getSocketDetails();
 }
@@ -61,13 +61,13 @@ Request::Request(std::shared_ptr<zmq::context_t> &context,
 */
 
 /// Move c'tor
-Request::Request(Request &&request) noexcept
+Requestor::Requestor(Requestor &&request) noexcept
 {
     *this = std::move(request);
 }
 
 /// Move assignment
-Request& Request::operator=(Request &&request) noexcept
+Requestor& Requestor::operator=(Requestor &&request) noexcept
 {
     if (&request == this){return *this;}
     pImpl = std::move(request.pImpl);
@@ -75,10 +75,10 @@ Request& Request::operator=(Request &&request) noexcept
 }
 
 /// Destructor
-Request::~Request() = default;
+Requestor::~Requestor() = default;
 
 /// Initialize
-void Request::initialize(const RequestOptions &options)
+void Requestor::initialize(const RequestorOptions &options)
 {
     if (!options.haveAddress())
     {
@@ -89,20 +89,20 @@ void Request::initialize(const RequestOptions &options)
 }
 
 /// Initialized?
-bool Request::isInitialized() const noexcept
+bool Requestor::isInitialized() const noexcept
 {
     return pImpl->mRequestor->isInitialized();
 }
 
 
 /// Disconnect
-void Request::disconnect()
+void Requestor::disconnect()
 {
     pImpl->mRequestor->disconnect();
 }
 
 /// Request sensor information
-std::unique_ptr<SensorResponse> Request::request(const SensorRequest &request)
+std::unique_ptr<SensorResponse> Requestor::request(const SensorRequest &request)
 {
     auto response 
         = static_unique_pointer_cast<SensorResponse>
@@ -113,7 +113,7 @@ std::unique_ptr<SensorResponse> Request::request(const SensorRequest &request)
 /// Request data
 //template<>
 std::unique_ptr<DataResponse<double>> 
-    Request::request(const DataRequest &request)
+    Requestor::request(const DataRequest &request)
 {
     if (!request.haveNetwork()){throw std::invalid_argument("Network not set");}
     if (!request.haveStation()){throw std::invalid_argument("Station not set");}

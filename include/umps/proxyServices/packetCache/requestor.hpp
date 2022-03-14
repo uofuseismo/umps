@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REQUEST_HPP
-#define UMPS_PROXYSERVICES_PACKETCACHE_REQUEST_HPP
+#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REQUESTOR_HPP
+#define UMPS_PROXYSERVICES_PACKETCACHE_REQUESTOR_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
@@ -15,7 +15,7 @@ namespace UMPS
  }
  namespace ProxyServices::PacketCache
  {
-  class RequestOptions;
+  class RequestorOptions;
   class DataRequest;
   template<class T> class DataResponse;
   class SensorRequest;
@@ -24,35 +24,35 @@ namespace UMPS
 }
 namespace UMPS::ProxyServices::PacketCache
 {
-/// @class Request "request.hpp" "umps/proxyServices/packetCache/request.hpp"
-/// @brief A ZeroMQ requestor from which to query the packet cache.
+/// @class Requestor "requestor.hpp" "umps/proxyServices/packetCache/requestor.hpp"
+/// @brief A requestor that will query the packet cache.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Request
+class Requestor
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    Request();
+    Requestor();
     /// @brief Constructor with a given logger.
     /// @param[in] logger  The logger.
-    explicit Request(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
-    /// @param[in,out] request  The request class from which to initialize
-    ///                         this class.  On exit, request's behavior is
-    ///                         undefined.
-    Request(Request &&request) noexcept;
+    /// @param[in,out] requestor  The request class from which to initialize
+    ///                           this class.  On exit, request's behavior is
+    ///                           undefined.
+    Requestor(Requestor &&requestor) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Move assignment operator.
-    /// @param[in,out] request  The request class whose memory will be moved
-    ///                         to this.  On exit, request's behavior is
-    ///                         undefined.
-    Request& operator=(Request &&request) noexcept;
+    /// @param[in,out] requestor  The request class whose memory will be moved
+    ///                           to this.  On exit, request's behavior is
+    ///                           undefined.
+    Requestor& operator=(Requestor &&requestor) noexcept;
     /// @result The memory from request moved to this.
     /// @} 
 
@@ -62,7 +62,7 @@ public:
     /// @brief Initializes the request.
     /// @param[in] options   The request options.
     /// @throws std::invalid_argument if the endpoint.
-    void initialize(const RequestOptions &options);
+    void initialize(const RequestorOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The details for connecting to this socket.
@@ -100,14 +100,14 @@ public:
     /// @{
 
     /// @brief Destructor.
-    ~Request();
+    ~Requestor();
     /// @}
 
-    Request(const Request &request) = delete;
-    Request& operator=(const Request &request) = delete;
+    Requestor(const Requestor &request) = delete;
+    Requestor& operator=(const Requestor &request) = delete;
 private:
-    class RequestImpl;
-    std::unique_ptr<RequestImpl> pImpl;
+    class RequestorImpl;
+    std::unique_ptr<RequestorImpl> pImpl;
 };
 }
 #endif

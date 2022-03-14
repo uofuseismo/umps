@@ -2,7 +2,7 @@
 #include <string>
 #include <functional>
 #include <chrono>
-#include "umps/proxyServices/packetCache/replyOptions.hpp"
+#include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
@@ -10,40 +10,40 @@
 using namespace UMPS::ProxyServices::PacketCache;
 namespace UAuth = UMPS::Authentication;
 
-class ReplyOptions::ReplyOptionsImpl
+class ReplierOptions::ReplierOptionsImpl
 {
 public:
     UMPS::Messaging::RouterDealer::ReplyOptions mOptions;
 };
 
 /// C'tor
-ReplyOptions::ReplyOptions() :
-    pImpl(std::make_unique<ReplyOptionsImpl> ())
+ReplierOptions::ReplierOptions() :
+    pImpl(std::make_unique<ReplierOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-ReplyOptions::ReplyOptions(const ReplyOptions &options)
+ReplierOptions::ReplierOptions(const ReplierOptions &options)
 {
     *this = options;
 }
 
 /// Move c'tor
-ReplyOptions::ReplyOptions(ReplyOptions &&options) noexcept
+ReplierOptions::ReplierOptions(ReplierOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Copy assignment
-ReplyOptions& ReplyOptions::operator=(const ReplyOptions &options)
+ReplierOptions& ReplierOptions::operator=(const ReplierOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<ReplyOptionsImpl> (*options.pImpl);
+    pImpl = std::make_unique<ReplierOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-ReplyOptions& ReplyOptions::operator=(ReplyOptions &&options) noexcept
+ReplierOptions& ReplierOptions::operator=(ReplierOptions &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -51,55 +51,55 @@ ReplyOptions& ReplyOptions::operator=(ReplyOptions &&options) noexcept
 }
 
 /// Reset class
-void ReplyOptions::clear() noexcept
+void ReplierOptions::clear() noexcept
 {
-    pImpl = std::make_unique<ReplyOptionsImpl> ();
+    pImpl = std::make_unique<ReplierOptionsImpl> ();
 }
 
 /// Destructor
-ReplyOptions::~ReplyOptions() = default;
+ReplierOptions::~ReplierOptions() = default;
 
 /// End point to bind to
-void ReplyOptions::setAddress(const std::string &address)
+void ReplierOptions::setAddress(const std::string &address)
 {
     pImpl->mOptions.setAddress(address);
 }
 
-std::string ReplyOptions::getAddress() const
+std::string ReplierOptions::getAddress() const
 {
     return pImpl->mOptions.getAddress();
 }
 
-bool ReplyOptions::haveAddress() const noexcept
+bool ReplierOptions::haveAddress() const noexcept
 {
     return pImpl->mOptions.haveAddress();
 }
 
 /// ZAP Options
-void ReplyOptions::setZAPOptions(const UAuth::ZAPOptions &options)
+void ReplierOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mOptions.setZAPOptions(options);
 }
 
-UAuth::ZAPOptions ReplyOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions ReplierOptions::getZAPOptions() const noexcept
 {
     return pImpl->mOptions.getZAPOptions();
 }
 
 /// High water mark
-void ReplyOptions::setHighWaterMark(const int highWaterMark)
+void ReplierOptions::setHighWaterMark(const int highWaterMark)
 {
     pImpl->mOptions.setHighWaterMark(highWaterMark);
 }
 
-int ReplyOptions::getHighWaterMark() const noexcept
+int ReplierOptions::getHighWaterMark() const noexcept
 {
     return pImpl->mOptions.getHighWaterMark();
 }
 
 /// Reply options
 UMPS::Messaging::RouterDealer::ReplyOptions
-    ReplyOptions::getReplyOptions() const noexcept
+    ReplierOptions::getReplyOptions() const noexcept
 {
     return pImpl->mOptions;
 }
