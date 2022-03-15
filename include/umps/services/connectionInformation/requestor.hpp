@@ -2,6 +2,10 @@
 #define UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOR_HPP
 #include <memory>
 #include <vector>
+namespace zmq
+{
+ class context_t;
+}
 namespace UMPS
 {
  namespace Logging
@@ -37,6 +41,12 @@ public:
     Requestor();
     /// @brief Constructs the class with a given logger.
     explicit Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given context.
+    /// @param[in] context  The ZeroMQ context to use.
+    explicit Requestor(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Constructor with a given context and logger.
+    Requestor(std::shared_ptr<zmq::context_t> &context,
+              std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] request  The request class from which to initialize
     ///                         this class.  On exit, request's behavior is

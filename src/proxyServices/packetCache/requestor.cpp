@@ -41,24 +41,22 @@ Requestor::Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+Requestor::Requestor(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<RequestorImpl> (context, nullptr))
+{
+}
+
+Requestor::Requestor(std::shared_ptr<zmq::context_t> &context,
+                     std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RequestorImpl> (context, logger))
+{
+}
+
 /// Connection information
 UCI::SocketDetails::Request Requestor::getSocketDetails() const
 {
     return pImpl->mRequestor->getSocketDetails();
 }
-
-/*
-Request::Request(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<RequestImpl> (context, nullptr))
-{
-}
-
-Request::Request(std::shared_ptr<zmq::context_t> &context,
-                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RequestImpl> (context, logger))
-{
-}
-*/
 
 /// Move c'tor
 Requestor::Requestor(Requestor &&request) noexcept

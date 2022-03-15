@@ -55,6 +55,19 @@ Requestor::Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+/// C'tor with context
+Requestor::Requestor(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<RequestorImpl> (context, nullptr))
+{
+}
+
+/// C'tor with context and logger
+Requestor::Requestor(std::shared_ptr<zmq::context_t> &context,
+                     std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RequestorImpl> (context, logger))
+{
+}
+
 /// Move c'tor
 Requestor::Requestor(Requestor &&request) noexcept
 {

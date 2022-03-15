@@ -159,8 +159,8 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/service.cpp
     src/proxyServices/packetCache/replier.cpp
     src/proxyServices/packetCache/replierOptions.cpp
-    src/proxyServices/packetCache/request.cpp
-    src/proxyServices/packetCache/requestOptions.cpp
+    src/proxyServices/packetCache/requestor.cpp
+    src/proxyServices/packetCache/requestorOptions.cpp
     src/modules/operator/readZAPOptions.cpp)
 if (${BUILD_EW})
    set(EARTHWORM_SRC 
