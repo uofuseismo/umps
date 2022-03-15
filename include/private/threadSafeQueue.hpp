@@ -103,6 +103,13 @@ public:
         }
         return false;
     }
+    /// @brief Pops the front of the queue.  This returns nothing.
+    /// @note This is useful when enforcing a maximum queue size.
+    void pop()
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mDataQueue.pop();
+    }
     /// @result A container with the value from the front of the queue.  The
     ///         value at front of the queue is removed.
     /// @result The value at the front of the queue.
