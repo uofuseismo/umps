@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <set>
 #include <string>
 #include <filesystem>
 #include <map>
@@ -9,6 +10,7 @@
 #include "umps/services/incrementer/incrementResponse.hpp"
 #include "umps/services/incrementer/incrementRequest.hpp"
 #include "umps/services/incrementer/itemsRequest.hpp"
+#include "umps/services/incrementer/itemsResponse.hpp"
 #include "umps/services/incrementer/counter.hpp"
 #include "umps/services/incrementer/options.hpp"
 #include <gtest/gtest.h>
@@ -77,6 +79,26 @@ TEST(Incrementer, ItemsRequest)
 
     request.clear();
     EXPECT_EQ(request.getMessageType(), "UMPS::Services::Incrementer::ItemsRequest");
+}
+
+TEST(Incrementer, ItemsResponse)
+{
+    UMPSIC::ItemsResponse response;
+    uint64_t id = 3423;
+    const std::set<std::string> items{"abc", "123", "mj"};
+    
+    response.setIdentifier(id);
+    EXPECT_NO_THROW(response.setItems(items));
+
+    auto msg = response.toMessage();
+    UMPSIC::ItemsResponse rCopy;
+    rCopy.fromMessage(msg.data(), msg.size());
+    EXPECT_EQ(rCopy.getItems().size(), items.size());
+    EXPECT_EQ(rCopy.getItems(), items);
+    EXPECT_EQ(rCopy.getIdentifier(), id);
+ 
+    response.clear();
+    EXPECT_EQ(response.getMessageType(), "UMPS::Services::Incrementer::ItemsResponse");
 }
 
 TEST(Incrementer, IncrementResponse)

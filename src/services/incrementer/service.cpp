@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <set>
 #include <thread>
 #ifndef NDEBUG
 #include <cassert>
@@ -8,17 +9,15 @@
 #include "umps/services/incrementer/service.hpp"
 #include "umps/services/incrementer/options.hpp"
 #include "umps/services/incrementer/counter.hpp"
-#include "umps/services/incrementer/incrementerReuest.hpp"
-#include "umps/services/incrementer/incrementerResponse.hpp"
-#include "umps/services/incrementer/itemRequest.hpp"
-#include "umps/services/incrementer/itemResponse.hpp"
+#include "umps/services/incrementer/incrementRequest.hpp"
+#include "umps/services/incrementer/incrementResponse.hpp"
+#include "umps/services/incrementer/itemsRequest.hpp"
+#include "umps/services/incrementer/itemsResponse.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
-#include "umps/services/incrementer/parameters.hpp"
+#include "umps/services/incrementer/options.hpp"
 #include "umps/services/incrementer/counter.hpp"
-#include "umps/services/incrementer/response.hpp"
-#include "umps/services/incrementer/request.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/authentication/authenticator.hpp"
@@ -56,7 +55,7 @@ public:
             mLogger = logger;
         }
         mRouter = std::make_unique<URequestRouter::Router> (mContext, mLogger);
-        mReplier = std::make_unique<Reply<T>> (mContext, mLogger);
+        //mReplier = std::make_unique<Reply<T>> (mContext, mLogger);
     }
     /// The callback to handle incrementer requests
     std::unique_ptr<UMPS::MessageFormats::IMessage>
@@ -70,16 +69,18 @@ public:
                          + " with length: " + std::to_string(length)
                          + " bytes was received.  Processing...");
         }
-        auto response = std::make_unique<Response> ();
-        ItemRequest itemRequest;
-        IncrementerRequest incrementRequest;
-        if (messageType == itemRequest.getMessageType())
+        ItemsRequest itemsRequest;
+        IncrementRequest incrementRequest;
+        if (messageType == incrementRequest.getMessageType())
         {
+            auto response = std::make_unique<IncrementResponse> ();
             // Unpack the request
+            std::string itemName;
             try
             {
                 auto messagePtr = static_cast<const char *> (messageContents);
-                request.fromMessage(messagePtr, length);
+                incrementRequest.fromMessage(messagePtr, length);
+                itemName = incrementRequest.getItem();
             }
             catch (const std::exception &e)
             {
@@ -89,11 +90,11 @@ public:
                 return response;
             }
             // Set the identifier to help out the recipient
-            response->setIdentifier(request.getIdentifier());
+            response->setIdentifier(incrementRequest.getIdentifier());
             // Process the request
             try
             {
-                auto nextValue = mCounter.getNextValue();
+                auto nextValue = mCounter.getNextValue(itemName);
                 response->setValue(nextValue);
                 response->setReturnCode(ReturnCode::SUCCESS);
             }
@@ -103,14 +104,36 @@ public:
                              + std::string(e.what()));
                 response->setReturnCode(ReturnCode::ALGORITHM_FAILURE);
             }
+            return response;
         }
-        else if (messageType == 
+        else if (messageType == itemsRequest.getMessageType())
+        {
+            auto response = std::make_unique<ItemsResponse> ();
+            try
+            {
+                auto messagePtr = static_cast<const char *> (messageContents);
+                itemsRequest.fromMessage(messagePtr, length);
+            }
+            catch (const std::exception &e) 
+            {
+                mLogger->error("Request serialization failed with: "
+                             + std::string(e.what()));
+                response->setReturnCode(ReturnCode::INVALID_MESSAGE);
+                return response;
+            }
+            // 
+             
+            return response;
+        }
         else
         {
-            mLogger->error("Expecting message type: " + request.getMessageType()
+            mLogger->error("Expecting message type: "
+                         + itemsRequest.getMessageType() + " or "
+                         + incrementRequest.getMessageType()
                          + " but received: " + messageType);
-            response->setReturnCode(ReturnCode::INVALID_MESSAGE);
         }
+        auto response = std::make_unique<ItemsResponse> ();
+        response->setReturnCode(ReturnCode::INVALID_MESSAGE);
         return response;
     }
     /// Stops the proxy and authenticator and joins threads
@@ -145,7 +168,7 @@ public:
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
     Counter mCounter; 
-    Parameters mParameters;
+    Options mOptions;
     std::string mName;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
@@ -185,8 +208,9 @@ bool Service::isRunning() const noexcept
     return pImpl->mRouter->isRunning();
 }
 
+/*
 /// Initialize
-void Service::initialize(const Parameters &parameters)
+void Service::initialize(const Options &options)
 {
     stop(); // Ensure the service is stopped
     // Create the counter
@@ -268,3 +292,4 @@ UMPS::Services::ConnectionInformation::Details
     if (!isInitialized()){throw std::runtime_error("Service not initialized");}
     return pImpl->mConnectionDetails;
 }
+*/
