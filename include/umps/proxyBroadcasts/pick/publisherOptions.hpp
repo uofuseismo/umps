@@ -1,63 +1,61 @@
-#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_SUBSCRIBEROPTIONS_HPP
-#define UMPS_PROXYBROADCASTS_HEARTBEAT_SUBSCRIBEROPTIONS_HPP
+#ifndef UMPS_PROXYBROADCASTS_PICK_PUBLISHEROPTIONS_HPP
+#define UMPS_PROXYBROADCASTS_PICK_PUBLISHEROPTIONS_HPP
 #include <memory>
+#include <string>
 #include <chrono>
 namespace UMPS
 {
- namespace Messaging
- {
-  namespace PublisherSubscriber
-  {
-   class SubscriberOptions;
-  }
- }
  namespace Authentication
  {
   class ZAPOptions;
  }
+ namespace Messaging
+ {
+  namespace XPublisherXSubscriber
+  {
+   class PublisherOptions;
+  }
+ }
 }
-namespace UMPS::ProxyBroadcasts::Heartbeat
+namespace UMPS::ProxyBroadcasts::Pick
 {
-/// @class SubscriberOptions "subscriberOptions.hpp" "umps/proxyBroadcasts/heartbeat/subscriberOptions.hpp"
-/// @brief Defines the parameters for connecting to the heartbeat backend.
+/// @class PublisherOptions "publisherOptions.hpp" "umps/proxyBroadcasts/pick/publisherOptions.hpp"
+/// @brief Options for initializing the publisher in the pick broadcast.
+/// @details The publisher sends picks and it is up to the subscribers to
+///          be listening.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class SubscriberOptions
+class PublisherOptions
 {
 public:
     /// @name Constructors
     /// @{
-
     /// @brief Constructor.
-    SubscriberOptions();
+    PublisherOptions();
     /// @brief Copy constructor.
-    /// @param[in] options  The options class from which to initialize
-    ///                     this class.
-    SubscriberOptions(const SubscriberOptions &options);
+    /// @param[in] options 
+    PublisherOptions(const PublisherOptions &options);
     /// @brief Move constructor.
-    /// @param[in,out] options  The options class from which to initialize this
-    ///                         class.  On exit, options's behavior is
-    ///                         undefined.
-    SubscriberOptions(SubscriberOptions &&options) noexcept;
+    /// @param[in,out] options  The class from which to initialize this class.
+    ///                         On exit, options's behavior is undefined.  
+    PublisherOptions(PublisherOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
-
     /// @brief Copy assignment operator.
     /// @param[in] options  The options to copy to this.
     /// @result A deep copy of the input options.
-    SubscriberOptions& operator=(const SubscriberOptions &options);
+    PublisherOptions& operator=(const PublisherOptions &options);
     /// @brief Move assignment operators.
     /// @param[in,out] options  The options whose memory will be moved to this.
     ///                         On exit, options's behavior is undefined.
     /// @result The memory moved from options to this.
-    SubscriberOptions& operator=(SubscriberOptions &&options) noexcept;
+    PublisherOptions& operator=(PublisherOptions &&options) noexcept;
     /// @}
 
-    /// @name Required Parameters
+    /// @name Publisher Options
     /// @{
-
-    /// @brief Sets the address to which the proxy will bind.
+    /// @brief Sets the address to which the publisher will connect.
     /// @throws std::invalid_argument if the address is empty.
     void setAddress(const std::string &address);
     /// @result The socket's address.
@@ -65,17 +63,6 @@ public:
     [[nodiscard]] std::string getAddress() const;
     /// @result True indicates the address was set.
     [[nodiscard]] bool haveAddress() const noexcept;
-    /// @}
-
-    /// @name Options Parameters
-    /// @{
-
-    /// @brief Defines the ZAP options to be used when configuring the socket.
-    /// @param[in] options  The ZAP options.
-    void setZAPOptions(const UMPS::Authentication::ZAPOptions &options);
-    /// @result The ZAP options.  By default this will configure sockets with
-    ///         the grasslands (no security) pattern.
-    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
 
     /// @brief This sets a hard limit on the maximum number of messages that
     ///        can be queued.
@@ -87,9 +74,9 @@ public:
     /// @result The high water mark.  The default is 0 (infinite).
     [[nodiscard]] int getHighWaterMark() const noexcept;
 
-    /// @brief If the subscriber waits the timeOut length of time before
-    ///        receiving a message then it will return without a message.
-    ///        This is useful when the subscriber thread has other
+    /// @brief If the publisher waits the timeOut length of time before
+    ///        sending a message then it will without having sent the message.
+    ///        This is useful when the publisher thread has other
     ///        responsibilities.
     /// @param[in] timeOut   The time out duration in milliseconds.  If this is
     ///                      zero then the subscriber will immediately return.
@@ -100,21 +87,30 @@ public:
     [[nodiscard]] std::chrono::milliseconds getTimeOut() const noexcept;
     /// @}
 
-    /// @result The subscriber options.
-    [[nodiscard]] UMPS::Messaging::PublisherSubscriber::SubscriberOptions
-        getSubscriberOptions() const noexcept;
+    /// @name ZeroMQ Authentication Protocol Options
+    /// @{
+    /// @brief Defines the ZAP options to be used when configuring the socket.
+    /// @param[in] options  The ZAP options.
+    void setZAPOptions(const UMPS::Authentication::ZAPOptions &options);
+    /// @result The ZAP options.  By default this will configure sockets with
+    ///         the grasslands (no security) pattern.
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
+    /// @}
 
+    /// @result The publisher options.
+    [[nodiscard]] UMPS::Messaging::XPublisherXSubscriber::PublisherOptions
+        getPublisherOptions() const noexcept;
+ 
     /// @name Destructors
     /// @{
-
     /// @brief Resets class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~SubscriberOptions();
+    ~PublisherOptions();
     /// @}
 private:
-    class SubscriberOptionsImpl;
-    std::unique_ptr<SubscriberOptionsImpl> pImpl;
+    class PublisherOptionsImpl;
+    std::unique_ptr<PublisherOptionsImpl> pImpl;
 };
 }
 #endif
