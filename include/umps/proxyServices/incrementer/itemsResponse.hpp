@@ -1,6 +1,7 @@
 #ifndef UMPS_PROXYSERVICES_INCREMENTER_ITEMSRESPONSE_HPP
 #define UMPS_PROXYSERVICES_INCREMENTER_ITEMSRESPONSE_HPP
 #include <memory>
+#include <set>
 #include "umps/messageFormats/message.hpp"
 #include "umps/proxyServices/incrementer/enums.hpp"
 namespace UMPS::ProxyServices::Incrementer
