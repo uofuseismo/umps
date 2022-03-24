@@ -61,6 +61,16 @@ public:
     /// @name Required Options
     /// @{
 
+    /// @brief Sets the proxy's backend address to which this service
+    ///        will connect.  It is at this address that the service will
+    ///        receive requests and send replies.
+    /// @param[in] address  The backend address to which to connect.
+    void setBackendAddress(const std::string &address);
+    /// @result The backend address.
+    /// @throws std::runtime_error if \c haveBackendAddress() is false.
+    [[nodiscard]] std::string getBackendAddress() const;
+    /// @result True indicates the backend address was set.
+    [[nodiscard]] bool haveBackendAddress() const noexcept;
     /// @brief Sets the proxy's address from which the server will connect.
     /// @param[in] address  The address from which the server connect to this
     ///                     incrementer service.
@@ -75,12 +85,12 @@ public:
     /// @brief Sets the proxy's address to which the clients will connect.
     /// @param[in] address  The address from which clients will connect to this
     ///                     incrementer service.
-    void setClientAccessAddress(const std::string &address);
+//    void setClientAccessAddress(const std::string &address);
     /// @result The address from which clients will access the service.
     /// @throws std::runtime_error if \c haveClientAccessAddress() is false.
-    [[nodiscard]] std::string getClientAccessAddress() const; 
+//    [[nodiscard]] std::string getClientAccessAddress() const; 
     /// @result True indicates that the client access address was set.
-    [[nodiscard]] bool haveClientAccessAddress() const noexcept;
+//    [[nodiscard]] bool haveClientAccessAddress() const noexcept;
     /// @}
 
     /// @name Optional Options
@@ -91,6 +101,14 @@ public:
     void setSqlite3FileName(const std::string &fileName);
     /// @result The sqlite3 file containing the items to be incremented.
     [[nodiscard]] std::string getSqlite3FileName() const noexcept;
+
+    /// @brief Allows the counter file to be deleted if it exists.
+    /// @param[in] deleteIfExists  If true then the sqlite3 with counter
+    ///                            information will be deleted and recreated
+    ///                            on startup.
+    void toggleDeleteSqlite3FileIfExists(bool deleteIfExists) noexcept;
+    /// @result If true then the slqite3 file will deleted if it exists.
+    [[nodiscard]] bool deleteSqlite3FileIfExists() const noexcept;
 
     /// @brief Sets the increment for all items.
     /// @param[in] increment  The amount by which to increment the counter.

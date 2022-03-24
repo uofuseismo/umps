@@ -177,6 +177,7 @@ void Service<T>::initialize(
     const UDataPacket::SubscriberOptions<T> &dataPacketSubscriberOptions,
     const ReplierOptions &packetCacheReplierOptions)
 {
+    stop(); // Ensure the service is stopped
     if (maxPackets <= 0)
     {
         throw std::invalid_argument("Max packets must be positive");

@@ -151,7 +151,9 @@ set(MODULES_LIBSRC
     src/proxyServices/incrementer/itemsRequest.cpp
     src/proxyServices/incrementer/itemsResponse.cpp
     src/proxyServices/incrementer/options.cpp
-    #src/proxyServices/incrementer/service.cpp
+    src/proxyServices/incrementer/replierOptions.cpp
+    src/proxyServices/incrementer/replier.cpp
+    src/proxyServices/incrementer/service.cpp
     src/proxyServices/packetCache/circularBuffer.cpp
     src/proxyServices/packetCache/cappedCollection.cpp
     src/proxyServices/packetCache/dataRequest.cpp

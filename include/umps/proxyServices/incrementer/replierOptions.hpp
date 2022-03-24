@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYSERVICES_PACKETCACHE_REPLIEROPTIONS_HPP
-#define UMPS_PROXYSERVICES_PACKETCACHE_REPLIEROPTIONS_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_REPLIEROPTIONS_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_REPLIEROPTIONS_HPP
 #include <memory>
 #include <chrono>
 // Forward declarations
@@ -19,10 +19,10 @@ namespace UMPS
   class ZAPOptions;
  }
 }
-namespace UMPS::ProxyServices::PacketCache
+namespace UMPS::ProxyServices::Incrementer
 {
 /// @class ReplierOptions "replierOptions.hpp" "umps/proxyServices/packetCache/replierOptions.hpp"
-/// @brief Defines the options for the packet cache's replier mechanism.
+/// @brief Defines the options for the incremeter's replier mechanism.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ReplierOptions
 {

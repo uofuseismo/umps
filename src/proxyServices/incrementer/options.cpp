@@ -16,10 +16,10 @@ public:
     UAuth::ZAPOptions mZAPOptions;
     std::string mSqlite3FileName = std::string(std::getenv("HOME"))
                                  + "/.local/share/UMPS/tables/counter.sqlite3";
-    //std::string mServerAddress;
-    std::string mClientAddress; 
+    std::string mBackendAddress;
     int64_t mInitialValue = 0;
     int mIncrement = 1;
+    bool mDeleteIfExists = false;
     UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::ERROR;
 };
 
@@ -91,7 +91,40 @@ void Options::setSqlite3FileName(const std::string &fileName)
 
 std::string Options::getSqlite3FileName() const noexcept
 {
-   return pImpl->mSqlite3FileName;
+    return pImpl->mSqlite3FileName;
+}
+
+/// Sets the backend address
+void Options::setBackendAddress(const std::string &address)
+{
+    if (address.empty()){throw std::invalid_argument("Address is empty");}
+    pImpl->mBackendAddress = address;
+}
+
+std::string Options::getBackendAddress() const
+{
+    if (!haveBackendAddress())
+    {
+        throw std::runtime_error("Backend address not set");
+    }
+    return pImpl->mBackendAddress; 
+}
+
+bool Options::haveBackendAddress() const noexcept
+{
+    return !pImpl->mBackendAddress.empty();
+}
+
+/// Delete SQLite3 file if it exists
+void Options::toggleDeleteSqlite3FileIfExists(
+    const bool deleteIfExists) noexcept
+{
+    pImpl->mDeleteIfExists = deleteIfExists;
+}
+
+bool Options::deleteSqlite3FileIfExists() const noexcept
+{
+    return pImpl->mDeleteIfExists;
 }
 
 /// Server address
@@ -118,7 +151,6 @@ bool Options::haveServerAccessAddress() const noexcept
 {
     return !pImpl->mServerAddress.empty();
 }
-*/
 
 /// Client address
 void Options::setClientAccessAddress(const std::string &address)
@@ -143,6 +175,7 @@ bool Options::haveClientAccessAddress() const noexcept
 {
     return !pImpl->mClientAddress.empty();
 }
+*/
 
 /// Incrementer increment
 void Options::setIncrement(const int increment)
@@ -193,7 +226,7 @@ UAuth::ZAPOptions Options::getZAPOptions() const noexcept
 }
 
 void Options::parseInitializationFile(const std::string &iniFile,
-                                         const std::string &section)
+                                      const std::string &section)
 {
     if (!std::filesystem::exists(iniFile))
     {
@@ -211,13 +244,13 @@ void Options::parseInitializationFile(const std::string &iniFile,
     //auto serverAddress
     //    = propertyTree.get<std::string> (section + ".serverAccessAddress");
     //options.setServerAccessAddress(serverAddress);
-    auto clientAccessAddress
-        = propertyTree.get<std::string> (section + ".clientAccessAddress",
-                                         "");
-    if (!clientAccessAddress.empty())
-    {
-        options.setClientAccessAddress(clientAccessAddress);
-    }
+    //auto clientAccessAddress
+    //    = propertyTree.get<std::string> (section + ".clientAccessAddress",
+    //                                     "");
+    //if (!clientAccessAddress.empty())
+    //{
+    //    options.setClientAccessAddress(clientAccessAddress);
+    //}
 
     auto increment = propertyTree.get<int> (section + ".increment", 1);
     options.setIncrement(increment);

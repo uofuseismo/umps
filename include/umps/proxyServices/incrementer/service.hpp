@@ -1,7 +1,6 @@
 #ifndef UMPS_PROXYSERVICES_INCREMENTER_SERVICE_HPP
 #define UMPS_PROXYSERVICES_INCREMENTER_SERVICE_HPP
 #include <memory>
-#include "umps/services/service.hpp"
 namespace UMPS
 {
  namespace Logging
@@ -13,13 +12,13 @@ namespace UMPS
   class IAuthenticator;
  }
 }
-namespace UMPS::Services::Incrementer
+namespace UMPS::ProxyServices::Incrementer
 {
-class Parameters;
+class Options;
 /// @class Service service.hpp "umps/services/incrementer/service.hpp"
 /// @brief Implements the incrementer service.
 /// @copyright Ben Baker (Univeristy of Utah) distributed under the MIT license.
-class Service : public UMPS::Services::IService
+class Service
 {
 public:
     /// @name Constructors
@@ -29,47 +28,36 @@ public:
     Service();
     /// @brief Constructor with a given logger.
     explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
-    /// @brief Constructor with a given logger and authenticator.
-    Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
-            std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
-    /// @brief Move constructor.
-    //Service(Service &&service) noexcept;
-    /// @brief Move assignment operator.
-    //Service& operator=(Service &&service) noexcept;
     /// @}
      
     /// @brief Initializes the service.
-    void initialize(const Parameters &parameters);
+    void initialize(const Options &options);
     /// @result True indicates that the service is initialized.
-    [[nodiscard]] bool isInitialized() const noexcept override final;
+    [[nodiscard]] bool isInitialized() const noexcept;
     /// @brief Gets the name of the item being incremented.
     /// @throws std::runtime_error if the class is not initialized.
-    [[nodiscard]] std::string getName() const override final;
+    //[[nodiscard]] std::string getName() const;
     /// @brief Gets the address to submit requests to this service.
     /// @throws std::runtime_error if the class is not running.
-    [[nodiscard]] std::string getRequestAddress() const override final;
+    //[[nodiscard]] std::string getRequestAddress() const;
     /// @result The details for connecting to the service.
-    [[nodiscard]] ConnectionInformation::Details getConnectionDetails() const override final;
+    //[[nodiscard]] ConnectionInformation::Details getConnectionDetails() const;
 
     /// @brief Starts the service.
-    /// @note This would be run something like:
-    ///       Service thisService;
-    ///       std::thread countingServiceThread(&Service::start, &thisService);
-    ///       .
-    ///       .
-    ///       .
-    ///       thisServiceThread.stop(); // Called by main thread
-    ///       countingServiceThread.join();
-    void start() override final;
+    void start();
 
     /// @result True indicates that the service is running.
     [[nodiscard]] bool isRunning() const noexcept;
 
     /// @brief Stops the service.
-    void stop() override final;
+    void stop();
+
+    /// @name Destructors
+    /// @{
 
     /// @brief Destructor.
-    ~Service() override;
+    ~Service();
+    /// @}
  
     Service(const Service &service) = delete;
     Service& operator=(const Service &service) = delete;

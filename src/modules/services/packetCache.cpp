@@ -54,7 +54,9 @@ struct ProgramOptions
     std::string operatorAddress;
     std::string dataBroadcastName = "DataPacket";
     std::string proxyServiceName;
+    std::string mLogFileDirectory = "logs";
     std::chrono::milliseconds dataPacketTimeOut{10};
+    UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::INFO;
     int maxPackets = DEFAULT_MAXPACKETS;
     int dataPacketHighWaterMark = static_cast<int> (DEFAULT_HWM);
 };
@@ -94,20 +96,31 @@ int main(int argc, char *argv[])
     auto zapOptions = options.mZAPOptions;
     // Create logger
     UMPS::Logging::StdOut logger;
-    logger.setLevel(UMPS::Logging::Level::INFO);
+    logger.setLevel(options.mVerbosity); //UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
     logger.debug("Getting available services...");
-    UCI::Requestor connectionInformation;
-    connectionInformation.initialize(
-        options.mConnectionInformationRequestOptions);
-    auto dataPacketAddress
-        = connectionInformation.getProxyBroadcastBackendDetails(
-             options.dataBroadcastName).getAddress();
-    auto proxyServiceAddress
-        = connectionInformation.getProxyServiceBackendDetails(
-             options.proxyServiceName).getAddress();
+    std::string dataPacketAddress;
+    std::string proxyServiceAddress;
+    try
+    {
+        UCI::Requestor connectionInformation;
+        connectionInformation.initialize(
+            options.mConnectionInformationRequestOptions);
+        dataPacketAddress
+            = connectionInformation.getProxyBroadcastBackendDetails(
+                 options.dataBroadcastName).getAddress();
+        proxyServiceAddress
+            = connectionInformation.getProxyServiceBackendDetails(
+                 options.proxyServiceName).getAddress();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger.error(std::string {e.what()});
+        return EXIT_FAILURE;
+    }
     // Set the broadcast connection details
     UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>
         dataPacketSubscriberOptions;
@@ -122,55 +135,20 @@ int main(int argc, char *argv[])
 
     // Initialize the service
     UPacketCache::Service<double> service(loggerPtr);
-    service.initialize(options.maxPackets,
-                       dataPacketSubscriberOptions,
-                       options.mPacketCacheReplyOptions);
-/*
-    // Now connect to datapacket broadcast backend 
-    UMPS::ProxyBroadcasts::DataPacket::SubscriberOptions<double>
-        dataPacketSubscriberOptions;
-    dataPacketSubscriberOptions.setAddress(dataPacketAddress);
-    dataPacketSubscriberOptions.setHighWaterMark(
-        options.dataPacketHighWaterMark);
-    dataPacketSubscriberOptions.setTimeOut(options.dataPacketTimeOut);
-    dataPacketSubscriberOptions.setZAPOptions(zapOptions);
-    auto dataPacketSubscriber
-        = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Subscriber<double>> ();
-    dataPacketSubscriber->initialize(dataPacketSubscriberOptions);
-    logger.debug("Connected!");
-
-    // Create a collection of circular buffers
-    auto cappedCollection
-        = std::make_shared<UPacketCache::CappedCollection<double>> (loggerPtr);
-    cappedCollection->initialize(options.maxPackets);
-#ifndef NDEBUG
-    assert(cappedCollection->isInitialized());
-#endif
-
-    // Create a replier
-    options.mPacketCacheReplyOptions.setAddress(proxyServiceAddress);
-    UMPS::Logging::StdOut replyLogger;
-    replyLogger.setLevel(UMPS::Logging::Level::DEBUG);
-    std::shared_ptr<UMPS::Logging::ILog> replyLoggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (replyLogger);
-    auto replier = std::make_shared<UPacketCache::Reply<double>> (replyLoggerPtr);
-    replier->initialize(options.mPacketCacheReplyOptions, cappedCollection);
-    // Create the struct
-    DataPacketSubscriber<double> dps(loggerPtr,
-                                     dataPacketSubscriber,
-                                     cappedCollection,
-                                     replier);
-*/
-
     try
     {
         logger.debug("Starting the service...");
+        service.initialize(options.maxPackets,
+                           dataPacketSubscriberOptions,
+                           options.mPacketCacheReplyOptions);
         service.start();
     }
     catch (const std::exception &e)
     {
         std::cerr << "Failed to start service.  Failed with: " 
                   << e.what() << std::endl;
+        logger.error("Failed to start service.  Failed with: "
+                   + std::string {e.what()});
         return EXIT_FAILURE;
     }
     // Monitor commands from stdin
@@ -209,6 +187,7 @@ int main(int argc, char *argv[])
     logger.debug("Stopping services...");
     service.stop();
     logger.debug("Program finished");
+    return EXIT_SUCCESS;
 }
 
 ///--------------------------------------------------------------------------///
@@ -255,14 +234,41 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
     //------------------------------------------------------------------------//
+    const std::string section = "PacketCache";
     options.proxyServiceName = propertyTree.get<std::string>
-                               ("PacketCache.proxyServiceName", "");
+                               (section + ".proxyServiceName", "");
     if (options.proxyServiceName.empty())
     {
         throw std::invalid_argument("proxyServiceName not set");
     }
-    options.maxPackets = propertyTree.get<int> ("PacketCache.maxPackets",
+    options.maxPackets = propertyTree.get<int> (section + ".maxPackets",
                                                 options.maxPackets);
+
+    auto verbosity = propertyTree.get<int>
+                     (section + ".verbose",
+                      static_cast<int> (options.mVerbosity));
+    verbosity = std::min(std::max(0, verbosity), 4); 
+    options.mVerbosity = static_cast<UMPS::Logging::Level> (verbosity);
+
+    auto logFileDirectory = propertyTree.get<std::string>
+                            (section + ".logFileDirectory",
+                            options.mLogFileDirectory);
+    if (logFileDirectory.empty())
+    {
+        logFileDirectory = std::string{std::filesystem::current_path()};
+    }
+    else
+    {
+        if (!std::filesystem::exists(logFileDirectory))
+        {
+            if (!std::filesystem::create_directories(logFileDirectory))
+            {
+                throw std::runtime_error("Failed to create log file directory: "
+                                       + logFileDirectory);
+            }
+        }
+    }
+    options.mLogFileDirectory = logFileDirectory;
     //------------------------------ Operator --------------------------------//
     UCI::RequestorOptions requestOptions;
     requestOptions.parseInitializationFile(iniFile);

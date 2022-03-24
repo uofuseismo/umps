@@ -304,6 +304,24 @@ TEST(PacketCache, RequestOptions)
     EXPECT_EQ(options.getHighWaterMark(), 2048);//1024);
 }
 
+TEST(PacketCache, ReplierOptions)
+{
+    const std::string address = "tcp://localhost:5050";
+    const int hwm = 1234;
+    PC::ReplierOptions replier;
+    replier.setAddress(address);
+    replier.setHighWaterMark(hwm);
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    replier.setZAPOptions(zapOptions);
+
+    PC::ReplierOptions optionsCopy(replier);
+    EXPECT_EQ(optionsCopy.getAddress(), address);
+    EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
+}
+
 TEST(PacketCache, SensorRequest)
 {
     PC::SensorRequest request;

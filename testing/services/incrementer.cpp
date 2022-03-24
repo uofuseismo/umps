@@ -11,31 +11,59 @@
 #include "umps/proxyServices/incrementer/incrementRequest.hpp"
 #include "umps/proxyServices/incrementer/itemsRequest.hpp"
 #include "umps/proxyServices/incrementer/itemsResponse.hpp"
+#include "umps/proxyServices/incrementer/replierOptions.hpp"
 #include "umps/proxyServices/incrementer/counter.hpp"
 #include "umps/proxyServices/incrementer/options.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 namespace UMPSIC = UMPS::ProxyServices::Incrementer;
+namespace UAuth = UMPS::Authentication;
 
-TEST(Incrementer, Parameters)
+TEST(Incrementer, Options)
 {
-    const char *cParms = "[Counters]\nsqlite3FileName = tables/counter.sqlite3\ninitialValue = 2\nincrement = 3\nserverAccessAddress = tcp://localhost:5560\nclientAccessAddress = tcp://localhost:5559\nverbosity = 2\n";
+/*
+    const char *cParms = "[Counters]\nsqlite3FileName = tables/counter.sqlite3\ninitialValue = 2\nincrement = 3\nbackendAddress = tcp://localhost:5560\nclientAccessAddress = tcp://localhost:5559\nverbosity = 2\n";
     //std::cout << cParms << std::endl;
     const std::string iniFileName = "incrementerExample.ini";
     std::ofstream tempFile(iniFileName);
     tempFile << cParms;
     tempFile.close();
-    UMPSIC::Options parameters;
-    EXPECT_NO_THROW(
-        parameters.parseInitializationFile(iniFileName, "Counters"));
-    std::remove(iniFileName.c_str());
-    EXPECT_EQ(parameters.getSqlite3FileName(), "tables/counter.sqlite3");
-    EXPECT_EQ(parameters.getInitialValue(), 2);
-    EXPECT_EQ(parameters.getIncrement(), 3);
-    //EXPECT_EQ(parameters.getServerAccessAddress(), "tcp://localhost:5560");
-    EXPECT_EQ(parameters.getClientAccessAddress(), "tcp://localhost:5559");
-    EXPECT_EQ(parameters.getVerbosity(), static_cast<UMPS::Logging::Level> (2));
+*/
+    UMPSIC::Options options; 
+    options.setSqlite3FileName("tables/counter.sqlite3");
+    options.setBackendAddress("tcp://localhost:5560");
+    options.setVerbosity(UMPS::Logging::Level::DEBUG);
+    options.setInitialValue(42);
+    options.setIncrement(84);
+
+    //EXPECT_NO_THROW(
+    //    options.parseInitializationFile(iniFileName, "Counters"));
+    //std::remove(iniFileName.c_str());
+    EXPECT_EQ(options.getSqlite3FileName(), "tables/counter.sqlite3");
+    EXPECT_EQ(options.getInitialValue(), 42);
+    EXPECT_EQ(options.getIncrement(), 84);
+    EXPECT_EQ(options.getBackendAddress(), "tcp://localhost:5560");
+    EXPECT_EQ(options.getVerbosity(), UMPS::Logging::Level::DEBUG); //static_cast<UMPS::Logging::Level> (2));
+}
+
+TEST(Incrementer, ReplierOptions)
+{
+    const std::string address = "tcp://localhost:5050";
+    const int hwm = 1234;
+    UMPSIC::ReplierOptions replier;
+    replier.setAddress(address);
+    replier.setHighWaterMark(hwm);
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    replier.setZAPOptions(zapOptions);
+
+    UMPSIC::ReplierOptions optionsCopy(replier);
+    EXPECT_EQ(optionsCopy.getAddress(), address);
+    EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
 }
 
 TEST(Incrementer, IncrementRequest)
@@ -45,9 +73,18 @@ TEST(Incrementer, IncrementRequest)
     const std::string item = "abc";
 
     EXPECT_NO_THROW(request.setItem(UMPSIC::Item::PHASE_PICK));
+    EXPECT_EQ(request.getItem(), "PhasePick");
     EXPECT_NO_THROW(request.setItem(UMPSIC::Item::PHASE_ARRIVAL));
+    EXPECT_EQ(request.getItem(), "PhaseArrival");
     EXPECT_NO_THROW(request.setItem(UMPSIC::Item::EVENT));
+    EXPECT_EQ(request.getItem(), "Event");
     EXPECT_NO_THROW(request.setItem(UMPSIC::Item::ORIGIN));
+    EXPECT_EQ(request.getItem(), "Origin");
+    EXPECT_NO_THROW(request.setItem(UMPSIC::Item::AMPLITUDE));
+    EXPECT_EQ(request.getItem(), "Amplitude");
+    EXPECT_NO_THROW(request.setItem(UMPSIC::Item::MAGNITUDE));
+    EXPECT_EQ(request.getItem(), "Magnitude");
+
     EXPECT_NO_THROW(request.setItem(item));
     request.setIdentifier(id);
     EXPECT_EQ(request.getIdentifier(), id);
