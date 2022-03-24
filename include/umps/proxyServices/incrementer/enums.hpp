@@ -1,18 +1,20 @@
-#ifndef UMPS_SERVICES_INCREMENTER_ENUMS_HPP
-#define UMPS_SERVICES_INCREMENTER_ENUMS_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_ENUMS_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_ENUMS_HPP
 #include <memory>
-namespace UMPS::Services::Incrementer
+namespace UMPS::ProxyServices::Incrementer
 {
 /// @brief These are predefined set of items that can be incremented by UMPS.
 /// @note You can define custom items.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class Item
 {
-    PHASE_PICK,    /*!< A pick item (this is an unassociated arrival). */ 
-    PHASE_ARRIVAL, /*!< An arrival item (this is an associated pick). */
+    AMPLITUDE,     /*!< An amplitude.  This is used in computing a magnitude. */
     EVENT,         /*!< An event identifier. */
-    ORIGIN         /*!< An event can have multiple origins as the location
+    MAGNITUDE,     /*!< A magnitude. */
+    ORIGIN,        /*!< An event can have multiple origins as the location
                         is refined. */
+    PHASE_ARRIVAL, /*!< An arrival item (this is an associated pick). */
+    PHASE_PICK     /*!< A pick item (this is an unassociated arrival). */ 
 };
 /// @brief These are return codes from the incrementer.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

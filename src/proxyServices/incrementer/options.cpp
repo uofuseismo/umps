@@ -3,11 +3,11 @@
 #include <filesystem>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "umps/services/incrementer/options.hpp"
+#include "umps/proxyServices/incrementer/options.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Services::Incrementer;
+using namespace UMPS::ProxyServices::Incrementer;
 namespace UAuth = UMPS::Authentication;
 
 class Options::OptionsImpl

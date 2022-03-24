@@ -5,12 +5,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/incrementer/incrementRequest.hpp"
+#include "umps/proxyServices/incrementer/incrementRequest.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Incrementer::IncrementRequest"
+#define MESSAGE_TYPE "UMPS::ProxyServices::Incrementer::IncrementRequest"
 
-using namespace UMPS::Services::Incrementer;
+using namespace UMPS::ProxyServices::Incrementer;
 
 namespace
 {
@@ -113,21 +113,29 @@ void IncrementRequest::setItem(const std::string &item)
 
 void IncrementRequest::setItem(const Item item) noexcept
 {
-   if (item == Item::PHASE_PICK)
+   if (item == Item::AMPLITUDE)
+   {
+       setItem("Amplitude");
+   }
+   else if (item == Item::EVENT)
+   {
+       setItem("Event");
+   }
+   else if (item == Item::MAGNITUDE)
+   {
+       setItem("Magnitude");
+   }
+   else if (item == Item::ORIGIN)
+   {
+       setItem("Origin");
+   }
+   else if (item == Item::PHASE_PICK)
    {
        setItem("PhasePick");
    }
    else if (item == Item::PHASE_ARRIVAL)
    {
        setItem("PhaseArrival");
-   }
-   else if (item == Item::EVENT)
-   {
-       setItem("Event");
-   }
-   else if (item == Item::ORIGIN)
-   {
-       setItem("Origin");
    }
    else
    {

@@ -6,10 +6,10 @@
 #include <cassert>
 #endif
 #include <sqlite3.h>
-#include "umps/services/incrementer/counter.hpp"
+#include "umps/proxyServices/incrementer/counter.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Services::Incrementer;
+using namespace UMPS::ProxyServices::Incrementer;
 
 /*
 namespace

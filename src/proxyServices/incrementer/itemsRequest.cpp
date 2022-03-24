@@ -5,12 +5,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/incrementer/itemsRequest.hpp"
+#include "umps/proxyServices/incrementer/itemsRequest.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Incrementer::ItemsRequest"
+#define MESSAGE_TYPE "UMPS::ProxyServices::Incrementer::ItemsRequest"
 
-using namespace UMPS::Services::Incrementer;
+using namespace UMPS::ProxyServices::Incrementer;
 
 namespace
 {

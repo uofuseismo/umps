@@ -1,14 +1,14 @@
-#ifndef UMPS_SERVICES_INCREMENTER_OPTIONS_HPP
-#define UMPS_SERVICES_INCREMENTER_OPTIONS_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_OPTIONS_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_OPTIONS_HPP
 #include <memory>
 #include "umps/logging/level.hpp"
 namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
-namespace UMPS::Services::Incrementer
+namespace UMPS::ProxyServices::Incrementer
 {
-/// @class Options "options.hpp" "umps/services/incrementer/options.hpp"
+/// @class Options "options.hpp" "umps/proxyServices/incrementer/options.hpp"
 /// @brief The options for controlling the incrementer.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Options

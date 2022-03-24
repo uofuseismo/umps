@@ -1,27 +1,26 @@
 #include <iostream>
 #include <string>
-#include <set>
 #include <limits>
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/incrementer/itemsResponse.hpp"
+#include "umps/proxyServices/incrementer/incrementResponse.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Incrementer::ItemsResponse"
+#define MESSAGE_TYPE "UMPS::ProxyServices::Incrementer::IncrementResponse"
 
-using namespace UMPS::Services::Incrementer;
+using namespace UMPS::ProxyServices::Incrementer;
 
 namespace
 {
 
-nlohmann::json toJSONObject(const ItemsResponse &response)
+nlohmann::json toJSONObject(const IncrementResponse &response)
 {
     nlohmann::json obj;
     // Essential stuff (this will throw): 
     obj["MessageType"] = response.getMessageType();
-    if (response.haveItems())
+    if (response.haveValue())
     {
-        obj["Value"] = response.getItems();
+        obj["Value"] = response.getValue();
     }
     else
     {
@@ -33,9 +32,9 @@ nlohmann::json toJSONObject(const ItemsResponse &response)
     return obj;
 }
 
-ItemsResponse objectToResponse(const nlohmann::json &obj)
+IncrementResponse objectToResponse(const nlohmann::json &obj)
 {
-    ItemsResponse response;
+    IncrementResponse response;
     if (obj["MessageType"] != response.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
@@ -43,7 +42,7 @@ ItemsResponse objectToResponse(const nlohmann::json &obj)
     // Essential stuff
     if (!obj["Value"].is_null())
     {
-        response.setItems(obj["Value"].get<std::set<std::string>> ());
+        response.setValue(obj["Value"].get<int64_t> ());
     }
     response.setIdentifier(obj["Identifier"].get<uint64_t> ());
     auto code = static_cast<ReturnCode> (obj["ReturnCode"].get<int> ());
@@ -51,13 +50,13 @@ ItemsResponse objectToResponse(const nlohmann::json &obj)
     return response;
 }
 
-ItemsResponse fromJSONMessage(const std::string &message)
+IncrementResponse fromJSONMessage(const std::string &message)
 {
     auto obj = nlohmann::json::parse(message);
     return objectToResponse(obj);
 }
 
-ItemsResponse fromCBORMessage(const uint8_t *message, const size_t length)
+IncrementResponse fromCBORMessage(const uint8_t *message, const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
     return objectToResponse(obj);
@@ -65,43 +64,45 @@ ItemsResponse fromCBORMessage(const uint8_t *message, const size_t length)
 
 }
 
-class ItemsResponse::ItemsResponseImpl
+class IncrementResponse::IncrementResponseImpl
 {
 public:
-    std::set<std::string> mItems;
+    int64_t mValue = 0;
     uint64_t mIdentifier = 0;
     ReturnCode mCode = ReturnCode::SUCCESS;
+    bool mHaveValue = false;
 };
 
 /// C'tor
-ItemsResponse::ItemsResponse() :
-    pImpl(std::make_unique<ItemsResponseImpl> ())
+IncrementResponse::IncrementResponse() :
+    pImpl(std::make_unique<IncrementResponseImpl> ())
 {
 }
 
 /// Copy c'tor
-ItemsResponse::ItemsResponse(const ItemsResponse &response)
+IncrementResponse::IncrementResponse(const IncrementResponse &response)
 {
     *this = response;
 }
 
 /// Move c'tor
-ItemsResponse::ItemsResponse(ItemsResponse &&response) noexcept
+IncrementResponse::IncrementResponse(IncrementResponse &&response) noexcept
 {
     *this = std::move(response);
 }
 
 /// Copy assignment
-ItemsResponse& ItemsResponse::operator=(const ItemsResponse &response)
+IncrementResponse&
+    IncrementResponse::operator=(const IncrementResponse &response)
 {
     if (&response == this){return *this;}
-    pImpl = std::make_unique<ItemsResponseImpl> (*response.pImpl);
+    pImpl = std::make_unique<IncrementResponseImpl> (*response.pImpl);
     return *this;
 }
 
 /// Move assignment
-ItemsResponse&
-    ItemsResponse::operator=(ItemsResponse &&response) noexcept
+IncrementResponse&
+    IncrementResponse::operator=(IncrementResponse &&response) noexcept
 {
     if (&response == this){return *this;}
     pImpl = std::move(response.pImpl);
@@ -109,63 +110,63 @@ ItemsResponse&
 }
 
 /// Destructor
-ItemsResponse::~ItemsResponse() = default;
+IncrementResponse::~IncrementResponse() = default;
 
 /// Clear
-void ItemsResponse::clear() noexcept
+void IncrementResponse::clear() noexcept
 {
-    pImpl = std::make_unique<ItemsResponseImpl> ();
+    pImpl = std::make_unique<IncrementResponseImpl> ();
 }
 
 /// Value
-void ItemsResponse::setItems(const std::set<std::string> &items)
+void IncrementResponse::setValue(const int64_t value) noexcept
 {
-    if (items.empty()){throw std::invalid_argument("items is empty");}
-    pImpl->mItems = items;
+    pImpl->mValue = value;
+    pImpl->mHaveValue = true;
 }
 
-std::set<std::string> ItemsResponse::getItems() const
+int64_t IncrementResponse::getValue() const
 {
-    if (!haveItems()){throw std::runtime_error("Items not set");}
-    return pImpl->mItems;
+    if (!haveValue()){throw std::runtime_error("Value not set");}
+    return pImpl->mValue;
 }
 
-bool ItemsResponse::haveItems() const noexcept
+bool IncrementResponse::haveValue() const noexcept
 {
-    return !pImpl->mItems.empty();
+    return pImpl->mHaveValue;
 }
 
 /// Identifier
-void ItemsResponse::setIdentifier(const uint64_t identifier) noexcept
+void IncrementResponse::setIdentifier(const uint64_t identifier) noexcept
 {
     pImpl->mIdentifier = identifier;
 }
 
-uint64_t ItemsResponse::getIdentifier() const noexcept
+uint64_t IncrementResponse::getIdentifier() const noexcept
 {
     return pImpl->mIdentifier;
 }
 
 /// Return code
-void ItemsResponse::setReturnCode(const ReturnCode code) noexcept
+void IncrementResponse::setReturnCode(const ReturnCode code) noexcept
 {
     pImpl->mCode = code;
 }
 
-ReturnCode ItemsResponse::getReturnCode() const noexcept
+ReturnCode IncrementResponse::getReturnCode() const noexcept
 {
     return pImpl->mCode;
 }
 
 /// Create JSON
-std::string ItemsResponse::toJSON(const int nIndent) const
+std::string IncrementResponse::toJSON(const int nIndent) const
 {
     auto obj = toJSONObject(*this);
     return obj.dump(nIndent);
 }
 
 /// Create CBOR
-std::string ItemsResponse::toCBOR() const
+std::string IncrementResponse::toCBOR() const
 {
     auto obj = toJSONObject(*this);
     auto v = nlohmann::json::to_cbor(obj);
@@ -174,18 +175,18 @@ std::string ItemsResponse::toCBOR() const
 }
 
 /// From JSON
-void ItemsResponse::fromJSON(const std::string &message)
+void IncrementResponse::fromJSON(const std::string &message)
 {
     *this = fromJSONMessage(message);
 }
 
 /// From CBOR
-void ItemsResponse::fromCBOR(const std::string &data)
+void IncrementResponse::fromCBOR(const std::string &data)
 {
     fromCBOR(reinterpret_cast<const uint8_t *> (data.data()), data.size());
 }
 
-void ItemsResponse::fromCBOR(const uint8_t *data, const size_t length)
+void IncrementResponse::fromCBOR(const uint8_t *data, const size_t length)
 {
     if (length == 0){throw std::invalid_argument("No data");}
     if (data == nullptr)
@@ -196,37 +197,37 @@ void ItemsResponse::fromCBOR(const uint8_t *data, const size_t length)
 }
 
 ///  Convert message
-std::string ItemsResponse::toMessage() const
+std::string IncrementResponse::toMessage() const
 {
     return toCBOR();
 }
 
 /// Convert from message
-void ItemsResponse::fromMessage(const char *messageIn, const size_t length)
+void IncrementResponse::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
     fromCBOR(message, length);
 }
 
 /// Copy this class
-std::unique_ptr<UMPS::MessageFormats::IMessage> ItemsResponse::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> IncrementResponse::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<ItemsResponse> (*this);
+        = std::make_unique<IncrementResponse> (*this);
     return result;
 }
 
 /// Create an instance of this class 
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    ItemsResponse::createInstance() const noexcept
+    IncrementResponse::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<ItemsResponse> ();
+        = std::make_unique<IncrementResponse> ();
     return result;
 }
 
 /// Message type
-std::string ItemsResponse::getMessageType() const noexcept
+std::string IncrementResponse::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 } 

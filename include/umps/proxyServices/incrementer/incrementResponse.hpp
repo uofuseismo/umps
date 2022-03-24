@@ -1,29 +1,29 @@
-#ifndef UMPS_SERVICES_INCREMENTER_ITEMSRESPONSE_HPP
-#define UMPS_SERVICES_INCREMENTER_ITEMSRESPONSE_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_INCREMENTRESPONSE_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_INCREMENTRESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-#include "umps/services/incrementer/enums.hpp"
-namespace UMPS::Services::Incrementer
+#include "umps/proxyServices/incrementer/enums.hpp"
+namespace UMPS::ProxyServices::Incrementer
 {
-/// @class ItemsResponse "itemsResponse.hpp" "umps/services/incrementer/itemsResponse.hpp"
-/// @brief This is a response to an items request.
+/// @class IncrementResponse "incrementResponse.hpp" "umps/services/incrementer/incrementResponse.hpp"
+/// @brief This is a response to an item increment request.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class ItemsResponse : public UMPS::MessageFormats::IMessage
+class IncrementResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    ItemsResponse();
+    IncrementResponse();
     /// @brief Copy constructor.
     /// @param[in] response  The response from which to initialize this class.
-    ItemsResponse(const ItemsResponse &response);
+    IncrementResponse(const IncrementResponse &response);
     /// @brief Move constructor.
     /// @param[in,out] response  The response from which to initialize this
     ///                          class.  On exit, response's behavior is
     ///                          undefined.
-    ItemsResponse(ItemsResponse &&response) noexcept;
+    IncrementResponse(IncrementResponse &&response) noexcept;
     /// @}
 
     /// @name Operators
@@ -32,25 +32,25 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] response   The response to copy to this.
     /// @result A deep copy of the the input response.
-    ItemsResponse& operator=(const ItemsResponse &response);
+    IncrementResponse& operator=(const IncrementResponse &response);
     /// @brief Move assignment operator.
     /// @param[in,out] response  The response whose memory will be moved to this.
     ///                          On exit, response's behavior is undefined.
     /// @result The memory from response moved to this.
-    ItemsResponse& operator=(ItemsResponse &&response) noexcept;
+    IncrementResponse& operator=(IncrementResponse &&response) noexcept;
     /// @}
 
     /// @name Response Information
     /// @{
 
     /// @brief Sets the increment value.
-    /// @param[in] items  The unique item names to set.
-    void setItems(const std::set<std::string> &items);
-    /// @result The items being incremented.
-    /// @throws std::runtime_error if the \c haveItems() is false.
-    [[nodiscard]] std::set<std::string> getItems() const;
+    /// @param[in] value  The increment value.
+    void setValue(int64_t value) noexcept; 
+    /// @result The value for the item of interest.
+    /// @throws std::runtime_error if the increment value was not set.
+    [[nodiscard]] int64_t getValue() const;
     /// @result True indicates that the increment value was set.
-    [[nodiscard]] bool haveItems() const noexcept;
+    [[nodiscard]] bool haveValue() const noexcept;
 
     /// @brief Sets the request identifier.
     /// @param[in] identifier  The request identifier.
@@ -128,11 +128,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~ItemsResponse() override;
+    ~IncrementResponse() override;
     /// @}
 private:
-    class ItemsResponseImpl;
-    std::unique_ptr<ItemsResponseImpl> pImpl;
+    class IncrementResponseImpl;
+    std::unique_ptr<IncrementResponseImpl> pImpl;
 };
 }
 #endif

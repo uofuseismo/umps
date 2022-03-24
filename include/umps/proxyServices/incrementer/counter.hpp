@@ -1,12 +1,12 @@
-#ifndef UMPS_SERVICES_INCREMENTER_COUNTER_HPP
-#define UMPS_SERVICES_INCREMENTER_COUNTER_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_COUNTER_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_COUNTER_HPP
 #include <memory>
 #include <map>
 #include <string>
 #include <set>
-namespace UMPS::Services::Incrementer
+namespace UMPS::ProxyServices::Incrementer
 {
-/// @class Counter counter.hpp "umps/services/incrementer/counter.hpp"
+/// @class Counter counter.hpp "umps/proxyServices/incrementer/counter.hpp"
 /// @brief This thread-safe class is responsible for incrementing item values.
 ///        This class is a simple way to assign unique identifiers to an item
 ///        of interest - e.g., a pick or event identifier

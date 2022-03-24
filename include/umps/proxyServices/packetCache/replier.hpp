@@ -48,7 +48,9 @@ public:
     /// @{
 
     /// @brief Initializes the reply.
-    /// @param[in] options   The reply options.
+    /// @param[in] options           The reply options.
+    /// @param[in] cappedCollection  A reference to the underlying capped
+    ///                              collection for use by the callback.
     /// @throws std::invalid_argument if the endpoint is not set.
     void initialize(const ReplierOptions &options,
                     std::shared_ptr<CappedCollection<T>> &cappedCollection);

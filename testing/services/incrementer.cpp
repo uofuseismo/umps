@@ -7,16 +7,16 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "umps/services/incrementer/incrementResponse.hpp"
-#include "umps/services/incrementer/incrementRequest.hpp"
-#include "umps/services/incrementer/itemsRequest.hpp"
-#include "umps/services/incrementer/itemsResponse.hpp"
-#include "umps/services/incrementer/counter.hpp"
-#include "umps/services/incrementer/options.hpp"
+#include "umps/proxyServices/incrementer/incrementResponse.hpp"
+#include "umps/proxyServices/incrementer/incrementRequest.hpp"
+#include "umps/proxyServices/incrementer/itemsRequest.hpp"
+#include "umps/proxyServices/incrementer/itemsResponse.hpp"
+#include "umps/proxyServices/incrementer/counter.hpp"
+#include "umps/proxyServices/incrementer/options.hpp"
 #include <gtest/gtest.h>
 namespace
 {
-namespace UMPSIC = UMPS::Services::Incrementer;
+namespace UMPSIC = UMPS::ProxyServices::Incrementer;
 
 TEST(Incrementer, Parameters)
 {
@@ -60,7 +60,7 @@ TEST(Incrementer, IncrementRequest)
 
     request.clear();
     EXPECT_FALSE(request.haveItem()); 
-    EXPECT_EQ(request.getMessageType(), "UMPS::Services::Incrementer::IncrementRequest");
+    EXPECT_EQ(request.getMessageType(), "UMPS::ProxyServices::Incrementer::IncrementRequest");
 }
 
 TEST(Incrementer, ItemsRequest)
@@ -78,7 +78,7 @@ TEST(Incrementer, ItemsRequest)
     EXPECT_EQ(rCopy.getIdentifier(), id);
 
     request.clear();
-    EXPECT_EQ(request.getMessageType(), "UMPS::Services::Incrementer::ItemsRequest");
+    EXPECT_EQ(request.getMessageType(), "UMPS::ProxyServices::Incrementer::ItemsRequest");
 }
 
 TEST(Incrementer, ItemsResponse)
@@ -98,7 +98,7 @@ TEST(Incrementer, ItemsResponse)
     EXPECT_EQ(rCopy.getIdentifier(), id);
  
     response.clear();
-    EXPECT_EQ(response.getMessageType(), "UMPS::Services::Incrementer::ItemsResponse");
+    EXPECT_EQ(response.getMessageType(), "UMPS::ProxyServices::Incrementer::ItemsResponse");
 }
 
 TEST(Incrementer, IncrementResponse)
@@ -123,7 +123,7 @@ TEST(Incrementer, IncrementResponse)
     EXPECT_EQ(rCopy.getReturnCode(), code);
 
     EXPECT_EQ(response.getMessageType(),
-              "UMPS::Services::Incrementer::IncrementResponse");
+              "UMPS::ProxyServices::Incrementer::IncrementResponse");
 }
 
 TEST(Incrementer, Counter)

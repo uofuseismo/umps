@@ -1,32 +1,32 @@
-#ifndef UMPS_SERVICES_INCREMENTER_ITEMSREQUEST_HPP
-#define UMPS_SERVICES_INCREMENTER_ITEMSREQUEST_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_INCREMENTREQUEST_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_INCREMENTREQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-#include "umps/services/incrementer/enums.hpp"
-namespace UMPS::Services::Incrementer
+#include "umps/proxyServices/incrementer/enums.hpp"
+namespace UMPS::ProxyServices::Incrementer
 {
-/// @class ItemsRequest "itemRequest.hpp" "umps/services/incrementer/itemRequest.hpp"
+/// @class IncrementRequest "incrementRequest.hpp" "umps/proxyServices/incrementer/incrementRequest.hpp"
 /// @brief To identify items (picks, events, origins, amplitudes, etc.) in the
 ///        processing pipeline we must assign them a unique object identifier.
 ///        The challenge in a distributed setting is that we need a single
 ///        entity that performs a lock-increment-unlock operation.  This is the
-///        mechanism for requesting the items being incremented.
+///        mechanism for requesting an identifier from that entity. 
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class ItemsRequest : public UMPS::MessageFormats::IMessage
+class IncrementRequest : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    ItemsRequest();
+    IncrementRequest();
     /// @brief Copy constructor.
     /// @param[in] request   The request from which to initialize this class.
-    ItemsRequest(const ItemsRequest &request);
+    IncrementRequest(const IncrementRequest &request);
     /// @brief Move constructor.
     /// @param[in,out] request  The request from which to initialize this class.
     ///                         On exit, request's behavior is undefined.
-    ItemsRequest(ItemsRequest &&request) noexcept;
+    IncrementRequest(IncrementRequest &&request) noexcept;
     /// @}
 
     /// @name Operators
@@ -35,12 +35,30 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] request   The request to copy to this.
     /// @result A deep copy of the the input request.
-    ItemsRequest& operator=(const ItemsRequest &request);
+    IncrementRequest& operator=(const IncrementRequest &request);
     /// @brief Move assignment operator.
     /// @param[in,out] request  The request whose memory will be moved to this.
     ///                         On exit, request's behavior is undefined.
     /// @result The memory from request moved to this.
-    ItemsRequest& operator=(ItemsRequest &&request) noexcept;
+    IncrementRequest& operator=(IncrementRequest &&request) noexcept;
+    /// @}
+
+    /// @name Required Information
+    /// @{
+
+    /// @brief This represents a custom item to be incremented.
+    /// @param[in] item  The item that (e.g., table name) that we are
+    ///                  requesting be incremented.   
+    /// @throws std::invalid_argument if the item is empty.
+    void setItem(const std::string &item);
+    /// @brief This defines a standard item to be incremented.
+    /// @param[in] item  The item whose identifier we are requesting be
+    ///                  incremented.
+    void setItem(Item item) noexcept;
+    /// @result The item identifier.
+    [[nodiscard]] std::string getItem() const;
+    /// @result True indicates that the item was set.
+    [[nodiscard]] bool haveItem() const noexcept;
     /// @}
 
     /// @name Optional Information
@@ -76,7 +94,7 @@ public:
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     virtual void fromMessage(const char *data, size_t length) override final;
     /// @result The message type.
-    [[nodiscard]] std::string getMessageType() const noexcept final;
+    [[nodiscard]] virtual std::string getMessageType() const noexcept final;
     /// @}
 
     /// @name Debugging Utilities
@@ -118,11 +136,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~ItemsRequest() override;
+    ~IncrementRequest() override;
     /// @}
 private:
-    class ItemsRequestImpl;
-    std::unique_ptr<ItemsRequestImpl> pImpl;
+    class IncrementRequestImpl;
+    std::unique_ptr<IncrementRequestImpl> pImpl;
 };
 }
 #endif

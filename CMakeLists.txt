@@ -13,16 +13,16 @@ find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(cppzmq REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
+find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(Doxygen)
 
-set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules) 
+set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 #set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindEarthworm_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindTBB_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindZeroMQ REQUIRED)
 #find_package(FindTime REQUIRED)
-find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(FindEarthworm)
 if (${FindEarthworm_FOUND})
    find_package(FindMiniSEED)
@@ -124,13 +124,6 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/socketDetails/xPublisher.cpp
     src/services/connectionInformation/socketDetails/xSubscriber.cpp
     src/services/connectionInformation/details.cpp
-    src/services/incrementer/counter.cpp
-    src/services/incrementer/incrementRequest.cpp
-    src/services/incrementer/incrementResponse.cpp
-    src/services/incrementer/itemsRequest.cpp
-    src/services/incrementer/itemsResponse.cpp
-    src/services/incrementer/options.cpp
-    #src/services/incrementer/service.cpp
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
     #src/proxyBroadcasts/dataPacket/proxy.cpp
@@ -152,6 +145,13 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/pick/subscriberOptions.cpp
     src/proxyServices/proxy.cpp
     src/proxyServices/proxyOptions.cpp
+    src/proxyServices/incrementer/counter.cpp
+    src/proxyServices/incrementer/incrementRequest.cpp
+    src/proxyServices/incrementer/incrementResponse.cpp
+    src/proxyServices/incrementer/itemsRequest.cpp
+    src/proxyServices/incrementer/itemsResponse.cpp
+    src/proxyServices/incrementer/options.cpp
+    #src/proxyServices/incrementer/service.cpp
     src/proxyServices/packetCache/circularBuffer.cpp
     src/proxyServices/packetCache/cappedCollection.cpp
     src/proxyServices/packetCache/dataRequest.cpp
@@ -184,8 +184,8 @@ set_target_properties(umps PROPERTIES
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 target_link_libraries(umps
-                      PUBLIC cppzmq ${SQLite3_LIBRARIES} Threads::Threads
-                      PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
+                      PUBLIC cppzmq Threads::Threads
+                      PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json ${SQLite3_LIBRARIES})
 target_include_directories(umps
                            PRIVATE spdlog::spdlog
                            PRIVATE ${cppzmq_INCLUDE_DIR}
@@ -216,21 +216,21 @@ set_target_properties(uOperator PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(uOperator PRIVATE umps Boost::program_options)
-if (${BUILD_EW})
-    add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
-    set_target_properties(broadcastWaveRing PROPERTIES
-                          CXX_STANDARD 20
-                          CXX_STANDARD_REQUIRED YES 
-                          CXX_EXTENSIONS NO) 
-    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options)
-endif()
+target_link_libraries(uOperator PRIVATE umps Boost::program_options Threads::Threads)
+
 add_executable(packetCache src/modules/services/packetCache.cpp)
 set_target_properties(packetCache PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_link_libraries(packetCache PRIVATE umps Boost::program_options)
+target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
+
+add_executable(incrementer src/modules/services/incrementer.cpp)
+set_target_properties(incrementer PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_link_libraries(incrementer PRIVATE umps Boost::program_options Threads::Threads)
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
 set_target_properties(uKeyPair PROPERTIES
@@ -246,6 +246,14 @@ set_target_properties(uUserTable PROPERTIES
                       CXX_EXTENSIONS NO) 
 target_link_libraries(uUserTable PRIVATE Boost::program_options umps)
 
+if (${BUILD_EW})
+    add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
+    set_target_properties(broadcastWaveRing PROPERTIES
+                          CXX_STANDARD 20
+                          CXX_STANDARD_REQUIRED YES 
+                          CXX_EXTENSIONS NO) 
+    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options Threads::Threads)
+endif()
 
 ##########################################################################################
 #                                      Python Wrapping                                   #

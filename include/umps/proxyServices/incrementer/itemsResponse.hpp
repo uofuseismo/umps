@@ -1,76 +1,69 @@
-#ifndef UMPS_SERVICES_INCREMENTER_INCREMENTREQUEST_HPP
-#define UMPS_SERVICES_INCREMENTER_INCREMENTREQUEST_HPP
+#ifndef UMPS_PROXYSERVICES_INCREMENTER_ITEMSRESPONSE_HPP
+#define UMPS_PROXYSERVICES_INCREMENTER_ITEMSRESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-#include "umps/services/incrementer/enums.hpp"
-namespace UMPS::Services::Incrementer
+#include "umps/proxyServices/incrementer/enums.hpp"
+namespace UMPS::ProxyServices::Incrementer
 {
-/// @class IncrementRequest "incrementRequest.hpp" "umps/services/incrementer/incrementRequest.hpp"
-/// @brief To identify items (picks, events, origins, amplitudes, etc.) in the
-///        processing pipeline we must assign them a unique object identifier.
-///        The challenge in a distributed setting is that we need a single
-///        entity that performs a lock-increment-unlock operation.  This is the
-///        mechanism for requesting an identifier from that entity. 
+/// @class ItemsResponse "itemsResponse.hpp" "umps/proxyServices/incrementer/itemsResponse.hpp"
+/// @brief This is a response to an items request.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class IncrementRequest : public UMPS::MessageFormats::IMessage
+class ItemsResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    IncrementRequest();
+    ItemsResponse();
     /// @brief Copy constructor.
-    /// @param[in] request   The request from which to initialize this class.
-    IncrementRequest(const IncrementRequest &request);
+    /// @param[in] response  The response from which to initialize this class.
+    ItemsResponse(const ItemsResponse &response);
     /// @brief Move constructor.
-    /// @param[in,out] request  The request from which to initialize this class.
-    ///                         On exit, request's behavior is undefined.
-    IncrementRequest(IncrementRequest &&request) noexcept;
+    /// @param[in,out] response  The response from which to initialize this
+    ///                          class.  On exit, response's behavior is
+    ///                          undefined.
+    ItemsResponse(ItemsResponse &&response) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment operator.
-    /// @param[in] request   The request to copy to this.
-    /// @result A deep copy of the the input request.
-    IncrementRequest& operator=(const IncrementRequest &request);
+    /// @param[in] response   The response to copy to this.
+    /// @result A deep copy of the the input response.
+    ItemsResponse& operator=(const ItemsResponse &response);
     /// @brief Move assignment operator.
-    /// @param[in,out] request  The request whose memory will be moved to this.
-    ///                         On exit, request's behavior is undefined.
-    /// @result The memory from request moved to this.
-    IncrementRequest& operator=(IncrementRequest &&request) noexcept;
+    /// @param[in,out] response  The response whose memory will be moved to this.
+    ///                          On exit, response's behavior is undefined.
+    /// @result The memory from response moved to this.
+    ItemsResponse& operator=(ItemsResponse &&response) noexcept;
     /// @}
 
-    /// @name Required Information
+    /// @name Response Information
     /// @{
 
-    /// @brief This represents a custom item to be incremented.
-    /// @param[in] item  The item that (e.g., table name) that we are
-    ///                  requesting be incremented.   
-    /// @throws std::invalid_argument if the item is empty.
-    void setItem(const std::string &item);
-    /// @brief This defines a standard item to be incremented.
-    /// @param[in] item  The item whose identifier we are requesting be
-    ///                  incremented.
-    void setItem(Item item) noexcept;
-    /// @result The item identifier.
-    [[nodiscard]] std::string getItem() const;
-    /// @result True indicates that the item was set.
-    [[nodiscard]] bool haveItem() const noexcept;
-    /// @}
+    /// @brief Sets the increment value.
+    /// @param[in] items  The unique item names to set.
+    void setItems(const std::set<std::string> &items);
+    /// @result The items being incremented.
+    /// @throws std::runtime_error if the \c haveItems() is false.
+    [[nodiscard]] std::set<std::string> getItems() const;
+    /// @result True indicates that the increment value was set.
+    [[nodiscard]] bool haveItems() const noexcept;
 
-    /// @name Optional Information
-    /// @{
-
-    /// @brief For asynchronous messaging this allows the requester to index
-    ///        the request.  This value will be returned so the requester
-    ///        can track which request was filled by the response.
-    /// @param[in] identifier   The request identifier.
+    /// @brief Sets the request identifier.
+    /// @param[in] identifier  The request identifier.
     void setIdentifier(uint64_t identifier) noexcept;
     /// @result The request identifier.
     [[nodiscard]] uint64_t getIdentifier() const noexcept;
+
+    /// @brief Allows the incrementer to set its return code and signal to
+    ///        the requester whether or not the increment was successful.
+    /// @param[in] code   The return code.
+    void setReturnCode(ReturnCode code) noexcept;
+    /// @result The return code from the incrementer.
+    [[nodiscard]] ReturnCode getReturnCode() const noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -79,7 +72,7 @@ public:
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.
-    [[nodiscard]] virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
+    virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
     /// @brief Converts the packet class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
@@ -93,18 +86,17 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     virtual void fromMessage(const char *data, size_t length) override final;
-    /// @result The message type.
-    [[nodiscard]] virtual std::string getMessageType() const noexcept final;
+    /// @result The message type - e.g., "DataPacket".
+    [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
 
-    /// @name Debugging Utilities
+    /// @name (De)serialization Utilities
     /// @{
 
-    /// @brief Creates the class from a JSON request message.
+    /// @brief Creates the class from a JSON response message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
-    /// @brief Converts the request class to a JSON message.  This is useful
-    ///        for debugging.
+    /// @brief Converts the response class to a JSON message.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message
     ///       transmission.
@@ -128,7 +120,7 @@ public:
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 
     [[nodiscard]] std::string toCBOR() const;
-    /// @}
+    /// @} 
  
     /// @name Destructors
     /// @{
@@ -136,11 +128,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~IncrementRequest() override;
+    ~ItemsResponse() override;
     /// @}
 private:
-    class IncrementRequestImpl;
-    std::unique_ptr<IncrementRequestImpl> pImpl;
+    class ItemsResponseImpl;
+    std::unique_ptr<ItemsResponseImpl> pImpl;
 };
 }
 #endif
