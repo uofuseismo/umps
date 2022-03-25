@@ -67,7 +67,7 @@ public:
     /// @brief Receives a pick message.
     /// @throws std::invalid_argument if the message cannot be serialized.
     /// @throws std::runtime_error if \c isIinitialized() is false.
-    [[nodiscard]] std::unique_ptr<Pick> receive() const;
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::Pick> receive() const;
 
     /// @brief Destructor. 
     ~Subscriber();
