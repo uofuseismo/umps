@@ -12,8 +12,11 @@
 #include "umps/proxyServices/incrementer/itemsRequest.hpp"
 #include "umps/proxyServices/incrementer/itemsResponse.hpp"
 #include "umps/proxyServices/incrementer/replierOptions.hpp"
+#include "umps/proxyServices/incrementer/requestorOptions.hpp"
 #include "umps/proxyServices/incrementer/counter.hpp"
 #include "umps/proxyServices/incrementer/options.hpp"
+#include "umps/messaging/routerDealer/requestOptions.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -46,6 +49,35 @@ TEST(Incrementer, Options)
     EXPECT_EQ(options.getIncrement(), 84);
     EXPECT_EQ(options.getBackendAddress(), "tcp://localhost:5560");
     EXPECT_EQ(options.getVerbosity(), UMPS::Logging::Level::DEBUG); //static_cast<UMPS::Logging::Level> (2));
+}
+
+TEST(Incrementer, RequestOptions)
+{
+    const std::string frontendAddress = "tcp://127.0.0.1:5555";
+    const int hwm = 100;
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+    UMPSIC::RequestorOptions options;
+    options.setAddress(frontendAddress);
+    options.setHighWaterMark(hwm);
+    options.setZAPOptions(zapOptions);
+
+    UMPSIC::RequestorOptions optionsCopy(options);
+
+    EXPECT_EQ(optionsCopy.getAddress(), frontendAddress);
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
+    EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+    auto messages = optionsCopy.getRequestOptions().getMessageFormats();
+    UMPSIC::ItemsResponse itemsResponse;
+    UMPSIC::IncrementResponse incrementResponse;
+    EXPECT_TRUE(messages.contains(itemsResponse.getMessageType()));
+    EXPECT_TRUE(messages.contains(incrementResponse.getMessageType()));
+
+    
+
+    options.clear();
+    EXPECT_EQ(options.getHighWaterMark(), 2048);//1024);
 }
 
 TEST(Incrementer, ReplierOptions)
