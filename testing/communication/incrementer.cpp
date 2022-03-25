@@ -76,7 +76,6 @@ void client()
         auto names = itemsReply->getItems();
         for (const auto &name : referenceItems)
         {
-std::cout << name << std::endl;
             EXPECT_TRUE(names.contains(name));
         }
     }
@@ -96,6 +95,8 @@ std::cout << name << std::endl;
     
 }
 
+/*
+// N.B. This works I just did it the other way to test something
 void service()
 {
     // Make a packet cache
@@ -120,6 +121,7 @@ void service()
     std::this_thread::sleep_for(std::chrono::seconds(2));
     EXPECT_NO_THROW(server.stop());
 }
+*/
 
 TEST(Communication, Incrementer)
 {
