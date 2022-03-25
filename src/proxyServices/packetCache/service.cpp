@@ -85,6 +85,9 @@ public:
     /// @brief Starts the service
     void start()
     {
+        stop();
+        setRunning(true); 
+        std::lock_guard<std::mutex> lockGuard(mMutex);
         // Start thread to read messages from broadcast and put into queue
         mLogger->debug("Starting data packet subscriber thread...");
         mDataPacketSubscriberThread

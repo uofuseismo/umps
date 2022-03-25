@@ -202,58 +202,13 @@ int main(int argc, char *argv[])
     {
         logger.info(e.what());
     }  
-
-/*
-    logger.info("Getting available services...");
-    std::vector<UServices::ConnectionInformation::Details> connectionDetails;
-    try
-    {
-        connectionDetails = UServices::ConnectionInformation::getConnections(
-                                 options.operatorAddress,
-                                 options.mZAPOptions);
-    }
-    catch (const std::exception &e)
-    {
-        logger.error("Error getting services: " + std::string(e.what()));
-        return EXIT_FAILURE;
-    }
-    // Connect so that I may publish to appropriate broadcast - e.g., DataPacket
-    std::string packetAddress;
-    std::string heartbeatAddress;
-    for (const auto &connectionDetail : connectionDetails)
-    {
-        if (connectionDetail.getName() == options.dataBroadcastName)
-        {
-            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
-            auto frontendSocketDetails
-                = proxySocketDetails.getXSubscriberFrontend();
-            packetAddress = frontendSocketDetails.getAddress();
-        }
-        if (connectionDetail.getName() == options.heartbeatBroadcastName)
-        {
-            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
-            auto frontendSocketDetails
-                = proxySocketDetails.getXSubscriberFrontend();
-            heartbeatAddress = frontendSocketDetails.getAddress();
-        }
-    }
-    if (packetAddress.empty())
-    {
-        logger.error("Failed to find " + options.dataBroadcastName 
-                   + " broadcast");
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        logger.info("Will connect to " + options.dataBroadcastName
-                  + " at " + packetAddress); 
-    }
-*/
     // Connect to proxy
     UMPS::ProxyBroadcasts::DataPacket::PublisherOptions publisherOptions;
     publisherOptions.setAddress(packetAddress);
     publisherOptions.setZAPOptions(options.mZAPOptions);
-    auto publisher = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Publisher> (loggerPtr);
+    auto publisher
+        = std::make_shared<UMPS::ProxyBroadcasts::DataPacket::Publisher>
+          (loggerPtr);
     publisher->initialize(publisherOptions);
 #ifndef NDEBUG
     assert(publisher->isInitialized());
@@ -314,45 +269,9 @@ int main(int argc, char *argv[])
             std::cout << "  help  Prints this message" << std::endl;
         }
     }
-/*
-    // Forward messages from earthworm to UMPS indefinitely
-    auto lastHeartBeat = std::chrono::high_resolution_clock::now(); 
-    for (int i = 0; i < 10; ++i)
-    {
-        // Read from the earthworm ring
-        waveRing->read();
-        auto nMessages = waveRing->getNumberOfTraceBuf2Messages();
-        auto traceBuf2MessagesPtr = waveRing->getTraceBuf2MessagesPointer();
-        // Now broadcast the tracebufs as datapacket messages
-        int nSent = 0;
-        for (int iMessage = 0; iMessage < nMessages; ++iMessage)
-        {
-            // Send it
-            try
-            {
-                auto dataPacket = traceBuf2MessagesPtr[iMessage].toDataPacket();
-                publisher->send(dataPacket);
-                nSent = nSent + 1;
-            }
-            catch (const std::exception &e)
-            {
-                logger.error(e.what());
-            }
-        }
-        //std::cout << "Sent: " << nSent << std::endl;
-        // Is it time to send a heartbeat?
-        auto newHeartBeat = std::chrono::high_resolution_clock::now();
-        auto heartBeatDuration
-            = std::chrono::duration_cast<std::chrono::seconds>
-             (newHeartBeat - lastHeartBeat);
-        if (heartBeatDuration > options.heartBeatInterval)
-        {
-            lastHeartBeat = newHeartBeat;
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-*/
+    logger.info("Exiting...");
     broadcastThread.join(); 
+    logger.info("Program finished");
     return EXIT_SUCCESS;
 }
 

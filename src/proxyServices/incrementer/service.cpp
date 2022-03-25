@@ -63,6 +63,8 @@ public:
     void start()
     {
         stop();
+        setRunning(true);
+        std::lock_guard<std::mutex> lockGuard(mMutex);
 #ifndef NDEBUG
         assert(mIncrementerReplier->isInitialized());
 #endif
