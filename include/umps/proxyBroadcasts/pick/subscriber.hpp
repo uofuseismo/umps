@@ -4,6 +4,10 @@
 #include "umps/authentication/enums.hpp"
 namespace UMPS
 {
+ namespace Logging
+ {
+  class ILog;
+ }
  namespace MessageFormats
  {
   class IMessage;
@@ -21,6 +25,10 @@ namespace UMPS
   class Subscriber;
  }
 }
+namespace zmq 
+{
+ class context_t;
+}
 namespace UMPS::ProxyBroadcasts::Pick
 {
 /// @class Subscriber "subscriber.hpp" "umps/proxyBroadcasts/pick/subscriber.hpp"
@@ -33,6 +41,19 @@ public:
     /// @{
     /// @brief Constructor.
     Subscriber();
+    /// @brief Constructs a subscriber with the given logger.
+    /// @param[in] logger  A pointer to the application's logger.
+    explicit Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructs a subscriber with a given ZeroMQ context.
+    /// @param[in] context  The context from which to initialize.
+    /// @note This can be useful for inproc communication where a separate
+    ///       thread IO thread is not required.  In this case, the context
+    ///       can be made with:
+    ///       auto context = std::shared_ptr<zmq::context_t> (0).
+    explicit Subscriber(std::shared_ptr<zmq::context_t> &context);
+    /// @brief Construtcs a subscriber with a given ZeroMQ context and logger.
+    Subscriber(std::shared_ptr<zmq::context_t> &context,
+               std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] subscriber  The subscriber from which to initialize this
     ///                            class.  On exit, subscriber's behavior is
@@ -55,11 +76,6 @@ public:
     void initialize(const SubscriberOptions &options);
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
-    /// @result The socket endpoint.
-    /// @throws std::runtime_error if \c isInitialized() is true.
-    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
     /// @result The connection details for this socket.
     /// @throws std::runtime_error if \c isInitialized() is false. 
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Subscriber getSocketDetails() const;
