@@ -52,7 +52,7 @@ public:
     /// Stops the proxy and authenticator and joins threads
     void stop()
     {
-        mLogger->debug("PacketCache stopping threads...");
+        mLogger->debug("Incrementer stopping threads...");
         setRunning(false);
         if (mIncrementerReplier != nullptr)
         {
@@ -68,10 +68,13 @@ public:
 #ifndef NDEBUG
         assert(mIncrementerReplier->isInitialized());
 #endif
+        mLogger->debug("Starting the replier...");
         mIncrementerReplier->start();
+#ifndef NDEBUG
+        assert(mIncrementerReplier->isRunning());
+#endif
     }
-    /// @result True indicates the data packet subscriber should keep receiving
-    ///         messages and putting the results in the circular buffer.
+    /// @result True indicates the threads should keep running
     [[nodiscard]] bool keepRunning() const
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
@@ -138,7 +141,7 @@ void Service::initialize(const Options &options)
                                        "Event",
                                        "Magnitude",
                                        "Origin",
-                                       "PhasPick",
+                                       "PhasePick",
                                        "PhaseArrival"};
     for (const auto &item : defaultItems)
     {

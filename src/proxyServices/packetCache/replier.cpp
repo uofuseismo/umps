@@ -37,7 +37,7 @@ public:
         {
             mLogger = logger;
         }
-        mReplier= std::make_unique<URouterDealer::Reply> (context, mLogger);
+        mReplier = std::make_unique<URouterDealer::Reply> (context, mLogger);
     }
     /// Destructor
     ~ReplierImpl()
@@ -165,6 +165,7 @@ public:
     {
         stop();
         mReplierThread = std::thread(&URouterDealer::Reply::start, &*mReplier);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
@@ -246,8 +247,10 @@ void Replier<T>::initialize(
                                                std::placeholders::_1,
                                                std::placeholders::_2,
                                                std::placeholders::_3));
-    //pImpl->createReplyOptions(options);
     pImpl->mReplier->initialize(pImpl->mReplyOptions);
+#ifndef NDEBUG
+    assert(pImpl->mReplier->isInitialized());
+#endif
     pImpl->mInitialized = true;
 }
 

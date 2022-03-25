@@ -100,8 +100,7 @@ public:
         mLogger->debug("Starting replier service...");
         mPacketCacheReplier->start();
     }
-    /// @result True indicates the data packet subscriber should keep receiving
-    ///         messages and putting the results in the circular buffer.
+    /// @result True indicates the threads should keep running
     [[nodiscard]] bool keepRunning() const
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);

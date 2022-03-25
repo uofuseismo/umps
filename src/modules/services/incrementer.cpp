@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
-    logger.debug("Getting available services...");
+    logger.info("Getting available services...");
     std::string incrementerProxyBackendAddress;
     try
     {
@@ -92,14 +92,16 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     // Set the connection details
-    UIncrementer::Service service;
+    UIncrementer::Service service(loggerPtr);
     auto incrementerOptions = options.mIncrementerOptions; 
     try
     {
+        logger.info("Initializing the incrementer...");
         service.initialize(incrementerOptions);
 #ifndef NDEBUG
         assert(service.isInitialized());
 #endif
+        logger.info("Starting the incrementer service...");
         service.start();
     }
     catch (const std::exception &e)
@@ -131,9 +133,9 @@ int main(int argc, char *argv[])
             std::cout << "  help      Prints this message" << std::endl;
         }
     }
-    logger.debug("Stopping services...");
+    logger.info("Stopping services...");
     service.stop();
-    logger.debug("Program finished");
+    logger.info("Program finished");
     return EXIT_SUCCESS;
 }
 
@@ -221,6 +223,8 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();
     options.mConnectionInformationRequestOptions = requestOptions;
     options.mConnectionInformationRequestOptions.setZAPOptions(
+        options.mZAPOptions);
+    options.mIncrementerOptions.setZAPOptions(
         options.mZAPOptions);
 
     return options;

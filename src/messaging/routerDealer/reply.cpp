@@ -53,16 +53,8 @@ public:
         std::scoped_lock lock(mMutex);
         mRunning = running;
     }
-    /// Indicate that the service is stopped/not running
-/*
-    void stop()
-    {
-        std::scoped_lock lock(mMutex);
-        mRunning = false;
-    }
-*/
     /// Determines if the service was started
-    bool isRunning() const noexcept
+    [[nodiscard]] bool isRunning() const noexcept
     {
         std::scoped_lock lock(mMutex);
         return mRunning;

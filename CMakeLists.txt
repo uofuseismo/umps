@@ -333,7 +333,8 @@ set(TEST_COMMUNICATION_SRC
     testing/communication/xpubxsub.cpp
     testing/communication/routerDealer.cpp
     testing/communication/dataPacket.cpp
-    testing/communication/packetCache.cpp)
+    testing/communication/packetCache.cpp
+    testing/communication/incrementer.cpp)
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
 set_target_properties(commTests PROPERTIES
                       CXX_STANDARD 20

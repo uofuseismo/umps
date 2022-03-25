@@ -375,7 +375,8 @@ public:
         if (!std::filesystem::exists(filePath))
         {
             auto parentPath = filePath.parent_path();
-            if (!std::filesystem::exists(parentPath))
+            if (!parentPath.empty() &&
+                !std::filesystem::exists(parentPath))
             {
                 if (!std::filesystem::create_directories(parentPath))
                 {

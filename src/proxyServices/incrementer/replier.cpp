@@ -13,7 +13,6 @@
 #include "umps/proxyServices/incrementer/incrementResponse.hpp"
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
-#include "umps/messageFormats/dataPacket.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/stdout.hpp"
 
@@ -144,6 +143,7 @@ public:
     {
         stop();
         mReplierThread = std::thread(&URouterDealer::Reply::start, &*mReplier);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
@@ -217,8 +217,10 @@ void Replier::initialize(
                                                std::placeholders::_1,
                                                std::placeholders::_2,
                                                std::placeholders::_3));
-    //pImpl->createReplyOptions(options);
     pImpl->mReplier->initialize(pImpl->mReplyOptions);
+#ifndef NDEBUG
+    assert(pImpl->mReplier->isInitialized());
+#endif
     pImpl->mInitialized = true;
 }
 
