@@ -38,6 +38,8 @@ nlohmann::json toJSONObject(const Pick &pick)
     }
     // Polarity
     obj["Polarity"] = static_cast<int> (pick.getPolarity()); 
+    // Review
+    obj["ReviewStatus"] = static_cast<int> (pick.getReviewStatus());
     // Algorithm
     obj["Algorithm"] = pick.getAlgorithm();
     return obj;
@@ -60,6 +62,8 @@ Pick objectToPick(const nlohmann::json &obj)
     // Optional stuff
     pick.setPolarity(
         static_cast<Pick::Polarity> (obj["Polarity"].get<int> ()));
+    pick.setReviewStatus(
+        static_cast<Pick::ReviewStatus> (obj["ReviewStatus"].get<int> ()));
     if (!obj["PhaseHint"].is_null())
     {
         pick.setPhaseHint(obj["PhaseHint"].get<std::string> ());
@@ -98,6 +102,7 @@ public:
     double mTime = 0;
     uint64_t mIdentifier = 0;
     Pick::Polarity mPolarity = Pick::Polarity::UNKNOWN;
+    Pick::ReviewStatus mReviewStatus = Pick::ReviewStatus::AUTOMATIC;
     bool mHaveTime = false;
     bool mHaveIdentifier = false;
 };
@@ -151,6 +156,7 @@ void Pick::clear() noexcept
     pImpl->mTime = 0;
     pImpl->mIdentifier = 0;
     pImpl->mPolarity = Pick::Polarity::UNKNOWN;
+    pImpl->mReviewStatus = Pick::ReviewStatus::AUTOMATIC;
     pImpl->mHaveTime = false;
     pImpl->mHaveIdentifier = false;
 }
@@ -275,6 +281,17 @@ void Pick::setPolarity(const Pick::Polarity polarity) noexcept
 Pick::Polarity Pick::getPolarity() const noexcept
 {
     return pImpl->mPolarity;
+}
+
+/// Review status
+void Pick::setReviewStatus(const Pick::ReviewStatus status) noexcept
+{
+    pImpl->mReviewStatus = status;
+}
+
+Pick::ReviewStatus Pick::getReviewStatus() const noexcept
+{
+    return pImpl->mReviewStatus;
 }
 
 /// Algorithm

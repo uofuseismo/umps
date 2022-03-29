@@ -24,6 +24,7 @@ TEST(PickTest, Pick)
     const std::string algorithm = "autoPicker";
     const double time = 500;
     auto polarity = Pick::Polarity::UP;
+    auto reviewStatus = Pick::ReviewStatus::MANUAL;
 
     pick.setIdentifier(pickID);
     pick.setTime(time);
@@ -33,6 +34,7 @@ TEST(PickTest, Pick)
     EXPECT_NO_THROW(pick.setLocationCode(locationCode));
     EXPECT_EQ(pick.getMessageType(), MESSAGE_TYPE);
     pick.setPolarity(polarity);
+    pick.setReviewStatus(reviewStatus);
     pick.setPhaseHint(phaseHint);
     pick.setAlgorithm(algorithm);
 
@@ -45,6 +47,7 @@ TEST(PickTest, Pick)
     EXPECT_EQ(pickCopy.getChannel(), channel);
     EXPECT_EQ(pickCopy.getLocationCode(), locationCode);
     EXPECT_EQ(pickCopy.getPolarity(), polarity);
+    EXPECT_EQ(pickCopy.getReviewStatus(), reviewStatus);
     EXPECT_EQ(pickCopy.getPhaseHint(), phaseHint);
     EXPECT_EQ(pickCopy.getAlgorithm(), algorithm);
 
@@ -52,6 +55,7 @@ TEST(PickTest, Pick)
 
     pick.clear();
     EXPECT_EQ(pick.getPolarity(), Pick::Polarity::UNKNOWN);
+    EXPECT_EQ(pick.getReviewStatus(), Pick::ReviewStatus::AUTOMATIC);
     EXPECT_TRUE(pick.getPhaseHint().empty());
     EXPECT_EQ(pick.getAlgorithm(), "unspecified");
 
@@ -63,6 +67,7 @@ TEST(PickTest, Pick)
     EXPECT_EQ(pick.getChannel(), channel);
     EXPECT_EQ(pick.getLocationCode(), locationCode);
     EXPECT_EQ(pick.getPolarity(), polarity);
+    EXPECT_EQ(pick.getReviewStatus(), reviewStatus);
     EXPECT_EQ(pick.getPhaseHint(), phaseHint);
     EXPECT_EQ(pick.getAlgorithm(), algorithm);
 
@@ -76,6 +81,7 @@ TEST(PickTest, Pick)
     EXPECT_EQ(pick.getChannel(), channel);
     EXPECT_EQ(pick.getLocationCode(), locationCode);
     EXPECT_EQ(pick.getPolarity(), polarity);
+    EXPECT_EQ(pick.getReviewStatus(), reviewStatus);
     EXPECT_EQ(pick.getPhaseHint(), phaseHint);
     EXPECT_EQ(pick.getAlgorithm(), algorithm);
 
@@ -89,6 +95,7 @@ TEST(PickTest, Pick)
     EXPECT_EQ(pick.getChannel(), channel);
     EXPECT_EQ(pick.getLocationCode(), locationCode);
     EXPECT_EQ(pick.getPolarity(), polarity);
+    EXPECT_EQ(pick.getReviewStatus(), reviewStatus);
     EXPECT_EQ(pick.getPhaseHint(), phaseHint);
     EXPECT_EQ(pick.getAlgorithm(), algorithm);
 }
