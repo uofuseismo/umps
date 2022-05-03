@@ -7,6 +7,8 @@
 #include "umps/proxyServices/packetCache/replier.hpp"
 #include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
+#include "umps/proxyServices/packetCache/bulkDataRequest.hpp"
+#include "umps/proxyServices/packetCache/bulkDataResponse.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
@@ -20,6 +22,45 @@
 using namespace UMPS::ProxyServices::PacketCache;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
+
+namespace
+{
+
+template<typename T>
+void performDataRequest(const DataRequest &dataRequest,
+                        const CappedCollection<T> &mCappedCollection,
+                        DataResponse<T> *response)
+{
+    // Does this SNCL exist in the cache?
+    auto name = dataRequest.getNetwork() + "." 
+              + dataRequest.getStation() + "." 
+              + dataRequest.getChannel() + "." 
+              + dataRequest.getLocationCode();
+    auto haveSensor = mCappedCollection.haveSensor(name);
+    if (haveSensor)
+    {
+        auto [startTime, endTime] = dataRequest.getQueryTimes();
+        try
+        {
+            auto packets = mCappedCollection.getPackets(name,
+                                                        startTime,
+                                                        endTime);
+            response->setPackets(packets);
+        }
+        catch (const std::exception &e) 
+        {
+            auto errorMessage = "Query failed with: " + std::string {e.what()};
+            response->setReturnCode(ReturnCode::ALGORITHM_FAILURE);
+            throw std::runtime_error(errorMessage);
+        }
+   }
+   else
+   {
+       response->setReturnCode(ReturnCode::NO_SENSOR);
+   }
+}
+
+}
 
 template<class T>
 class Replier<T>::ReplierImpl
@@ -56,7 +97,7 @@ public:
         {
             mLogger->debug("Data request received");
             // Deserialize the message
-            PacketCache::DataResponse<T> response;
+            DataResponse<T> response;
             try
             {
                 dataRequest.fromMessage(
@@ -70,6 +111,17 @@ public:
                 return response.clone();
             }
             // Does this SNCL exist in the cache?
+            try
+            {
+                performDataRequest(dataRequest,
+                                   *mCappedCollection,
+                                   &response);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error(e.what());
+            }
+            /*
             auto name = dataRequest.getNetwork() + "."
                       + dataRequest.getStation() + "."
                       + dataRequest.getChannel() + "."
@@ -98,7 +150,49 @@ public:
                 response.setReturnCode(ReturnCode::NO_SENSOR);
                 return response.clone();
             }
+            */
             mLogger->debug("Replying to data request");
+            return response.clone();
+        }
+        // Bulk data request
+        BulkDataRequest bulkDataRequest;
+        if (messageType == bulkDataRequest.getMessageType())
+        {
+            mLogger->debug("Bulk data request received");
+            // Deserialize the message
+            PacketCache::BulkDataResponse<T> response;
+            try
+            {
+                bulkDataRequest.fromMessage(
+                    static_cast<const char *> (messageContents), length);
+                response.setIdentifier(bulkDataRequest.getIdentifier());
+            }
+            catch (...)
+            {
+                mLogger->error("Received invalid data request");
+                response.setReturnCode(ReturnCode::INVALID_MESSAGE);
+                return response.clone();
+            }
+            auto nRequests = bulkDataRequest.getNumberOfDataRequests();
+            const auto dataRequests = bulkDataRequest.getDataRequestsPointer();
+            for (int iRequest = 0; iRequest < nRequests; ++iRequest)
+            {
+                DataResponse<T> dataResponse;
+                dataResponse.setIdentifier(
+                    dataRequests[iRequest].getIdentifier());
+                try
+                {
+                    performDataRequest(dataRequests[iRequest],
+                                       *mCappedCollection,
+                                       &dataResponse);
+                }
+                catch (const std::exception &e)
+                {
+                    mLogger->error(e.what());
+                }
+                response.addDataResponse(std::move(dataResponse));
+            }
+            mLogger->debug("Replying to bulk data request");
             return response.clone();
         }
         // Get sensors

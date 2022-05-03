@@ -20,7 +20,9 @@ namespace UMPS
  namespace ProxyServices::PacketCache
  {
   class RequestorOptions;
+  class BulkDataRequest;
   class DataRequest;
+  template<class T> class BulkDataResponse;
   template<class T> class DataResponse;
   class SensorRequest;
   class SensorResponse;
@@ -96,6 +98,16 @@ public:
     /// @result The response to the data request from the server.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] std::unique_ptr<DataResponse<double>> request(const DataRequest &request);
+    /// @brief Performs a blocking bulk data request for data in the packet
+    ///        cache.
+    /// @param[in] request  The collection of data requests to make to the
+    ///                     the server via the router.
+    /// @result The corresponding responses to the collection of individual
+    ///         requests aggregrated in request.
+    /// @throws std::invalid_argument if there are no data requests in the
+    ///         bulk request.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::unique_ptr<BulkDataResponse<double>> request(const BulkDataRequest &request);
     /// @}
 
     /// @name Step 3: Disconnecting

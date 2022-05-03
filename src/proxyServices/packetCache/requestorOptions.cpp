@@ -2,6 +2,7 @@
 #include <string>
 #include <chrono>
 #include "umps/proxyServices/packetCache/requestorOptions.hpp"
+ #include "umps/proxyServices/packetCache/bulkDataResponse.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
@@ -21,10 +22,13 @@ public:
         mOptions.setHighWaterMark(2048);
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataResponse
             = std::make_unique<DataResponse<double>> ();
+        std::unique_ptr<UMPS::MessageFormats::IMessage> bulkResponse
+            = std::make_unique<BulkDataResponse<double>> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> sensorResponse
             = std::make_unique<SensorResponse> ();
         UMPS::MessageFormats::Messages messageFormats;
         messageFormats.add(dataResponse);
+        messageFormats.add(bulkResponse);
         messageFormats.add(sensorResponse);
         mOptions.setMessageFormats(messageFormats);
 

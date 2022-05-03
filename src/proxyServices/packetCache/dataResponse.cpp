@@ -98,7 +98,7 @@ DataResponse<T> objectToDataResponse(const nlohmann::json &obj)
         }
         response.setPackets(std::move(packets));
     }
-    response.setIdentifier(obj["Identifier"]);
+    response.setIdentifier(obj["Identifier"].get<uint64_t> ());
     response.setReturnCode(static_cast<ReturnCode>
                            (obj["ReturnCode"].get<int> ()));
     return response;
@@ -312,16 +312,29 @@ std::string DataResponse<T>::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Create JSON
+template<class T>
+std::string DataResponse<T>::toJSON(const int nIndent) const
+{
+    auto obj = toJSONObject(*this);
+    return obj.dump(nIndent);
+}
+
 /// Create CBOR
 template<class T>
 std::string DataResponse<T>::toCBOR() const
 {
-//std::cout << "cbor'ing" << std::endl;
     auto obj = toJSONObject(*this);
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
-//std::cout << "cbor out" << result.size() <<  std::endl;
     return result;
+}
+
+/// From JSON
+template<class T>
+void DataResponse<T>::fromJSON(const std::string &message)
+{
+    *this = fromJSONMessage<T>(message);
 }
 
 /// From CBOR

@@ -76,7 +76,7 @@ public:
     uint64_t mIdentifier = 0;
     const double mMaxTime
         = static_cast<double> (std::numeric_limits<uint32_t>::max());
-    double mStartTime = std::numeric_limits<double>::lowest();
+    double mStartTime = -mMaxTime; //std::numeric_limits<double>::lowest();
     double mEndTime = mMaxTime; //16725225600; // Year 2500 is 16725225600
 };
 

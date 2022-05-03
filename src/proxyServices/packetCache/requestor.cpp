@@ -5,6 +5,8 @@
 #include "umps/proxyServices/packetCache/requestorOptions.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
+#include "umps/proxyServices/packetCache/bulkDataRequest.hpp"
+#include "umps/proxyServices/packetCache/bulkDataResponse.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
@@ -109,7 +111,6 @@ std::unique_ptr<SensorResponse> Requestor::request(const SensorRequest &request)
 }
 
 /// Request data
-//template<>
 std::unique_ptr<DataResponse<double>> 
     Requestor::request(const DataRequest &request)
 {
@@ -122,6 +123,20 @@ std::unique_ptr<DataResponse<double>>
     }
     auto response 
         = static_unique_pointer_cast<DataResponse<double>>
+          (pImpl->mRequestor->request(request));
+    return response;
+}
+
+/// Bulk data request
+std::unique_ptr<BulkDataResponse<double>>
+    Requestor::request(const BulkDataRequest &request) 
+{
+    if (request.getNumberOfDataRequests() < 1)
+    { 
+        throw std::invalid_argument("No requests");
+    }
+    auto response
+        = static_unique_pointer_cast<BulkDataResponse<double>>
           (pImpl->mRequestor->request(request));
     return response;
 }
