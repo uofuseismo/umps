@@ -105,6 +105,7 @@ set(MESSAGING_SRC
     src/messaging/xPublisherXSubscriber/publisher.cpp
     src/messaging/xPublisherXSubscriber/publisherOptions.cpp)
 set(MODULES_LIBSRC
+    src/modules/module.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp

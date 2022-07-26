@@ -101,3 +101,8 @@ void Publisher::send(const Status &message)
     pImpl->mPublisher->send(message); 
 }
 
+/// Disconnect
+void Publisher::disconnect()
+{
+    pImpl->mPublisher->disconnect();
+}

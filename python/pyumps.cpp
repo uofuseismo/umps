@@ -11,7 +11,7 @@ PYBIND11_MODULE(pyumps, m)
 {
     m.attr("__version__") = UMPS_VERSION;
     m.attr("__name__") = "pyumps";
-    m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismgoraph Stations Message Passing System (UMPS).";
+    m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismograph Stations Message Passing System (UMPS).";
     // Enums
     pybind11::enum_<UMPS::Authentication::SecurityLevel> (m, "SecurityLevel")
         .value("Grasslands", UMPS::Authentication::SecurityLevel::GRASSLANDS,

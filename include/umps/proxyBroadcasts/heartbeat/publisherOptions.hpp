@@ -29,6 +29,7 @@ class PublisherOptions
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     PublisherOptions();
     /// @brief Copy constructor.
@@ -42,6 +43,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] options  The options to copy to this.
     /// @result A deep copy of the input options.
@@ -55,6 +57,7 @@ public:
 
     /// @name Publisher Options
     /// @{
+
     /// @brief Sets the address to which the publisher will connect.
     /// @throws std::invalid_argument if the address is empty.
     void setAddress(const std::string &address);
@@ -75,8 +78,8 @@ public:
     [[nodiscard]] int getHighWaterMark() const noexcept;
 
     /// @brief If the publisher waits the timeOut length of time before
-    ///        sending a message then it will without having sent the message.
-    ///        This is useful when the publisher thread has other
+    ///        sending a message then it will exit without having sent the
+    ///        message.  This is useful when the publisher thread has other
     ///        responsibilities.
     /// @param[in] timeOut   The time out duration in milliseconds.  If this is
     ///                      zero then the subscriber will immediately return.
@@ -89,6 +92,7 @@ public:
 
     /// @name ZeroMQ Authentication Protocol Options
     /// @{
+
     /// @brief Defines the ZAP options to be used when configuring the socket.
     /// @param[in] options  The ZAP options.
     void setZAPOptions(const UMPS::Authentication::ZAPOptions &options);
@@ -103,6 +107,7 @@ public:
  
     /// @name Destructors
     /// @{
+
     /// @brief Resets class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.

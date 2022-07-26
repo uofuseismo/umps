@@ -87,6 +87,10 @@ public:
     /// @name Destructors
     /// @{
 
+    /// @brief Disconnects from the publisher.
+    /// @note The class will need to be initialized again to restore the
+    ///       connection.
+    void disconnect();
     /// @brief Destructor.
     ~Publisher();
     /// @}
