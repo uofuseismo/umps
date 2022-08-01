@@ -1,0 +1,31 @@
+namespace UMPS
+{
+/*!
+\page TopicModules Modules
+\ingroup Modules_chapter
+
+\a Modules \a are the programs that users will ultimately use.  Modules will do things like pick waveforms and associate events.  For this reason, a module can be thought of as a standalone program.  A program typically consists of multiple pieces or processes.  A \a process \a in UMPS is a component of a module (program) that handles a specific task.  For example, you may want a process in your module that periodically sends a status message.
+
+<br>
+
+Now, let's explore the basic building blocks of a module; that is a process:
+
+\include umps/modules/process.hpp
+
+A process consists of a few very simple items
+  - A module can be started by either explictly calling \a start \a or by using the () operator.  In this abstract base class we have provided the default implementation.
+  - A module can be stopped with \a stop \a.
+  - A module must be able to report whether or not it is currently running with \a isRunning \a.
+
+Additionally, note that a process itself may be multi-threaded.  What this means is that even though a process will likely be started using something std::thread(process), there still may exist a thread-pool within the process's implementation that enables it to scale.
+
+<br>
+
+Next, we introduce the idea of a module as a collection of processes. 
+
+<br>
+
+In parting, we note that you do not \a need \a to write your programs using the process/module paradigm.  It exists because I find it convenient and dislike rewriting the same boiler-plate code for common tasks like connecting/querying the uOperator or sending a heartbeat.  Indeed, none of the code to implement these tasks is particularly difficult to write.  What you may, however, find slightly challenging is organizing your code that you can catch exceptions. 
+
+*/
+}
