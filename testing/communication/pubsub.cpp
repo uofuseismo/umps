@@ -9,6 +9,7 @@
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -115,7 +116,8 @@ TEST(Messaging, PubSub)
     // Create publisher and bind
     PublisherOptions publisherOptions;
     publisherOptions.setAddress(serverHost);
-    Publisher publisher(loggerPtr);
+auto context = std::make_shared<UMPS::Messaging::Context> (1);
+    Publisher publisher(context, loggerPtr);
     publisher.initialize(publisherOptions);
     EXPECT_TRUE(publisher.isInitialized());
     //publisher.bind(serverHost);//localHost);

@@ -8,6 +8,7 @@ namespace UMPS {
   - \subpage TopicMessages
   - \subpage TopicMessaging
   - \subpage TopicMessageFormats
+  - \subpage TopicModules
   - \subpage UserManual_UMPS
   - \subpage TopicNetworking
 */
@@ -49,5 +50,13 @@ namespace UMPS {
     \ingroup MessagingPatterns_ReqRep */
 
 /** \defgroup Authentication_chapter Authentication */
+
+/** \defgroup Modules_chapter Modules */
+/** \defgroup Modules_ModuleBaseClass Module Base Class
+    \brief This is a container for the processes that constitute a program.
+    \ingroup Modules_chapter  */
+/** \defgroup Modules_ProcessesBaseClass Process Base Class
+    \brief Processes are independent components of a program - e.g., heartbeating.
+    \ingroup Modules_chapter */
 
 }

@@ -7,6 +7,7 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -22,8 +23,9 @@ class Reply::ReplyImpl
 {
 public:
     /// C'tor
+    /*
     ReplyImpl(std::shared_ptr<zmq::context_t> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger)
+              std::shared_ptr<UMPS::Logging::ILog> logger, int)
     {
         // Ensure the context gets made
         if (context == nullptr)
@@ -45,6 +47,34 @@ public:
         }   
         // Now make the socket
         mServer = std::make_unique<zmq::socket_t> (*mContext,
+                                                   zmq::socket_type::rep);
+    }
+    */
+    /// C'tor
+    ReplyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+              std::shared_ptr<UMPS::Logging::ILog> logger)
+    {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<UMPS::Messaging::Context> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Now make the socket
+        auto contextPtr = reinterpret_cast<zmq::context_t *>
+                          (mContext->getContext());
+        mServer = std::make_unique<zmq::socket_t> (*contextPtr,
                                                    zmq::socket_type::rep);
     }
     /// Indicate that the service is started/running
@@ -80,9 +110,9 @@ public:
     }
 ///private:
     mutable std::mutex mMutex;
-    std::shared_ptr<zmq::context_t> mContext = nullptr;
-    std::unique_ptr<zmq::socket_t> mServer;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::unique_ptr<zmq::socket_t> mServer{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::function<
           std::unique_ptr<UMPS::MessageFormats::IMessage>
           (const std::string &messageType, const void *contents,
@@ -107,24 +137,37 @@ Reply::Reply() :
 {
 }
 
-/// C'tor
 Reply::Reply(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ReplyImpl> (nullptr, logger))
 {
 }
 
-/// C'tor
+/*
 Reply::Reply(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<ReplyImpl> (context, nullptr))
+    pImpl(std::make_unique<ReplyImpl> (context, nullptr, 0))
+{
+}
+*/
+
+Reply::Reply(std::shared_ptr<UMPS::Messaging::Context> &context) :
+    pImpl(std::make_unique<ReplyImpl> (context, nullptr)) 
 {
 }
 
-/// C'tor
+/*
 Reply::Reply(std::shared_ptr<zmq::context_t> &context,
              std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ReplyImpl> (context, logger))
+    pImpl(std::make_unique<ReplyImpl> (context, logger, 0))
 {
 }
+*/
+
+Reply::Reply(std::shared_ptr<UMPS::Messaging::Context> &context,
+             std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ReplyImpl> (context, logger)) 
+{
+}
+
 
 /// Destructor
 Reply::~Reply() = default;

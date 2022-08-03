@@ -7,10 +7,10 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @brief Defines the module's status.
 enum class ModuleStatus : int8_t
 {
-    UNKNOWN = 0,
-    ALIVE,         /*!< The module is alive. */
-    DISCONNECTED,  /*!< The module has safely disconnected. */
-    DIED           /*!< The module has unexpectedly died.  This likely
+    Unknown = 0,   /*!< The module's status is unknown. */
+    Alive,         /*!< The module is alive. */
+    Disconnected,  /*!< The module has safely disconnected. */
+    Died           /*!< The module has unexpectedly died.  This likely
                         indicates that a restart is required. */
 };
 /// @class Status "status.hpp" "umps/broadcasts/heartbeat/status.hpp"

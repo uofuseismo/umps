@@ -2,10 +2,6 @@
 #define UMPS_MODULES_MODULE_HPP
 #include <memory>
 #include "umps/logging/level.hpp"
-namespace zmq
-{
- class context_t;
-}
 namespace UMPS
 {
  namespace Authentication
@@ -23,13 +19,19 @@ namespace UMPS
  {
   class ILog;
  }
+ namespace Modules
+ {
+  class IProcess;
+ }
 }
 namespace UMPS::Modules
 {
+/// @class Module "module.hpp" "umps/modules/module.hpp"
 /// @brief This is a generic base class module.  It will implement some, but not
 ///        all, generic module activities.  Of course, any and all routines
 ///        can be overridden as necessary.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Modules_ModuleBaseClass
 class IModule
 {
 public:

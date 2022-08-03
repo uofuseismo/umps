@@ -13,18 +13,18 @@ namespace UMPS
  {
   class IMessage;
  }
- namespace Messaging::RouterDealer
+ namespace Messaging
  {
-  class ReplyOptions;
+  class Context;
+  namespace RouterDealer
+  {
+   class ReplyOptions;
+  }
  }
  namespace Services::ConnectionInformation::SocketDetails
  {
   class Reply;
  }
-}
-namespace zmq 
-{
- class context_t;
 }
 namespace UMPS::Messaging::RouterDealer
 {
@@ -41,6 +41,7 @@ public:
     /// @name Constructors
     /// @{
 
+    /// @brief Constructor.
     Reply();
     /// @brief Constructs a request socket with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
@@ -50,10 +51,10 @@ public:
     /// @note This can be useful for inproc communication where a separate
     ///       thread IO thread is not required.  In this case, the context
     ///       can be made with:
-    ///       auto context = std::shared_ptr<zmq::context_t> (0).
-    explicit Reply(std::shared_ptr<zmq::context_t> &context);
+    ///       auto context = std::shared_ptr<UMPS::Messaging::Context> (0).
+    explicit Reply(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructs a reply socket with the given context and logger.
-    Reply(std::shared_ptr<zmq::context_t> &context,
+    Reply(std::shared_ptr<UMPS::Messaging::Context> &context,
           std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 

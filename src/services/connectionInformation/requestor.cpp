@@ -1,5 +1,4 @@
 #include <vector>
-#include <zmq.hpp>
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -12,11 +11,13 @@
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include "private/isEmpty.hpp"
 
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
+namespace UAuth = UMPS::Authentication;
 using namespace UMPS::Services::ConnectionInformation;
 
 class Requestor::RequestorImpl
@@ -24,7 +25,7 @@ class Requestor::RequestorImpl
 public:
     /// Constructors
     RequestorImpl() = delete;
-    RequestorImpl(std::shared_ptr<zmq::context_t> context,
+    RequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                   std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (logger == nullptr)
@@ -56,13 +57,13 @@ Requestor::Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 }
 
 /// C'tor with context
-Requestor::Requestor(std::shared_ptr<zmq::context_t> &context) :
+Requestor::Requestor(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<RequestorImpl> (context, nullptr))
 {
 }
 
 /// C'tor with context and logger
-Requestor::Requestor(std::shared_ptr<zmq::context_t> &context,
+Requestor::Requestor(std::shared_ptr<UMPS::Messaging::Context> &context,
                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RequestorImpl> (context, logger))
 {
@@ -94,6 +95,7 @@ void Requestor::initialize(const RequestorOptions &requestOptions)
         throw std::invalid_argument("End point not set");
     } 
     pImpl->mRequestor->initialize(options);
+    pImpl->mOptions = requestOptions;
 }
 
 /// Initialized?
@@ -204,6 +206,19 @@ Requestor::getProxyServiceBackendDetails(const std::string &name) const
         }
     }
     throw std::runtime_error("No details found for: " + name);
+}
+
+/// The requestor options
+RequestorOptions Requestor::getRequestorOptions() const
+{
+    if (!isInitialized()){throw std::runtime_error("Requestor not initialized");}
+    return pImpl->mOptions;
+}
+
+/// My ZAP information
+UAuth::ZAPOptions Requestor::getZAPOptions() const
+{
+    return getRequestorOptions().getRequestOptions().getZAPOptions();
 }
 
 /// Disconnect

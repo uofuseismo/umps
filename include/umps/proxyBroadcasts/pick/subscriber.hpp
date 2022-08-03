@@ -8,6 +8,10 @@ namespace UMPS
  {
   class ILog;
  }
+ namespace Messaging
+ {
+  class Context;
+ }
  namespace MessageFormats
  {
   class IMessage;
@@ -24,10 +28,6 @@ namespace UMPS
  {
   class Subscriber;
  }
-}
-namespace zmq 
-{
- class context_t;
 }
 namespace UMPS::ProxyBroadcasts::Pick
 {
@@ -49,10 +49,10 @@ public:
     /// @note This can be useful for inproc communication where a separate
     ///       thread IO thread is not required.  In this case, the context
     ///       can be made with:
-    ///       auto context = std::shared_ptr<zmq::context_t> (0).
-    explicit Subscriber(std::shared_ptr<zmq::context_t> &context);
+    ///       auto context = std::shared_ptr<UMPS:Messaging::Context> (0).
+    explicit Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Construtcs a subscriber with a given ZeroMQ context and logger.
-    Subscriber(std::shared_ptr<zmq::context_t> &context,
+    Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context,
                std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] subscriber  The subscriber from which to initialize this

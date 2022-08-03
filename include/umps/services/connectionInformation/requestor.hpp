@@ -2,15 +2,19 @@
 #define UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOR_HPP
 #include <memory>
 #include <vector>
-namespace zmq
-{
- class context_t;
-}
 namespace UMPS
 {
+ namespace Authentication
+ {
+  class ZAPOptions;
+ }
  namespace Logging
  {
   class ILog;
+ }
+ namespace Messaging
+ {
+  class Context;
  }
  namespace Services::ConnectionInformation
  {
@@ -43,9 +47,9 @@ public:
     explicit Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context.
     /// @param[in] context  The ZeroMQ context to use.
-    explicit Requestor(std::shared_ptr<zmq::context_t> &context);
+    explicit Requestor(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructor with a given context and logger.
-    Requestor(std::shared_ptr<zmq::context_t> &context,
+    Requestor(std::shared_ptr<UMPS::Messaging::Context> &context,
               std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] request  The request class from which to initialize
@@ -72,6 +76,12 @@ public:
     void initialize(const RequestorOptions &options);
     /// @result True indicates the requestor is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
+    /// @result The requestor options.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] RequestorOptions getRequestorOptions() const;
+    /// @result The requestor's ZAP options.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const;
     /// @}
 
     /// @name Query All Connections

@@ -1,7 +1,7 @@
 #include <iostream>
-#include <zmq.hpp>
 #include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
@@ -18,7 +18,14 @@ template<class T>
 class Subscriber<T>::SubscriberImpl
 {
 public:
+    /*
     SubscriberImpl(std::shared_ptr<zmq::context_t> context,
+                   std::shared_ptr<UMPS::Logging::ILog> logger, int)
+    {
+        mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
+    }
+    */
+    SubscriberImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                    std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
@@ -34,23 +41,37 @@ Subscriber<T>::Subscriber() :
 {
 }
 
-/// C'tor
+/*
 template<class T>
 Subscriber<T>::Subscriber(std::shared_ptr<zmq::context_t> &context) :
+    pImpl(std::make_unique<SubscriberImpl> (context, nullptr, 0))
+{
+}
+*/
+
+template<class T>
+Subscriber<T>::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<SubscriberImpl> (context, nullptr))
 {
 }
 
-/// C'tor
 template<class T>
 Subscriber<T>::Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<SubscriberImpl> (nullptr, logger))
 {
 }
 
-/// C'tor
+/*
 template<class T>
 Subscriber<T>::Subscriber(std::shared_ptr<zmq::context_t> &context,
+                          std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<SubscriberImpl> (context, logger, 0))
+{
+}
+*/
+
+template<class T>
+Subscriber<T>::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context,
                           std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<SubscriberImpl> (context, logger))
 {

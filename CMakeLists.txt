@@ -86,6 +86,7 @@ set(MESSAGING_SRC
     src/authentication/certificate/keys.cpp
     src/authentication/certificate/userNameAndPassword.cpp
     #src/authentication/generateKeyPair.cpp
+    src/messaging/context.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/publisherOptions.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
@@ -105,6 +106,7 @@ set(MESSAGING_SRC
     src/messaging/xPublisherXSubscriber/publisher.cpp
     src/messaging/xPublisherXSubscriber/publisherOptions.cpp)
 set(MODULES_LIBSRC
+    src/modules/process.cpp
     src/modules/module.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
@@ -125,6 +127,8 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/socketDetails/xPublisher.cpp
     src/services/connectionInformation/socketDetails/xSubscriber.cpp
     src/services/connectionInformation/details.cpp
+    src/services/moduleRegistry/registrationRequest.cpp
+    src/services/moduleRegistry/registrationResponse.cpp
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
     #src/proxyBroadcasts/dataPacket/proxy.cpp
@@ -137,6 +141,8 @@ set(MODULES_LIBSRC
     #src/proxyBroadcasts/heartbeat/proxyOptions.cpp
     src/proxyBroadcasts/heartbeat/publisher.cpp
     src/proxyBroadcasts/heartbeat/publisherOptions.cpp
+    src/proxyBroadcasts/heartbeat/publisherProcessOptions.cpp
+    src/proxyBroadcasts/heartbeat/publisherProcess.cpp
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
     src/proxyBroadcasts/heartbeat/status.cpp
@@ -311,6 +317,7 @@ set(TEST_SRC
     testing/services/packetCache.cpp
     testing/services/incrementer.cpp
     testing/services/connectionInformation.cpp
+    testing/services/moduleRegistry.cpp
     testing/messaging/authentication.cpp
     testing/messaging/options.cpp
     )

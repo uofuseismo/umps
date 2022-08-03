@@ -1,8 +1,8 @@
 #include <iostream>
-#include <zmq.hpp>
 #include "umps/proxyBroadcasts/pick/subscriber.hpp"
 #include "umps/proxyBroadcasts/pick/subscriberOptions.hpp"
 #include "umps/messageFormats/pick.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
@@ -17,7 +17,7 @@ namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 class Subscriber::SubscriberImpl
 {
 public:
-    SubscriberImpl(std::shared_ptr<zmq::context_t> context,
+    SubscriberImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                    std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
@@ -33,7 +33,7 @@ Subscriber::Subscriber() :
 }
 
 /// C'tor
-Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context) :
+Subscriber::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<SubscriberImpl> (context, nullptr))
 {
 }
@@ -45,7 +45,7 @@ Subscriber::Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 }
 
 /// C'tor
-Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context,
+Subscriber::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context,
                        std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<SubscriberImpl> (context, logger))
 {

@@ -15,6 +15,7 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/authenticator.hpp"
 #include "umps/authentication/grasslands.hpp"
@@ -30,10 +31,11 @@ class Proxy::ProxyImpl
 {
 public:
     /// Constructors
+    /*
     ProxyImpl() = delete;
     ProxyImpl(std::shared_ptr<zmq::context_t> context,
               std::shared_ptr<UMPS::Logging::ILog> logger,
-              std::shared_ptr<UAuth::IAuthenticator> authenticator)
+              std::shared_ptr<UAuth::IAuthenticator> authenticator, int)
     {
         if (context == nullptr)
         {
@@ -63,6 +65,39 @@ public:
         mAuthenticatorService = std::make_unique<UAuth::Service>
                                 (mContext, mLogger, mAuthenticator);
     }
+    */
+    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+              std::shared_ptr<UMPS::Logging::ILog> logger,
+              std::shared_ptr<UAuth::IAuthenticator> authenticator)
+    {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<UMPS::Messaging::Context> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        if (authenticator == nullptr)
+        {
+            mAuthenticator = std::make_shared<UAuth::Grasslands> (mLogger);
+        }
+        else
+        {
+            mAuthenticator = authenticator;
+        }
+        mProxy = std::make_unique<UXPubXSub::Proxy> (mInternalContext, mLogger);
+        mAuthenticatorService = std::make_unique<UAuth::Service>
+                                (mInternalContext, mLogger, mAuthenticator);
+    }
     /// Stops the proxy and authenticator and joins threads
     void stop()
     {   
@@ -89,7 +124,7 @@ public:
         stop();
     }
 ///private:
-    std::shared_ptr<zmq::context_t> mContext{nullptr};
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::shared_ptr<UXPubXSub::Proxy> mProxy{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
@@ -108,7 +143,7 @@ Proxy::Proxy() :
 }
 
 /*
-Proxy::Proxy(std::shared_ptr<zmq::context_t> &context) :
+Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<ProxyImpl> (context, nullptr, nullptr))
 {
 }
@@ -126,13 +161,13 @@ Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
 }
 
 /*
-Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
+Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &context,
              std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
     pImpl(std::make_unique<ProxyImpl> (context, nullptr, authenticator))
 {
 }
 
-Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
+Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &context,
              std::shared_ptr<UMPS::Logging::ILog> &logger,
              std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
     pImpl(std::make_unique<ProxyImpl> (context, logger, authenticator))

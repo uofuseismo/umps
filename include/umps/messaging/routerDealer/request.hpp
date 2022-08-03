@@ -15,6 +15,7 @@ namespace UMPS
  }
  namespace Messaging
  {
+  class Context;
   namespace RouterDealer
   {
    class RequestOptions;
@@ -24,10 +25,6 @@ namespace UMPS
  {
   class Request;
  }
-}
-namespace zmq
-{
- class context_t;
 }
 namespace UMPS::Messaging::RouterDealer
 {
@@ -53,10 +50,10 @@ public:
     /// @note This can be useful for inproc communication where a separate
     ///       thread IO thread is not required.  In this case, the context
     ///       can be made with:
-    ///       auto context = std::shared_ptr<zmq::context_t> (0).
-    explicit Request(std::shared_ptr<zmq::context_t> &context);
+    ///       auto context = std::shared_ptr<UMPS::Messaging::Context> (0).
+    explicit Request(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructs a request socket with the given context and logger.
-    Request(std::shared_ptr<zmq::context_t> &context,
+    Request(std::shared_ptr<UMPS::Messaging::Context> &context,
             std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] request  The requestor class from which to initialize

@@ -1,20 +1,28 @@
 #include <string>
+#include <map>
 #include <filesystem>
 #include <mutex>
 #include <thread>
 #include <chrono>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include <zmq.hpp>
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include "umps/modules/module.hpp"
+#include "umps/modules/process.hpp"
 #include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisherProcess.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/logging/level.hpp"
 #include "umps/logging/stdout.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -27,12 +35,47 @@ namespace UAuth = UMPS::Authentication;
 namespace UCI = UMPS::Services::ConnectionInformation;
 using namespace UMPS::Modules;
 
+/*
+namespace
+{
+std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
+    createHeartbeatProcess(std::shared_ptr<UCI::Requestor> &requestor,
+                           const UAuth::ZAPOptions &zapOptions,
+                           const std::chrono::seconds &interval = std::chrono::seconds {30},
+                           const std::string &broadcast = "Heartbeat",
+                           std::shared_ptr<zmq::context_t> context = nullptr,
+                           std::shared_ptr<UMPS::Logging::ILog> logger = nullptr)
+{
+    namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
+    // Get the heartbeat broadcast's address
+    auto address
+        = requestor->getProxyBroadcastFrontendDetails(broadcast).getAddress();
+    // Create the publisher connection
+    UHeartbeat::PublisherOptions connectionOptions;
+    connectionOptions.setAddress(address);
+    connectionOptions.setZAPOptions(zapOptions);
+    auto connection = std::make_unique<UHeartbeat::Publisher> (context, logger);
+    connection->initialize(connectionOptions);
+#ifndef NDEBUG
+    assert(connection->isInitialized());
+#endif
+    // Create the publisher options
+    UHeartbeat::PublisherProcessOptions processOptions;
+    processOptions.setInterval(interval); 
+    // Create the publisher
+    auto process = std::make_unique<UHeartbeat::PublisherProcess> ();
+    process->initialize(processOptions, std::move(connection));
+    return process;
+}
+}
+*/
+
 class IModule::IModuleImpl
 {
 public:
     IModuleImpl() :
         mLogger(std::make_shared<UMPS::Logging::StdOut> ()),
-        mContext(std::make_shared<zmq::context_t> ())
+        mContext(std::make_shared<UMPS::Messaging::Context> (1))
     {
     }
     ~IModuleImpl()
@@ -116,6 +159,10 @@ public:
     void stop()
     {
         setRunning(false);
+        for (auto &process : mProcesses)
+        {
+            process.second->stop();
+        }
         mLogger->debug("IModule stopping threads...");
     }
     /// Start threads
@@ -123,10 +170,26 @@ public:
     {
         stop();
         setRunning(true);
+        for (auto &process : mProcesses)
+        {
+            process.second->start();
+        }
         mLogger->debug("IModule starting threads...");
     } 
+    /// Add a process
+    void addProcess(std::unique_ptr<IProcess> &process)
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        auto name = process->getName();
+        if (mProcesses.contains(name))
+        {
+            throw std::invalid_argument("Process: " + name + " already exists");
+        }
+        mProcesses.insert(std::pair {name, std::move(process)});
+    }
     mutable std::mutex mMutex;
-    std::shared_ptr<zmq::context_t> mContext{nullptr};
+    std::map<std::string, std::unique_ptr<IProcess>> mProcesses;
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::shared_ptr<UCI::Requestor> mConnectionInformationRequestor{nullptr};
     std::shared_ptr<UHeartbeat::Publisher> mHeartbeatPublisher{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
@@ -189,22 +252,39 @@ void IModule::parseInitializationFile(const std::string &initializationFile)
         throw std::runtime_error(operatorSection + ".address not not defined");
     }
     setOperatorAddress(address);
-    setZAPOptions(
-        UMPS::Modules::Operator::readZAPClientOptions(initializationFile));
+    auto zapOptions
+        = UMPS::Modules::Operator::readZAPClientOptions(initializationFile);
+    setZAPOptions(zapOptions);
+    // Connect to operator
+    pImpl->createConnectionInformationRequestor();
 
     // Other broadcasts/command queues:
     // Heartbeat broadcast name
+    ProxyBroadcasts::Heartbeat::PublisherProcessOptions heartbeatPublisherOptions;
+
     const std::string heartbeatSection = "Heartbeat";
-    setHeartbeatBroadcastName(propertyTree.get<std::string>
-                              (heartbeatSection + ".name",
-                               getHeartbeatBroadcastName()));
+    std::string heartbeatBroadcastName{"Heartbeat"};
+    heartbeatBroadcastName
+        = propertyTree.get<std::string> (heartbeatSection + ".name",
+                                         heartbeatBroadcastName);
  
-    auto heartbeatInterval = static_cast<int> (getHeartbeatInterval().count()); 
+    auto heartbeatInterval = static_cast<int> (heartbeatPublisherOptions.getInterval().count());
     heartbeatInterval = propertyTree.get<int> (heartbeatSection + ".interval",
                                                heartbeatInterval);
     setHeartbeatInterval(std::chrono::seconds{heartbeatInterval});
-     
-    
+
+/*
+    createHeartbeatProcess(pImpl->mConnectionInformationRequestor,
+                           zapOptions,
+                           std::chrono::seconds {heartbeatInterval},
+                           heartbeatBroadcastName,
+                           pImpl->mContext,
+                           pImpl->mLogger);
+*/
+/*
+    heartbeatPublisherOptions.setInterval(std::chrono::seconds{heartbeatInterval});
+    heartbeatPublisherOptions.setBroadcastName(heartbeatBroadcastName);
+*/    
 }
 
 /// ZAP options

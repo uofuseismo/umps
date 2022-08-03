@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
-#include <zmq.hpp>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "umps/proxyServices/incrementer/requestor.hpp"
 #include "umps/proxyServices/incrementer/requestorOptions.hpp"
 #include "umps/proxyServices/incrementer/itemsRequest.hpp"
@@ -21,7 +23,7 @@ namespace URouterDealer = UMPS::Messaging::RouterDealer;
 class Requestor::RequestorImpl
 {
 public:
-    RequestorImpl(std::shared_ptr<zmq::context_t> context,
+    RequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                   std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mRequestor = std::make_unique<URouterDealer::Request> (context, logger);
@@ -41,12 +43,12 @@ Requestor::Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
-Requestor::Requestor(std::shared_ptr<zmq::context_t> &context) :
+Requestor::Requestor(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<RequestorImpl> (context, nullptr))
 {
 }
 
-Requestor::Requestor(std::shared_ptr<zmq::context_t> &context,
+Requestor::Requestor(std::shared_ptr<UMPS::Messaging::Context> &context,
                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RequestorImpl> (context, logger))
 {

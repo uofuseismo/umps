@@ -3,7 +3,9 @@
 #include <vector>
 #include <functional>
 #include <thread>
-#include <zmq.hpp>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "umps/proxyServices/incrementer/replier.hpp"
 #include "umps/proxyServices/incrementer/replierOptions.hpp"
 #include "umps/proxyServices/incrementer/counter.hpp"
@@ -11,6 +13,7 @@
 #include "umps/proxyServices/incrementer/itemsResponse.hpp"
 #include "umps/proxyServices/incrementer/incrementRequest.hpp"
 #include "umps/proxyServices/incrementer/incrementResponse.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
@@ -24,7 +27,7 @@ class Replier::ReplierImpl
 {
 public:
     // C'tor
-    ReplierImpl(std::shared_ptr<zmq::context_t> context,
+    ReplierImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                 std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (logger == nullptr)
@@ -168,7 +171,7 @@ Replier::Replier(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 }
 
 /// C'tor
-Replier::Replier(std::shared_ptr<zmq::context_t> &context,
+Replier::Replier(std::shared_ptr<UMPS::Messaging::Context> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ReplierImpl> (context, logger))
 {

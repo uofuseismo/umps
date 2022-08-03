@@ -15,6 +15,7 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/authenticator.hpp"
 #include "umps/authentication/grasslands.hpp"
@@ -31,13 +32,13 @@ class Proxy::ProxyImpl
 public:
     /// Constructors
     ProxyImpl() = delete;
-    ProxyImpl(std::shared_ptr<zmq::context_t> context,
+    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
               std::shared_ptr<UMPS::Logging::ILog> logger,
               std::shared_ptr<UAuth::IAuthenticator> authenticator)
     {
         if (context == nullptr)
         {
-            mContext = std::make_shared<zmq::context_t> (1);
+            mContext = std::make_shared<UMPS::Messaging::Context> (1);
         }
         else
         {
@@ -89,7 +90,7 @@ public:
         stop();
     }
 ///private:
-    std::shared_ptr<zmq::context_t> mContext{nullptr};
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::shared_ptr<UXPubXSub::Proxy> mProxy{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};

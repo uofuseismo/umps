@@ -557,11 +557,11 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                             8000);
     auto portEnd   = propertyTree.get<int> ("uOperator.openPortBlockEnd",
                                             8899);
-    if (portStart < 3)
+    if (portStart < 4)
     {
         throw std::runtime_error("uOperator.openPortBlockStart = "
                                + std::to_string(portStart)
-                               + " must be at least 3");
+                               + " must be at least 4");
     }
     if (portEnd < portStart)
     {

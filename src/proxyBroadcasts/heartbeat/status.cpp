@@ -94,7 +94,7 @@ public:
     std::string mModule = "unknown";
     std::string mHostName = boost::asio::ip::host_name(); 
     std::string mTimeStamp = "1970:01:01T00:00:00.000";
-    ModuleStatus mStatus = ModuleStatus::UNKNOWN;
+    ModuleStatus mStatus = ModuleStatus::Unknown;
 };
 
 /// C'tor
@@ -298,7 +298,6 @@ void Status::fromMessage(const char *messageIn, const size_t length)
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
     fromCBOR(message, length);
 }
-
 
 /// Copy this class
 std::unique_ptr<UMPS::MessageFormats::IMessage> Status::clone() const

@@ -7,6 +7,7 @@
 #include <zmq_addon.hpp>
 #include "umps/messaging/routerDealer/request.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -21,9 +22,10 @@ namespace UAuth = UMPS::Authentication;
 class Request::RequestImpl
 {
 public:
+    /*
     /// C'tor
     RequestImpl(std::shared_ptr<zmq::context_t> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger)
+                std::shared_ptr<UMPS::Logging::ILog> logger, int)
     {   
         // Ensure the context gets made
         if (context == nullptr)
@@ -47,6 +49,34 @@ public:
         mClient = std::make_unique<zmq::socket_t> (*mContext,
                                                    zmq::socket_type::req);
     }
+    */
+    /// C'tor
+    RequestImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+                std::shared_ptr<UMPS::Logging::ILog> logger)
+    {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<UMPS::Messaging::Context> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Now make the socket
+        auto contextPtr = reinterpret_cast<zmq::context_t *>
+                          (mContext->getContext());
+        mClient = std::make_unique<zmq::socket_t> (*contextPtr,
+                                                   zmq::socket_type::req);
+    }
     /// Update socket details
     void updateSocketDetails()
     {   
@@ -57,9 +87,9 @@ public:
 //private:
     UMPS::MessageFormats::Messages mMessageFormats;
     RequestOptions mOptions;
-    std::shared_ptr<zmq::context_t> mContext = nullptr;
-    std::unique_ptr<zmq::socket_t> mClient;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::unique_ptr<zmq::socket_t> mClient{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::string mAddress;
     UCI::SocketDetails::Request mSocketDetails;
     int mHighWaterMark = 200;
@@ -79,14 +109,29 @@ Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+/*
 Request::Request(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<RequestImpl> (context, nullptr))
+    pImpl(std::make_unique<RequestImpl> (context, nullptr, 0))
+{
+}
+*/
+
+Request::Request(std::shared_ptr<UMPS::Messaging::Context> &context) :
+    pImpl(std::make_unique<RequestImpl> (context, nullptr)) 
 {
 }
 
+/*
 Request::Request(std::shared_ptr<zmq::context_t> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RequestImpl> (context, logger))
+    pImpl(std::make_unique<RequestImpl> (context, logger, 0))
+{
+}
+*/
+
+Request::Request(std::shared_ptr<UMPS::Messaging::Context> &context,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<RequestImpl> (context, logger)) 
 {
 }
 

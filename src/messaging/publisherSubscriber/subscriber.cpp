@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -22,9 +23,10 @@ namespace UAuth = UMPS::Authentication;
 class Subscriber::SubscriberImpl
 {
 public:
+    /*
     /// C'tor
     SubscriberImpl(std::shared_ptr<zmq::context_t> context,
-                   std::shared_ptr<UMPS::Logging::ILog> logger)
+                   std::shared_ptr<UMPS::Logging::ILog> logger, int)
     {
         // Ensure the context gets made
         if (context == nullptr)
@@ -48,6 +50,34 @@ public:
         mSubscriber = std::make_unique<zmq::socket_t> (*mContext,
                                                        zmq::socket_type::sub);
     }
+    */
+    /// C'tor
+    SubscriberImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+                   std::shared_ptr<UMPS::Logging::ILog> logger)
+    {
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<UMPS::Messaging::Context> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        // Make the logger
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Now make the socket
+        auto contextPtr = reinterpret_cast<zmq::context_t *>
+                          (mContext->getContext());
+        mSubscriber = std::make_unique<zmq::socket_t> (*contextPtr,
+                                                       zmq::socket_type::sub);
+    }
     /// Disconnect
     void disconnect()
     {
@@ -66,10 +96,10 @@ public:
         mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
     }
     UMPS::MessageFormats::Messages mMessageTypes;
-    std::shared_ptr<zmq::context_t> mContext = nullptr;
-    std::unique_ptr<zmq::socket_t> mSubscriber;
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::unique_ptr<zmq::socket_t> mSubscriber{nullptr};
     ///std::map<std::string, bool> mEndPoints;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger = nullptr;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     SubscriberOptions mOptions;
     UCI::SocketDetails::Subscriber mSocketDetails;
     std::string mAddress;
@@ -85,8 +115,15 @@ Subscriber::Subscriber() :
 {
 }
 
+/*
 Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context) :
-   pImpl(std::make_unique<SubscriberImpl> (context, nullptr))
+   pImpl(std::make_unique<SubscriberImpl> (context, nullptr, 0))
+{
+}
+*/
+
+Subscriber::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context) :
+    pImpl(std::make_unique<SubscriberImpl> (context, nullptr)) 
 {
 }
 
@@ -95,9 +132,17 @@ Subscriber::Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
+/*
 Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context,
                        std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<SubscriberImpl> (context, logger))
+    pImpl(std::make_unique<SubscriberImpl> (context, logger, 0))
+{
+}
+*/
+
+Subscriber::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context,
+                       std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<SubscriberImpl> (context, logger)) 
 {
 }
 

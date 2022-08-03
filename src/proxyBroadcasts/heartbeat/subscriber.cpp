@@ -4,6 +4,7 @@
 #include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -16,17 +17,9 @@ namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
 class Subscriber::SubscriberImpl
 {
 public:
-    SubscriberImpl(std::shared_ptr<zmq::context_t> context,
+    SubscriberImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                    std::shared_ptr<UMPS::Logging::ILog> logger)
     {
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
         if (logger == nullptr)
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
@@ -37,7 +30,6 @@ public:
         }
         mSubscriber = std::make_unique<UPubSub::Subscriber> (context, logger);
     }
-    std::shared_ptr<zmq::context_t> mContext;
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
     std::unique_ptr<UPubSub::Subscriber> mSubscriber;
     SubscriberOptions mOptions;

@@ -1,11 +1,14 @@
 #include <iostream>
 #include <thread>
-#include <zmq.hpp>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -18,7 +21,7 @@ namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 class Publisher::PublisherImpl
 {
 public:
-    PublisherImpl(std::shared_ptr<zmq::context_t> context,
+    PublisherImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                   std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mPublisher = std::make_unique<UXPubXSub::Publisher> (context, logger);
@@ -34,7 +37,7 @@ Publisher::Publisher() :
 }
 
 /// C'tor
-Publisher::Publisher(std::shared_ptr<zmq::context_t> &context) :
+Publisher::Publisher(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<PublisherImpl> (context, nullptr))
 {
 }
@@ -46,7 +49,7 @@ Publisher::Publisher(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 }
 
 /// C'tor
-Publisher::Publisher(std::shared_ptr<zmq::context_t> &context,
+Publisher::Publisher(std::shared_ptr<UMPS::Messaging::Context> &context,
                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<PublisherImpl> (context, logger))
 {

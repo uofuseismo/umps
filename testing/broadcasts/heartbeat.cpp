@@ -83,7 +83,7 @@ TEST(BroadcastHeartbeat, Status)
     Status status;
     const std::string module = "testModule";
     const std::string hostName = "testComputer";
-    const ModuleStatus moduleStatus = ModuleStatus::ALIVE;
+    const ModuleStatus moduleStatus = ModuleStatus::Alive;
     std::string referenceHostName = boost::asio::ip::host_name();
     std::string timeStamp{"2022-11-01T00:01:02.300"}; 
 
@@ -103,7 +103,7 @@ TEST(BroadcastHeartbeat, Status)
     
     // Check defaults
     status.clear();
-    EXPECT_EQ(status.getModuleStatus(), ModuleStatus::UNKNOWN);
+    EXPECT_EQ(status.getModuleStatus(), ModuleStatus::Unknown);
     EXPECT_EQ(status.getHostName(), referenceHostName);
 }
 

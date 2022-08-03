@@ -12,6 +12,7 @@ namespace UMPS
  }
  namespace Messaging
  {
+  class Context;
   namespace RouterDealer
   {
    class ProxyOptions;
@@ -21,10 +22,6 @@ namespace UMPS
  {
   class Proxy;
  }
-}
-namespace zmq
-{
- class context_t;
 }
 namespace UMPS::Messaging::RouterDealer
 {
@@ -51,10 +48,10 @@ public:
     explicit Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructs a proxy with the given context.
     /// @param[in] context  A pointer to the application's context.
-    explicit Proxy(std::shared_ptr<zmq::context_t> &context);
+    explicit Proxy(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructs a proxy with the given context and logger.
-    Proxy(std::shared_ptr<zmq::context_t> &context,
-          std::shared_ptr<UMPS::Logging::ILog> &logger);
+    Proxy(std::shared_ptr<UMPS::Messaging::Context> &context,
+          std::shared_ptr<UMPS::Logging::ILog> &logger); 
     /// @}
 
     /// @name Initialization

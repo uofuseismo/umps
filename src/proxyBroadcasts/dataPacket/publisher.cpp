@@ -3,6 +3,7 @@
 #include <zmq.hpp>
 #include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
@@ -18,7 +19,14 @@ namespace UXPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 class Publisher::PublisherImpl
 {
 public:
+    /*
     PublisherImpl(std::shared_ptr<zmq::context_t> context,
+                  std::shared_ptr<UMPS::Logging::ILog> logger, int)
+    {
+        mPublisher = std::make_unique<UXPubXSub::Publisher> (context, logger);
+    }
+    */
+    PublisherImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                   std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mPublisher = std::make_unique<UXPubXSub::Publisher> (context, logger);
@@ -34,8 +42,15 @@ Publisher::Publisher() :
 }
 
 /// C'tor
+/*
 Publisher::Publisher(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<PublisherImpl> (context, nullptr))
+    pImpl(std::make_unique<PublisherImpl> (context, nullptr, 0))
+{
+}
+*/
+
+Publisher::Publisher(std::shared_ptr<UMPS::Messaging::Context> &context) :
+    pImpl(std::make_unique<PublisherImpl> (context, nullptr)) 
 {
 }
 
@@ -46,9 +61,17 @@ Publisher::Publisher(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 }
 
 /// C'tor
+/*
 Publisher::Publisher(std::shared_ptr<zmq::context_t> &context,
                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<PublisherImpl> (context, logger))
+    pImpl(std::make_unique<PublisherImpl> (context, logger, 0))
+{
+}
+*/
+
+Publisher::Publisher(std::shared_ptr<UMPS::Messaging::Context> &context,
+                     std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<PublisherImpl> (context, logger)) 
 {
 }
 

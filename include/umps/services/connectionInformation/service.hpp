@@ -8,6 +8,10 @@ namespace UMPS
  {
   class ILog;
  }
+ namespace Messaging
+ {
+  class Context;
+ }
  namespace Services
  {
   class IService;
@@ -43,18 +47,18 @@ public:
     /// @brief Constructor with a given logger.
     explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context.
-    //explicit Service(std::shared_ptr<zmq::context_t> &context);
+    //explicit Service(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructor with a given context and logger.
-    //Service(std::shared_ptr<zmq::context_t> &context,
+    //Service(std::shared_ptr<UMPS::Messaging::Context> &context,
     //        std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context and authenticator.
-    //Service(std::shared_ptr<zmq::context_t> &context,
+    //Service(std::shared_ptr<UMPS::Messaging::Context> &context,
     //        std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given logger and authenticator.
     Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
             std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given context, logger, and authenticator.
-    //Service(std::shared_ptr<zmq::context_t> &context,
+    //Service(std::shared_ptr<UMPS::Messaging::Context> &context,
     //        std::shared_ptr<UMPS::Logging::ILog> &logger,
     //        std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
 

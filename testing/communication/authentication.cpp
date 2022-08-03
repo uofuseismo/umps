@@ -7,6 +7,7 @@
 #include "umps/authentication/user.hpp"
 #include "umps/authentication/sqlite3Authenticator.hpp"
 #include "umps/authentication/service.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
@@ -294,7 +295,8 @@ UMPS::MessageFormats::Pick makePickMessage() noexcept
     return pick;
 }
 
-void pub(std::shared_ptr<zmq::context_t> context,
+void pub(//std::shared_ptr<zmq::context_t> context,
+         std::shared_ptr<UMPS::Messaging::Context> context,
          const UAuth::Certificate::Keys serverCertificate)
 {
     //bool isAuthenticationServer = true;
@@ -376,7 +378,8 @@ TEST(Messaging, Authenticator)
     UAuth::Certificate::Keys serverCertificate;
     serverCertificate.create();
 
-    auto context = std::make_shared<zmq::context_t> (1);
+    //auto context = std::make_shared<zmq::context_t> (1);
+    auto context = std::make_shared<UMPS::Messaging::Context> (1);
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr

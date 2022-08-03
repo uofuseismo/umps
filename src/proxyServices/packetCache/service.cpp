@@ -1,13 +1,14 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
-#include <zmq.hpp>
+#include <vector>
 #include "umps/proxyServices/packetCache/service.hpp"
 #include "umps/proxyServices/packetCache/replier.hpp"
 #include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/threadSafeQueue.hpp"
@@ -30,7 +31,7 @@ public:
         {
             mLogger = logger;
         }
-        mContext = std::make_shared<zmq::context_t> ();
+        mContext = std::make_shared<UMPS::Messaging::Context> (1);
         mDataPacketSubscriber = std::make_unique<UDataPacket::Subscriber<T>>
                                 (mContext, mLogger);
         mCappedCollection = std::make_shared<CappedCollection<T>> (mLogger);
@@ -144,8 +145,8 @@ public:
     std::thread mDataPacketSubscriberThread;
     std::thread mQueueToPacketCacheThread;
     std::thread mResponseThread;
-    std::shared_ptr<zmq::context_t> mContext;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger;
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UDataPacket::Subscriber<T>> mDataPacketSubscriber{nullptr};
     std::shared_ptr<CappedCollection<T>> mCappedCollection{nullptr};
     std::unique_ptr<Replier<T>> mPacketCacheReplier{nullptr};

@@ -6,7 +6,6 @@
 #ifndef NDEBUG
 #include <cassert>
 #endif
-#include <zmq.hpp>
 #include "umps/proxyServices/incrementer/service.hpp"
 #include "umps/proxyServices/incrementer/options.hpp"
 #include "umps/proxyServices/incrementer/counter.hpp"
@@ -17,6 +16,7 @@
 #include "umps/proxyServices/incrementer/replierOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/authentication/service.hpp"
+#include "umps/messaging/context.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyServices::Incrementer;
@@ -27,12 +27,12 @@ class Service::ServiceImpl
 public:
     /// Constructors
     ServiceImpl() = delete;
-    ServiceImpl(std::shared_ptr<zmq::context_t> context,
+    ServiceImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                 std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (context == nullptr)
         {
-            mContext = std::make_shared<zmq::context_t> (1);
+            mContext = std::make_shared<UMPS::Messaging::Context> (1);
         }
         else
         {
@@ -93,7 +93,7 @@ public:
     }
 ///private:
     mutable std::mutex mMutex;
-    std::shared_ptr<zmq::context_t> mContext{nullptr};
+    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<Replier> mIncrementerReplier{nullptr};
     std::shared_ptr<Counter> mCounter{nullptr};

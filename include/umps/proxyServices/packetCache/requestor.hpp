@@ -3,15 +3,15 @@
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
-namespace zmq
-{
- class context_t;
-}
 namespace UMPS
 {
  namespace Logging
  {
   class ILog;
+ }
+ namespace Messaging
+ {
+  class Context; 
  }
  namespace Services::ConnectionInformation::SocketDetails
  {
@@ -46,9 +46,9 @@ public:
     explicit Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context.
     /// @param[in] context  The ZeroMQ context to use.
-    explicit Requestor(std::shared_ptr<zmq::context_t> &context);
+    explicit Requestor(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructor with a given context and logger.
-    Requestor(std::shared_ptr<zmq::context_t> &context,
+    Requestor(std::shared_ptr<UMPS::Messaging::Context> &context,
               std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] requestor  The request class from which to initialize

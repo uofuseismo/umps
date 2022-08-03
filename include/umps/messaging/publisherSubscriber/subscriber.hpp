@@ -13,18 +13,18 @@ namespace UMPS
  {
   class IMessage;
  }
- namespace Messaging::PublisherSubscriber
+ namespace Messaging
  {
-  class SubscriberOptions;
+  class Context;
+  namespace PublisherSubscriber
+  {
+   class SubscriberOptions;
+  }
  }
  namespace Services::ConnectionInformation::SocketDetails
  {
   class Subscriber;
  }
-}
-namespace zmq
-{
- class context_t;
 }
 namespace UMPS::Messaging::PublisherSubscriber
 {
@@ -45,9 +45,9 @@ public:
     explicit Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a specified context.
     /// @param[in] context  The ZeroMQ context.
-    explicit Subscriber(std::shared_ptr<zmq::context_t> &context);
+    Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Construtcs a publisher with a given ZeroMQ context and logger.
-    Subscriber(std::shared_ptr<zmq::context_t> &context,
+    Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context,
                std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] subscriber  The subscriber class from which to initialize

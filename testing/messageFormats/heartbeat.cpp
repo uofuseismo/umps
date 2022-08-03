@@ -19,13 +19,13 @@ TEST(HeartbeatTest, Status)
     Status status;
     const std::string moduleName = "heartbeatTest";
     const std::string hostName = "localhost";
-    auto moduleStatus = ModuleStatus::ALIVE;
+    auto moduleStatus = ModuleStatus::Alive;
     const std::string timeStamp("2021-10-11T21:36:42.090");
     // Check the defaults
     EXPECT_EQ(status.getModule(), "unknown");
     EXPECT_EQ(status.getHostName(), boost::asio::ip::host_name());
     EXPECT_EQ(status.getMessageType(), MESSAGE_TYPE); 
-    EXPECT_EQ(status.getModuleStatus(), ModuleStatus::UNKNOWN);
+    EXPECT_EQ(status.getModuleStatus(), ModuleStatus::Unknown);
     EXPECT_TRUE(!status.getTimeStamp().empty());
 
     status.setModuleStatus(moduleStatus);

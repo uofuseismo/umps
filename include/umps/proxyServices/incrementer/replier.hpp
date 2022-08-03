@@ -9,6 +9,10 @@ namespace UMPS
  {
   class ILog;
  }
+ namespace Messaging
+ {
+  class Context;
+ }
  namespace Services::ConnectionInformation::SocketDetails
  {
   class Reply;
@@ -18,10 +22,6 @@ namespace UMPS
   class ReplierOptions;
   class Counter;
  }
-}
-namespace zmq
-{
- class context_t;
 }
 namespace UMPS::ProxyServices::Incrementer
 {
@@ -39,7 +39,7 @@ public:
     /// @param[in] logger  A pointer to the application's logger.
     explicit Replier(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructs a request socket with a given logger and context.
-    Replier(std::shared_ptr<zmq::context_t> &context,
+    Replier(std::shared_ptr<UMPS::Messaging::Context> &context,
             std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 

@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
-#include <zmq.hpp>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "umps/proxyServices/packetCache/requestor.hpp"
 #include "umps/proxyServices/packetCache/requestorOptions.hpp"
 #include "umps/proxyServices/packetCache/sensorRequest.hpp"
@@ -11,6 +13,7 @@
 #include "umps/proxyServices/packetCache/dataResponse.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messaging/routerDealer/request.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -23,7 +26,7 @@ namespace URouterDealer = UMPS::Messaging::RouterDealer;
 class Requestor::RequestorImpl
 {
 public:
-    RequestorImpl(std::shared_ptr<zmq::context_t> context,
+    RequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                   std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         mRequestor = std::make_unique<URouterDealer::Request> (context, logger);
@@ -43,12 +46,12 @@ Requestor::Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
-Requestor::Requestor(std::shared_ptr<zmq::context_t> &context) :
+Requestor::Requestor(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<RequestorImpl> (context, nullptr))
 {
 }
 
-Requestor::Requestor(std::shared_ptr<zmq::context_t> &context,
+Requestor::Requestor(std::shared_ptr<UMPS::Messaging::Context> &context,
                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RequestorImpl> (context, logger))
 {

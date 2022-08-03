@@ -80,7 +80,7 @@ public:
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An instance of an uninitialized class.
     [[nodiscard]] virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
-    /// @brief Converts the packet class to a string message.
+    /// @brief Converts the request class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
     /// @note Though the container is a string the message need not be
@@ -123,7 +123,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromCBOR(const uint8_t *data, const size_t length);
-    /// @brief Converts the packet class to a CBOR message.
+    /// @brief Converts the request class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.
     /// @throws std::runtime_error if the required information is not set. 

@@ -15,6 +15,7 @@ namespace UMPS
  }
  namespace Messaging
  {
+  class Context;
   namespace PublisherSubscriber
   {
    class PublisherOptions;
@@ -24,10 +25,6 @@ namespace UMPS
  {
   class Publisher;
  }
-}
-namespace zmq
-{
- class context_t;
 }
 namespace UMPS::Messaging::PublisherSubscriber
 {
@@ -55,10 +52,10 @@ public:
     /// @note This can be useful for inproc communication where a separate
     ///       thread IO thread is not required.  In this case, the context
     ///       can be made with:
-    ///       auto context = std::shared_ptr<zmq::context_t> (0).
-    explicit Publisher(std::shared_ptr<zmq::context_t> &context);
+    ///       auto context = std::shared_ptr<UMPS::Messaging::Context> (0).
+    explicit Publisher(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Construtcs a publisher with a given ZeroMQ context and logger.
-    Publisher(std::shared_ptr<zmq::context_t> &context,
+    Publisher(std::shared_ptr<UMPS::Messaging::Context> &context,
               std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] publisher  The publisher class from which to initialize
