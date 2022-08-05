@@ -349,11 +349,13 @@ int main(int argc, char *argv[])
           (moduleRegistryLoggerPtr, authenticator);
     auto serviceKey = "Services::" + moduleRegistry->getName();
     moduleRegistry->initialize(options.mModuleRegistryOptions);
-     modules.mServices.insert(std::pair(serviceKey,
-                                        std::move(moduleRegistry)));
+    modules.mServices.insert(std::pair(serviceKey,
+                                       std::move(moduleRegistry)));
     try
     {
         modules.mServices[serviceKey]->start();
+        modules.mConnectionInformation->addConnection(
+            *modules.mServices[serviceKey]);
     }
     catch (const std::exception &e)
     {
