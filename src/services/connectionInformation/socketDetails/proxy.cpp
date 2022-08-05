@@ -12,8 +12,8 @@ class Proxy::ProxyImpl
 public:
     std::pair<XSubscriber, XPublisher> mXSubXPubSocketPair;
     std::pair<Router, Dealer> mRouterDealerSocketPair;
-    UCI::SocketType mFrontendSocket = UCI::SocketType::UNKNOWN;
-    UCI::SocketType mBackendSocket = UCI::SocketType::UNKNOWN;
+    UCI::SocketType mFrontendSocket = UCI::SocketType::Unknown;
+    UCI::SocketType mBackendSocket = UCI::SocketType::Unknown;
     bool mHavePair = false;
 };
 
@@ -116,7 +116,7 @@ UCI::SocketType Proxy::getBackendSocketType() const
 /// Frontend sockets
 XSubscriber Proxy::getXSubscriberFrontend() const
 {
-    if (getFrontendSocketType() != UCI::SocketType::XSUBSCRIBER)
+    if (getFrontendSocketType() != UCI::SocketType::XSubscriber)
     {
         throw std::invalid_argument("Frontend not XSUB");
     }
@@ -126,7 +126,7 @@ XSubscriber Proxy::getXSubscriberFrontend() const
 /// Frontend sockets
 Router Proxy::getRouterFrontend() const
 {
-    if (getFrontendSocketType() != UCI::SocketType::ROUTER)
+    if (getFrontendSocketType() != UCI::SocketType::Router)
     {
         throw std::invalid_argument("Frontend not ROUTER");
     }
@@ -136,7 +136,7 @@ Router Proxy::getRouterFrontend() const
 /// Backend sockets
 XPublisher Proxy::getXPublisherBackend() const
 {
-    if (getBackendSocketType() != UCI::SocketType::XPUBLISHER)
+    if (getBackendSocketType() != UCI::SocketType::XPublisher)
     {
         throw std::invalid_argument("Backend not XPUB");
     }
@@ -145,7 +145,7 @@ XPublisher Proxy::getXPublisherBackend() const
 
 Dealer Proxy::getDealerBackend() const
 {
-    if (getBackendSocketType() != UCI::SocketType::DEALER)
+    if (getBackendSocketType() != UCI::SocketType::Dealer)
     {
         throw std::invalid_argument("Backend not DEALER");
     }
@@ -155,17 +155,17 @@ Dealer Proxy::getDealerBackend() const
 /// Socket type
 UCI::SocketType Proxy::getSocketType() noexcept
 {
-    return UCI::SocketType::PROXY;
+    return UCI::SocketType::Proxy;
 }
 
 /// Frontend socket address
 std::string Proxy::getFrontendAddress() const
 {
-    if (getFrontendSocketType() == UCI::SocketType::XSUBSCRIBER)
+    if (getFrontendSocketType() == UCI::SocketType::XSubscriber)
     {
         return getXSubscriberFrontend().getAddress();
     }
-    else if (getFrontendSocketType() == UCI::SocketType::ROUTER)
+    else if (getFrontendSocketType() == UCI::SocketType::Router)
     {
         return getRouterFrontend().getAddress();
     }
@@ -178,11 +178,11 @@ std::string Proxy::getFrontendAddress() const
 /// Backend socket address
 std::string Proxy::getBackendAddress() const
 {
-    if (getBackendSocketType() == UCI::SocketType::XPUBLISHER)
+    if (getBackendSocketType() == UCI::SocketType::XPublisher)
     {
         return getXPublisherBackend().getAddress();
     }   
-    else if (getBackendSocketType() == UCI::SocketType::DEALER)
+    else if (getBackendSocketType() == UCI::SocketType::Dealer)
     {
         return getDealerBackend().getAddress();
     }

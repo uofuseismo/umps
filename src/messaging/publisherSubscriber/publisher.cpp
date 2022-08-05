@@ -98,7 +98,7 @@ public:
     {
         mSocketDetails.setAddress(mAddress);
         mSocketDetails.setSecurityLevel(mSecurityLevel);
-        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::Connect);
     }
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::unique_ptr<zmq::socket_t> mPublisher{nullptr};

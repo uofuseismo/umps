@@ -31,7 +31,7 @@ public:
     SocketDetails::XSubscriber mXSubscriber;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS; 
     UAuth::UserPrivileges mUserPrivileges = UAuth::UserPrivileges::READ_ONLY;
-    SocketType mSocketType = SocketType::UNKNOWN;
+    SocketType mSocketType = SocketType::Unknown;
     bool mHaveConnectionType = false;
 };
 
@@ -262,7 +262,7 @@ void Details::setSocketDetails(const SocketDetails::Proxy &socket)
 /// Get socket details
 SocketDetails::Dealer Details::getDealerSocketDetails() const
 {
-    if (getSocketType() != SocketType::DEALER)
+    if (getSocketType() != SocketType::Dealer)
     {
         throw std::runtime_error("Dealer socket details not set");
     }
@@ -271,7 +271,7 @@ SocketDetails::Dealer Details::getDealerSocketDetails() const
 
 SocketDetails::Publisher Details::getPublisherSocketDetails() const
 {
-    if (getSocketType() != SocketType::PUBLISHER)
+    if (getSocketType() != SocketType::Publisher)
     {
         throw std::runtime_error("Publisher socket details not set");
     }
@@ -280,7 +280,7 @@ SocketDetails::Publisher Details::getPublisherSocketDetails() const
 
 SocketDetails::Subscriber Details::getSubscriberSocketDetails() const
 {
-    if (getSocketType() != SocketType::SUBSCRIBER)
+    if (getSocketType() != SocketType::Subscriber)
     {
         throw std::runtime_error("Subscriber socket details not set");
     }
@@ -289,7 +289,7 @@ SocketDetails::Subscriber Details::getSubscriberSocketDetails() const
 
 SocketDetails::Reply Details::getReplySocketDetails() const
 {
-    if (getSocketType() != SocketType::REPLY)
+    if (getSocketType() != SocketType::Reply)
     {
         throw std::runtime_error("Reply socket details not set");
     }
@@ -298,7 +298,7 @@ SocketDetails::Reply Details::getReplySocketDetails() const
 
 SocketDetails::Request Details::getRequestSocketDetails() const
 {
-    if (getSocketType() != SocketType::REQUEST)
+    if (getSocketType() != SocketType::Request)
     {
         throw std::runtime_error("Request socket details not set");
     }
@@ -307,7 +307,7 @@ SocketDetails::Request Details::getRequestSocketDetails() const
 
 SocketDetails::Router Details::getRouterSocketDetails() const
 {
-    if (getSocketType() != SocketType::ROUTER)
+    if (getSocketType() != SocketType::Router)
     {
         throw std::runtime_error("Router socket details not set");
     }
@@ -316,7 +316,7 @@ SocketDetails::Router Details::getRouterSocketDetails() const
 
 SocketDetails::XPublisher Details::getXPublisherSocketDetails() const
 {
-    if (getSocketType() != SocketType::XPUBLISHER)
+    if (getSocketType() != SocketType::XPublisher)
     {
         throw std::runtime_error("XPublisher socket details not set");
     }
@@ -325,7 +325,7 @@ SocketDetails::XPublisher Details::getXPublisherSocketDetails() const
 
 SocketDetails::XSubscriber Details::getXSubscriberSocketDetails() const
 {
-    if (getSocketType() != SocketType::XSUBSCRIBER)
+    if (getSocketType() != SocketType::XSubscriber)
     {
         throw std::runtime_error("XSubscriber socket details not set");
     }
@@ -334,7 +334,7 @@ SocketDetails::XSubscriber Details::getXSubscriberSocketDetails() const
 
 SocketDetails::Proxy Details::getProxySocketDetails() const
 {
-    if (getSocketType() != SocketType::PROXY)
+    if (getSocketType() != SocketType::Proxy)
     {
         throw std::runtime_error("Proxy socket details not set");
     }

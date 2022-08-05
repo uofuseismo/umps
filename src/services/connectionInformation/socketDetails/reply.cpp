@@ -11,7 +11,7 @@ class Reply::ReplyImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::BIND;
+    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Bind;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
@@ -103,5 +103,5 @@ UCI::ConnectOrBind Reply::getConnectOrBind() const noexcept
 
 UCI::SocketType Reply::getSocketType() noexcept
 {
-    return UCI::SocketType::REPLY;
+    return UCI::SocketType::Reply;
 }

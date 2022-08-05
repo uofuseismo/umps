@@ -24,11 +24,13 @@
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
-#include "umps/services/connectionInformation/parameters.hpp"
+#include "umps/services/connectionInformation/serviceOptions.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
+#include "umps/services/moduleRegistry/serviceOptions.hpp"
+#include "umps/services/moduleRegistry/service.hpp"
 //#include "umps/services/incrementer/service.hpp"
 //#include "umps/services/incrementer/parameters.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
@@ -54,8 +56,9 @@ struct ProgramOptions
     std::vector<UMPS::ProxyServices::ProxyOptions> mProxyServiceOptions;
     std::vector<UMPS::ProxyBroadcasts::ProxyOptions> mProxyBroadcastOptions;
     std::vector<std::pair<int, bool>> mAvailablePorts;
-    UMPS::Services::ConnectionInformation::Parameters
-        mConnectionInformationParameters;
+    UMPS::Services::ConnectionInformation::ServiceOptions
+        mConnectionInformationOptions;
+    UMPS::Services::ModuleRegistry::ServiceOptions mModuleRegistryOptions;
     //UMPS::ProxyBroadcasts::DataPacket::ProxyOptions mDataPacketParameters;
     //UMPS::ProxyBroadcasts::Heartbeat::ProxyOptions mHeartbeatParameters;
     UAuth::ZAPOptions mZAPOptions;
@@ -65,7 +68,7 @@ struct ProgramOptions
     std::string mUserTable = mTablesDirectory + "user.sqlite3";
     std::string mBlacklistTable = mTablesDirectory + "blacklist.sqlite3";
     std::string mWhiteListTable = mTablesDirectory + "whitelist.sqlite3";
-    std::string mIPAddress;
+    std::string mAddress;
     UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::INFO;
 };
 
@@ -161,7 +164,7 @@ void printBroadcast(const UMPS::ProxyBroadcasts::Proxy &proxy)
 std::string makeNextAvailableAddress(
     const std::string &proposedAddress,
     std::vector<std::pair<int, bool>> &availablePorts,
-    const std::string &ipAddress,
+    const std::string &rootAddress,
     const std::set<std::string> &usedAddresses,
     const std::string &connectionType = "tcp://")
 {
@@ -179,7 +182,7 @@ std::string makeNextAvailableAddress(
         auto isAvailable = availablePort.second;
         if (isAvailable)
         {
-            address = connectionType + ipAddress
+            address = connectionType + rootAddress
                     + ":" + std::to_string(port);
             if (usedAddresses.contains(address))
             {
@@ -251,6 +254,7 @@ int main(int argc, char *argv[])
     //std::cout << myIPAddress << std::endl;
     //return 0;
     // Get the ini file from the command line
+    bool runInteractive{true};
     std::string iniFile;
     try
     {
@@ -328,8 +332,33 @@ int main(int argc, char *argv[])
     auto connectionInformation
         = std::make_unique<UMPS::Services::ConnectionInformation::Service>
           (connectionInformationLoggerPtr, authenticator);
-    connectionInformation->initialize(options.mConnectionInformationParameters);
+    connectionInformation->initialize(options.mConnectionInformationOptions);
     modules.mConnectionInformation = std::move(connectionInformation);
+    // Initialize the module registry service
+    auto moduleRegistryLogFileName = options.mLogDirectory + "/" 
+                                   + "moduleRegistry.log";
+    UMPS::Logging::SpdLog moduleRegistryLogger;
+    moduleRegistryLogger.initialize("ModuleRegistry",
+                                    moduleRegistryLogFileName,
+                                    UMPS::Logging::Level::INFO,
+                                    hour, minute);
+    std::shared_ptr<UMPS::Logging::ILog> moduleRegistryLoggerPtr
+        = std::make_shared<UMPS::Logging::SpdLog> (moduleRegistryLogger);
+    auto moduleRegistry
+        = std::make_unique<UMPS::Services::ModuleRegistry::Service>
+          (moduleRegistryLoggerPtr, authenticator);
+    auto serviceKey = "Services::" + moduleRegistry->getName();
+    moduleRegistry->initialize(options.mModuleRegistryOptions);
+     modules.mServices.insert(std::pair(serviceKey,
+                                        std::move(moduleRegistry)));
+    try
+    {
+        modules.mServices[serviceKey]->start();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     // Start the proxy broadcasts
     for (const auto &proxyOptions : options.mProxyBroadcastOptions)
     {
@@ -349,9 +378,16 @@ int main(int argc, char *argv[])
         auto broadcastKey = "ProxyBroadcasts::" + moduleName;
         modules.mProxyBroadcasts.insert(std::pair(broadcastKey,
                                                   std::move(proxyBroadcast)));
-        modules.mProxyBroadcasts[broadcastKey]->start();
-        modules.mConnectionInformation->addConnection(
-            *modules.mProxyBroadcasts[broadcastKey]);
+        try
+        {
+            modules.mProxyBroadcasts[broadcastKey]->start();
+            modules.mConnectionInformation->addConnection(
+                *modules.mProxyBroadcasts[broadcastKey]);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
     // Start the proxy services
     for (const auto &proxyOptions : options.mProxyServiceOptions)
@@ -372,18 +408,20 @@ int main(int argc, char *argv[])
         auto serviceKey = "ProxyServices::" + moduleName;
         modules.mProxyServices.insert(std::pair(serviceKey,
                                                 std::move(proxyService)));
-try
-{
-        modules.mProxyServices[serviceKey]->start();
-}
-catch (const std::exception &e)
-{
- std::cerr << e.what() << std::endl;
-}
-        modules.mConnectionInformation->addConnection(
-            *modules.mProxyServices[serviceKey]);
+        try
+        {
+            modules.mProxyServices[serviceKey]->start();
+            modules.mConnectionInformation->addConnection(
+                *modules.mProxyServices[serviceKey]);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
-    // Finally, start the connection service information 
+    // Start the services
+
+    // Start the connection service information 
     std::cout << "Starting connection information service..." << std::endl;
     try
     {
@@ -532,6 +570,7 @@ std::string parseCommandLineOptions(int argc, char *argv[])
 /// Parse the ini file
 ProgramOptions parseIniFile(const std::string &iniFile)
 {
+    const std::string connectionType = "tcp://";
     ProgramOptions options;
     if (!std::filesystem::exists(iniFile))
     {
@@ -548,10 +587,14 @@ ProgramOptions parseIniFile(const std::string &iniFile)
           (propertyTree.get<int> ("uOperator.verbosity",
                                   static_cast<int> (options.mVerbosity)));
     // Need an IP address
-    options.mIPAddress = propertyTree.get<std::string> ("uOperator.ipAddress");
-    if (options.mIPAddress.empty())
+    options.mAddress = propertyTree.get<std::string> ("uOperator.address");
+    if (options.mAddress.empty())
     {
-        throw std::runtime_error("uOperator.ipAddress not not defined");
+        options.mAddress = propertyTree.get<std::string> ("uOperator.ipAddress");
+        if (options.mAddress.empty())
+        {
+            throw std::runtime_error("uOperator.ipAddress not not defined");
+        }
     }
     auto portStart = propertyTree.get<int> ("uOperator.openPortBlockStart",
                                             8000);
@@ -617,12 +660,20 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                              options.mWhiteListTable);
     }
     // Set the ZAP information for the connection information service
-    options.mConnectionInformationParameters.setZAPOptions(options.mZAPOptions);
+    options.mConnectionInformationOptions.setZAPOptions(options.mZAPOptions);
     // First make sure the connection information service is available
-    auto address = "tcp://" + options.mIPAddress
+    auto address = connectionType + options.mAddress
                  + ":" + std::to_string(options.mAvailablePorts.at(0).first);
-    options.mConnectionInformationParameters.setClientAccessAddress(address);
+    options.mConnectionInformationOptions.setClientAccessAddress(address);
     options.mAvailablePorts.at(0).second = false;
+    // Next, the module registry
+    address = connectionType + options.mAddress
+            + ":" + std::to_string(options.mAvailablePorts.at(1).first);
+    options.mModuleRegistryOptions.setZAPOptions(options.mZAPOptions);
+    options.mModuleRegistryOptions.setClientAccessAddress(address);
+    options.mAvailablePorts.at(1).second = false;
+    // Now the heartbeat broadcast
+
     // Next get all the counters
 /*
     auto counters = makePropertyList(propertyTree, "Counters");
@@ -644,9 +695,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         {
             auto counterAddress = makeNextAvailableAddress(
                                       options.mAvailablePorts, 
-                                      options.mIPAddress,
+                                      options.mAddress,
                                       &usedAddresses,
-                                      "tcp://");
+                                      connectionType);
             counterOptions.setClientAccessAddress(counterAddress);
         }
 #ifndef NDEBUG
@@ -663,14 +714,14 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     {
         auto frontendAddress = makeNextAvailableAddress(
                                     options.mAvailablePorts,
-                                    options.mIPAddress,
+                                    options.mAddress,
                                     &usedAddresses,
-                                    "tcp://");
+                                    connectionType);
         auto backendAddress = makeNextAvailableAddress(
                                     options.mAvailablePorts,
-                                    options.mIPAddress,
+                                    options.mAddress,
                                     &usedAddresses,
-                                    "tcp://");
+                                    connectionType);
         UMPS::ProxyServices::PacketCache::ProxyOptions packetCacheProxyOptions;
         packetCacheProxyOptions.setName(packetCache); 
         packetCacheProxyOptions.setFrontendAddress(frontendAddress);
@@ -693,9 +744,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         }
         auto newAddress = makeNextAvailableAddress(address,
                                                    options.mAvailablePorts,
-                                                   options.mIPAddress,
+                                                   options.mAddress,
                                                    usedAddresses,
-                                                   "tcp://");
+                                                   connectionType);
         if (newAddress != address)
         {   
             proxyOptions.setFrontendAddress(newAddress);
@@ -708,9 +759,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         }
         newAddress = makeNextAvailableAddress(address,
                                               options.mAvailablePorts,
-                                              options.mIPAddress,
+                                              options.mAddress,
                                               usedAddresses,
-                                              "tcp://");
+                                              connectionType);
         if (newAddress != address)
         {
             proxyOptions.setBackendAddress(newAddress);
@@ -733,9 +784,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         }
         auto newAddress = makeNextAvailableAddress(address,
                                                    options.mAvailablePorts,
-                                                   options.mIPAddress,
+                                                   options.mAddress,
                                                    usedAddresses,
-                                                   "tcp://");
+                                                   connectionType);
         if (newAddress != address)
         {
             proxyOptions.setFrontendAddress(newAddress);
@@ -748,9 +799,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         }
         newAddress = makeNextAvailableAddress(address,
                                               options.mAvailablePorts,
-                                              options.mIPAddress,
+                                              options.mAddress,
                                               usedAddresses,
-                                              "tcp://");
+                                              connectionType);
         if (newAddress != address)
         {
             proxyOptions.setBackendAddress(newAddress);
@@ -774,16 +825,16 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     {
         auto frontendAddress = makeNextAvailableAddress(
                                     options.mAvailablePorts,
-                                    options.mIPAddress,
-                                    "tcp://");
+                                    options.mAddress,
+                                    connectionType);
         dataPacketOptions.setFrontendAddress(frontendAddress);
     } 
     if (!dataPacketOptions.haveBackendAddress())
     {
         auto backendAddress = makeNextAvailableAddress(
                                     options.mAvailablePorts,
-                                    options.mIPAddress,
-                                    "tcp://");
+                                    options.mAddress,
+                                    connectionType);
         dataPacketOptions.setBackendAddress(backendAddress);
     }
     dataPacketOptions.setZAPOptions(options.mZAPOptions);
@@ -807,16 +858,16 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     {   
         auto frontendAddress = makeNextAvailableAddress(
                                     options.mAvailablePorts,
-                                    options.mIPAddress,
-                                    "tcp://");
+                                    options.mAddress,
+                                    connectionType);
         heartbeatOptions.setFrontendAddress(frontendAddress);
     }   
     if (!heartbeatOptions.haveBackendAddress())
     {   
         auto backendAddress = makeNextAvailableAddress(
                                     options.mAvailablePorts,
-                                    options.mIPAddress,
-                                    "tcp://");
+                                    options.mAddress,
+                                    connectionType);
         heartbeatOptions.setBackendAddress(backendAddress);
     }
     heartbeatOptions.setZAPOptions(options.mZAPOptions);

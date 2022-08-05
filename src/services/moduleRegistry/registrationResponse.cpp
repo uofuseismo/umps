@@ -105,7 +105,6 @@ void RegistrationResponse::clear() noexcept
     pImpl = std::make_unique<RegistrationResponseImpl> ();
 }
 
-
 /// Return code
 void RegistrationResponse::setReturnCode(
     const RegistrationReturnCode code) noexcept

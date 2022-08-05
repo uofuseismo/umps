@@ -11,7 +11,7 @@ class Subscriber::SubscriberImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::BIND;
+    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Bind;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
@@ -102,5 +102,5 @@ UCI::ConnectOrBind Subscriber::getConnectOrBind() const noexcept
 
 UCI::SocketType Subscriber::getSocketType() noexcept
 {
-    return UCI::SocketType::SUBSCRIBER;
+    return UCI::SocketType::Subscriber;
 }

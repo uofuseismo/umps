@@ -82,7 +82,7 @@ public:
     {   
         mSocketDetails.setAddress(mAddress);
         mSocketDetails.setSecurityLevel(mSecurityLevel);
-        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::BIND);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::Bind);
     }
 //private:
     //std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 

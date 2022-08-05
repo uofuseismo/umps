@@ -54,93 +54,93 @@ TEST(ConnectionInformation, SocketDetails)
 
     SocketDetails::Publisher publisher;
     EXPECT_NO_THROW(publisher.setAddress(frontEnd));
-    publisher.setConnectOrBind(ConnectOrBind::BIND);
+    publisher.setConnectOrBind(ConnectOrBind::Bind);
     EXPECT_EQ(publisher.getAddress(), frontEnd);
-    EXPECT_EQ(publisher.getSocketType(), SocketType::PUBLISHER);
-    EXPECT_EQ(publisher.getConnectOrBind(), ConnectOrBind::BIND);
+    EXPECT_EQ(publisher.getSocketType(), SocketType::Publisher);
+    EXPECT_EQ(publisher.getConnectOrBind(), ConnectOrBind::Bind);
 
     SocketDetails::Subscriber subscriber;
     EXPECT_NO_THROW(subscriber.setAddress(frontEnd));
-    subscriber.setConnectOrBind(ConnectOrBind::BIND);
+    subscriber.setConnectOrBind(ConnectOrBind::Bind);
     EXPECT_EQ(subscriber.getAddress(), frontEnd);
-    EXPECT_EQ(subscriber.getSocketType(), SocketType::SUBSCRIBER);
-    EXPECT_EQ(subscriber.getConnectOrBind(), ConnectOrBind::BIND);
+    EXPECT_EQ(subscriber.getSocketType(), SocketType::Subscriber);
+    EXPECT_EQ(subscriber.getConnectOrBind(), ConnectOrBind::Bind);
 
     SocketDetails::XPublisher xPublisher;
     EXPECT_NO_THROW(xPublisher.setAddress(backEnd));
-    xPublisher.setConnectOrBind(ConnectOrBind::CONNECT);
+    xPublisher.setConnectOrBind(ConnectOrBind::Connect);
     EXPECT_EQ(xPublisher.getAddress(), backEnd);
-    EXPECT_EQ(xPublisher.getSocketType(), SocketType::XPUBLISHER);
-    EXPECT_EQ(xPublisher.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(xPublisher.getSocketType(), SocketType::XPublisher);
+    EXPECT_EQ(xPublisher.getConnectOrBind(), ConnectOrBind::Connect);
 
     SocketDetails::XSubscriber xSubscriber;
     EXPECT_NO_THROW(xSubscriber.setAddress(frontEnd));
-    xSubscriber.setConnectOrBind(ConnectOrBind::CONNECT);
+    xSubscriber.setConnectOrBind(ConnectOrBind::Connect);
     EXPECT_EQ(xSubscriber.getAddress(), frontEnd);
-    EXPECT_EQ(xSubscriber.getSocketType(), SocketType::XSUBSCRIBER);
-    EXPECT_EQ(xSubscriber.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(xSubscriber.getSocketType(), SocketType::XSubscriber);
+    EXPECT_EQ(xSubscriber.getConnectOrBind(), ConnectOrBind::Connect);
 
     SocketDetails::Router router;
     EXPECT_NO_THROW(router.setAddress(frontEnd));
-    router.setConnectOrBind(ConnectOrBind::CONNECT);
+    router.setConnectOrBind(ConnectOrBind::Connect);
     EXPECT_EQ(router.getAddress(), frontEnd);
-    EXPECT_EQ(router.getSocketType(), SocketType::ROUTER);
-    EXPECT_EQ(router.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(router.getSocketType(), SocketType::Router);
+    EXPECT_EQ(router.getConnectOrBind(), ConnectOrBind::Connect);
 
     SocketDetails::Request request;
     EXPECT_NO_THROW(request.setAddress(frontEnd));
-    request.setConnectOrBind(ConnectOrBind::BIND);
+    request.setConnectOrBind(ConnectOrBind::Bind);
     EXPECT_EQ(request.getAddress(), frontEnd);
-    EXPECT_EQ(request.getSocketType(), SocketType::REQUEST);
-    EXPECT_EQ(request.getConnectOrBind(), ConnectOrBind::BIND);
+    EXPECT_EQ(request.getSocketType(), SocketType::Request);
+    EXPECT_EQ(request.getConnectOrBind(), ConnectOrBind::Bind);
 
     SocketDetails::Reply reply;
     EXPECT_NO_THROW(reply.setAddress(backEnd));
-    reply.setConnectOrBind(ConnectOrBind::CONNECT);
+    reply.setConnectOrBind(ConnectOrBind::Connect);
     EXPECT_EQ(reply.getAddress(), backEnd);
-    EXPECT_EQ(reply.getSocketType(), SocketType::REPLY);
-    EXPECT_EQ(reply.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(reply.getSocketType(), SocketType::Reply);
+    EXPECT_EQ(reply.getConnectOrBind(), ConnectOrBind::Connect);
 
     SocketDetails::Dealer dealer;
     EXPECT_NO_THROW(dealer.setAddress(backEnd));
-    dealer.setConnectOrBind(ConnectOrBind::CONNECT);
+    dealer.setConnectOrBind(ConnectOrBind::Connect);
     EXPECT_EQ(dealer.getAddress(), backEnd);
-    EXPECT_EQ(dealer.getSocketType(), SocketType::DEALER);
-    EXPECT_EQ(dealer.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(dealer.getSocketType(), SocketType::Dealer);
+    EXPECT_EQ(dealer.getConnectOrBind(), ConnectOrBind::Connect);
 
     SocketDetails::Proxy proxy;
     EXPECT_NO_THROW(proxy.setSocketPair(std::pair(xSubscriber, xPublisher)));
-    EXPECT_EQ(proxy.getSocketType(), SocketType::PROXY);
-    EXPECT_EQ(proxy.getFrontendSocketType(), SocketType::XSUBSCRIBER);
-    EXPECT_EQ(proxy.getBackendSocketType(),  SocketType::XPUBLISHER);
+    EXPECT_EQ(proxy.getSocketType(), SocketType::Proxy);
+    EXPECT_EQ(proxy.getFrontendSocketType(), SocketType::XSubscriber);
+    EXPECT_EQ(proxy.getBackendSocketType(),  SocketType::XPublisher);
     auto xSubCopy = proxy.getXSubscriberFrontend();
     auto xPubCopy = proxy.getXPublisherBackend(); 
     EXPECT_EQ(xSubCopy.getAddress(), frontEnd);
-    EXPECT_EQ(xSubCopy.getSocketType(), SocketType::XSUBSCRIBER);
-    EXPECT_EQ(xSubCopy.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(xSubCopy.getSocketType(), SocketType::XSubscriber);
+    EXPECT_EQ(xSubCopy.getConnectOrBind(), ConnectOrBind::Connect);
     EXPECT_EQ(xPubCopy.getAddress(), backEnd);
-    EXPECT_EQ(xPubCopy.getSocketType(), SocketType::XPUBLISHER);
-    EXPECT_EQ(xPubCopy.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(xPubCopy.getSocketType(), SocketType::XPublisher);
+    EXPECT_EQ(xPubCopy.getConnectOrBind(), ConnectOrBind::Connect);
 
     EXPECT_NO_THROW(proxy.setSocketPair(std::pair(router, dealer)));
-    EXPECT_EQ(proxy.getSocketType(), SocketType::PROXY);
-    EXPECT_EQ(proxy.getFrontendSocketType(), SocketType::ROUTER);
-    EXPECT_EQ(proxy.getBackendSocketType(),  SocketType::DEALER);
+    EXPECT_EQ(proxy.getSocketType(), SocketType::Proxy);
+    EXPECT_EQ(proxy.getFrontendSocketType(), SocketType::Router);
+    EXPECT_EQ(proxy.getBackendSocketType(),  SocketType::Dealer);
     auto routerCopy = proxy.getRouterFrontend();
     auto dealerCopy = proxy.getDealerBackend(); 
     EXPECT_EQ(routerCopy.getAddress(), frontEnd);
-    EXPECT_EQ(routerCopy.getSocketType(), SocketType::ROUTER);
-    EXPECT_EQ(routerCopy.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(routerCopy.getSocketType(), SocketType::Router);
+    EXPECT_EQ(routerCopy.getConnectOrBind(), ConnectOrBind::Connect);
     EXPECT_EQ(dealerCopy.getAddress(), backEnd);
-    EXPECT_EQ(dealerCopy.getSocketType(), SocketType::DEALER);
-    EXPECT_EQ(dealerCopy.getConnectOrBind(), ConnectOrBind::CONNECT);
+    EXPECT_EQ(dealerCopy.getSocketType(), SocketType::Dealer);
+    EXPECT_EQ(dealerCopy.getConnectOrBind(), ConnectOrBind::Connect);
 }
 
 TEST(ConnectionInformation, Details)
 {
     const std::string moduleName = "testModule";
     const std::string connectionString = "tcp://127.0.0.1:8080";
-    auto connectionType = ConnectionType::BROADCAST;
+    auto connectionType = ConnectionType::Broadcast;
     auto securityLevel = UAuth::SecurityLevel::GRASSLANDS;
     auto privileges = UAuth::UserPrivileges::READ_WRITE;
 
@@ -164,7 +164,7 @@ TEST(ConnectionInformation, Details)
     EXPECT_EQ(detailsCopy.getConnectionType(), connectionType);
     EXPECT_EQ(detailsCopy.getSecurityLevel(), securityLevel);
     EXPECT_EQ(detailsCopy.getUserPrivileges(), privileges);
-    EXPECT_EQ(detailsCopy.getSocketType(), SocketType::PUBLISHER);
+    EXPECT_EQ(detailsCopy.getSocketType(), SocketType::Publisher);
     
     auto pubSocketCopy = detailsCopy.getPublisherSocketDetails();
     EXPECT_EQ(pubSocketCopy.getAddress(), connectionString);
@@ -173,7 +173,7 @@ TEST(ConnectionInformation, Details)
     EXPECT_FALSE(details.haveName());
     //EXPECT_FALSE(details.haveConnectionString());
     EXPECT_FALSE(details.haveConnectionType());
-    EXPECT_EQ(details.getSocketType(), SocketType::UNKNOWN);
+    EXPECT_EQ(details.getSocketType(), SocketType::Unknown);
 }
 
 TEST(ConnectionInformation, AvailableConnectionsRequest)
@@ -201,8 +201,8 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
     std::vector<std::string> names{"Test1", "Test2"};
     std::vector<std::string> connectionStrings{"tcp://127.0.0.1:5050",
                                                "tcp://127.0.0.1:5060"};
-    std::vector<ConnectionType> connectionTypes{ConnectionType::BROADCAST,
-                                                ConnectionType::SERVICE};
+    std::vector<ConnectionType> connectionTypes{ConnectionType::Broadcast,
+                                                ConnectionType::Service};
     std::vector<UAuth::UserPrivileges>
         privileges{UAuth::UserPrivileges::READ_WRITE,
                    UAuth::UserPrivileges::ADMINISTRATOR};

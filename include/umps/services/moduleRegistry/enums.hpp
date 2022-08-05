@@ -7,12 +7,12 @@ namespace UMPS::Services::ModuleRegistry
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class RegistrationReturnCode
 {
-    Success = 0,        /*!< The module was successfully registered. */
-    InvalidMessage,     /*!< The request message could not be parsed. */
-    Exists,             /*!< The module was not register because an identically
-                             named module already exists. */
-    AlgorithmicFailure  /*!< The module was not registered because of a
-                             server-side error. */
+    Success = 0,      /*!< The module was successfully registered. */
+    InvalidMessage,   /*!< The request message could not be parsed. */
+    Exists,           /*!< The module was not register because an identically
+                           named module already exists. */
+    AlgorithmFailure  /*!< The module was not registered because of a
+                           server-side error. */
 };
 }
 #endif

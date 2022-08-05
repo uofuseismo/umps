@@ -114,7 +114,7 @@ public:
     {
         mSocketDetails.setAddress(mAddress);
         mSocketDetails.setSecurityLevel(mSecurityLevel);
-        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::Connect);
     }
 //    std::map<std::string, std::unique_ptr<UMPS::MessageFormats::IMessage>> 
         //mSubscriptions;

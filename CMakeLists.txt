@@ -116,7 +116,7 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/requestorOptions.cpp
     src/services/connectionInformation/requestor.cpp
     src/services/connectionInformation/service.cpp
-    src/services/connectionInformation/parameters.cpp
+    src/services/connectionInformation/serviceOptions.cpp
     src/services/connectionInformation/socketDetails/dealer.cpp
     src/services/connectionInformation/socketDetails/proxy.cpp
     src/services/connectionInformation/socketDetails/publisher.cpp
@@ -127,8 +127,11 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/socketDetails/xPublisher.cpp
     src/services/connectionInformation/socketDetails/xSubscriber.cpp
     src/services/connectionInformation/details.cpp
+    src/services/moduleRegistry/moduleDetails.cpp
+    src/services/moduleRegistry/serviceOptions.cpp
     src/services/moduleRegistry/registrationRequest.cpp
     src/services/moduleRegistry/registrationResponse.cpp
+    src/services/moduleRegistry/service.cpp
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
     #src/proxyBroadcasts/dataPacket/proxy.cpp

@@ -258,12 +258,12 @@ public:
         UCI::SocketDetails::XSubscriber xSub;
         xSub.setAddress(mFrontendAddress);
         xSub.setSecurityLevel(mSecurityLevel);
-        xSub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        xSub.setConnectOrBind(UCI::ConnectOrBind::Connect);
 
         UCI::SocketDetails::XPublisher xPub;
         xPub.setAddress(mBackendAddress);
         xPub.setSecurityLevel(mSecurityLevel);
-        xPub.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        xPub.setConnectOrBind(UCI::ConnectOrBind::Connect);
         mSocketDetails.setSocketPair(std::pair(xSub, xPub));
     }
 ///private:

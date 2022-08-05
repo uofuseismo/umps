@@ -7,17 +7,17 @@ namespace UMPS::Services::ConnectionInformation
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class ConnectionType
 {
-    SERVICE,   /*!< The connection is to a service.  This will be a 
+    Service,   /*!< The connection is to a service.  This will be a 
                     generalization of a request-reply socket.  */
-    BROADCAST  /*!< The connection is to a broadcast.  This will be 
+    Broadcast  /*!< The connection is to a broadcast.  This will be 
                     generalization of a publisher-subscribe socket. */
 };
 /// @brief Defines whether peers should bind or connect to access the socket.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class ConnectOrBind
 {
-    CONNECT,  /*!< To connect to the socket peers connect.  */
-    BIND      /*!< To connect to the socket peers must bind.  */
+    Connect,  /*!< To connect to the socket peers connect.  */
+    Bind      /*!< To connect to the socket peers must bind.  */
 };
 /// @brief This defines the socket type.  Note, ZeroMQ may have more socket
 ///        types than what is enumerated here.  These are simply the patterns
@@ -25,35 +25,35 @@ enum class ConnectOrBind
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class SocketType
 {
-    UNKNOWN,     /*!< The socket type is not specified. */
-    REQUEST,     /*!< This is a socket that receives requests. 
+    Unknown,     /*!< The socket type is not specified. */
+    Request,     /*!< This is a socket that receives requests. 
                       This will accept connections from a RESPONSE or
                       DEALER socket. */
-    DEALER,      /*!< This is a socket that receives requests asynchronously.
+    Dealer,      /*!< This is a socket that receives requests asynchronously.
                       This will accept connections from a ROUTER, RESPONSE, or
                       DEALER socket. */
-    REPLY,       /*!< This is a socket that replies to responses.
+    Reply,       /*!< This is a socket that replies to responses.
                       This will accept connections from a REQUEST or
                       ROUTER socket. */
-    RESPONSE,    /*!< This is a socket that receives responses.
+    Response,    /*!< This is a socket that receives responses.
                       This will accept connections from a REQUEST
                       or DEALER socket. */
-    ROUTER,      /*!< This is a socket that receives responses asynchronously.
+    Router,      /*!< This is a socket that receives responses asynchronously.
                       This will accept connections from a DEALER, REQUEST,
                       or ROUTER socket. */ 
-    PUBLISHER,   /*!< This is a publisher socket.
+    Publisher,   /*!< This is a publisher socket.
                       This will accept connections from a SUBSCRIBE or
                       XSUBSCRIBE socket. */ 
-    XPUBLISHER,  /*!< This is an extended publisher socket.
+    XPublisher,  /*!< This is an extended publisher socket.
                       This will accept connections from a SUBSCRIBE or
                       XSUBSCRIBE socket. */ 
-    SUBSCRIBER,  /*!< This is a subscription socket.
+    Subscriber,  /*!< This is a subscription socket.
                       This will accept connections from a PUBLISH or
                       XPUBLISH socket. */
-    XSUBSCRIBER, /*!< This is an extended subscription socket.
+    XSubscriber, /*!< This is an extended subscription socket.
                       This accept connections from a PUBLISH or
                       XPUBLISH socket. */
-    PROXY        /*!< A proxy really isn't a socket but a paradigm. 
+    Proxy        /*!< A proxy really isn't a socket but a paradigm. 
                       It indicates that there could be a REQUEST-ROUTER
                       or XPUB-XSUB pattern.  For this socket type the
                       user will have to get the frontend and backend

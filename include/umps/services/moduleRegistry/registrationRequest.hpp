@@ -4,6 +4,10 @@
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::ModuleRegistry
 {
+ class ModuleDetails;
+}
+namespace UMPS::Services::ModuleRegistry
+{
 /// @class RegistrationRequest registrationRequest.hpp "umps/services/moduleRegistry/registrationRequest.hpp"
 /// @brief Requests a module be registered with UMPS.
 /// @detail While no module needs to be explicitly registered, particularly 
@@ -44,26 +48,20 @@ public:
     /// @name Required Properties
     /// @{
 
-    /// @brief Sets the module name.
-    /// @param[in] name   The module name.
-    /// @throws std::invalid_argument if the name is empty.
-    void setModuleName(const std::string &name);
-    /// @result The module name.
-    /// @throws std::runtime_error if the module name was not set.
-    [[nodiscard]] std::string getModuleName() const;
-    /// @result True indicates the module name was set.
-    [[nodiscard]] bool haveModuleName() const noexcept;
+    /// @brief Sets the module details.
+    /// @param[in] details  The module details.
+    /// @throws std::invalid_argument if \c details.haveName() is false. 
+    void setModuleDetails(const ModuleDetails &details);
+    /// @result The module details.
+    /// @throws std::runtime_error if \c haveModuleDetails() is false.
+    [[nodiscard]] ModuleDetails getModuleDetails() const;
+    /// @result True indicates the module details were set.
+    [[nodiscard]] bool haveModuleDetails() const noexcept;
+
     /// @}
 
     /// @name Optional Properties
     /// @{
-
-    /// @brief Sets the machine on which the module is running.
-    /// @param[in] machine  The machine name.
-    void setMachine(const std::string &machine) noexcept;
-    /// @result The machine on which the module is running.
-    /// @note This can be blank.
-    [[nodiscard]] std::string getMachine() const noexcept;
 
     /// @brief For asynchronous messaging this allows the requester to index
     ///        the request.  This value will be returned so the requester

@@ -11,7 +11,7 @@ class Dealer::DealerImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::CONNECT;
+    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Connect;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
 };
 
@@ -101,7 +101,7 @@ UCI::ConnectOrBind Dealer::getConnectOrBind() const noexcept
 
 UCI::SocketType Dealer::getSocketType() noexcept
 {
-    return UCI::SocketType::DEALER;
+    return UCI::SocketType::Dealer;
 }
 
 

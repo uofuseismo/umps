@@ -1,8 +1,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
-#include <boost/asio/ip/host_name.hpp>
 #include "umps/services/moduleRegistry/registrationRequest.hpp"
-#include "private/isEmpty.hpp"
+#include "umps/services/moduleRegistry/moduleDetails.hpp"
 
 using namespace UMPS::Services::ModuleRegistry;
 
@@ -14,11 +13,15 @@ namespace
 nlohmann::json toJSONObject(const RegistrationRequest &request)
 {
     nlohmann::json obj;
+    auto details = request.getModuleDetails();;
     // Essential stuff (this will throw): 
     obj["MessageType"] = request.getMessageType();
-    obj["ModuleName"] = request.getModuleName(); // Throws
+    obj["ModuleName"] = details.getName(); // Throws
     // Other stuff
-    obj["Machine"] = request.getMachine();
+    obj["Executable"] = details.getExecutableName();
+    obj["ProcessIdentifier"] = details.getProcessIdentifier();
+    obj["ParentProcessIdentifier"] =  details.getParentProcessIdentifier();
+    obj["Machine"] = details.getMachine();
     obj["Identifier"] = request.getIdentifier();
     return obj;
 }
@@ -26,15 +29,22 @@ nlohmann::json toJSONObject(const RegistrationRequest &request)
 RegistrationRequest objectToRequest(const nlohmann::json &obj)
 {
     RegistrationRequest request;
+    ModuleDetails details;
     // Essential stuff
     if (obj["MessageType"] != request.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
     }
-    request.setModuleName(obj["ModuleName"].get<std::string> ());
+    details.setName(obj["ModuleName"].get<std::string> ());
     // Optional stuff
-    request.setMachine(obj["Machine"].get<std::string> ());
+    details.setExecutableName(obj["Executable"].get<std::string> ());
+    details.setProcessIdentifier(obj["ProcessIdentifier"].get<int64_t> ());
+    details.setParentProcessIdentifier(
+        obj["ParentProcessIdentifier"].get<int64_t> ());
+    details.setMachine(obj["Machine"].get<std::string> ());
     request.setIdentifier(obj["Identifier"].get<uint64_t> ());
+
+    request.setModuleDetails(details);
     return request;
 }
 
@@ -55,19 +65,9 @@ RegistrationRequest fromCBORMessage(const uint8_t *message, const size_t length)
 class RegistrationRequest::RegistrationRequestImpl
 {
 public:
-    RegistrationRequestImpl()
-    {
-        try
-        {
-            mMachine = boost::asio::ip::host_name();
-        }
-        catch (...)
-        {
-        }
-    }
-    std::string mModuleName;
-    std::string mMachine;
-    uint64_t mIdentifier = 0;
+    ModuleDetails mModuleDetails;
+    uint64_t mIdentifier{0};
+    bool mHaveModuleDetails{false};
 };
 
 
@@ -116,6 +116,31 @@ void RegistrationRequest::clear() noexcept
     pImpl = std::make_unique<RegistrationRequestImpl> ();
 }
 
+void RegistrationRequest::setModuleDetails(const ModuleDetails &details)
+{
+    if (!details.haveName())
+    {
+        throw std::invalid_argument("Module name not set");
+    }
+    pImpl->mModuleDetails = details;
+    pImpl->mHaveModuleDetails = true;
+}
+
+ModuleDetails RegistrationRequest::getModuleDetails() const
+{
+    if (!haveModuleDetails())
+    {
+        throw std::runtime_error("Module details not set");
+    }
+    return pImpl->mModuleDetails;
+}
+
+bool RegistrationRequest::haveModuleDetails() const noexcept
+{
+    return pImpl->mHaveModuleDetails;
+}
+
+/*
 /// Module name
 void RegistrationRequest::setModuleName(const std::string &module)
 {
@@ -144,6 +169,7 @@ std::string RegistrationRequest::getMachine() const noexcept
 {
     return pImpl->mMachine;
 }
+*/
 
 /// Identifier
 void RegistrationRequest::setIdentifier(const uint64_t identifier) noexcept

@@ -31,7 +31,7 @@ void throwOnInvalidDetails(const Details &detail)
     {
         throw std::invalid_argument("Connection type not set");
     }
-    if (detail.getSocketType() == SocketType::UNKNOWN)
+    if (detail.getSocketType() == SocketType::Unknown)
     {
         throw std::invalid_argument("Unknown socket information");
     }
@@ -51,68 +51,68 @@ nlohmann::json detailsToJSONObject(const Details &detail)
 
     auto socketType = detail.getSocketType();
     obj["SocketType"] = static_cast<int> (socketType);
-    if (socketType == SocketType::DEALER)
+    if (socketType == SocketType::Dealer)
     {
         auto socket = detail.getDealerSocketDetails();
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }
-    else if (socketType == SocketType::PUBLISHER)
+    else if (socketType == SocketType::Publisher)
     {
         auto socket = detail.getPublisherSocketDetails(); 
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }
-    else if (socketType == SocketType::SUBSCRIBER)
+    else if (socketType == SocketType::Subscriber)
     {
         auto socket = detail.getSubscriberSocketDetails();
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }
-    else if (socketType == SocketType::REPLY)
+    else if (socketType == SocketType::Reply)
     {
         auto socket = detail.getReplySocketDetails();
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }
-    else if (socketType == SocketType::REQUEST)
+    else if (socketType == SocketType::Request)
     {
         auto socket = detail.getRequestSocketDetails();
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }
-    else if (socketType == SocketType::ROUTER)
+    else if (socketType == SocketType::Router)
     {
         auto socket = detail.getRouterSocketDetails();
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }
-    else if (socketType == SocketType::XPUBLISHER)
+    else if (socketType == SocketType::XPublisher)
     {
         auto socket = detail.getXPublisherSocketDetails(); 
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }   
-    else if (socketType == SocketType::XSUBSCRIBER)
+    else if (socketType == SocketType::XSubscriber)
     {
         auto socket = detail.getXSubscriberSocketDetails();
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
     }
-    else if (socketType == SocketType::PROXY)
+    else if (socketType == SocketType::Proxy)
     {
         auto proxy = detail.getProxySocketDetails();
         auto frontendType = proxy.getFrontendSocketType();
         auto backendType  = proxy.getBackendSocketType();
-        if (frontendType == SocketType::XSUBSCRIBER)
+        if (frontendType == SocketType::XSubscriber)
         {
             auto socket = proxy.getXSubscriberFrontend(); 
             obj["FrontendAddress"] = socket.getAddress();
@@ -123,7 +123,7 @@ nlohmann::json detailsToJSONObject(const Details &detail)
             obj["FrontendSecurityLevel"]
                 = static_cast<int> (socket.getSecurityLevel());
         }
-        else if (frontendType == SocketType::ROUTER)
+        else if (frontendType == SocketType::Router)
         {
             auto socket = proxy.getRouterFrontend(); 
             obj["FrontendAddress"] = socket.getAddress();
@@ -139,7 +139,7 @@ nlohmann::json detailsToJSONObject(const Details &detail)
             throw std::runtime_error("Unhandled frontend");
         }
  
-        if (backendType == SocketType::XPUBLISHER)
+        if (backendType == SocketType::XPublisher)
         {
             auto socket = proxy.getXPublisherBackend();
             obj["BackendAddress"] = socket.getAddress();
@@ -150,7 +150,7 @@ nlohmann::json detailsToJSONObject(const Details &detail)
             obj["BackendSecurityLevel"]
                 = static_cast<int> (socket.getSecurityLevel());
         }
-        else if (backendType == SocketType::DEALER)
+        else if (backendType == SocketType::Dealer)
         {
             auto socket = proxy.getDealerBackend();
             obj["BackendAddress"] = socket.getAddress();
@@ -168,7 +168,7 @@ nlohmann::json detailsToJSONObject(const Details &detail)
     }
     else
     {
-        if (socketType != SocketType::UNKNOWN)
+        if (socketType != SocketType::Unknown)
         {
             throw std::runtime_error("Unhandled socket");
         }
@@ -198,7 +198,7 @@ Details objectToDetails(const nlohmann::json &obj)
     if (!obj["Name"].is_null()){details.setName(obj["Name"]);}
 
     auto socketType = static_cast<SocketType> (obj["SocketType"].get<int> ());
-    if (socketType == SocketType::PUBLISHER)
+    if (socketType == SocketType::Publisher)
     {
         SocketDetails::Publisher socket;
         auto address = obj["Address"];
@@ -211,7 +211,7 @@ Details objectToDetails(const nlohmann::json &obj)
         socket.setConnectOrBind(corb);
         details.setSocketDetails(socket);
     }
-    else if (socketType == SocketType::SUBSCRIBER)
+    else if (socketType == SocketType::Subscriber)
     {
         SocketDetails::Subscriber socket;
         auto address = obj["Address"];
@@ -224,7 +224,7 @@ Details objectToDetails(const nlohmann::json &obj)
         socket.setConnectOrBind(corb);
         details.setSocketDetails(socket); 
     }
-    else if (socketType == SocketType::REPLY)
+    else if (socketType == SocketType::Reply)
     {
         SocketDetails::Reply socket;
         auto address = obj["Address"];
@@ -237,7 +237,7 @@ Details objectToDetails(const nlohmann::json &obj)
         socket.setConnectOrBind(corb);
         details.setSocketDetails(socket);
     }
-    else if (socketType == SocketType::REQUEST)
+    else if (socketType == SocketType::Request)
     {
         SocketDetails::Request socket;
         auto address = obj["Address"];
@@ -250,7 +250,7 @@ Details objectToDetails(const nlohmann::json &obj)
         socket.setConnectOrBind(corb);
         details.setSocketDetails(socket);
     }
-    else if (socketType == SocketType::ROUTER)
+    else if (socketType == SocketType::Router)
     {
         SocketDetails::Router socket;
         auto address = obj["Address"];
@@ -263,7 +263,7 @@ Details objectToDetails(const nlohmann::json &obj)
         socket.setConnectOrBind(corb);
         details.setSocketDetails(socket);
     }
-    else if (socketType == SocketType::XPUBLISHER)
+    else if (socketType == SocketType::XPublisher)
     {
         SocketDetails::XPublisher socket;
         auto address = obj["Address"];
@@ -276,7 +276,7 @@ Details objectToDetails(const nlohmann::json &obj)
         socket.setConnectOrBind(corb);
         details.setSocketDetails(socket);
     }
-    else if (socketType == SocketType::XSUBSCRIBER)
+    else if (socketType == SocketType::XSubscriber)
     {
         SocketDetails::XSubscriber socket;
         auto address = obj["Address"];
@@ -289,15 +289,15 @@ Details objectToDetails(const nlohmann::json &obj)
         socket.setConnectOrBind(corb);
         details.setSocketDetails(socket);
     }
-    else if (socketType == SocketType::PROXY)
+    else if (socketType == SocketType::Proxy)
     {
         SocketDetails::Proxy proxy;
         auto frontendSocketType = static_cast<SocketType>
             (obj["FrontendSocketType"].get<int> ());
         auto backendSocketType = static_cast<SocketType>
             (obj["BackendSocketType"].get<int> ());
-        if (frontendSocketType == SocketType::XSUBSCRIBER &&
-            backendSocketType  == SocketType::XPUBLISHER)
+        if (frontendSocketType == SocketType::XSubscriber &&
+            backendSocketType  == SocketType::XPublisher)
         {
             SocketDetails::XSubscriber frontendSocket;
             SocketDetails::XPublisher  backendSocket;
@@ -319,8 +319,8 @@ Details objectToDetails(const nlohmann::json &obj)
             backendSocket.setConnectOrBind(backendCorb);
             proxy.setSocketPair(std::pair(frontendSocket, backendSocket));
         }
-        else if (frontendSocketType == SocketType::ROUTER &&
-                 backendSocketType  == SocketType::DEALER)
+        else if (frontendSocketType == SocketType::Router &&
+                 backendSocketType  == SocketType::Dealer)
         {
             SocketDetails::Router frontendSocket;
             SocketDetails::Dealer  backendSocket;
@@ -350,7 +350,7 @@ Details objectToDetails(const nlohmann::json &obj)
     }
     else
     {
-        if (socketType != SocketType::UNKNOWN)
+        if (socketType != SocketType::Unknown)
         {
             throw std::runtime_error("Unhandled socket");
         }

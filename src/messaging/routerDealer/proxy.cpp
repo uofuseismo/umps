@@ -245,10 +245,10 @@ public:
         UCI::SocketDetails::Dealer dealer;
         router.setAddress(mFrontendAddress);
         router.setSecurityLevel(mSecurityLevel);
-        router.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        router.setConnectOrBind(UCI::ConnectOrBind::Connect);
         dealer.setAddress(mBackendAddress);
         dealer.setSecurityLevel(mSecurityLevel);
-        dealer.setConnectOrBind(UCI::ConnectOrBind::CONNECT);
+        dealer.setConnectOrBind(UCI::ConnectOrBind::Connect);
         mSocketDetails.setSocketPair(std::pair(router, dealer));
     }
 ///private:

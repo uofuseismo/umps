@@ -396,26 +396,33 @@ public:
     {
         return getName() + "$";
     }
-    void processTerminal()
+    void processTerminal(const bool runInteractive = true)
     {
         while (IModule::keepRunning())
         {
-            std::string command;
-            std::cout << getInputLine();
-            std::cin >> command;
-            if (command == "quit")
+            if (runInteractive)
             {
-                stop();
+                std::string command;
+                std::cout << getInputLine();
+                std::cin >> command;
+                if (command == "quit")
+                {
+                    stop();
+                }
+                else
+                {
+                    std::cout << std::endl;
+                    if (command != "help")
+                    {
+                        std::cout << "Unknown command: " << command << std::endl;
+                        std::cout << std::endl;
+                    }
+                    std::cout << getInputOptions();
+                }
             }
             else
             {
-                std::cout << std::endl;
-                if (command != "help")
-                {
-                    std::cout << "Unknown command: " << command << std::endl;
-                    std::cout << std::endl;
-                }
-                std::cout << getInputOptions();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         }
         mLogger->debug("Terminal management thread exiting...");
@@ -463,16 +470,19 @@ public:
     int mEarthwormWait = 0;
 };
 
-std::string parseCommandLineOptions(int argc, char *argv[]);
+std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[]);
 ProgramOptions parseInitializationFile(const std::string &iniFile);
 
 int main(int argc, char *argv[])
 {
     // Get the ini file from the command line
+    bool runInteractive{false};
     std::string iniFile;
     try 
     {
-        iniFile = parseCommandLineOptions(argc, argv);
+        auto commandLineOptions = parseCommandLineOptions(argc, argv);
+        iniFile = commandLineOptions.first;
+        runInteractive = commandLineOptions.second;
         if (iniFile.empty()){return EXIT_SUCCESS;}
     }
     catch (const std::exception &e)
@@ -511,7 +521,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 module.start();
-module.processTerminal();
+module.processTerminal(runInteractive);
 //getchar();
 //module.stop();
 /*
@@ -609,30 +619,33 @@ return 0;
     BroadcastPackets broadcastPackets(module.mPacketPublisher, module.mEarthwormWaveRing, module.mLogger);
     std::thread broadcastThread(&BroadcastPackets::run, &broadcastPackets);
 
-    while (true)
+    if (runInteractive)
     {
-        std::string command;
-        std::cout << "broadcastWaveRing$";
-        std::cin >> command;
-        if (command == "quit")
+        while (true)
         {
-            broadcastPackets.stop();
-            break;
-        }
-        else
-        {
-            std::cout << std::endl;
-            if (command != "help")
+            std::string command;
+            std::cout << "broadcastWaveRing$";
+            std::cin >> command;
+            if (command == "quit")
             {
-                std::cout << "Unknown command: " << command << std::endl;
-                std::cout << std::endl;
+                broadcastPackets.stop();
+                break;
             }
-            std::cout << "Commands: " << std::endl;
-            std::cout << "  quit  Exits the program" << std::endl;
-            std::cout << "  help  Prints this message" << std::endl;
+            else
+            {
+                std::cout << std::endl;
+                if (command != "help")
+                {
+                    std::cout << "Unknown command: " << command << std::endl;
+                    std::cout << std::endl;
+                }
+                std::cout << "Commands: " << std::endl;
+                std::cout << "  quit  Exits the program" << std::endl;
+                std::cout << "  help  Prints this message" << std::endl;
+            }
         }
+        module.mLogger->info("Exiting...");
     }
-    module.mLogger->info("Exiting...");
     broadcastThread.join(); 
     module.mLogger->info("Program finished");
     return EXIT_SUCCESS;
@@ -642,12 +655,14 @@ return 0;
 ///                            Utility Functions                             ///
 ///--------------------------------------------------------------------------///
 /// Read the program options from the command line
-std::string parseCommandLineOptions(int argc, char *argv[])
+std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[])
 {
     std::string iniFile;
+    bool runInteractive = true;
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
+        ("background", "Setting this is useful for running the program as a background process - e.g., with nohup")
         ("ini",  boost::program_options::value<std::string> (), 
                  "Defines the initialization file for this module");
     boost::program_options::variables_map vm;
@@ -657,7 +672,7 @@ std::string parseCommandLineOptions(int argc, char *argv[])
     if (vm.count("help"))
     {
         std::cout << desc << std::endl;
-        return iniFile;
+        return std::pair{iniFile, runInteractive};
     }
     if (vm.count("ini"))
     {
@@ -672,7 +687,8 @@ std::string parseCommandLineOptions(int argc, char *argv[])
     {
         throw std::runtime_error("Initialization file was not set");
     }
-    return iniFile;
+    if (vm.count("background")){runInteractive = false;}
+    return std::pair{iniFile, runInteractive};
 }
 
 /// Parse the ini file
