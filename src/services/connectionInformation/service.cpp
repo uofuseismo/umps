@@ -7,13 +7,12 @@
 #include <cassert>
 #endif
 #include <functional>
-#include <zmq.hpp>
 #include "umps/services/service.hpp"
 #include "umps/broadcasts/broadcast.hpp"
 #include "umps/proxyBroadcasts/proxy.hpp"
 #include "umps/proxyServices/proxy.hpp"
 #include "umps/services/connectionInformation/service.hpp"
-#include "umps/services/connectionInformation/parameters.hpp"
+#include "umps/services/connectionInformation/serviceOptions.hpp"
 #include "umps/services/connectionInformation/availableConnectionsRequest.hpp"
 #include "umps/services/connectionInformation/availableConnectionsResponse.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
@@ -164,7 +163,7 @@ public:
     UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
-    const std::string mName = Parameters::getName(); //"ConnectionInformation";
+    const std::string mName = ServiceOptions::getName();
     bool mInitialized = false;
 };
 
@@ -233,9 +232,9 @@ Service& Service::operator=(Service &&service) noexcept
 Service::~Service() = default;
 
 /// Initialize
-void Service::initialize(const Parameters &parameters)
+void Service::initialize(const ServiceOptions &options)
 {
-    if (!parameters.haveClientAccessAddress())
+    if (!options.haveClientAccessAddress())
     {
         throw std::invalid_argument("Client access address not set");
     }
@@ -244,14 +243,14 @@ void Service::initialize(const Parameters &parameters)
     pImpl->mConnections.clear();
     pImpl->mRouterOptions.clear();
     // Initialize the socket - Step 1: Initialize options
-    auto clientAccessAddress = parameters.getClientAccessAddress();
+    auto clientAccessAddress = options.getClientAccessAddress();
     pImpl->mRouterOptions.setAddress(clientAccessAddress);
     pImpl->mRouterOptions.setCallback(std::bind(&ServiceImpl::callback,
                                                 &*this->pImpl,
                                                 std::placeholders::_1,
                                                 std::placeholders::_2,
                                                 std::placeholders::_3));
-    pImpl->mRouterOptions.setZAPOptions(parameters.getZAPOptions());
+    pImpl->mRouterOptions.setZAPOptions(options.getZAPOptions());
     // Add the message types
     //std::unique_ptr<UMPS::MessageFormats::IMessage> requestType
     //    = std::make_unique<AvailableConnectionsRequest> (); 
@@ -290,7 +289,8 @@ bool Service::isRunning() const noexcept
 }
 
 /// Connection details
-UMPS::Services::ConnectionInformation::Details Service::getConnectionDetails() const
+UMPS::Services::ConnectionInformation::Details
+    Service::getConnectionDetails() const
 {
     if (!isInitialized()){throw std::runtime_error("Service not initialized");}
     return pImpl->mConnectionDetails; 
@@ -318,20 +318,8 @@ void Service::start()
     {
         throw std::runtime_error("Service not initialized");
     }
-    pImpl->mLogger->debug("Beginning authenticator for service "
-                        + getName() + "...");
+    pImpl->mLogger->debug("Beginning " + getName() + " service...");
     pImpl->start();
-/*
-    std::thread authThread(&UAuth::Service::start,
-                           &*pImpl->mAuthenticatorService);
-    pImpl->mLogger->debug("Beginning service " + getName() + "...");
-    pImpl->mRouter->start(); // This should hang until the service is stopped
-    pImpl->mLogger->debug("Thread stopping authenticator service on "
-                        + getName());
-    pImpl->mAuthenticatorService->stop();
-    authThread.join();
-    pImpl->mLogger->debug("Thread exiting service " + getName());
-*/
 }
 
 /// Add (service) connection

@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_PARAMETERS_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_PARAMETERS_HPP
+#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_SERVICEOPTIONS_HPP
+#define UMPS_SERVICES_CONNECTIONINFORMATION_SERVICEOPTIONS_HPP
 #include <memory>
 #include "umps/logging/level.hpp"
 namespace UMPS::Authentication
@@ -8,50 +8,47 @@ namespace UMPS::Authentication
 }
 namespace UMPS::Services::ConnectionInformation
 {
-/// @class Parameters "parameters.hpp" "umps/services/connectionInformation/parameters.hpp"
-/// @brief The parameters for controlling the connection information service.
+/// @class ServiceOptions "serviceOptions.hpp" "umps/services/connectionInformation/serviceOptions.hpp"
+/// @brief The options for controlling the connection information service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Parameters
+class ServiceOptions
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    Parameters();
+    ServiceOptions();
     /// @brief Copy constructor.
-    /// @param[in] parameters  The parameters from which to initialize
-    ///                        this class. 
-    Parameters(const Parameters &parameters);
+    /// @param[in] options  The options from which to initialize
+    ///                     this class. 
+    ServiceOptions(const ServiceOptions &options);
     /// @brief Move constructor.
-    /// @param[in] parameters  The parameters from which to initialize this
-    ///                        class.  On exit, parameter's behavior is
-    ///                        undefined. 
-    Parameters(Parameters &&parameters) noexcept;
+    /// @param[in] options  The options from which to initialize this
+    ///                     class.  On exit, parameter's behavior is
+    ///                     undefined. 
+    ServiceOptions(ServiceOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment.
-    /// @param[in] parameters   The parameters class to copy to this.
-    /// @result A deep copy of parameters.
-    Parameters& operator=(const Parameters &parameters);
+    /// @param[in] options   The options class to copy to this.
+    /// @result A deep copy of options.
+    ServiceOptions& operator=(const ServiceOptions &options);
     /// @brief Move assignment.
-    /// @param[in,out] parameters  The parameters whose memory will be moved to
-    ///                            this.  On exit, parameters's behavior is
-    ///                            undefined.
-    /// @result The memory from parameters moved to this.
-    Parameters& operator=(Parameters &&parameters) noexcept;
+    /// @param[in,out] options  The options whose memory will be moved to
+    ///                         this.  On exit, options's behavior is
+    ///                         undefined.
+    /// @result The memory from options moved to this.
+    ServiceOptions& operator=(ServiceOptions &&options) noexcept;
     /// @}
 
-    /// @brief Loads the parameters from an initialization file.
+    /// @brief Loads the options from an initialization file.
     /// @param[in] fileName   The name of the initialization file.
     /// @param[in] section    The section of the initialization file with the
-    ///                       information to be parsed.  This will likely
-    ///                       be of the form "Counter.Name" where Name is the
-    ///                       name of the item to count e.g., "Pick",
-    ///                       "Amplitude", etc.
+    ///                       information to be parsed.
     /// @throws std::invalid_argument if the initialization file does not,
     ///         exist cannot be parsed, does not have the specified section,
     ///         or has incorrect information.
@@ -97,11 +94,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~Parameters();
+    ~ServiceOptions();
     /// @}
 private:
-    class ParametersImpl;
-    std::unique_ptr<ParametersImpl> pImpl;    
+    class ServiceOptionsImpl;
+    std::unique_ptr<ServiceOptionsImpl> pImpl;    
 };
 }
 #endif

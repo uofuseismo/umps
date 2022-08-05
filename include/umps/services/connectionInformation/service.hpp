@@ -14,7 +14,11 @@ namespace UMPS
  }
  namespace Services
  {
-  class IService;
+  namespace ConnectionInformation
+  {
+   class Details; 
+   class ServiceOptions;
+  }
  }
  namespace Broadcasts
  {
@@ -35,8 +39,7 @@ namespace UMPS
 }
 namespace UMPS::Services::ConnectionInformation
 {
-class Parameters;
-/// @class Service service.hpp "umps/services/incrementer/service.hpp"
+/// @class Service service.hpp "umps/services/connectionInformation/service.hpp"
 /// @brief Implements the server-side connection information service.
 /// @copyright Ben Baker (Univeristy of Utah) distributed under the MIT license.
 class Service : public UMPS::Services::IService
@@ -68,10 +71,15 @@ public:
     //Service& operator=(Service &&service) noexcept;
 
     /// @brief Initializes the service.
-    void initialize(const Parameters &parameters);
+    /// @param[in] options  The connection options from which to initialize
+    ///                     this class.
+    /// @throws std::invalid_argument if \c options.haveClientAccessAddress()
+    ///         is false.
+    void initialize(const ServiceOptions &options);
 
     /// @name Available Connections 
     /// @{
+
     /// @brief Adds a service connection. 
     /// @param[in] service  The service whose connection information will
     ///                     be added to the connections.
@@ -130,8 +138,12 @@ public:
     /// @brief Stops the service and authenticator.
     void stop() final override;
 
-    /// @brief Destructors.
+    /// @name Destructors
+    /// @{
+
+    /// @brief Destructor.
     ~Service() override;
+    /// @}
 
     Service(const Service &service) = delete;
     Service& operator=(const Service &service) = delete;
