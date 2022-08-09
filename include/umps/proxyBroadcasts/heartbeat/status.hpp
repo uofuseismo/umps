@@ -1,6 +1,7 @@
 #ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_STATUS_HPP
 #define UMPS_PROXYBROADCASTS_HEARTBEAT_STATUS_HPP
 #include <memory>
+#include <ostream>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::ProxyBroadcasts::Heartbeat
 {
@@ -150,5 +151,7 @@ private:
 /// @result True indicates that the lhs status has a larger time stamp
 ///         than the right hand side status's time stamp.
 [[nodiscard]] bool operator>(const Status &lhs, const Status &rhs);
+/// @result A string representation of the status.
+std::ostream& operator<<(std::ostream &os, const Status &status);
 }
 #endif

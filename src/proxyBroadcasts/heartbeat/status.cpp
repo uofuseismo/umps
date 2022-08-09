@@ -357,3 +357,30 @@ bool UMPS::ProxyBroadcasts::Heartbeat::operator>(const Status &lhs,
     if (milliSecond1 > milliSecond2){return true;}
     return false;
 }
+
+/// Print out the status
+std::ostream& UMPS::ProxyBroadcasts::Heartbeat::operator<<(
+    std::ostream &os, const Status &status)
+{
+    std::string result;
+    result = result + "Module: " + status.getModule() + "\n";
+    if (status.getModuleStatus() == ModuleStatus::Alive)
+    {
+        result = result + "    Status: Alive\n";
+    }
+    else if (status.getModuleStatus() == ModuleStatus::Disconnected)
+    {
+        result = result + "    Status: Disconnected\n";
+    }
+    else if (status.getModuleStatus() == ModuleStatus::Died)
+    {
+        result = result + "    Status: Died\n";
+    }
+    else
+    {
+        result = result + "    Status: Unknown\n";
+    }
+    result = result + "    Time: " + status.getTimeStamp() + "\n";
+    result = result + "    Hostname: " + status.getHostName() + "\n";
+    return os << result;
+}
