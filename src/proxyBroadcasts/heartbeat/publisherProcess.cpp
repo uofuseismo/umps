@@ -13,12 +13,14 @@
 #include "umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/status.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/threadSafeQueue.hpp"
 
 using namespace UMPS::ProxyBroadcasts::Heartbeat;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -26,7 +28,9 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 class PublisherProcess::PublisherProcessImpl
 {
 public:
-    explicit PublisherProcessImpl(std::shared_ptr<UMPS::Logging::ILog> &logger):
+    /// @brief C'tor.
+    explicit PublisherProcessImpl(
+        std::shared_ptr<UMPS::Logging::ILog> logger) :
         mLogger(logger)
     {
         if (logger == nullptr)
@@ -34,30 +38,112 @@ public:
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
     }
-    /// Destructor
+    /// @brief Destructor
     ~PublisherProcessImpl()
     {
         stop();
     }
-    /// Start the module
+    /// @brief Sets the status message to publish
+    void setStatus(const Status &status)
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mStatus = status;
+    }
+    /// @brief Sends a status message
+    void sendStatus(const Status &status)
+    {
+        mStatusQueue.push(status);
+    }
+    /// @brief Actually publish the message
+    void publishStatus()
+    {
+        Status status;
+        mLogger->debug("Heartbeat publisher status starting...");
+        try
+        {
+            Status startStatus;
+            startStatus.setModule(mModule);
+            startStatus.setModuleStatus(ModuleStatus::Alive);
+            mPublisher->send(startStatus);
+        }
+        catch (const std::exception &e)
+        {
+            mLogger->error("Failed to send start status:  Failed with:\n"
+                         + std::string{e.what()});
+        }
+        while (keepRunning())
+        {
+            if (mStatusQueue.wait_until_and_pop(&status))
+            {
+                try
+                {
+                    mPublisher->send(status);
+                }
+                catch (const std::exception &e) 
+                {
+                    mLogger->error("Failed to send status:  Failed with:\n"
+                                 + std::string{e.what()});
+                }
+            }
+        }
+        // I'll make and send the last message.  This prevents a weird edge
+        // case on shut down wehre this thread exits and sendStatus pushes
+        // an exit message but no one is there to send it.
+        try
+        {
+            Status exitStatus;
+            exitStatus.setModule(mModule);
+            exitStatus.setModuleStatus(ModuleStatus::Disconnected);
+            mPublisher->send(exitStatus);
+        }
+        catch (const std::exception &e)
+        {
+            mLogger->error("Failed to send exit status:  Failed with\n"
+                         + std::string{e.what()});
+        }
+        mLogger->debug("Heartbeat publisher thread exiting...");
+    }
+    /// @brief Just keep cranking out a message that the module is running.
+    void sendMyStatus()
+    {
+        mLogger->debug("Heartbeat okay status thread starting...");
+        auto interval = mOptions.getInterval();
+        while (keepRunning())
+        {
+            std::this_thread::sleep_for(interval);
+            mStatus.setTimeStampToNow();
+            mStatusQueue.push(mStatus);
+        }
+        mLogger->debug("Heartbeat okay status thread exiting...");
+    }
+    /// @brief Start the heartbeat process.
     void start()
     {
         stop(); // Make sure everything stopped
-        // Now start it up
+        // Return to default status message
+        mStatus.setModule(mModule);
+        mStatus.setModuleStatus(ModuleStatus::Alive);
+        mStatus.setTimeStampToNow();
+        // Start threads
+        mPublisherThread = std::thread(&PublisherProcessImpl::publishStatus,
+                                       this);
+        mStatusThread = std::thread(&PublisherProcessImpl::sendMyStatus,
+                                    this);
     }
-    /// Stop the module
+    /// @brief Stop the heartbeat process.
     void stop()
     {
         setRunning(false);
+        if (mStatusThread.joinable()){mStatusThread.join();}
         if (mPublisherThread.joinable()){mPublisherThread.join();}
     }
-    /// Initialized
+    /// @brief Sets the class as being initialized or not.
     void setInitialized(const bool initialized)
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
         mInitialized = initialized;
     }
-    /// Initialized?
+    /// @result True indicates this class is initialized
     [[nodiscard]] bool isInitialized() const noexcept
     {
         std::lock_guard<std::mutex> lockGuard(mMutex);
@@ -77,17 +163,26 @@ public:
     }
 ///private:
     mutable std::mutex mMutex;
+    ThreadSafeQueue<Status> mStatusQueue;
+    Status mStatus;
     std::thread mPublisherThread;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger;
+    std::thread mStatusThread;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<Publisher> mPublisher{nullptr};
     PublisherProcessOptions mOptions;
+    std::string mModule{"Unknown"};
     bool mKeepRunning{false};
     bool mInitialized{false};
 };
 
 /// C'tor
+PublisherProcess::PublisherProcess() :
+    pImpl(std::make_unique<PublisherProcessImpl> (nullptr))
+{
+}
+
 PublisherProcess::PublisherProcess(
-    std::shared_ptr<UMPS::Logging::ILog> logger) :
+    std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<PublisherProcessImpl> (logger))
 {
 }
@@ -131,6 +226,25 @@ void PublisherProcess::initialize(const PublisherProcessOptions &options,
     // Okay, now make it
     pImpl->mPublisher = std::move(publisher);
     pImpl->mOptions = options;
+}
+
+/// Set the module status
+void PublisherProcess::setStatus(const Status &status)
+{
+    if (!isRunning())
+    {
+        throw std::runtime_error("Heartbeat process not running");
+    }
+    pImpl->setStatus(status);
+}
+
+void PublisherProcess::sendStatus(const Status &status) const
+{
+    if (!isRunning())
+    {
+        throw std::runtime_error("Heartbeat process not running");
+    }
+    pImpl->sendStatus(status);
 }
 
 // Create a heartbeat publisher process from the ini file

@@ -21,6 +21,7 @@ namespace UMPS
  {
   class PublisherProcessOptions;
   class Publisher;
+  class Status;
  }
 }
 namespace UMPS::ProxyBroadcasts::Heartbeat
@@ -34,7 +35,9 @@ public:
     /// @{
 
     /// @brief Constructor.
-    explicit PublisherProcess(std::shared_ptr<UMPS::Logging::ILog> logger = nullptr);
+    PublisherProcess();
+    /// @brief Constructor with a given logger.
+    explicit PublisherProcess(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @name Step 1: Initialization
@@ -57,8 +60,16 @@ public:
     void start() override;
     /// @result True indicates the process is running.
     [[nodiscard]] bool isRunning() const noexcept override;
-    /// @brief Sends a status message.
-    //[[nodiscard]] void 
+    /// @brief Sets the status message that will be broadcast at regular
+    ///        intervals.  By default, the process will send messages to
+    ///        indicate that it is running but you can override that.
+    /// @throws std::runtime_error if \c isRunning() is false.
+    void setStatus(const Status &status);
+    /// @brief By default this process will send messages at regular intervals.
+    ///        However, if you feel compelled to, this function will allow you
+    ///        to send a status.
+    /// @throws std::runtime_error if \c isRunning() is false.
+    void sendStatus(const Status &status) const; 
     /// @}
 
     /// @name Step 3: Stop the Process

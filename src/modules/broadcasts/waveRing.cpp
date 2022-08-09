@@ -13,6 +13,7 @@
 #include <filesystem>
 #include "umps/modules/module.hpp"
 #include "umps/modules/process.hpp"
+#include "umps/modules/processManager.hpp"
 #include "umps/logging/spdlog.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/earthworm/traceBuf2.hpp"
