@@ -11,14 +11,14 @@ using namespace UMPS::Services::ModuleRegistry;
 namespace
 {
 
-nlohmann::json toJSONObject(const RegistrationResponse &request)
+nlohmann::json toJSONObject(const RegistrationResponse &response)
 {
     nlohmann::json obj;
     // Essential stuff (this will throw): 
-    obj["MessageType"] = request.getMessageType();
-    obj["ReturnCode"] = static_cast<int> (request.getReturnCode()); // Throws
+    obj["MessageType"] = response.getMessageType();
+    obj["ReturnCode"] = static_cast<int> (response.getReturnCode()); // Throws
     // Other stuff
-    obj["Identifier"] = request.getIdentifier();
+    obj["Identifier"] = response.getIdentifier();
     return obj;
 }
 
@@ -66,33 +66,33 @@ RegistrationResponse::RegistrationResponse() :
 }
 
 /// Copy c'tor
-RegistrationResponse::RegistrationResponse(const RegistrationResponse &request)
+RegistrationResponse::RegistrationResponse(const RegistrationResponse &response)
 {
-    *this = request;
+    *this = response;
 }
 
 /// Move c'tor
 RegistrationResponse::RegistrationResponse(
-    RegistrationResponse &&request) noexcept
+    RegistrationResponse &&response) noexcept
 {
-    *this = std::move(request);
+    *this = std::move(response);
 }
 
 /// Copy assignment
 RegistrationResponse&
-RegistrationResponse::operator=(const RegistrationResponse &request)
+RegistrationResponse::operator=(const RegistrationResponse &response)
 {
-    if (&request == this){return *this;}
-    pImpl = std::make_unique<RegistrationResponseImpl> (*request.pImpl);
+    if (&response == this){return *this;}
+    pImpl = std::make_unique<RegistrationResponseImpl> (*response.pImpl);
     return *this;
 }
 
 /// Move assignment
 RegistrationResponse&
-RegistrationResponse::operator=(RegistrationResponse &&request) noexcept
+RegistrationResponse::operator=(RegistrationResponse &&response) noexcept
 {
-    if (&request == this){return *this;}
-    pImpl = std::move(request.pImpl);
+    if (&response == this){return *this;}
+    pImpl = std::move(response.pImpl);
     return *this;
 }
 

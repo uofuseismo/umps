@@ -12,6 +12,8 @@
 #include "umps/services/moduleRegistry/moduleDetails.hpp"
 #include "umps/services/moduleRegistry/registrationRequest.hpp"
 #include "umps/services/moduleRegistry/registrationResponse.hpp"
+#include "umps/services/moduleRegistry/registeredModulesRequest.hpp"
+#include "umps/services/moduleRegistry/registeredModulesResponse.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/service.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
@@ -78,8 +80,8 @@ public:
                          + " with length: " + std::to_string(length)
                          + " bytes was received.  Processing...");
         }
-        //RegistrationResponse response;
         RegistrationRequest registrationRequest;
+        RegisteredModulesRequest registeredModulesRequest;
         if (messageType == registrationRequest.getMessageType())
         {
             RegistrationResponse response;
@@ -91,12 +93,13 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Reg request serialization failed with: "
+                mLogger->error("Reg request unpacking failed with: "
                              + std::string(e.what()));
                 response.setReturnCode(
-                    RegistrationReturnCode::AlgorithmFailure);
+                    RegistrationReturnCode::InvalidMessage);
                 return response.clone();
             }
+            // Check if the module exists
             auto details = registrationRequest.getModuleDetails();
             if (contains(details.getName()))
             {
@@ -104,6 +107,7 @@ public:
                     RegistrationReturnCode::Exists);
                 return response.clone();
             }
+            // Try to insert it
             try
             {
                 insert(details);
@@ -118,6 +122,38 @@ public:
             }
             return response.clone();
         }
+        else if (messageType == registeredModulesRequest.getMessageType())
+        {
+            RegisteredModulesResponse response;
+            // Unpack the request
+            try
+            {
+                auto messagePtr = static_cast<const char *> (messageContents);
+                registeredModulesRequest.fromMessage(messagePtr, length);
+            }
+            catch (const std::exception &e) 
+            {
+                mLogger->error("Reg modules unpacking failed with: "
+                             + std::string(e.what()));
+                response.setReturnCode(
+                    RegisteredModulesReturnCode::InvalidMessage);
+                return response.clone();
+            }
+            // Get the modules and fill up the response
+            try
+            {
+                response.setModules(getModules());
+                response.setReturnCode(RegisteredModulesReturnCode::Success);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Reg modules packing failed with: "
+                             + std::string(e.what()));
+                response.setReturnCode(
+                     RegisteredModulesReturnCode::AlgorithmFailure);
+            }
+            return response.clone();
+        }
         else
         {
             RegistrationResponse response;
@@ -125,12 +161,24 @@ public:
             return response.clone();
         }
     }
+    /// Gets the modules
+    [[nodiscard]] std::vector<ModuleDetails> getModules() const
+    {
+        std::vector<ModuleDetails> modules;
+        modules.reserve(mRegisteredModules.size());
+        for (const auto &m : mRegisteredModules)
+        {
+            modules.push_back(m.second);
+        }
+        return modules;
+    }
     /// Contains?
-    bool contains(const std::string &name) const noexcept
+    [[nodiscard]] bool contains(const std::string &name) const noexcept
     {
         return mRegisteredModules.contains(name);
     } 
-    bool contains(const ModuleDetails &details) const
+    /// Contains?
+    [[nodiscard]] bool contains(const ModuleDetails &details) const
     {
         return contains(details.getName());
     }
@@ -211,7 +259,6 @@ void Service::initialize(const ServiceOptions &options)
     }
     stop(); // Ensure the service is stopped
     // Clear out the old services and broadcasts
-    //pImpl->mConnections.clear();
     pImpl->mRouterOptions.clear();
     // Step 1: Initialize socket
     auto clientAccessAddress = options.getClientAccessAddress();

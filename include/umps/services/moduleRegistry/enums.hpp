@@ -14,5 +14,12 @@ enum class RegistrationReturnCode
     AlgorithmFailure  /*!< The module was not registered because of a
                            server-side error. */
 };
+enum class RegisteredModulesReturnCode
+{
+    Success = 0,      /*!< The module was successfully registered. */
+    InvalidMessage,   /*!< The request message could not be parsed. */
+    AlgorithmFailure  /*!< The module was not registered because of a
+                           server-side error. */
+};
 }
 #endif

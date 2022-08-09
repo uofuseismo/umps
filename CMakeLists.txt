@@ -129,6 +129,8 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/details.cpp
     src/services/moduleRegistry/moduleDetails.cpp
     src/services/moduleRegistry/serviceOptions.cpp
+    src/services/moduleRegistry/registeredModulesRequest.cpp
+    src/services/moduleRegistry/registeredModulesResponse.cpp
     src/services/moduleRegistry/registrationRequest.cpp
     src/services/moduleRegistry/registrationResponse.cpp
     src/services/moduleRegistry/service.cpp

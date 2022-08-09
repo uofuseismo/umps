@@ -2,6 +2,7 @@
 #include <nlohmann/json.hpp>
 #include "umps/services/moduleRegistry/registrationRequest.hpp"
 #include "umps/services/moduleRegistry/moduleDetails.hpp"
+#include "private/services/packDetails.hpp"
 
 using namespace UMPS::Services::ModuleRegistry;
 
@@ -14,14 +15,8 @@ nlohmann::json toJSONObject(const RegistrationRequest &request)
 {
     nlohmann::json obj;
     auto details = request.getModuleDetails();;
-    // Essential stuff (this will throw): 
     obj["MessageType"] = request.getMessageType();
-    obj["ModuleName"] = details.getName(); // Throws
-    // Other stuff
-    obj["Executable"] = details.getExecutableName();
-    obj["ProcessIdentifier"] = details.getProcessIdentifier();
-    obj["ParentProcessIdentifier"] =  details.getParentProcessIdentifier();
-    obj["Machine"] = details.getMachine();
+    obj["ModuleDetails"] = pack(details); // Throws on name
     obj["Identifier"] = request.getIdentifier();
     return obj;
 }
@@ -29,21 +24,12 @@ nlohmann::json toJSONObject(const RegistrationRequest &request)
 RegistrationRequest objectToRequest(const nlohmann::json &obj)
 {
     RegistrationRequest request;
-    ModuleDetails details;
-    // Essential stuff
     if (obj["MessageType"] != request.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
     }
-    details.setName(obj["ModuleName"].get<std::string> ());
-    // Optional stuff
-    details.setExecutableName(obj["Executable"].get<std::string> ());
-    details.setProcessIdentifier(obj["ProcessIdentifier"].get<int64_t> ());
-    details.setParentProcessIdentifier(
-        obj["ParentProcessIdentifier"].get<int64_t> ());
-    details.setMachine(obj["Machine"].get<std::string> ());
+    auto details = unpack(obj["ModuleDetails"]);
     request.setIdentifier(obj["Identifier"].get<uint64_t> ());
-
     request.setModuleDetails(details);
     return request;
 }
