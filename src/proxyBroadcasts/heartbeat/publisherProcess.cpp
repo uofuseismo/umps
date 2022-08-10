@@ -1,3 +1,4 @@
+#include <iostream>
 #include <mutex>
 #include <thread>
 #include <string>
@@ -226,6 +227,7 @@ void PublisherProcess::initialize(const PublisherProcessOptions &options,
     // Okay, now make it
     pImpl->mPublisher = std::move(publisher);
     pImpl->mOptions = options;
+    pImpl->setInitialized(true);
 }
 
 /// Set the module status
@@ -250,22 +252,16 @@ void PublisherProcess::sendStatus(const Status &status) const
 // Create a heartbeat publisher process from the ini file
 std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
     UMPS::ProxyBroadcasts::Heartbeat::createHeartbeatProcess(
-        std::shared_ptr<UCI::Requestor> &requestorIn,
+        const UCI::Requestor &requestor,
         const std::string &iniFile,
         const std::string &section,
         std::shared_ptr<UMPS::Messaging::Context> context,
         std::shared_ptr<UMPS::Logging::ILog> logger)
 {
     // Do I need to make the operator requestor?
-    std::shared_ptr<UCI::Requestor> requestor{requestorIn};
-    bool makeRequestor{false};
-    if (requestorIn == nullptr)
-    { 
-        makeRequestor = true;
-    }
-    else if (!requestorIn->isInitialized())
+    if (!requestor.isInitialized())
     {
-        makeRequestor = true;
+        throw std::invalid_argument("uOperator requestor not initialized");
     }
     // Set the defaults
     PublisherProcessOptions processOptions;
@@ -288,40 +284,11 @@ std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
         iInterval = propertyTree.get<int> (section + ".interval", iInterval);
         interval = std::chrono::seconds {iInterval};
         processOptions.setInterval(interval);
-    
-        // Yes, I need to make the requestor
-        if (makeRequestor)
-        {
-            if (!std::filesystem::exists(iniFile))
-            {
-                throw std::invalid_argument("Initialization file: " + iniFile
-                                         + " does not exist");
-            }
-            // I actually can save this...
-            const std::string operatorSection{"uOperator"};
-            std::string operatorAddress
-                = propertyTree.get<std::string> (operatorSection + ".address",
-                                                 "");
-            if (operatorAddress.empty())
-            {
-                throw std::runtime_error(operatorSection
-                                       + ".address not not defined");
-            }
-       
-            auto zapOperatorOptions
-               = UMPS::Modules::Operator::readZAPClientOptions(iniFile);
-            UCI::RequestorOptions operatorOptions;
-            operatorOptions.setAddress(operatorAddress);
-            operatorOptions.setZAPOptions(zapOperatorOptions);
-
-            requestor = std::make_shared<UCI::Requestor> (logger);
-            requestor->initialize(operatorOptions);
-        }
     } // End check on ini file
     // Get the heartbeat broadcast's address and the ZAP options
     auto address
-        = requestor->getProxyBroadcastFrontendDetails(broadcast).getAddress();
-    auto zapOptions = requestor->getZAPOptions();
+        = requestor.getProxyBroadcastFrontendDetails(broadcast).getAddress();
+    auto zapOptions = requestor.getZAPOptions();
     // Create the publisher
     PublisherOptions publisherOptions;
     publisherOptions.setAddress(address);
