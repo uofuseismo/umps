@@ -135,7 +135,7 @@ public:
     mutable std::mutex mMutex;
     std::string mAddress;
     int mHighWaterMark = 100; 
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
     bool mBound = false;
     bool mRunning = false; 
     bool mConnected = false;

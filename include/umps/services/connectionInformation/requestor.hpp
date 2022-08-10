@@ -137,5 +137,21 @@ private:
     class RequestorImpl;
     std::unique_ptr<RequestorImpl> pImpl;
 };
+/// @brief Creates a connection information requestor from an
+///        initialization file.
+/// @param[in] requestor  The connection information requestor.
+/// @param[in] iniFile    The initialization file.
+/// @param[in] section    The section of the initialization file with the
+///                       heartbeat options.
+/// @param[in] context    The ZeroMQ context.
+/// @param[in] logger     The application's logger.
+/// @result On successful exit, this is a connection information requestor that
+///         is connected and ready to query UMPS for broadcasts, services, etc.
+std::unique_ptr<Requestor>
+    createRequestor(const std::string &iniFile,
+                    const std::string &section = "uOperator",
+                    std::shared_ptr<UMPS::Messaging::Context> context = nullptr,
+                    std::shared_ptr<UMPS::Logging::ILog> logger = nullptr);
+
 }
 #endif

@@ -233,39 +233,39 @@ TEST(Messaging, ZAPOptions)
     plainText.setPassword(password);
 
     ZAPOptions options;
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Grasslands);
     EXPECT_EQ(options.getDomain(), defaultDomain);
 
     options.setDomain(domain);
 
     options.setGrasslandsServer();
     EXPECT_TRUE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Grasslands);
 
     options.setGrasslandsClient();
     EXPECT_FALSE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Grasslands);
 
     options.setStrawhouseServer();
     EXPECT_TRUE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STRAWHOUSE);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Strawhouse);
     EXPECT_NO_THROW(options.setSocketOptions(&socket));
     std::string domainWork(socket.get(zmq::sockopt::zap_domain).data());
     EXPECT_EQ(domain, domainWork);
 
     options.setStrawhouseClient();
     EXPECT_FALSE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STRAWHOUSE);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Strawhouse);
 
     options.setWoodhouseServer();
     EXPECT_TRUE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::WOODHOUSE);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Woodhouse);
     EXPECT_NO_THROW(options.setSocketOptions(&socket));
     EXPECT_EQ(socket.get(zmq::sockopt::plain_server), 1); 
 
     EXPECT_NO_THROW(options.setWoodhouseClient(plainText));
     EXPECT_FALSE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::WOODHOUSE);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Woodhouse);
     auto plainTextCopy = options.getClientCredentials();
     EXPECT_EQ(plainTextCopy.getUserName(), plainText.getUserName());
     EXPECT_EQ(plainTextCopy.getPassword(), plainText.getPassword());
@@ -275,7 +275,7 @@ TEST(Messaging, ZAPOptions)
 
     EXPECT_NO_THROW(options.setStonehouseServer(serverKeys));
     EXPECT_TRUE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STONEHOUSE);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Stonehouse);
     EXPECT_NO_THROW(options.setSocketOptions(&socket));
     EXPECT_EQ(socket.get(zmq::sockopt::curve_server), 1); 
     auto publicKeyText
@@ -289,7 +289,7 @@ TEST(Messaging, ZAPOptions)
 
     EXPECT_NO_THROW(options.setStonehouseClient(serverKeys, clientKeys));
     EXPECT_FALSE(options.isAuthenticationServer());
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::STONEHOUSE);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Stonehouse);
     auto serverKeysCopy = options.getServerKeys();
     auto clientKeysCopy = options.getClientKeys(); 
     EXPECT_EQ(serverKeysCopy.getPublicKey(),  serverKeys.getPublicKey());
@@ -312,10 +312,10 @@ TEST(Messaging, ZAPOptions)
     ZAPOptions optionsCopy(options);
     EXPECT_EQ(optionsCopy.getDomain(), domain);
     EXPECT_FALSE(optionsCopy.isAuthenticationServer());
-    EXPECT_EQ(optionsCopy.getSecurityLevel(), SecurityLevel::STONEHOUSE);
+    EXPECT_EQ(optionsCopy.getSecurityLevel(), SecurityLevel::Stonehouse);
 
     options.clear();
-    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::GRASSLANDS);
+    EXPECT_EQ(options.getSecurityLevel(), SecurityLevel::Grasslands);
     EXPECT_EQ(options.getDomain(), defaultDomain);
 }
 

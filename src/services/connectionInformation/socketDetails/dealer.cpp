@@ -12,7 +12,7 @@ class Dealer::DealerImpl
 public:
     std::string mAddress;
     UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Connect;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
 };
 
 /// C'tor

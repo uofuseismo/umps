@@ -92,7 +92,7 @@ public:
     PublisherOptions mOptions;
     UCI::SocketDetails::XPublisher mSocketDetails;
     std::string mAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
     bool mConnected = false;
     bool mInitialized = false;
 };

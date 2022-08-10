@@ -103,7 +103,7 @@ public:
     SubscriberOptions mOptions;
     UCI::SocketDetails::Subscriber mSocketDetails;
     std::string mAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
     bool mMadeContext = true;
     bool mInitialized = false;
     bool mConnected = false;

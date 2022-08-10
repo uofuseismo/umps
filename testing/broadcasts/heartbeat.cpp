@@ -24,7 +24,7 @@ TEST(BroadcastsHeartbeat, SubscriberOptions)
     EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds{10});
     EXPECT_EQ(options.getHighWaterMark(), 1024);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UAuth::SecurityLevel::GRASSLANDS);
+              UAuth::SecurityLevel::Grasslands);
     auto messageTypes = options.getSubscriberOptions().getMessageTypes();
     EXPECT_EQ(messageTypes.size(), 1);
     EXPECT_TRUE(messageTypes.contains(status));
@@ -58,7 +58,7 @@ TEST(BroadcastHeartbeat, PublisherOptions)
     EXPECT_EQ(options.getHighWaterMark(), 8192);
     EXPECT_EQ(options.getTimeOut(), oneSecond);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UAuth::SecurityLevel::GRASSLANDS);
+              UAuth::SecurityLevel::Grasslands);
     // Test facade
     const std::string frontEnd = "tcp://127.0.0.1:8082";
     UAuth::ZAPOptions zapOptions;

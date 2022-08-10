@@ -95,7 +95,7 @@ public:
     std::string mAddress;
     UCI::SocketDetails::Request mSocketDetails;
     int mHighWaterMark = 200;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
     bool mInitialized = false;
     bool mConnected = false;
 };

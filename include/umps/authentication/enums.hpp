@@ -7,13 +7,13 @@ namespace UMPS::Authentication
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class SecurityLevel
 {
-    GRASSLANDS,  /*!< No validation. */
-    STRAWHOUSE,  /*!< Server validates client's IP address. */
-    WOODHOUSE,   /*!< Server validates client's IP address, username,
+    Grasslands,  /*!< No validation. */
+    Strawhouse,  /*!< Server validates client's IP address. */
+    Woodhouse,   /*!< Server validates client's IP address, username,
                       and password. */
-    STONEHOUSE,  /*!< Server validates client's IP address and client's
+    Stonehouse,  /*!< Server validates client's IP address and client's
                       public key. */
-    IRONHOUSE    /*!< Server validates client's IP address and client's 
+    Ironhouse    /*!< Server validates client's IP address and client's 
                       public key and client validate's server's public key. */
 };
 /// @class UserPrivileges "enums.hpp" "umps/authentication/enums.hpp"

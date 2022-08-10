@@ -267,7 +267,7 @@ public:
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mControlAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
     std::chrono::milliseconds mPollTimeOutMS{10};
     bool mHaveFrontend = false;
     bool mHaveBackend = false;

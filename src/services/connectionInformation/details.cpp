@@ -29,7 +29,7 @@ public:
     SocketDetails::Subscriber mSubscriber;
     SocketDetails::XPublisher mXPublisher;
     SocketDetails::XSubscriber mXSubscriber;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS; 
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands; 
     UAuth::UserPrivileges mUserPrivileges = UAuth::UserPrivileges::READ_ONLY;
     SocketType mSocketType = SocketType::Unknown;
     bool mHaveConnectionType = false;

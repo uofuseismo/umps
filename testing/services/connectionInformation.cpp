@@ -38,7 +38,7 @@ TEST(Messaging, RequestorOptions)
     RequestorOptions optionsCopy(options); 
     auto optionsBase = optionsCopy.getRequestOptions();
     EXPECT_EQ(optionsBase.getZAPOptions().getSecurityLevel(),
-              UAuth::SecurityLevel::STRAWHOUSE);
+              UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(optionsBase.getAddress(), address);
     EXPECT_EQ(optionsBase.getTimeOut(), timeOut);
 
@@ -141,7 +141,7 @@ TEST(ConnectionInformation, Details)
     const std::string moduleName = "testModule";
     const std::string connectionString = "tcp://127.0.0.1:8080";
     auto connectionType = ConnectionType::Broadcast;
-    auto securityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    auto securityLevel = UAuth::SecurityLevel::Grasslands;
     auto privileges = UAuth::UserPrivileges::READ_WRITE;
 
     Details details;
@@ -207,8 +207,8 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
         privileges{UAuth::UserPrivileges::READ_WRITE,
                    UAuth::UserPrivileges::ADMINISTRATOR};
     std::vector<UAuth::SecurityLevel>
-        securityLevels{UAuth::SecurityLevel::STONEHOUSE,
-                       UAuth::SecurityLevel::WOODHOUSE};
+        securityLevels{UAuth::SecurityLevel::Stonehouse,
+                       UAuth::SecurityLevel::Woodhouse};
 
     std::vector<Details> details;
     for (int i = 0; i < static_cast<int> (names.size()); ++i)

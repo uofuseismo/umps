@@ -5,10 +5,10 @@ namespace UMPS::Authentication
 {
  class ZAPOptions;
 }
-namespace boost::program_options
-{
-class ptree;
-}
+//namespace boost::program_options
+//{
+//class ptree;
+//}
 namespace UMPS::Modules::Operator
 {
 /// @brief Parses an ini file and loads the uOperator ZAP security options for
@@ -20,7 +20,8 @@ namespace UMPS::Modules::Operator
 ///         invalid.
 /// @note By default a grasslands client will be returned.
 UMPS::Authentication::ZAPOptions
-    readZAPClientOptions(const std::string &iniFile);
+    readZAPClientOptions(const std::string &iniFile,
+                         const std::string &section = "uOperator");
 /// @brief Parses an ini file and loads the uOperator ZAP security options for
 ///        a ZAP client.
 /// @param[in] propertyTree  The boost property tree.
@@ -28,8 +29,8 @@ UMPS::Authentication::ZAPOptions
 /// @throws std::runtime_error if the options specified in the ini file are
 ///         invalid.
 /// @note By default a grasslands client will be returned.
-UMPS::Authentication::ZAPOptions 
-   readZAPClientOptions(const boost::property_tree::ptree &propertyTree);
+//UMPS::Authentication::ZAPOptions 
+//   readZAPClientOptions(const boost::property_tree::ptree &propertyTree);
 
 /// @brief Parses an ini file and loads the uOperator ZAP security options for
 ///        a ZAP server.
@@ -40,7 +41,8 @@ UMPS::Authentication::ZAPOptions
 ///         invalid.
 /// @note By default a grasslands server will be returned.
 UMPS::Authentication::ZAPOptions
-    readZAPServerOptions(const std::string &iniFile);
+    readZAPServerOptions(const std::string &iniFile,
+                         const std::string &section = "uOperator");
 /// @brief Parses an ini file and loads the uOperator ZAP security options for
 ///        a ZAP server.
 /// @param[in] propertyTree  The boost property tree.
@@ -48,7 +50,7 @@ UMPS::Authentication::ZAPOptions
 /// @throws std::runtime_error if the options specified in the ini file are
 ///         invalid.
 /// @note By default a grasslands server will be returned.
-UMPS::Authentication::ZAPOptions 
-   readZAPServerOptions(const boost::property_tree::ptree &propertyTree);
+//UMPS::Authentication::ZAPOptions 
+//   readZAPServerOptions(const boost::property_tree::ptree &propertyTree);
 }
 #endif

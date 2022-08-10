@@ -70,8 +70,11 @@ public:
     [[nodiscard]] UMPS::Messaging::RequestRouter::RequestOptions getRequestOptions() const noexcept;
     /// @brief Initializes the class from an ini file.
     /// @param[in] iniFile  The name of the initialization file to parse.
-    /// @throws std::runtime_error if the uOperator.ipAddress cannot be found. 
-    void parseInitializationFile(const std::string &iniFile);
+    /// @param[in] section  The section of the initialization file with the
+    ///                     uOperator connection details.
+    /// @throws std::runtime_error if the section.address cannot be found. 
+    void parseInitializationFile(const std::string &iniFile,
+                                 const std::string &section = "uOperator");
 
     /// @name Destructors
     /// @{

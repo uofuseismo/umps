@@ -86,7 +86,7 @@ public:
     Certificate::Keys mServerKeys;
     Certificate::Keys mClientKeys;
     std::string mDomain = "global";
-    SecurityLevel mSecurityLevel = SecurityLevel::GRASSLANDS;
+    SecurityLevel mSecurityLevel = SecurityLevel::Grasslands;
     bool mIsAuthenticationServer = false;
 };
 
@@ -136,33 +136,33 @@ void ZAPOptions::clear() noexcept
 /// Grasslands
 void ZAPOptions::setGrasslandsServer() noexcept
 {
-    pImpl->mSecurityLevel = SecurityLevel::GRASSLANDS;
+    pImpl->mSecurityLevel = SecurityLevel::Grasslands;
     pImpl->mIsAuthenticationServer = true;
 }
 
 void ZAPOptions::setGrasslandsClient() noexcept
 {
-    pImpl->mSecurityLevel = SecurityLevel::GRASSLANDS;
+    pImpl->mSecurityLevel = SecurityLevel::Grasslands;
     pImpl->mIsAuthenticationServer = false;
 }
 
 /// Strawhouse
 void ZAPOptions::setStrawhouseServer() noexcept
 {
-    pImpl->mSecurityLevel = SecurityLevel::STRAWHOUSE;
+    pImpl->mSecurityLevel = SecurityLevel::Strawhouse;
     pImpl->mIsAuthenticationServer = true;
 }
 
 void ZAPOptions::setStrawhouseClient() noexcept
 {
-    pImpl->mSecurityLevel = SecurityLevel::STRAWHOUSE;
+    pImpl->mSecurityLevel = SecurityLevel::Strawhouse;
     pImpl->mIsAuthenticationServer = false;
 }
 
 /// Woodhouse
 void ZAPOptions::setWoodhouseServer() noexcept
 {
-    pImpl->mSecurityLevel = SecurityLevel::WOODHOUSE;
+    pImpl->mSecurityLevel = SecurityLevel::Woodhouse;
     pImpl->mIsAuthenticationServer = true;
 }
 
@@ -178,7 +178,7 @@ void ZAPOptions::setWoodhouseClient(
         throw std::invalid_argument("Password must be set for ZAP client");
     }
     pImpl->mClientCredentials = credentials;
-    pImpl->mSecurityLevel = SecurityLevel::WOODHOUSE;
+    pImpl->mSecurityLevel = SecurityLevel::Woodhouse;
     pImpl->mIsAuthenticationServer = false;
 }
 
@@ -194,7 +194,7 @@ void ZAPOptions::setStonehouseServer(const Certificate::Keys &serverKeys)
         throw std::invalid_argument("Server private key not set");
     }
     pImpl->mServerKeys = serverKeys;
-    pImpl->mSecurityLevel = SecurityLevel::STONEHOUSE;
+    pImpl->mSecurityLevel = SecurityLevel::Stonehouse;
     pImpl->mIsAuthenticationServer = true;
 }
 
@@ -215,7 +215,7 @@ void ZAPOptions::setStonehouseClient(const Certificate::Keys &serverKeys,
     }
     pImpl->mServerKeys = serverKeys;
     pImpl->mClientKeys = clientKeys;
-    pImpl->mSecurityLevel = SecurityLevel::STONEHOUSE;
+    pImpl->mSecurityLevel = SecurityLevel::Stonehouse;
     pImpl->mIsAuthenticationServer = false;
 }
 
@@ -234,7 +234,7 @@ std::string ZAPOptions::getDomain() const noexcept
 /// Client credentials
 Certificate::UserNameAndPassword ZAPOptions::getClientCredentials() const
 {
-    if (getSecurityLevel() != SecurityLevel::WOODHOUSE)
+    if (getSecurityLevel() != SecurityLevel::Woodhouse)
     {
         throw std::runtime_error("Security level must be woodhouse");
     }
@@ -248,7 +248,7 @@ Certificate::UserNameAndPassword ZAPOptions::getClientCredentials() const
 /// Client keys
 Certificate::Keys ZAPOptions::getServerKeys() const
 {
-    if (getSecurityLevel() != SecurityLevel::STONEHOUSE)
+    if (getSecurityLevel() != SecurityLevel::Stonehouse)
     {
         throw std::runtime_error("Security level must be stonehouse");
     }
@@ -257,7 +257,7 @@ Certificate::Keys ZAPOptions::getServerKeys() const
 
 Certificate::Keys ZAPOptions::getClientKeys() const
 {
-    if (getSecurityLevel() != SecurityLevel::STONEHOUSE)
+    if (getSecurityLevel() != SecurityLevel::Stonehouse)
     {
         throw std::runtime_error("Security level must be stonehouse");
     }
@@ -285,23 +285,23 @@ void ZAPOptions::setSocketOptions(zmq::socket_t *socket) const
 {
     // Nothing to do
     auto securityLevel = getSecurityLevel();
-    if (securityLevel == SecurityLevel::GRASSLANDS){return;}
+    if (securityLevel == SecurityLevel::Grasslands){return;}
     // Verify socket isn't null
     if (socket == nullptr){throw std::invalid_argument("Socket is NULL");}
     // Get common information
     auto isAuthServer = isAuthenticationServer();
     auto zapDomain = getDomain();
-    if (securityLevel == SecurityLevel::STRAWHOUSE)
+    if (securityLevel == SecurityLevel::Strawhouse)
     {
         setStrawhouseSocketOptions(socket, isAuthServer, zapDomain);
     }
-    else if (securityLevel == SecurityLevel::WOODHOUSE)
+    else if (securityLevel == SecurityLevel::Woodhouse)
     {
         Certificate::UserNameAndPassword credentials;
         if (!isAuthServer){credentials = getClientCredentials();}
         setWoodhouseSocketOptions(socket, credentials, isAuthServer, zapDomain);
     }
-    else if (securityLevel == SecurityLevel::STONEHOUSE)
+    else if (securityLevel == SecurityLevel::Stonehouse)
     {
         auto serverKeys = getServerKeys();
         if (isAuthServer)

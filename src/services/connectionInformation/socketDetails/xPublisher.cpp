@@ -12,7 +12,7 @@ class XPublisher::XPublisherImpl
 public:
     std::string mAddress;
     UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Bind;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
 };
 
 /// C'tor

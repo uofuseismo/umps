@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
         = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
     std::shared_ptr<UAuth::IAuthenticator> authenticator;
     if (options.mZAPOptions.getSecurityLevel() ==
-        UAuth::SecurityLevel::GRASSLANDS)
+        UAuth::SecurityLevel::Grasslands)
     {
         std::cout << "Creating grasslands authenticator..." << std::endl;
         authenticator
@@ -636,10 +636,10 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     }
     // Define ZAP options
     options.mZAPOptions
-        = UMPS::Modules::Operator::readZAPServerOptions(propertyTree);
+        = UMPS::Modules::Operator::readZAPServerOptions(iniFile, "uOperator");
     auto securityLevel = options.mZAPOptions.getSecurityLevel();
     // Get sqlite3 authentication tables
-    if (securityLevel != UAuth::SecurityLevel::GRASSLANDS)
+    if (securityLevel != UAuth::SecurityLevel::Grasslands)
     {
         options.mTablesDirectory
             = propertyTree.get<std::string> ("uOperator.tablesTableDirectory",
@@ -648,8 +648,8 @@ ProgramOptions parseIniFile(const std::string &iniFile)
             = propertyTree.get<std::string> ("uOperator.userTable",
                                              options.mUserTable);
         if (!std::filesystem::exists(options.mUserTable) &&
-            (securityLevel == UAuth::SecurityLevel::WOODHOUSE ||
-            securityLevel == UAuth::SecurityLevel::STONEHOUSE))
+            (securityLevel == UAuth::SecurityLevel::Woodhouse ||
+            securityLevel == UAuth::SecurityLevel::Stonehouse))
         {
             throw std::invalid_argument("User table: "
                                       + options.mUserTable + " does not exist");

@@ -147,7 +147,7 @@ TEST(Messaging, RequestRouterRequestOptions)
     RequestRouter::RequestOptions optionsCopy(options); 
     EXPECT_EQ(options.getHighWaterMark(), hwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UAuth::SecurityLevel::STRAWHOUSE);
+              UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(options.getAddress(), address);
     EXPECT_EQ(options.getTimeOut(), timeOut);
     EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
@@ -207,7 +207,7 @@ TEST(Messaging, RouterDealerRequestOptions)
     RouterDealer::RequestOptions optionsCopy(options); 
     EXPECT_EQ(options.getHighWaterMark(), hwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UAuth::SecurityLevel::STRAWHOUSE);
+              UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(options.getAddress(), address);
     //EXPECT_EQ(options.getTimeOut(), timeOut);
     EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
@@ -235,7 +235,7 @@ TEST(Messaging, RouterDealerReplyOptions)
     RouterDealer::ReplyOptions optionsCopy(options); 
     EXPECT_EQ(options.getHighWaterMark(), hwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
-              UAuth::SecurityLevel::STRAWHOUSE);
+              UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(options.getAddress(), address);
     //EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
 

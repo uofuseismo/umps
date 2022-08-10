@@ -9,6 +9,7 @@
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
+#include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -226,3 +227,20 @@ void Requestor::disconnect()
 {
     pImpl->mRequestor->disconnect();
 }
+
+/// Create from ini file
+std::unique_ptr<Requestor>
+UMPS::Services::ConnectionInformation::createRequestor(
+    const std::string &iniFile,
+    const std::string &section,
+    std::shared_ptr<UMPS::Messaging::Context> context,
+    std::shared_ptr<UMPS::Logging::ILog> logger)
+{
+    // Load the essential operator connection information from an ini file
+    RequestorOptions options;
+    options.parseInitializationFile(iniFile, section);
+    auto requestor = std::make_unique<Requestor> (context, logger);
+    requestor->initialize(options);
+    return requestor;
+}
+

@@ -99,7 +99,8 @@ RequestorOptions::getRequestOptions() const noexcept
 }
 
 /// Load from ini file
-void RequestorOptions::parseInitializationFile(const std::string &iniFile)
+void RequestorOptions::parseInitializationFile(const std::string &iniFile,
+                                               const std::string &section)
 {
     if (!std::filesystem::exists(iniFile))
     {
@@ -110,16 +111,21 @@ void RequestorOptions::parseInitializationFile(const std::string &iniFile)
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
     // Load the operator's front-end address
     auto operatorAddress = propertyTree.get<std::string>
-         ("uOperator.ipAddress", "");
+         (section + ".address", "");
     if (isEmpty(operatorAddress))
     {
-        throw std::runtime_error("Operator address not set");
+        operatorAddress = propertyTree.get<std::string>
+            (section + ".ipAddress", "");
+        if (isEmpty(operatorAddress))
+        {
+            throw std::runtime_error("Operator address not set");
+        }
     }
     RequestorOptions options;
     options.setAddress(operatorAddress);
     // Load the ZAP options
     auto zapOptions
-         = UMPS::Modules::Operator::readZAPClientOptions(propertyTree);
+         = UMPS::Modules::Operator::readZAPClientOptions(iniFile, section);
     options.setZAPOptions(zapOptions); 
     // Save it
     *this = options;

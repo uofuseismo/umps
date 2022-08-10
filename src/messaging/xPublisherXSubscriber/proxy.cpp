@@ -289,7 +289,7 @@ public:
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mControlAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::GRASSLANDS;
+    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
     //int mHighWaterMark = 4*1024;
     bool mHaveFrontend = false;
     bool mHaveBackend = false;
