@@ -20,17 +20,17 @@
 #include "umps/earthworm/waveRing.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisherOptions.hpp"
-//#include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
-//#include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisherProcess.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"
-//#include "umps/services/connectionInformation/getConnections.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/certificate/keys.hpp"
@@ -46,35 +46,178 @@
 namespace UAuth = UMPS::Authentication;
 namespace UServices = UMPS::Services;
 namespace UCI = UMPS::Services::ConnectionInformation;
+namespace UModules = UMPS::Modules;
+namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
 
+/// @brief Defines the module options.
 struct ProgramOptions
 {
-    UCI::RequestorOptions mConnectionInformationRequestOptions;
+    /// @brief Load the module options from an initialization file.
+    void parseInitializationFile(const std::string &iniFile,
+                                 const std::string generalSection = "General")
+    {
+        boost::property_tree::ptree propertyTree;
+        boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
+        //------------------------------ General -----------------------------//
+        // Module name
+        mModuleName
+            = propertyTree.get<std::string> (generalSection + ".moduleName",
+                                             mModuleName);
+        if (mModuleName.empty())
+        {
+            throw std::runtime_error("Module name not defined");
+        }
+        // Verbosity
+        mVerbosity = static_cast<UMPS::Logging::Level>
+                     (propertyTree.get<int> (generalSection + ".verbose",
+                                             static_cast<int> (mVerbosity)));
+        // Log file directory
+        mLogFileDirectory = propertyTree.get<std::string>
+            (generalSection + ".logFileDirectory",
+             mLogFileDirectory.string());
+        if (!mLogFileDirectory.empty() &&
+            !std::filesystem::exists(mLogFileDirectory))
+        {
+            std::cout << "Creating log file directory: "
+                      << mLogFileDirectory << std::endl;
+            if (!std::filesystem::create_directories(mLogFileDirectory))
+            {
+                throw std::runtime_error("Failed to make log directory");
+            }
+        }
+        // Broadcast name
+        mDataPacketBroadcastName
+            = propertyTree.get<std::string>
+                ("General.dataPacketBroadcast", mDataPacketBroadcastName);
+        if (mDataPacketBroadcastName.empty())
+        {
+            throw std::runtime_error("General.dataPacketBroadcast not set");
+        }
+        //----------------------------- Earthworm ----------------------------//
+        // EW_PARAMS environment variable
+        mEarthwormParametersDirectory = propertyTree.get<std::string>
+                                        ("Earthworm.ewParams",
+                                         mEarthwormParametersDirectory);
+        if (!std::filesystem::exists(mEarthwormParametersDirectory))
+        {
+            throw std::runtime_error("Earthworm parameters directory: "
+                                   + mEarthwormParametersDirectory
+                                   + " does not exist");
+        }
+        // EW_INST environment variable
+        mEarthwormInstallation = propertyTree.get<std::string>
+                                 ("Earthworm.ewInstallation",
+                                  mEarthwormInstallation);
+        // Earthworm wave ring
+        mEarthwormWaveRingName = propertyTree.get<std::string>
+                                 ("Earthworm.waveRingName",
+                                  mEarthwormWaveRingName);
+        // Wait after reading
+        mEarthwormWait = propertyTree.get<int> ("Earthworm.wait",
+                                                mEarthwormWait);
+        if (mEarthwormWait < 0)
+        {
+            std::cerr << "Setting wait time to 0" << std::endl;
+            mEarthwormWait = 0;
+        }
+    }
     UAuth::ZAPOptions mZAPOptions;
-    std::string earthwormParametersDirectory
-        = "/opt/earthworm/run_working/params/";
-    std::string earthwormInstallation = "INST_UNKNOWN"; 
-    std::string earthwormWaveRingName = "WAVE_RING";
-    std::string operatorAddress;
-    std::string dataBroadcastName = "DataPacket";
-    std::string heartbeatBroadcastName = "Heartbeat";
-    std::filesystem::path logFileDirectory = "logs";
-    int earthwormWait = 0;
+    std::string mEarthwormParametersDirectory
+        {"/opt/earthworm/run_working/params/"};
+    std::string mModuleName{MODULE_NAME};
+    std::string mEarthwormInstallation{"INST_UNKNOWN"};
+    std::string mEarthwormWaveRingName{"WAVE_RING"};
+    //std::string operatorAddress;
+    std::string mDataPacketBroadcastName{"DataPacket"};
+    std::string mHeartbeatBroadcastName{"Heartbeat"};
+    std::filesystem::path mLogFileDirectory{"/var/log/umps"};
     std::chrono::seconds heartBeatInterval{30};
+    int mEarthwormWait{0};
+    UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::Info;
 };
 
+/// @result The logger for this application.
+std::shared_ptr<UMPS::Logging::ILog>
+    createLogger(const std::string &moduleName,
+                 const std::filesystem::path logFileDirectory = "/var/log/umps",
+                 const UMPS::Logging::Level verbosity = UMPS::Logging::Level::Info,
+                 const int hour = 0, const int minute = 0)
+{
+    auto logFileName = moduleName + ".log";  
+    auto fullLogFileName = logFileDirectory / logFileName;
+    auto logger = std::make_shared<UMPS::Logging::SpdLog> ();
+    logger->initialize(moduleName,
+                       fullLogFileName,
+                       verbosity,
+                       hour, minute);
+    logger->info("Starting logging for " + moduleName);
+    return logger;
+}
+
+/// @brief Create utility to attach to and read from earthworm wave ring
+std::unique_ptr<UMPS::Earthworm::WaveRing> 
+    createEarthwormWaveRingReader(const ProgramOptions &options,
+                                  std::shared_ptr<UMPS::Logging::ILog> &logger,
+                                  const bool flushRing = true)
+{
+    logger->debug("Attaching to earthworm ring: "
+                + options.mEarthwormWaveRingName);
+    setenv("EW_PARAMS", options.mEarthwormParametersDirectory.c_str(), true);
+    setenv("EW_INSTALLATION", options.mEarthwormInstallation.c_str(), true);
+    auto earthwormWaveRing
+        = std::make_unique<UMPS::Earthworm::WaveRing> (logger);
+    earthwormWaveRing->connect(options.mEarthwormWaveRingName,
+                               options.mEarthwormWait);
+    if (flushRing){earthwormWaveRing->flush();}
+    logger->debug("Attach to earthworm ring: "
+                + options.mEarthwormWaveRingName);
+    return earthwormWaveRing;
+}
+
+
+//----------------------------------------------------------------------------//
+/// @brief Reads packets from the wave ring then brodcasts them to UMPS.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class BroadcastPackets : public UMPS::Modules::IProcess
 {
 public:
     BroadcastPackets() = default;
     BroadcastPackets(
-        std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> &packetPublisher,
-        std::shared_ptr<UMPS::Earthworm::WaveRing> &waveRing,
+        std::unique_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher>
+             &&packetPublisher,
+        std::unique_ptr<UMPS::Earthworm::WaveRing> &&waveRing,
         std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mPacketPublisher(packetPublisher),
-        mWaveRing(waveRing),
+        mPacketPublisher(std::move(packetPublisher)),
+        mWaveRing(std::move(waveRing)),
         mLogger(logger)
     {
+        if (mWaveRing == nullptr)
+        {
+            throw std::invalid_argument("Wave ring is NULL");
+        }
+        if (mPacketPublisher == nullptr)
+        {
+            throw std::invalid_argument("Packet publisher is NULL");
+        }
+        if (!mWaveRing->isConnected())
+        {
+            throw std::invalid_argument("Wave ring reader not connected");
+        }
+        if (!mPacketPublisher->isInitialized())
+        {
+            throw std::invalid_argument("Packet publisher not initialized");
+        }
+        if (mLogger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
+        mInitialized = true;
+    }
+    /// Initialized?
+    [[nodiscard]] bool isInitialized() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mInitialized;
     }
     /// Destructor
     ~BroadcastPackets() override
@@ -107,6 +250,10 @@ public:
     void start() override
     {
         stop();
+        if (!isInitialized())
+        {
+            throw std::runtime_error("Class not initialized");
+        }
         setRunning(true);
         mLogger->debug("Starting the waveRing broadcast thread...");
         mBroadcastThread = std::thread(&BroadcastPackets::run,
@@ -129,7 +276,6 @@ public:
         }
         mWaveRing->flush();
         mLogger->debug("Earthworm broadcast thread is starting");
-        constexpr std::chrono::seconds oneSecond{1}; 
         while (keepRunning())
         {
             auto startClock = std::chrono::high_resolution_clock::now();
@@ -140,7 +286,7 @@ public:
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed reading wave ring:\n"
+                mLogger->error("Failed reading wave ring.  Failed with:\n"
                              + std::string(e.what()));
                 continue;
             }
@@ -168,23 +314,121 @@ public:
             auto endClock = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::seconds>
                             (endClock - startClock);
-            if (duration < oneSecond)
+            if (duration < mBroadcastInterval)
             {
-                auto wait = oneSecond - duration;
+                auto wait = mBroadcastInterval - duration;
                 std::this_thread::sleep_for(wait);
             }
-            //std::cout << "Sent: " << nSent << std::endl;
         }
         mLogger->debug("Earthworm broadcast thread is terminating");
     }
     mutable std::mutex mMutex;
     std::thread mBroadcastThread;
-    std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher> mPacketPublisher;
-    std::shared_ptr<UMPS::Earthworm::WaveRing> mWaveRing;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger;
-    bool mKeepRunning = true;
+    std::unique_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher>
+         mPacketPublisher{nullptr};
+    std::unique_ptr<UMPS::Earthworm::WaveRing> mWaveRing{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::chrono::seconds mBroadcastInterval{1};
+    bool mKeepRunning{true};
+    bool mInitialized{false};
 };
 
+///--------------------------------------------------------------------------///
+class CommandProcess : UMPS::Modules::IProcess
+{
+public:
+    CommandProcess(std::shared_ptr<UMPS::Logging::ILog> logger = nullptr) :
+        mLogger(logger)
+    {    
+        if (mLogger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+        }
+    }
+    /// @brief Destructor
+    ~CommandProcess()
+    {
+        stop();
+    }
+    /// @brief Gets the command line input options as a string.
+    [[nodiscard]] std::string getInputOptions() const
+    {
+        std::string commands;
+        commands = "Commands:\n";
+        commands = commands + "   quit   Exits the program.\n";
+        commands = commands + "   help   Displays this message.\n";
+        return commands;
+    }
+    /// Running?
+    [[nodiscard]] bool isRunning() const noexcept override
+    {
+        std::scoped_lock lock(mMutex);
+        return mKeepRunning;
+    }
+    /// Start
+    void start() override
+    {
+        stop();
+        setRunning(true);
+    }
+    /// Stops a thread
+    void stop() override
+    {
+        setRunning(false);
+        if (mCommandThread.joinable()){mCommandThread.join();}
+    }
+    /// @brief Toggles this as running or not running
+    void setRunning(const bool running)
+    {
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mKeepRunning = running;
+    }
+    /// @brief Gets the input line
+    [[nodiscard]] static std::string getInputLine()
+    {
+        return std::string{MODULE_NAME} + "$";
+    }
+    /// @brief Handles the terminal interaction when running interactively.
+    ///        This should be handled by the main thread.
+    void processTerminal(const bool runInteractive = true)
+    {
+        while (isRunning())
+        {
+            if (runInteractive)
+            {
+                std::string command;
+                std::cout << getInputLine();
+                std::cin >> command;
+                if (command == "quit")
+                {
+                    stop();
+                }
+                else
+                {
+                    std::cout << std::endl;
+                    if (command != "help")
+                    {
+                        std::cout << "Unknown command: " << command << std::endl;
+                        std::cout << std::endl;
+                    }
+                    std::cout << getInputOptions();
+                }
+            }
+            else
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+        }
+        mLogger->debug("Terminal management thread exiting...");
+    }
+//private:
+    mutable std::mutex mMutex;
+    std::thread mCommandThread;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    bool mKeepRunning{true}; 
+};
+
+/*
 class BroadcastWaveRing
 {
 public:
@@ -278,7 +522,9 @@ public:
     int mEarthwormWait{0};
     UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::INFO};
 };
+*/
 
+/*
 class Module : public UMPS::Modules::IModule
 {
 public:
@@ -432,13 +678,11 @@ public:
     void start() override
     {
         stop(); // Make sure threads are stopped
-/*
         // Create the additional processes
-        std::unique_ptr<UMPS::Modules::IProcess> earthwormBroadcast
-            = std::make_unique<BroadcastPackets> (mPacketPublisher,
-                                                  mEarthwormWaveRing, mLogger);
-        addProcess(std::move(earthwormBroadcast));
-*/
+        //std::unique_ptr<UMPS::Modules::IProcess> earthwormBroadcast
+        //    = std::make_unique<BroadcastPackets> (mPacketPublisher,
+        //                                          mEarthwormWaveRing, mLogger);
+        //addProcess(std::move(earthwormBroadcast));
         IModule::start();
         mEarthwormBroadcast
             = std::make_shared<BroadcastPackets> (mPacketPublisher,
@@ -457,22 +701,22 @@ public:
     /// @brief Runs the main loop
 //private:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::shared_ptr<UMPS::Modules::ProcessManager> mProcessManager{nullptr};
     std::shared_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher>
          mPacketPublisher{nullptr};
     std::shared_ptr<UMPS::Earthworm::WaveRing> mEarthwormWaveRing{nullptr};
     std::shared_ptr<BroadcastPackets> mEarthwormBroadcast{nullptr};
-    std::string mEarthwormParametersDirectory
-        = "/opt/earthworm/run_working/params/";
-    std::string mEarthwormInstallation = "INST_UNKNOWN";
-    std::string mEarthwormWaveRingName = "WAVE_RING";
-    std::string mDataPacketBroadcastName = "DataPacket";
-    //std::thread mBroadcastThread;
-    //std::thread mTerminalThread;
-    int mEarthwormWait = 0;
+    std::string mEarthwormParametersDirectory{
+         "/opt/earthworm/run_working/params/"};
+    std::string mEarthwormInstallation{"INST_UNKNOWN"};
+    std::string mEarthwormWaveRingName{"WAVE_RING"};
+    std::string mDataPacketBroadcastName{"DataPacket"};
+    int mEarthwormWait{0};
 };
+*/
 
 std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[]);
-ProgramOptions parseInitializationFile(const std::string &iniFile);
+//ProgramOptions parseInitializationFile(const std::string &iniFile);
 
 int main(int argc, char *argv[])
 {
@@ -491,7 +735,119 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    // Parse the initialization file
+    ProgramOptions programOptions;
+    try
+    {
+        programOptions.parseInitializationFile(iniFile, "General");
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+    // Create the logger
+    constexpr int hour = 0;
+    constexpr int minute = 0;
+    auto logger = createLogger(programOptions.mModuleName,
+                               programOptions.mLogFileDirectory,
+                               programOptions.mVerbosity,
+                               hour, minute);
+    // Initialize the wavering
+
+    // This module only needs one context.  There's not much data to move.
+    auto context = std::make_shared<UMPS::Messaging::Context> (1);
+    // Initialize the modules
+    logger->info("Initializing processes...");
+    UMPS::Modules::ProcessManager processManager(logger);
+    try
+    {
+        logger->debug("Connecting to uOperator...");
+        const std::string operatorSection{"uOperator"};
+        auto uOperator = UCI::createRequestor(iniFile, operatorSection,
+                                              context, logger);
+        programOptions.mZAPOptions = uOperator->getZAPOptions();
+
+        logger->debug("Creating heartbeat process...");
+        auto heartbeat = UHeartbeat::createHeartbeatProcess(*uOperator, iniFile,
+                                                            "Heartbeat",
+                                                            context, logger);
+        processManager.insert(std::move(heartbeat));
+
+        logger->debug("Creating packet broadcast process...");
+        auto packetAddress
+            = uOperator->getProxyBroadcastFrontendDetails(
+                 programOptions.mDataPacketBroadcastName).getAddress();
+        UMPS::ProxyBroadcasts::DataPacket::PublisherOptions
+            packetPublisherOptions;
+        auto packetPublisher = std::make_unique<UMPS::ProxyBroadcasts::DataPacket::Publisher> (context, logger);
+        packetPublisherOptions.setAddress(packetAddress);
+        packetPublisherOptions.setZAPOptions(programOptions.mZAPOptions);
+        packetPublisher->initialize(packetPublisherOptions);
+
+        constexpr bool flushRing{true};
+        auto earthwormReader = createEarthwormWaveRingReader(programOptions,
+                                                             logger,
+                                                             flushRing);
+
+        auto broadcastProcess 
+            = std::make_unique<BroadcastPackets> (std::move(packetPublisher), 
+                                                  std::move(earthwormReader),
+                                                  logger);
+        processManager.insert(std::move(broadcastProcess)); 
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // Start the modules
+    logger->info("Starting processes...");
+    try
+    {
+        processManager.start();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        logger->error(e.what());
+        return EXIT_FAILURE;
+    }
+    // Run interactive
+    while (processManager.isRunning())
+    {
+        if (runInteractive)
+        {
+            std::string command;
+            std::cout << CommandProcess::getInputLine();
+            std::cin >> command;
+            if (command == "quit")
+            {
+                processManager.stop();
+            }
+            else
+            {
+                std::cout << std::endl;
+                if (command != "help")
+                {
+                    std::cout << "Unknown command: " << command << std::endl;
+                    std::cout << std::endl;
+                }
+                //std::cout << getInputOptions();
+            }
+        }
+        else
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+    logger->info("Exiting...");
+    //processManager.stop();
+    return EXIT_SUCCESS;
+/*
     // Initialize processes
+     
     // Attach to module
 
     // Run module
@@ -523,6 +879,7 @@ int main(int argc, char *argv[])
     }
 module.start();
 module.processTerminal(runInteractive);
+*/
 //getchar();
 //module.stop();
 /*
@@ -617,6 +974,8 @@ return 0;
     }
     waveRing->flush();
 */
+
+/*
     BroadcastPackets broadcastPackets(module.mPacketPublisher, module.mEarthwormWaveRing, module.mLogger);
     std::thread broadcastThread(&BroadcastPackets::run, &broadcastPackets);
 
@@ -649,6 +1008,7 @@ return 0;
     }
     broadcastThread.join(); 
     module.mLogger->info("Program finished");
+*/
     return EXIT_SUCCESS;
 }
 
@@ -662,7 +1022,7 @@ std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[])
     bool runInteractive = true;
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
-        ("help", "produce help message")
+        ("help", "Produce help message")
         ("background", "Setting this is useful for running the program as a background process - e.g., with nohup")
         ("ini",  boost::program_options::value<std::string> (), 
                  "Defines the initialization file for this module");
@@ -672,6 +1032,10 @@ std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[])
     boost::program_options::notify(vm);
     if (vm.count("help"))
     {
+        std::cout << MODULE_NAME
+                  << " is for broadcasting traceBuf2 packets "
+                  << "on an Earthworm wave ring to UMPS."
+                  << std::endl << std::endl;
         std::cout << desc << std::endl;
         return std::pair{iniFile, runInteractive};
     }
@@ -692,6 +1056,7 @@ std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[])
     return std::pair{iniFile, runInteractive};
 }
 
+/*
 /// Parse the ini file
 ProgramOptions parseInitializationFile(const std::string &iniFile)
 {
@@ -699,14 +1064,14 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
     //------------------------------ General ---------------------------------//
-    options.logFileDirectory = propertyTree.get<std::string>
-        ("WaveRing.logFileDirectory", options.logFileDirectory.string());
-    if (!options.logFileDirectory.empty() &&
-        !std::filesystem::exists(options.logFileDirectory))
+    options.mLogFileDirectory = propertyTree.get<std::string>
+        ("WaveRing.logFileDirectory", options.mLogFileDirectory.string());
+    if (!options.mLogFileDirectory.empty() &&
+        !std::filesystem::exists(options.mLogFileDirectory))
     {
         std::cout << "Creating log file directory: "
-                  << options.logFileDirectory << std::endl;
-        if (!std::filesystem::create_directories(options.logFileDirectory))
+                  << options.mLogFileDirectory << std::endl;
+        if (!std::filesystem::create_directories(options.mLogFileDirectory))
         {
             throw std::runtime_error("Failed to make log directory");
         }
@@ -717,85 +1082,31 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     options.mConnectionInformationRequestOptions = requestOptions;
     options.operatorAddress = requestOptions.getRequestOptions().getAddress();
     options.mZAPOptions = requestOptions.getRequestOptions().getZAPOptions();
-
-/*
-    options.operatorAddress = propertyTree.get<std::string>
-        ("uOperator.ipAddress", options.operatorAddress);
-    if (isEmpty(options.operatorAddress))
-    {
-        throw std::runtime_error("Operator address not set");
-    } 
-    options.mZAPOptions
-        = UMPS::Modules::Operator::readZAPClientOptions(propertyTree);
-*/
-/*
-    // Security level
-    auto securityLevel = static_cast<UAuth::SecurityLevel>
-       (propertyTree.get<int> ("uOperator.securityLevel",
-                    static_cast<int> (options.mZAPOptions.getSecurityLevel())));
-    if (static_cast<int> (securityLevel) < 0 ||
-        static_cast<int> (securityLevel) > 4)
-    {
-        throw std::invalid_argument("Security level must be in range [0,4]");
-    }
-    // Define ZAP options
-    options.mZAPOptions.setGrasslandsClient();
-    if (securityLevel == UAuth::SecurityLevel::GRASSLANDS)
-    {
-        options.mZAPOptions.setGrasslandsClient();
-    }
-    else if (securityLevel == UAuth::SecurityLevel::STRAWHOUSE)
-    {
-        options.mZAPOptions.setStrawhouseClient();
-    }
-    else if (securityLevel == UAuth::SecurityLevel::WOODHOUSE)
-    {
-        UAuth::Certificate::UserNameAndPassword credentials;
-        //options.mZAPOptions.setWoodhouseClient();
-    }
-    else if (securityLevel == UAuth::SecurityLevel::STONEHOUSE)
-    {
-        auto serverPublicKeyFile
-            = propertyTree.get<std::string> ("uOperator.serverPublicKeyFile");
-        auto clientPublicKeyFile
-            = propertyTree.get<std::string> ("uOperator.clientPublicKeyFile");
-        auto clientPrivateKeyFile
-            = propertyTree.get<std::string> ("uOperator.clientPrivateKeyFile");
-        UAuth::Certificate::Keys serverKeys, clientKeys;
-        serverKeys.loadFromTextFile(serverPublicKeyFile);
-        clientKeys.loadFromTextFile(clientPublicKeyFile);
-        clientKeys.loadFromTextFile(clientPrivateKeyFile);
-        options.mZAPOptions.setStonehouseClient(serverKeys, clientKeys);
-    }
-    else
-    {
-        throw std::runtime_error("Unhandled security level");
-    }
-*/
     //------------------------------ Earthworm -------------------------------//
     // EW_PARAMS environment variable
     options.earthwormParametersDirectory = propertyTree.get<std::string>
-        ("Earthworm.ewParams", options.earthwormParametersDirectory);
-    if (!std::filesystem::exists(options.earthwormParametersDirectory))
+        ("Earthworm.ewParams", options.mEarthwormParametersDirectory);
+    if (!std::filesystem::exists(options.mEarthwormParametersDirectory))
     {   
         throw std::runtime_error("Earthworm parameters directory: " 
-                               + options.earthwormParametersDirectory
+                               + options.mEarthwormParametersDirectory
                                + " does not exist");
     }   
     // EW_INST environment variable
-    options.earthwormInstallation = propertyTree.get<std::string>
-        ("Earthworm.ewInstallation", options.earthwormInstallation);
+    options.mEarthwormInstallation = propertyTree.get<std::string>
+        ("Earthworm.ewInstallation", options.mEarthwormInstallation);
     // Earthworm wave ring
-    options.earthwormWaveRingName = propertyTree.get<std::string>
-        ("Earthworm.waveRingName", options.earthwormWaveRingName);
+    options.mEarthwormWaveRingName = propertyTree.get<std::string>
+        ("Earthworm.waveRingName", options.mEarthwormWaveRingName);
     // Wait after reading
-    options.earthwormWait = propertyTree.get<int> ("Earthworm.wait",
-                                                   options.earthwormWait);
-    if (options.earthwormWait < 0)
+    options.mEarthwormWait = propertyTree.get<int> ("Earthworm.wait",
+                                                    options.mEarthwormWait);
+    if (options.mEarthwormWait < 0)
     {   
         std::cerr << "Setting wait time to 0" << std::endl;
-        options.earthwormWait = 0;
+        options.mEarthwormWait = 0;
     }   
     //------------------------------------------------------------------------//
     return options;
 }
+*/

@@ -138,3 +138,9 @@ bool ProcessManager::contains(const std::string &name) const noexcept
 {
     return pImpl->contains(name);
 }
+
+//// Running?
+bool ProcessManager::isRunning() const noexcept
+{
+    return pImpl->isRunning();
+}
