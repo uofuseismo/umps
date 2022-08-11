@@ -22,6 +22,7 @@
 #include "umps/authentication/service.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/certificate/keys.hpp"
+#include "umps/messaging/context.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/services/connectionInformation/serviceOptions.hpp"
@@ -35,6 +36,7 @@
 #include "umps/services/moduleRegistry/service.hpp"
 //#include "umps/services/incrementer/service.hpp"
 //#include "umps/services/incrementer/parameters.hpp"
+#include "umps/modules/processManager.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/proxyBroadcasts/proxy.hpp"
 #include "umps/proxyBroadcasts/proxyOptions.hpp"
@@ -42,6 +44,10 @@
 //#include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
 //#include "umps/proxyBroadcasts/heartbeat/proxy.hpp"
 //#include "umps/proxyBroadcasts/heartbeat/proxyOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp"
+#include "umps/proxyBroadcasts/heartbeat/publisherProcess.hpp"
 #include "umps/proxyServices/proxy.hpp"
 #include "umps/proxyServices/proxyOptions.hpp"
 //#include "umps/proxyServices/packetCache/proxy.hpp"
@@ -449,15 +455,54 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     // Create my processes
+    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Slow joiner
+    UMPS::Modules::ProcessManager
+        processManager(connectionInformationLoggerPtr);
     try
     {
+        auto processContext = std::make_shared<UMPS::Messaging::Context> (1);
+        /*
         const std::string operatorSection{"uOperator"};
         UCI::RequestorOptions requestorOptions;
-        auto operatorAddress = options.mConnectionInformationOptions.getClientAccessAddress();
+        auto operatorAddress = options.mConnectionInformationOptions
+                                      .getClientAccessAddress();
         requestorOptions.setAddress(operatorAddress);
         requestorOptions.setZAPOptions(options.mZAPOptions);
-        auto uOperator = std::make_shared<UCI::Requestor> ();
+        auto uOperator
+            = std::make_shared<UCI::Requestor> (processContext,
+                                                connectionInformationLoggerPtr);
         uOperator->initialize(requestorOptions);
+        */
+
+        std::string heartbeatAddress;
+        for (const auto &broadcast : modules.mProxyBroadcasts)
+        {
+             auto details = broadcast.second->getConnectionDetails();
+             auto socketInfo = details.getProxySocketDetails();
+             if (broadcast.second->getName() == "Heartbeat")
+             {
+                  heartbeatAddress = socketInfo.getFrontendAddress();
+             }
+        }
+        namespace UHB = UMPS::ProxyBroadcasts::Heartbeat;
+        UHB::PublisherOptions heartbeatPublisherOptions;
+        heartbeatPublisherOptions.setAddress(heartbeatAddress);
+        heartbeatPublisherOptions.setZAPOptions(options.mZAPOptions);
+        auto heartbeatPublisher
+            = std::make_unique<UMPS::ProxyBroadcasts::Heartbeat::Publisher>
+              (processContext, connectionInformationLoggerPtr);
+        heartbeatPublisher->initialize(heartbeatPublisherOptions);
+
+        UHB::PublisherProcessOptions heartbeatPublisherProcessOptions; 
+        auto heartbeatProcess
+            = std::make_unique<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
+              (connectionInformationLoggerPtr);
+        heartbeatProcess->initialize(heartbeatPublisherProcessOptions,
+                                     std::move(heartbeatPublisher));
+        processManager.insert(std::move(heartbeatProcess));
+
+        // Lastly, start them up
+        //processManager.start(); 
     }
     catch (const std::exception &e)
     {
@@ -525,7 +570,7 @@ int main(int argc, char *argv[])
         }
 //        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-
+//    processManager.stop();
     // Shut down the services
     //std::cout << "Stopping the authenticator..." << std::endl;
     //authenticatorService.stop();

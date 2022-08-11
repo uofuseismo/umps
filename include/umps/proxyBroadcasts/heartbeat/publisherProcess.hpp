@@ -38,6 +38,11 @@ public:
     PublisherProcess();
     /// @brief Constructor with a given logger.
     explicit PublisherProcess(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given context.
+    //explicit PublisherProcess(std::shared_ptr<UMPS::Messaging::Context> &context);
+    /// @brief Constructor with a given logger and context.
+    //PublisherProcess(std::shared_ptr<UMPS::Messaging::Context> &context,
+    //                 std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @name Step 1: Initialization

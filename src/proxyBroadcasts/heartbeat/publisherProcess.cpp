@@ -298,8 +298,10 @@ std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
         processOptions.setName(processName);
     } // End check on ini file
     // Get the heartbeat broadcast's address and the ZAP options
+std::cout << "getting address..." << std::endl;
     auto address
         = requestor.getProxyBroadcastFrontendDetails(broadcast).getAddress();
+std::cout << address << std::endl;
     auto zapOptions = requestor.getZAPOptions();
     // Create the publisher
     PublisherOptions publisherOptions;
