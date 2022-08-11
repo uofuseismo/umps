@@ -28,6 +28,7 @@
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"
+#include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/moduleRegistry/serviceOptions.hpp"
@@ -451,12 +452,16 @@ int main(int argc, char *argv[])
     try
     {
         const std::string operatorSection{"uOperator"};
-        auto uOperator = UCI::createRequestor(iniFile, operatorSection,
-                                              nullptr, nullptr);
+        UCI::RequestorOptions requestorOptions;
+        auto operatorAddress = options.mConnectionInformationOptions.getClientAccessAddress();
+        requestorOptions.setAddress(operatorAddress);
+        requestorOptions.setZAPOptions(options.mZAPOptions);
+        auto uOperator = std::make_shared<UCI::Requestor> ();
+        uOperator->initialize(requestorOptions);
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Failed to create processes" << std::endl;
+        std::cerr << "Failed to create processes: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
     

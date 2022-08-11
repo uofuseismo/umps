@@ -170,7 +170,16 @@ void Request::initialize(const RequestOptions &options)
     }
     // Bind
     pImpl->mLogger->debug("Attempting to connect to: " + address);
-    pImpl->mClient->connect(address);
+    try
+    {
+        pImpl->mClient->connect(address);
+    }
+    catch (const std::exception &e)
+    {
+        throw std::runtime_error("Failed to connect to client at: " + address
+                               + ".  Failed with: "
+                               + std::string{e.what()});
+    }
     pImpl->mLogger->debug("Connected to: " + address + "!");
     // Resolve end point
     pImpl->mAddress = address;

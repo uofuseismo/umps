@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
