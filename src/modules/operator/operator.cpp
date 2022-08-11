@@ -27,6 +27,7 @@
 #include "umps/services/connectionInformation/serviceOptions.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
+#include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/moduleRegistry/serviceOptions.hpp"
@@ -48,6 +49,7 @@
 #include "umps/logging/spdlog.hpp"
 
 namespace UAuth = UMPS::Authentication;
+namespace UCI = UMPS::Services::ConnectionInformation;
 
 struct ProgramOptions
 {
@@ -56,8 +58,7 @@ struct ProgramOptions
     std::vector<UMPS::ProxyServices::ProxyOptions> mProxyServiceOptions;
     std::vector<UMPS::ProxyBroadcasts::ProxyOptions> mProxyBroadcastOptions;
     std::vector<std::pair<int, bool>> mAvailablePorts;
-    UMPS::Services::ConnectionInformation::ServiceOptions
-        mConnectionInformationOptions;
+    UCI::ServiceOptions mConnectionInformationOptions;
     UMPS::Services::ModuleRegistry::ServiceOptions mModuleRegistryOptions;
     //UMPS::ProxyBroadcasts::DataPacket::ProxyOptions mDataPacketParameters;
     //UMPS::ProxyBroadcasts::Heartbeat::ProxyOptions mHeartbeatParameters;
@@ -83,7 +84,7 @@ struct Modules
         mProxyServices;
     //std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
     //std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
-    std::unique_ptr<UMPS::Services::ConnectionInformation::Service> mConnectionInformation;
+    std::unique_ptr<UCI::Service> mConnectionInformation;
 };
 
 ProgramOptions parseIniFile(const std::string &iniFile);
@@ -224,6 +225,17 @@ makePropertyList(const boost::property_tree::ptree &propertyTree,
 }
 
 /*
+std::unique_ptr<UMPS::Modules::IProcess>
+    createHeartbeatProcess(const std::string &broadcastName = "Heartbeat",
+                           std::shared_ptr<UMPS::Messaging::Context> context = nullptr,
+                           std::shared_ptr<UMPS::Logging::ILog> logger = nullptr)
+{
+    //                                                    "Heartbeat",
+    //                                                    context, logger);
+}
+*/
+
+/*
 std::string ipResolver(const std::string &serverName)
 {
     boost::asio::io_context ioContext;
@@ -330,7 +342,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
     auto connectionInformation
-        = std::make_unique<UMPS::Services::ConnectionInformation::Service>
+        = std::make_unique<UCI::Service>
           (connectionInformationLoggerPtr, authenticator);
     connectionInformation->initialize(options.mConnectionInformationOptions);
     modules.mConnectionInformation = std::move(connectionInformation);
@@ -435,6 +447,19 @@ int main(int argc, char *argv[])
                   << std::endl;
         return EXIT_FAILURE;
     }
+    // Create my processes
+    try
+    {
+        const std::string operatorSection{"uOperator"};
+        auto uOperator = UCI::createRequestor(iniFile, operatorSection,
+                                              nullptr, nullptr);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Failed to create processes" << std::endl;
+        return EXIT_FAILURE;
+    }
+    
     // Main program loop
     while (true)
     {
@@ -595,7 +620,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         options.mAddress = propertyTree.get<std::string> ("uOperator.ipAddress");
         if (options.mAddress.empty())
         {
-            throw std::runtime_error("uOperator.ipAddress not not defined");
+            throw std::runtime_error("uOperator.address not not defined");
         }
     }
     auto portStart = propertyTree.get<int> ("uOperator.openPortBlockStart",
@@ -676,6 +701,7 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     options.mAvailablePorts.at(1).second = false;
     // Now the heartbeat broadcast
 
+    //logger->debug("Creating heartbeat process...");
     // Next get all the counters
 /*
     auto counters = makePropertyList(propertyTree, "Counters");

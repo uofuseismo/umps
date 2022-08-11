@@ -58,6 +58,13 @@ public:
     void setInterval(const std::chrono::seconds &interval);
     /// @reslt The time interval between status messages.
     [[nodiscard]] std::chrono::seconds getInterval() const noexcept;
+
+    /// @brief Sets the name of the process.  
+    /// @param[in] name  The name of the module.
+    /// @throws std::invalid_argument if the name is empty.
+    void setName(const std::string &name);
+    /// @result The name of the process.  By default this is Heartbeat.
+    [[nodiscard]] std::string getName() const noexcept;
  
     /// @name Destructors
     /// @{

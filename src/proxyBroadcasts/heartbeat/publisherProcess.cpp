@@ -249,6 +249,12 @@ void PublisherProcess::sendStatus(const Status &status) const
     pImpl->sendStatus(status);
 }
 
+/// Name of module
+std::string PublisherProcess::getName() const noexcept
+{
+    return pImpl->mOptions.getName();
+}
+
 // Create a heartbeat publisher process from the ini file
 std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
     UMPS::ProxyBroadcasts::Heartbeat::createHeartbeatProcess(
@@ -280,10 +286,16 @@ std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
         {
             throw std::runtime_error("Heartbeat broadcast not set");
         }
+        // Interval
         auto iInterval = static_cast<int> (interval.count());
         iInterval = propertyTree.get<int> (section + ".interval", iInterval);
         interval = std::chrono::seconds {iInterval};
         processOptions.setInterval(interval);
+        // Custom process name
+        auto processName
+            = propertyTree.get<std::string> (section + ".processName",
+                                             processOptions.getName());
+        processOptions.setName(processName);
     } // End check on ini file
     // Get the heartbeat broadcast's address and the ZAP options
     auto address

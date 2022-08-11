@@ -51,6 +51,8 @@ public:
                     std::unique_ptr<Publisher> &&publisherConnection); 
     /// @result True indicates the publisher process is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
+    /// @result The name of the process.
+    [[nodiscard]] std::string getName() const noexcept override;
     /// @}
 
     /// @name Step 2: Start the Process
@@ -106,7 +108,7 @@ private:
 /// @result On successful exit, this is a heartbeat process that is connected
 ///         and ready to publish to the heartbeat broadcast.  
 std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
-    createHeartbeatProcess(std::shared_ptr<UMPS::Services::ConnectionInformation::Requestor> &requestor,
+    createHeartbeatProcess(const UMPS::Services::ConnectionInformation::Requestor &requestor,
                            const std::string &iniFile,
                            const std::string &section = "Heartbeat",
                            std::shared_ptr<UMPS::Messaging::Context> context = nullptr,

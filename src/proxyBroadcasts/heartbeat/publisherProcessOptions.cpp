@@ -17,6 +17,7 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 class PublisherProcessOptions::PublisherProcessOptionsImpl
 {
 public:
+    std::string mName{"Heartbeat"};
     std::chrono::seconds mInterval{30};
 };
 
@@ -80,4 +81,16 @@ void PublisherProcessOptions::setInterval(const std::chrono::seconds &interval)
 std::chrono::seconds PublisherProcessOptions::getInterval() const noexcept
 {
     return pImpl->mInterval;
+}
+
+/// Process name
+void PublisherProcessOptions::setName(const std::string &name)
+{
+    if (isEmpty(name)){throw std::invalid_argument("Name is empty");}
+    pImpl->mName = name;
+}
+
+std::string PublisherProcessOptions::getName() const noexcept
+{
+    return pImpl->mName;
 }
