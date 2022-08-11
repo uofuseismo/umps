@@ -108,7 +108,7 @@ set(MESSAGING_SRC
 set(MODULES_LIBSRC
     src/modules/process.cpp
     src/modules/processManager.cpp
-    src/modules/module.cpp
+    #src/modules/module.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
