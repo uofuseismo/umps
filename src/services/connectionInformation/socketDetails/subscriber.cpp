@@ -11,8 +11,9 @@ class Subscriber::SubscriberImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Bind;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
+    UCI::ConnectOrBind mConnectOrBind{UCI::ConnectOrBind::Bind};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    UAuth::UserPrivileges mUserPrivileges{UAuth::UserPrivileges::ReadOnly};
 };
 
 /// C'tor
@@ -104,3 +105,16 @@ UCI::SocketType Subscriber::getSocketType() noexcept
 {
     return UCI::SocketType::Subscriber;
 }
+
+/// Privileges
+void Subscriber::setMinimumUserPrivileges(
+    const UAuth::UserPrivileges privileges) noexcept
+{
+    pImpl->mUserPrivileges = privileges;
+}
+
+UAuth::UserPrivileges Subscriber::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mUserPrivileges;
+}
+

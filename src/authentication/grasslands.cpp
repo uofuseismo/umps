@@ -21,6 +21,7 @@ public:
         }
     }
     std::shared_ptr<UMPS::Logging::ILog> mLogger;
+    const UserPrivileges mPrivileges{UserPrivileges::ReadOnly};
 };
 
 /// C'tor
@@ -87,3 +88,8 @@ std::pair<std::string, std::string> Grasslands::isValid(
     }
     return std::pair(okayStatus(), okayMessage());
 }   
+
+UserPrivileges Grasslands::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mPrivileges;
+}

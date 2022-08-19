@@ -11,8 +11,9 @@ class Router::RouterImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Connect;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
+    UCI::ConnectOrBind mConnectOrBind{UCI::ConnectOrBind::Connect};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    UAuth::UserPrivileges mUserPrivileges{UAuth::UserPrivileges::ReadOnly};
 };
 
 /// C'tor
@@ -103,4 +104,16 @@ UCI::ConnectOrBind Router::getConnectOrBind() const noexcept
 UCI::SocketType Router::getSocketType() noexcept
 {
     return UCI::SocketType::Router;
+}
+
+/// Privileges
+void Router::setMinimumUserPrivileges(
+    const UAuth::UserPrivileges privileges) noexcept
+{
+    pImpl->mUserPrivileges = privileges;
+}
+
+UAuth::UserPrivileges Router::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mUserPrivileges;
 }

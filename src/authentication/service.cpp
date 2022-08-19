@@ -475,4 +475,8 @@ void Service::blacklist(const std::string &address)
     pImpl->mPipe->send(buffer);
 }
 
-/// Configures a curve server 
+/// Minimum permissions
+UserPrivileges Service::getMinimumUserPrivileges() const
+{
+    return pImpl->mAuthenticator->getMinimumUserPrivileges();
+}

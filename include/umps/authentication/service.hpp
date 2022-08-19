@@ -133,6 +133,9 @@ public:
     ///       be changed to reflect the updated certificate information.
     void configureCurve(const std::string domain = "*",
                         const std::string directory = "");
+
+    /// @result The minimum user privileges.
+    [[nodiscard]] UserPrivileges getMinimumUserPrivileges() const;
     /// @}
 
     /// @name Destructors

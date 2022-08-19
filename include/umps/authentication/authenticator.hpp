@@ -24,6 +24,8 @@ public:
     [[nodiscard]] virtual std::pair<std::string, std::string> isBlacklisted(const std::string &address) const noexcept = 0;
     /// @result Determines if the given IP address is whitelisted.
     [[nodiscard]] virtual std::pair<std::string, std::string> isWhitelisted(const std::string &address) const noexcept = 0;
+    /// @result The minimum user privileges for this authenticator.
+    [[nodiscard]] virtual UserPrivileges getMinimumUserPrivileges() const noexcept = 0;
     /// @result Determines if the given username and password are allowed.
     /// @result result.first is the status code where "200" means okay,
     ///         "400" means a client error - i.e., invalid credentials,

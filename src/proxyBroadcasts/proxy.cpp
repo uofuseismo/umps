@@ -285,8 +285,29 @@ void Proxy::initialize(const ProxyOptions &parameters)
     pImpl->mProxy->initialize(pImpl->mProxyOptions);
     // Figure out the connection details
     pImpl->mConnectionDetails.setName(pImpl->mOptions.getName());
-    pImpl->mConnectionDetails.setSocketDetails(
-        pImpl->mProxy->getSocketDetails());
+    auto proxyDetails = pImpl->mProxy->getSocketDetails();
+    auto frontendDetails = proxyDetails.getXSubscriberFrontend();
+    auto backendDetails  = proxyDetails.getXPublisherBackend();
+    auto frontendPrivileges = UAuth::UserPrivileges::ReadOnly;
+    auto backendPrivileges  = UAuth::UserPrivileges::ReadOnly;
+    if (pImpl->mSymmetricAuthentication)
+    {
+        frontendPrivileges
+            = pImpl->mAuthenticatorService->getMinimumUserPrivileges();
+        backendPrivileges = frontendPrivileges;
+    }
+    else
+    {
+        frontendPrivileges
+            = pImpl->mFrontendAuthenticatorService->getMinimumUserPrivileges();
+        backendPrivileges 
+            = pImpl->mBackendAuthenticatorService->getMinimumUserPrivileges();
+    }
+    frontendDetails.setMinimumUserPrivileges(frontendPrivileges);
+    backendDetails.setMinimumUserPrivileges(backendPrivileges);
+    proxyDetails.setSocketPair(std::pair(frontendDetails, backendDetails));
+
+    pImpl->mConnectionDetails.setSocketDetails(proxyDetails);
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::Broadcast);
     pImpl->mConnectionDetails.setSecurityLevel(
         pImpl->mProxy->getSecurityLevel());

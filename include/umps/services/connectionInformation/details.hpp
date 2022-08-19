@@ -157,9 +157,9 @@ public:
 
     /// @brief The required privileges to connect.
     /// @param[in] privileges  The privileges required to connect.
-    void setUserPrivileges(const UMPS::Authentication::UserPrivileges privileges) noexcept;
+    [[deprecated]] void setUserPrivileges(const UMPS::Authentication::UserPrivileges privileges) noexcept;
     /// @result The requisite privileges to connect.
-    [[nodiscard]] UMPS::Authentication::UserPrivileges getUserPrivileges() const noexcept;
+    [[deprecated]] [[nodiscard]] UMPS::Authentication::UserPrivileges getUserPrivileges() const noexcept;
 
     /// @brief Sets the security level required to establish a connection.
     /// @param[in] securityLevel  The requisite security level.

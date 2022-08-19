@@ -57,6 +57,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }
     else if (socketType == SocketType::Publisher)
     {
@@ -64,6 +66,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }
     else if (socketType == SocketType::Subscriber)
     {
@@ -71,6 +75,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }
     else if (socketType == SocketType::Reply)
     {
@@ -78,6 +84,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }
     else if (socketType == SocketType::Request)
     {
@@ -85,6 +93,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }
     else if (socketType == SocketType::Router)
     {
@@ -92,6 +102,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }
     else if (socketType == SocketType::XPublisher)
     {
@@ -99,6 +111,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }   
     else if (socketType == SocketType::XSubscriber)
     {
@@ -106,6 +120,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["Address"] = socket.getAddress();
         obj["ConnectOrBind"] = static_cast<int> (socket.getConnectOrBind());
         obj["SecurityLevel"] = static_cast<int> (socket.getSecurityLevel());
+        obj["MinimumPrivileges"]
+            = static_cast<int> (socket.getMinimumUserPrivileges());
     }
     else if (socketType == SocketType::Proxy)
     {
@@ -122,6 +138,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
                 = static_cast<int> (socket.getConnectOrBind());
             obj["FrontendSecurityLevel"]
                 = static_cast<int> (socket.getSecurityLevel());
+            obj["FrontendMinimumPrivileges"]
+                = static_cast<int> (socket.getMinimumUserPrivileges());
         }
         else if (frontendType == SocketType::Router)
         {
@@ -133,6 +151,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
                 = static_cast<int> (socket.getConnectOrBind());
             obj["FrontendSecurityLevel"]
                 = static_cast<int> (socket.getSecurityLevel());
+            obj["FrontendMinimumPrivileges"]
+                = static_cast<int> (socket.getMinimumUserPrivileges());
         }
         else
         {
@@ -149,6 +169,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
                 = static_cast<int> (socket.getConnectOrBind());
             obj["BackendSecurityLevel"]
                 = static_cast<int> (socket.getSecurityLevel());
+            obj["BackendMinimumPrivileges"]
+                = static_cast<int> (socket.getMinimumUserPrivileges());
         }
         else if (backendType == SocketType::Dealer)
         {
@@ -160,6 +182,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
                 = static_cast<int> (socket.getConnectOrBind()); 
             obj["BackendSecurityLevel"]
                 = static_cast<int> (socket.getSecurityLevel());
+            obj["BackendMinimumPrivileges"]
+                = static_cast<int> (socket.getMinimumUserPrivileges());
         }
         else
         {
@@ -183,8 +207,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
         obj["ConnectionType"] = nullptr;
     }
 
-    auto privileges = static_cast<int> (detail.getUserPrivileges());
-    obj["UserPrivileges"] = privileges;
+    //auto privileges = static_cast<int> (detail.getUserPrivileges());
+    //obj["UserPrivileges"] = privileges;
 
     auto securityLevel = static_cast<int> (detail.getSecurityLevel());
     obj["SecurityLevel"] = securityLevel;
@@ -206,9 +230,12 @@ Details objectToDetails(const nlohmann::json &obj)
                     (obj["ConnectOrBind"].get<int> ());
         auto level = static_cast<UAuth::SecurityLevel>
                      (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges>
+                          (obj["MinimumPrivileges"].get<int> ());
         socket.setAddress(address);
         socket.setSecurityLevel(level);
         socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
         details.setSocketDetails(socket);
     }
     else if (socketType == SocketType::Subscriber)
@@ -219,9 +246,12 @@ Details objectToDetails(const nlohmann::json &obj)
                     (obj["ConnectOrBind"].get<int> ()); 
         auto level = static_cast<UAuth::SecurityLevel>
                      (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges>
+                          (obj["MinimumPrivileges"].get<int> ());
         socket.setAddress(address);
         socket.setSecurityLevel(level);
         socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
         details.setSocketDetails(socket); 
     }
     else if (socketType == SocketType::Reply)
@@ -232,9 +262,12 @@ Details objectToDetails(const nlohmann::json &obj)
                     (obj["ConnectOrBind"].get<int> ());
         auto level = static_cast<UAuth::SecurityLevel>
                      (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges>
+                          (obj["MinimumPrivileges"].get<int> ());
         socket.setAddress(address);
         socket.setSecurityLevel(level);
         socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
         details.setSocketDetails(socket);
     }
     else if (socketType == SocketType::Request)
@@ -245,9 +278,12 @@ Details objectToDetails(const nlohmann::json &obj)
                     (obj["ConnectOrBind"].get<int> ());
         auto level = static_cast<UAuth::SecurityLevel>
                      (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges>
+                          (obj["MinimumPrivileges"].get<int> ());
         socket.setAddress(address);
         socket.setSecurityLevel(level);
         socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
         details.setSocketDetails(socket);
     }
     else if (socketType == SocketType::Router)
@@ -258,9 +294,28 @@ Details objectToDetails(const nlohmann::json &obj)
                     (obj["ConnectOrBind"].get<int> ());
         auto level = static_cast<UAuth::SecurityLevel>
                      (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges>
+                          (obj["MinimumPrivileges"].get<int> ());
         socket.setAddress(address);
         socket.setSecurityLevel(level);
         socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
+        details.setSocketDetails(socket);
+    }
+    else if (socketType == SocketType::Dealer)
+    {
+        SocketDetails::Dealer socket;
+        auto address = obj["Address"];
+        auto corb = static_cast<ConnectOrBind> 
+                    (obj["ConnectOrBind"].get<int> ());
+        auto level = static_cast<UAuth::SecurityLevel>
+                     (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges> 
+                          (obj["MinimumPrivileges"].get<int> ());
+        socket.setAddress(address);
+        socket.setSecurityLevel(level);
+        socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
         details.setSocketDetails(socket);
     }
     else if (socketType == SocketType::XPublisher)
@@ -271,9 +326,12 @@ Details objectToDetails(const nlohmann::json &obj)
                     (obj["ConnectOrBind"].get<int> ());
         auto level = static_cast<UAuth::SecurityLevel>
                      (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges>
+                          (obj["MinimumPrivileges"].get<int> ());
         socket.setAddress(address);
         socket.setSecurityLevel(level);
         socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
         details.setSocketDetails(socket);
     }
     else if (socketType == SocketType::XSubscriber)
@@ -284,9 +342,12 @@ Details objectToDetails(const nlohmann::json &obj)
                     (obj["ConnectOrBind"].get<int> ());
         auto level = static_cast<UAuth::SecurityLevel>
                      (obj["SecurityLevel"].get<int> ());
+        auto privileges = static_cast<UAuth::UserPrivileges>
+                          (obj["MinimumPrivileges"].get<int> ());
         socket.setAddress(address);
         socket.setSecurityLevel(level);
         socket.setConnectOrBind(corb);
+        socket.setMinimumUserPrivileges(privileges);
         details.setSocketDetails(socket);
     }
     else if (socketType == SocketType::Proxy)
@@ -306,17 +367,23 @@ Details objectToDetails(const nlohmann::json &obj)
                                  (obj["FrontendSecurityLevel"].get<int> ());
             auto frontendCorb = static_cast<ConnectOrBind> 
                                 (obj["FrontendConnectOrBind"].get<int> ());
+            auto frontendPrivileges = static_cast<UAuth::UserPrivileges>
+                                 (obj["FrontendMinimumPrivileges"].get<int> ());
             frontendSocket.setAddress(frontendAddress);
             frontendSocket.setSecurityLevel(frontendLevel);
             frontendSocket.setConnectOrBind(frontendCorb);
+            frontendSocket.setMinimumUserPrivileges(frontendPrivileges);
             auto backendAddress = obj["BackendAddress"];
             auto backendLevel = static_cast<UAuth::SecurityLevel>
                                 (obj["BackendSecurityLevel"].get<int> ());
             auto backendCorb = static_cast<ConnectOrBind> 
                                (obj["BackendConnectOrBind"].get<int> ());
+            auto backendPrivileges = static_cast<UAuth::UserPrivileges>
+                                 (obj["BackendMinimumPrivileges"].get<int> ());
             backendSocket.setAddress(backendAddress); 
             backendSocket.setSecurityLevel(backendLevel);
             backendSocket.setConnectOrBind(backendCorb);
+            backendSocket.setMinimumUserPrivileges(backendPrivileges);
             proxy.setSocketPair(std::pair(frontendSocket, backendSocket));
         }
         else if (frontendSocketType == SocketType::Router &&
@@ -329,17 +396,23 @@ Details objectToDetails(const nlohmann::json &obj)
                                  (obj["FrontendSecurityLevel"].get<int> ());
             auto frontendCorb = static_cast<ConnectOrBind> 
                                 (obj["FrontendConnectOrBind"].get<int> ());
+            auto frontendPrivileges = static_cast<UAuth::UserPrivileges>
+                                 (obj["FrontendMinimumPrivileges"].get<int> ());
             frontendSocket.setAddress(frontendAddress);
             frontendSocket.setSecurityLevel(frontendLevel);
             frontendSocket.setConnectOrBind(frontendCorb);
+            frontendSocket.setMinimumUserPrivileges(frontendPrivileges);
             auto backendAddress = obj["BackendAddress"];
             auto backendLevel = static_cast<UAuth::SecurityLevel>
                                 (obj["BackendSecurityLevel"].get<int> ());
             auto backendCorb = static_cast<ConnectOrBind> 
                                (obj["BackendConnectOrBind"].get<int> ());
+            auto backendPrivileges = static_cast<UAuth::UserPrivileges>
+                                 (obj["BackendMinimumPrivileges"].get<int> ());
             backendSocket.setAddress(backendAddress); 
             backendSocket.setSecurityLevel(backendLevel);
             backendSocket.setConnectOrBind(backendCorb);
+            backendSocket.setMinimumUserPrivileges(backendPrivileges);
             proxy.setSocketPair(std::pair(frontendSocket, backendSocket));
         }
         else
@@ -362,12 +435,12 @@ Details objectToDetails(const nlohmann::json &obj)
                               (obj["ConnectionType"].get<int> ());
         details.setConnectionType(connectionType);
     }
-    if (!obj["UserPrivileges"].is_null())
-    {
-        auto privileges = static_cast<UAuth::UserPrivileges>
-                          (obj["UserPrivileges"].get<int> ());
-        details.setUserPrivileges(privileges);
-    }
+    //if (!obj["UserPrivileges"].is_null())
+    //{
+    //    auto privileges = static_cast<UAuth::UserPrivileges>
+    //                      (obj["UserPrivileges"].get<int> ());
+    //    details.setUserPrivileges(privileges);
+    //}
     if (!obj["SecurityLevel"].is_null())
     {
         auto security = static_cast<UAuth::SecurityLevel>

@@ -11,8 +11,9 @@ class Reply::ReplyImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Bind;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
+    UCI::ConnectOrBind mConnectOrBind{UCI::ConnectOrBind::Bind};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    UAuth::UserPrivileges mUserPrivileges{UAuth::UserPrivileges::ReadOnly};
 };
 
 /// C'tor
@@ -105,3 +106,16 @@ UCI::SocketType Reply::getSocketType() noexcept
 {
     return UCI::SocketType::Reply;
 }
+
+/// Privileges
+void Reply::setMinimumUserPrivileges(
+    const UAuth::UserPrivileges privileges) noexcept
+{
+    pImpl->mUserPrivileges = privileges;
+}
+
+UAuth::UserPrivileges Reply::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mUserPrivileges;
+}
+

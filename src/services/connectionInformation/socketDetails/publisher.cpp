@@ -11,8 +11,9 @@ class Publisher::PublisherImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Bind;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
+    UCI::ConnectOrBind mConnectOrBind{UCI::ConnectOrBind::Bind};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    UAuth::UserPrivileges mUserPrivileges{UAuth::UserPrivileges::ReadOnly};
 };
 
 /// C'tor
@@ -104,3 +105,16 @@ UCI::SocketType Publisher::getSocketType() noexcept
 {
     return UCI::SocketType::Publisher;
 }
+
+/// Privileges
+void Publisher::setMinimumUserPrivileges(
+    const UAuth::UserPrivileges privileges) noexcept
+{
+    pImpl->mUserPrivileges = privileges;
+}
+
+UAuth::UserPrivileges Publisher::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mUserPrivileges;
+}
+

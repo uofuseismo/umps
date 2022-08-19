@@ -1097,6 +1097,13 @@ std::pair<std::string, std::string> SQLite3Authenticator::isValid(
     return pImpl->isValid(textKey);
 }
 
+/// Minimum privileges
+UserPrivileges SQLite3Authenticator::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mPrivileges;
+}
+
+
 /*
 void Authenticator::start()
 {

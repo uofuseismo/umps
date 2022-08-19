@@ -11,8 +11,9 @@ class XSubscriber::XSubscriberImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Connect;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
+    UCI::ConnectOrBind mConnectOrBind{UCI::ConnectOrBind::Connect};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    UAuth::UserPrivileges mUserPrivileges{UAuth::UserPrivileges::ReadOnly};
 };
 
 /// C'tor
@@ -105,3 +106,15 @@ UCI::SocketType XSubscriber::getSocketType() noexcept
 {
     return UCI::SocketType::XSubscriber;
 }
+
+void XSubscriber::setMinimumUserPrivileges(
+    const UAuth::UserPrivileges privileges) noexcept
+{
+    pImpl->mUserPrivileges = privileges;
+}
+
+UAuth::UserPrivileges XSubscriber::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mUserPrivileges;
+}
+

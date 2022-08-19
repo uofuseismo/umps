@@ -62,6 +62,13 @@ public:
     /// @result The socket type.
     [[nodiscard]] static SocketType getSocketType() noexcept;
 
+    /// @brief Defines the minimum user privileges to connect to this socket.
+    /// @param[in] privileges  The minimum user privileges required to connect
+    ///                        to this socket.
+    void setMinimumUserPrivileges(UMPS::Authentication::UserPrivileges privileges) noexcept;
+    /// @result The minimum privileges to connect to this socket.
+    [[nodiscard]] UMPS::Authentication::UserPrivileges getMinimumUserPrivileges() const noexcept;
+
     /// @name Destructors
     /// @{
 

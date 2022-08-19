@@ -155,7 +155,7 @@ TEST(ConnectionInformation, Details)
 
     details.setConnectionType(connectionType);
     details.setSecurityLevel(securityLevel);
-    details.setUserPrivileges(privileges);
+    //details.setUserPrivileges(privileges);
 
  
     Details detailsCopy(details);
@@ -163,7 +163,7 @@ TEST(ConnectionInformation, Details)
     //EXPECT_EQ(detailsCopy.getConnectionString(), connectionString);
     EXPECT_EQ(detailsCopy.getConnectionType(), connectionType);
     EXPECT_EQ(detailsCopy.getSecurityLevel(), securityLevel);
-    EXPECT_EQ(detailsCopy.getUserPrivileges(), privileges);
+    //EXPECT_EQ(detailsCopy.getUserPrivileges(), privileges);
     EXPECT_EQ(detailsCopy.getSocketType(), SocketType::Publisher);
     
     auto pubSocketCopy = detailsCopy.getPublisherSocketDetails();
@@ -217,9 +217,11 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
         detail.setName(names[i]);
         SocketDetails::Publisher pubSocket;
         pubSocket.setAddress(connectionStrings[i]);
+        pubSocket.setMinimumUserPrivileges(privileges[i]);
+        pubSocket.setSecurityLevel(securityLevels[i]);
         //detail.setConnectionString(connectionStrings[i]);
         detail.setConnectionType(connectionTypes[i]);
-        detail.setUserPrivileges(privileges[i]);
+        //detail.setUserPrivileges(privileges[i]);
         detail.setSecurityLevel(securityLevels[i]);
         detail.setSocketDetails(pubSocket);
         details.push_back(detail);
@@ -239,13 +241,18 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
     EXPECT_EQ(detailsCopy.size(), details.size());
     for (int i = 0; i < static_cast<int> (details.size()); ++i)
     {
+        auto pubSocket = detailsCopy[i].getPublisherSocketDetails();
+        EXPECT_EQ(pubSocket.getAddress(), connectionStrings[i]);
+        EXPECT_EQ(pubSocket.getMinimumUserPrivileges(), privileges[i]);
+        EXPECT_EQ(pubSocket.getSecurityLevel(), securityLevels[i]);
+
         EXPECT_EQ(detailsCopy[i].getName(), details[i].getName());
         //EXPECT_EQ(detailsCopy[i].getConnectionString(),
         //          details[i].getConnectionString());
         EXPECT_EQ(detailsCopy[i].getConnectionType(),
                   details[i].getConnectionType());
-        EXPECT_EQ(detailsCopy[i].getUserPrivileges(),
-                  details[i].getUserPrivileges());
+        //EXPECT_EQ(detailsCopy[i].getUserPrivileges(),
+        //          details[i].getUserPrivileges());
         EXPECT_EQ(detailsCopy[i].getSecurityLevel(),
                   details[i].getSecurityLevel());
     }

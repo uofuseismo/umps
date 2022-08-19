@@ -136,6 +136,9 @@ public:
     [[nodiscard]] std::pair<std::string, std::string> isValid(
         const Certificate::Keys &keys) const noexcept override final;
 
+    /// @result The minimum user privileges.
+    [[nodiscard]] virtual UserPrivileges getMinimumUserPrivileges() const noexcept override final;
+
     /// @brief Creates and binds the ZAP socket.
     //void start();
 

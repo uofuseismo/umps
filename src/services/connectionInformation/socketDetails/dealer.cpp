@@ -11,8 +11,9 @@ class Dealer::DealerImpl
 {
 public:
     std::string mAddress;
-    UCI::ConnectOrBind mConnectOrBind = UCI::ConnectOrBind::Connect;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
+    UCI::ConnectOrBind mConnectOrBind{UCI::ConnectOrBind::Connect};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    UAuth::UserPrivileges mUserPrivileges{UAuth::UserPrivileges::ReadOnly};
 };
 
 /// C'tor
@@ -104,4 +105,14 @@ UCI::SocketType Dealer::getSocketType() noexcept
     return UCI::SocketType::Dealer;
 }
 
+/// Privileges
+void Dealer::setMinimumUserPrivileges(
+    const UAuth::UserPrivileges privileges) noexcept
+{
+    pImpl->mUserPrivileges = privileges;
+}
 
+UAuth::UserPrivileges Dealer::getMinimumUserPrivileges() const noexcept
+{
+    return pImpl->mUserPrivileges;
+}
