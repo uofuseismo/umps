@@ -3,6 +3,7 @@
 //#include "messaging/publisherSubscriber/publisher.hpp"
 //#include "messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "initialize.hpp"
+#include "proxyBroadcasts.hpp"
 #include "umps/authentication/enums.hpp"
 #include "umps/version.hpp"
 #include <pybind11/pybind11.h>
@@ -46,6 +47,7 @@ PYBIND11_MODULE(pyumps, m)
     broadcastsModule.attr("__doc__") = "An assortment of modules for publishing to and receiving messages with pre-defined message types."; 
     PUMPS::ProxyBroadcasts::initializeDataPacketSubscriber(broadcastsModule);
     PUMPS::ProxyBroadcasts::initializeDataPacketSubscriberOptions(broadcastsModule);
+    PUMPS::ProxyBroadcasts::initializeHeartbeat(broadcastsModule);
     
     pybind11::module pubsubModule = messagingModule.def_submodule("PublisherSubscriber");
     //PUMPS::Messaging::XPublisherXSubscriber::initializePublisherOptions(messagingModule);
