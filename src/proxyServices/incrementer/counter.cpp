@@ -57,7 +57,7 @@ public:
 
 Row unpack(sqlite3_stmt *result)
 {
-    struct Row row;
+    Row row;
     std::string item(reinterpret_cast<const char *>
                     (sqlite3_column_text(result, 0)));
     row.item = item;
@@ -178,7 +178,7 @@ void getItems(sqlite3 *db, std::vector<Row> *rows)
     {
         auto step = sqlite3_step(result);
         if (step != SQLITE_ROW){break;}
-        rows->push_back(std::move(unpack(result)));
+        rows->push_back(unpack(result));
     }   
     sqlite3_finalize(result);
 }

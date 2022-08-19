@@ -14,13 +14,13 @@ PYBIND11_MODULE(pyumps, m)
     m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismograph Stations Message Passing System (UMPS).";
     // Enums
     pybind11::enum_<UMPS::Authentication::SecurityLevel> (m, "SecurityLevel")
-        .value("Grasslands", UMPS::Authentication::SecurityLevel::GRASSLANDS,
+        .value("Grasslands", UMPS::Authentication::SecurityLevel::Grasslands,
                "All authentications are accepted.")
-        .value("Strawhouse", UMPS::Authentication::SecurityLevel::STRAWHOUSE,
+        .value("Strawhouse", UMPS::Authentication::SecurityLevel::Strawhouse,
                "IP addresses may be validated.")
-        .value("Woodhouse",  UMPS::Authentication::SecurityLevel::WOODHOUSE,
+        .value("Woodhouse",  UMPS::Authentication::SecurityLevel::Woodhouse,
                "A user name and password must be provided and IP addresses may be validated.")
-        .value("Stonehouse",  UMPS::Authentication::SecurityLevel::STONEHOUSE,
+        .value("Stonehouse",  UMPS::Authentication::SecurityLevel::Stonehouse,
                "A key exchange will be performed and IP addresses may be validated.");
 
     // Message formats
