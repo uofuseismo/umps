@@ -52,6 +52,7 @@ public:
         {
             mLogger = logger;
         }
+        mSymmetricAuthentication = true;
         if (authenticator == nullptr)
         {
             mAuthenticator = std::make_shared<UAuth::Grasslands> (mLogger);
@@ -64,13 +65,118 @@ public:
         mAuthenticatorService = std::make_unique<UAuth::Service>
                                 (mContext, mLogger, mAuthenticator);
     }
+    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> frontendContext,
+              std::shared_ptr<UMPS::Messaging::Context> backendContext,
+              std::shared_ptr<UMPS::Logging::ILog> logger,
+              std::shared_ptr<UAuth::IAuthenticator> frontendAuthenticator,
+              std::shared_ptr<UAuth::IAuthenticator> backendAuthenticator)
+    {
+        // Handle context
+        if (frontendContext == nullptr &&
+            backendContext == nullptr)
+        {
+            mFrontendContext = std::make_shared<UMPS::Messaging::Context> (1);
+            mBackendContext  = std::make_shared<UMPS::Messaging::Context> (1);
+        }
+        else
+        {
+            if (frontendContext == nullptr)
+            {
+                mFrontendContext = std::make_shared<UMPS::Messaging::Context> (1);
+            }
+            else
+            {
+                mFrontendContext = frontendContext;
+            }
+            if (backendContext == nullptr)
+            {
+                mBackendContext = std::make_shared<UMPS::Messaging::Context> (1);
+            }
+            else
+            {
+                mBackendContext = backendContext;
+            }
+        }
+#ifndef NDEBUG
+        assert(mFrontendContext != nullptr);
+        assert(mBackendContext  != nullptr);
+#endif
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        else
+        {
+            mLogger = logger;
+        }
+        // Create authenticator
+        mSymmetricAuthentication = false;
+        if (frontendAuthenticator == nullptr)
+        {
+            mFrontendAuthenticator
+                = std::make_shared<UAuth::Grasslands> (mLogger);
+        }
+        else
+        {   
+            mFrontendAuthenticator = frontendAuthenticator;
+        }
+        if (backendAuthenticator == nullptr)
+        {
+            mBackendAuthenticator 
+                = std::make_shared<UAuth::Grasslands> (mLogger);
+        }
+        else
+        {
+            mBackendAuthenticator = backendAuthenticator;
+        }
+#ifndef NDEBUG
+        assert(mFrontendAuthenticator != nullptr);
+        assert(mBackendAuthenticator != nullptr);
+#endif
+        mProxy = std::make_unique<UXPubXSub::Proxy> (mFrontendContext,
+                                                     mBackendContext,
+                                                     mLogger);
+        mFrontendAuthenticatorService = std::make_unique<UAuth::Service>
+                                        (mFrontendContext,
+                                         mLogger,
+                                         mFrontendAuthenticator);
+        mBackendAuthenticatorService = std::make_unique<UAuth::Service>
+                                        (mBackendContext, 
+                                         mLogger,
+                                         mBackendAuthenticator);
+    }
     /// Stops the proxy and authenticator and joins threads
     void stop()
     {   
         if (mProxy->isRunning()){mProxy->stop();}
-        if (mAuthenticatorService->isRunning()){mAuthenticatorService->stop();}
+        if (mSymmetricAuthentication)
+        {
+            if (mAuthenticatorService->isRunning())
+            {
+                mAuthenticatorService->stop();
+            }
+        }
+        else
+        {
+            if (mFrontendAuthenticatorService->isRunning())
+            {
+                mFrontendAuthenticatorService->stop();
+            }
+            if (mBackendAuthenticatorService->isRunning())
+            {
+                mBackendAuthenticatorService->stop();
+            }
+        }
         if (mProxyThread.joinable()){mProxyThread.join();}
         if (mAuthenticatorThread.joinable()){mAuthenticatorThread.join();}
+        if (mFrontendAuthenticatorThread.joinable())
+        {
+            mFrontendAuthenticatorThread.join();
+        }
+        if (mBackendAuthenticatorThread.joinable())
+        {
+            mBackendAuthenticatorThread.join();
+        } 
     }   
     /// Starts the proxy and authenticator and creates threads
     void start()
@@ -79,10 +185,23 @@ public:
 #ifndef NDEBUG
         assert(mProxy->isInitialized());
 #endif
+        if (mSymmetricAuthentication)
+        {
+            mAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                               &*mAuthenticatorService);
+        }
+        else
+        {
+            mFrontendAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                               &*mFrontendAuthenticatorService);
+            mBackendAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                               &*mBackendAuthenticatorService);
+        }
+        // Give authenticators a chance to start then start proxy.  Otherwise,
+        // a sneaky person can connect pre-authentication.
+        std::this_thread::sleep_for(std::chrono::milliseconds{5});
         mProxyThread = std::thread(&UXPubXSub::Proxy::start,
                                    &*mProxy);
-        mAuthenticatorThread = std::thread(&UAuth::Service::start,
-                                           &*mAuthenticatorService);
     }
     /// Destructor
     ~ProxyImpl()
@@ -91,16 +210,25 @@ public:
     }
 ///private:
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
+    std::shared_ptr<UMPS::Messaging::Context> mFrontendContext{nullptr};
+    std::shared_ptr<UMPS::Messaging::Context> mBackendContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::shared_ptr<UXPubXSub::Proxy> mProxy{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
+    std::unique_ptr<UAuth::Service> mFrontendAuthenticatorService{nullptr};
+    std::unique_ptr<UAuth::Service> mBackendAuthenticatorService{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
+    std::shared_ptr<UAuth::IAuthenticator> mFrontendAuthenticator{nullptr};
+    std::shared_ptr<UAuth::IAuthenticator> mBackendAuthenticator{nullptr};
     UXPubXSub::ProxyOptions mProxyOptions;
     ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
-    bool mInitialized = false;
+    std::thread mBackendAuthenticatorThread;
+    std::thread mFrontendAuthenticatorThread;
+    bool mInitialized{false};
+    bool mSymmetricAuthentication{true};
 };
 
 /// C'tor
@@ -117,6 +245,17 @@ Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
              std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
     pImpl(std::make_unique<ProxyImpl> (nullptr, logger, authenticator))
+{
+}
+
+Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+             std::shared_ptr<UAuth::IAuthenticator> &frontendAuthenticator,
+             std::shared_ptr<UAuth::IAuthenticator> &backendAuthenticator) :
+    pImpl(std::make_unique<ProxyImpl> (nullptr,
+                                       nullptr,
+                                       logger,
+                                       frontendAuthenticator,
+                                       backendAuthenticator))
 {
 }
 

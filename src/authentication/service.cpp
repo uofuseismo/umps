@@ -122,7 +122,7 @@ public:
     //std::thread mThread;
     std::string mEndPoint;
     std::chrono::milliseconds mPollTimeOutMS{-1};
-    //bool mHaveThread = false;
+    //bool mHaveThread{false};
     bool mHavePipe{false};
     bool mRunning{false};
 };
@@ -138,25 +138,10 @@ Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
-/*
-Service::Service(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<ServiceImpl> (context, nullptr, nullptr, 0))
-{
-}
-*/
-
 Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<ServiceImpl> (context, nullptr, nullptr))   
 {
 }
-
-/*
-Service::Service(std::shared_ptr<zmq::context_t> &context,
-                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ServiceImpl> (context, logger, nullptr, 0))
-{
-}
-*/
 
 Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -170,28 +155,11 @@ Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger,
 {
 }
 
-/*
-Service::Service(std::shared_ptr<zmq::context_t> &context,
-                 std::shared_ptr<IAuthenticator> &authenticator) :
-    pImpl(std::make_unique<ServiceImpl> (context, nullptr, authenticator, 0))
-{
-}
-*/
-
 Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context,
                  std::shared_ptr<IAuthenticator> &authenticator) :
     pImpl(std::make_unique<ServiceImpl> (context, nullptr, authenticator))   
 {
 }
-
-/*
-Service::Service(std::shared_ptr<zmq::context_t> &context,
-                 std::shared_ptr<UMPS::Logging::ILog> &logger,
-                 std::shared_ptr<IAuthenticator> &authenticator) :
-    pImpl(std::make_unique<ServiceImpl> (context, logger, authenticator, 0))
-{
-}
-*/
 
 Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger,
@@ -205,7 +173,6 @@ Service::~Service()
 {
    stop();
 }
-// = default;
 
 /// Start the thread authenticator
 void Service::start()
@@ -369,7 +336,7 @@ void Service::start()
                         pImpl->mLogger->error("Failed to set username/pwd");
                     }
                     // Check the username and password
-                   std::tie(statusCode, statusText) 
+                    std::tie(statusCode, statusText) 
                         = pImpl->mAuthenticator->isValid(plainText);
                 }
                 else if (mechanism == "CURVE") // Check public key 

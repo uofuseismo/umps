@@ -113,10 +113,13 @@ public:
 #ifndef NDEBUG
         assert(mProxy->isInitialized());
 #endif
-        mProxyThread = std::thread(&URouterDealer::Proxy::start,
-                                   &*mProxy);
         mAuthenticatorThread = std::thread(&UAuth::Service::start,
                                            &*mAuthenticatorService);
+        // Give authenticators a chance to start then start proxy.  Otherwise,
+        // a sneaky person can connect pre-authentication.
+        std::this_thread::sleep_for(std::chrono::milliseconds{5});
+        mProxyThread = std::thread(&URouterDealer::Proxy::start,
+                                   &*mProxy);
     }
     /// Destructor
     ~ProxyImpl()

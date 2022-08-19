@@ -23,6 +23,26 @@ using namespace UMPS::Authentication;
 
 namespace
 {
+std::string toPrivilegeString(const UserPrivileges privileges)
+{
+    if (privileges == UserPrivileges::ReadOnly)
+    {
+        return "read-only access";
+    }
+    else if (privileges == UserPrivileges::ReadWrite)
+    {
+        return "read-write access";
+    }
+    else if (privileges == UserPrivileges::Administrator)
+    {
+        return "administrator access";
+    }
+    else
+    {
+        return "unkonwn access";
+    }
+}
+
 struct UserComparitor
 {
     bool operator()(const User &lhs, const User &rhs) const
@@ -393,12 +413,17 @@ void deleteUserFromDatabase(sqlite3 *db, const User &user)
 class SQLite3Authenticator::AuthenticatorImpl
 {
 public:
+    AuthenticatorImpl() = delete;
+    /*
     AuthenticatorImpl() :
         mLogger(std::make_shared<UMPS::Logging::StdOut> ())
     {
     }
-    explicit AuthenticatorImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mLogger(logger)
+    */
+    AuthenticatorImpl(std::shared_ptr<UMPS::Logging::ILog> logger,
+                      const UserPrivileges privileges) :
+        mLogger(logger),
+        mPrivileges(privileges)
     {
         if (logger == nullptr)
         {
@@ -715,9 +740,10 @@ public:
         constexpr bool queryUser = true;
         return queryFromUsersTable(mUsersTable, userName, queryUser);
     }
-    /// Query user
+    /// Does user and password match?
     std::pair<std::string, std::string> 
-        isValid(const std::string &userName, const std::string &password) const
+        isValid(const std::string &userName,
+                const std::string &password) const
     {
         std::scoped_lock lock(mMutex);
         if (!mHaveUsersTable)
@@ -742,6 +768,16 @@ public:
             return std::pair(clientErrorStatus(),
                              "User: " + userName + " does not have password");
         }
+        if (returnedUsers[0].getPrivileges() < mPrivileges)
+        {
+            return std::pair(clientErrorStatus(),
+                             "User: " + userName
+                           + " has insufficient privileges."
+                           + userName + " has " 
+                           + toPrivilegeString(returnedUsers[0].getPrivileges())
+                           + " but requires "
+                           + toPrivilegeString(mPrivileges));
+        }
         if (!returnedUsers[0].doesPasswordMatch(password))
         {
             return std::pair(clientErrorStatus(),
@@ -754,7 +790,7 @@ public:
     }
     /// Does public key match?
     std::pair<std::string, std::string>
-        isValid(const std::string &publicKey)
+        isValid(const std::string &publicKey) const
     {
         std::scoped_lock lock(mMutex);
         if (!mHaveUsersTable)
@@ -773,37 +809,48 @@ public:
 #ifndef NDEBUG 
         assert(static_cast<int> (returnedUsers.size()) == 1);  
 #endif
+        if (returnedUsers[0].getPrivileges() < mPrivileges)
+        {
+            return std::pair(clientErrorStatus(),
+                            "User has insufficient privileges.  "
+                           + returnedUsers[0].getName() + " has " 
+                           + toPrivilegeString(returnedUsers[0].getPrivileges())
+                           + " but requires "
+                           + toPrivilegeString(mPrivileges));
+        }
         mLogger->info("Validated public key");
         return std::pair(okayStatus(), okayMessage()); 
     }
 ///private:
     mutable std::mutex mMutex;
-    std::shared_ptr<UMPS::Logging::ILog> mLogger;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     //std::set<User, UserComparitor> mUsers;
     std::set<std::string> mBlacklist;
     std::set<std::string> mWhitelist;
-    sqlite3 *mUsersTable = nullptr;
-    sqlite3 *mWhitelistTable = nullptr;
-    sqlite3 *mBlacklistTable = nullptr;
+    sqlite3 *mUsersTable{nullptr};
+    sqlite3 *mWhitelistTable{nullptr};
+    sqlite3 *mBlacklistTable{nullptr};
     std::string mUsersTableFile;
     std::string mWhitelistTableFile;
     std::string mBlacklistTableFile;
     //std::set<std::pair<std::string, std::string>> mPasswords;
+    UserPrivileges mPrivileges{UserPrivileges::ReadOnly};
     //bool mHaveZapSocket = false;
-    bool mHaveUsersTable = false;
-    bool mHaveBlacklistTable = false;
-    bool mHaveWhitelistTable = false;
+    bool mHaveUsersTable{false};
+    bool mHaveBlacklistTable{false};
+    bool mHaveWhitelistTable{false};
 };
 
 /// C'tors
-SQLite3Authenticator::SQLite3Authenticator() :
-    pImpl(std::make_unique<AuthenticatorImpl> ())
+SQLite3Authenticator::SQLite3Authenticator(const UserPrivileges privileges) :
+    pImpl(std::make_unique<AuthenticatorImpl> (nullptr, privileges))
 {
 }
 
 SQLite3Authenticator::SQLite3Authenticator(
-    std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<AuthenticatorImpl> (logger))
+    std::shared_ptr<UMPS::Logging::ILog> &logger,
+    const UserPrivileges privileges) :
+    pImpl(std::make_unique<AuthenticatorImpl> (logger, privileges))
 {
 }
 

@@ -153,7 +153,7 @@ TEST(Messaging, User)
     //const std::string hashedPublicKey{"$argon2id$v=19$m=262144,t=3,p=1$O6vEofky6H6v9FdbAY+rXg$DK2w9VWV34N2DCepM5gCbZrmtqRXadgwxm9q6iAN/EE"};
     // Interactive
     //const std::string hashedPublicKey{"$argon2id$v=19$m=65536,t=2,p=1$+YTFJ9DZwiiX8c4866brIA$XJBjmDCmeGXAdh1PL/xfPHqd7Kpvile1rDUAefvWcHU"};
-    const UserPrivileges privileges = UserPrivileges::ADMINISTRATOR;
+    const UserPrivileges privileges = UserPrivileges::Administrator;
  
     EXPECT_EQ(user.getMaximumHashedStringLength(), crypto_pwhash_STRBYTES);
     user.setIdentifier(id);
@@ -363,7 +363,7 @@ TEST(Messaging, SQLite3Authenticator)
         user.setName(plainText.getUserName());
         user.setEmail(email);
         user.setHashedPassword(hashedPassword);
-        user.setPrivileges(UserPrivileges::READ_WRITE);
+        user.setPrivileges(UserPrivileges::ReadWrite);
         // Add the user
         auth.addUser(user);
         // Give the user a public key

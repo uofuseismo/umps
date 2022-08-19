@@ -7,23 +7,23 @@ namespace UMPS::Authentication
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class SecurityLevel
 {
-    Grasslands,  /*!< No validation. */
-    Strawhouse,  /*!< Server validates client's IP address. */
-    Woodhouse,   /*!< Server validates client's IP address, username,
-                      and password. */
-    Stonehouse,  /*!< Server validates client's IP address and client's
-                      public key. */
-    Ironhouse    /*!< Server validates client's IP address and client's 
-                      public key and client validate's server's public key. */
+    Grasslands = 0,  /*!< No validation. */
+    Strawhouse = 1,  /*!< Server validates client's IP address. */
+    Woodhouse = 2,   /*!< Server validates client's IP address, username,
+                          and password. */
+    Stonehouse = 3   /*!< Server validates client's IP address and client's
+                          public key. */
+    //Ironhouse =4   /*!<  Server validates client's IP address and client's 
+    //                     public key and client validate's server's public key. */
 };
 /// @class UserPrivileges "enums.hpp" "umps/authentication/enums.hpp"
 /// @brief Defines the user's privileges.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class UserPrivileges
 {
-    READ_ONLY = 0,     /*!< The user has read-only permissions. */
-    READ_WRITE = 1,    /*!< The user has read-write permissions.  */
-    ADMINISTRATOR = 2  /*!< The user has administrative permissions. */
+    ReadOnly = 0,      /*!< The user has read-only permissions. */
+    ReadWrite = 1,     /*!< The user has read-write permissions.  */
+    Administrator = 2  /*!< The user has administrative permissions. */
 };
 }
 #endif

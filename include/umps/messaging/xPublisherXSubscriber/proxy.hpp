@@ -49,8 +49,19 @@ public:
     /// @brief Constructs a proxy with the given context.
     /// @param[in] context  A pointer to the application's context.
     explicit Proxy(std::shared_ptr<UMPS::Messaging::Context> &context);
+    /// @brief Constructs a proxy with a given frontend and backend context.
+    /// @param[in] frontendContext  The context for the frontend (where the
+    ///                             publishers will connect).
+    /// @param[in] backendContext   The context for the backend (where the
+    ///                             subscribers will connect).
+    Proxy(std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
+          std::shared_ptr<UMPS::Messaging::Context> &backendContext);
     /// @brief Constructs a proxy with the given context and logger.
     Proxy(std::shared_ptr<UMPS::Messaging::Context> &context,
+          std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructs a proxy with the given contexts and logger.
+    Proxy(std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
+          std::shared_ptr<UMPS::Messaging::Context> &backendContext,
           std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 

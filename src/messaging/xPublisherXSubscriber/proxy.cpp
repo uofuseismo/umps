@@ -42,41 +42,8 @@ void checkOptions(const ProxyOptions &options)
 class Proxy::ProxyImpl
 {
 public:
-    /*
-    ProxyImpl(std::shared_ptr<zmq::context_t> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger, int) :
-        mControlContext(std::make_unique<zmq::context_t> (0)),
-        mControl( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::sub)),
-        mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::pub))
-    {
-        // Ensure the context gets made
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        // Make the logger
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        // Now make the sockets
-        mFrontend = std::make_unique<zmq::socket_t> (*mContext,
-                                                     zmq::socket_type::xsub);
-        mBackend = std::make_unique<zmq::socket_t> (*mContext,
-                                                    zmq::socket_type::xpub);
-    }
-    */
-    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> frontendContext,
+              std::shared_ptr<UMPS::Messaging::Context> backendContext,
               std::shared_ptr<UMPS::Logging::ILog> logger) :
         mControlContext(std::make_unique<zmq::context_t> (0)),
         mControl( std::make_unique<zmq::socket_t> (*mControlContext,
@@ -85,14 +52,37 @@ public:
                                                    zmq::socket_type::pub))
     {
         // Ensure the context gets made
-        if (context == nullptr)
+        if (frontendContext == nullptr &&
+            backendContext == nullptr)
         {
-            mContext = std::make_shared<UMPS::Messaging::Context> (1);
+            mFrontendContext = std::make_shared<UMPS::Messaging::Context> (1);
+            mBackendContext = mFrontendContext;
         }
         else
         {
-            mContext = context;
+            if (frontendContext == nullptr)
+            {
+                mFrontendContext
+                    = std::make_shared<UMPS::Messaging::Context> (1);
+            }
+            else
+            {
+                mFrontendContext = frontendContext;
+            }
+            if (backendContext == nullptr)
+            {
+                mBackendContext
+                    = std::make_shared<UMPS::Messaging::Context> (1);
+            }
+            else
+            {
+                mBackendContext = backendContext;
+            }
         }
+#ifndef NDEBUG
+        assert(mFrontendContext != nullptr);
+        assert(mBackendContext !=  nullptr);
+#endif
         // Make the logger
         if (logger == nullptr)
         {
@@ -103,11 +93,13 @@ public:
             mLogger = logger;
         }
         // Now make the sockets
-        auto contextPtr = reinterpret_cast<zmq::context_t *>
-                          (mContext->getContext());
-        mFrontend = std::make_unique<zmq::socket_t> (*contextPtr,
+        auto frontendContextPtr = reinterpret_cast<zmq::context_t *>
+                                  (mFrontendContext->getContext());
+        auto backendContextPtr = reinterpret_cast<zmq::context_t *>
+                                 (mBackendContext->getContext()); 
+        mFrontend = std::make_unique<zmq::socket_t> (*frontendContextPtr,
                                                      zmq::socket_type::xsub);
-        mBackend = std::make_unique<zmq::socket_t> (*contextPtr,
+        mBackend = std::make_unique<zmq::socket_t> (*backendContextPtr,
                                                     zmq::socket_type::xpub);
     }
     void setStarted(const bool status)
@@ -226,10 +218,6 @@ public:
                         + std::to_string(nowMuSec)
                         + " _" + address.str()
                         + "_xpubxsub_control";
-        /*
-        mControlAddress = "inproc://" + mOptions.getTopic()
-                        + "_xpubxsub_control";
-        */
         // Connect the control
         try
         {
@@ -275,9 +263,10 @@ public:
     std::unique_ptr<zmq::socket_t> mControl{nullptr};
     // The command socket issues terminate/pause/start messages to the control.
     std::unique_ptr<zmq::socket_t> mCommand{nullptr};
-    // This context handles external communication with other servers
-    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
-    //std::shared_ptr<zmq::context_t> mContext{nullptr};
+    // This context handles communication with producers.
+    std::shared_ptr<UMPS::Messaging::Context> mFrontendContext{nullptr};
+    // This context handles communication with the subscribers.
+    std::shared_ptr<UMPS::Messaging::Context> mBackendContext{nullptr};
     // The front is an xsub that faces the internal servers
     std::unique_ptr<zmq::socket_t> mFrontend{nullptr};
     // The backend is an xpub that faces the external clients
@@ -301,38 +290,40 @@ public:
 
 /// C'tor
 Proxy::Proxy() :
-    pImpl(std::make_unique<ProxyImpl> (nullptr, nullptr))
+    pImpl(std::make_unique<ProxyImpl> (nullptr, nullptr, nullptr))
 {
 }
 
 Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ProxyImpl> (nullptr, logger))
+    pImpl(std::make_unique<ProxyImpl> (nullptr, nullptr, logger))
 {
 }
-
-/*
-Proxy::Proxy(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<ProxyImpl> (context, nullptr, 0))
-{
-}
-*/
 
 Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &context) :
-    pImpl(std::make_unique<ProxyImpl> (context, nullptr))
+    pImpl(std::make_unique<ProxyImpl> (context, nullptr,  nullptr))
 {
 }
 
-/*
-Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
-             std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ProxyImpl> (context, logger, 0))
+Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
+             std::shared_ptr<UMPS::Messaging::Context> &backendContext) :
+    pImpl(std::make_unique<ProxyImpl> (frontendContext,
+                                       backendContext,
+                                       nullptr))
 {
 }
-*/
 
 Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &context,
              std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ProxyImpl> (context, logger))
+    pImpl(std::make_unique<ProxyImpl> (context, nullptr, logger))
+{
+}
+
+Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
+             std::shared_ptr<UMPS::Messaging::Context> &backendContext,
+             std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ProxyImpl> (frontendContext,
+                                       backendContext,
+                                       logger))
 {
 }
 

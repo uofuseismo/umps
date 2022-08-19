@@ -307,23 +307,30 @@ int main(int argc, char *argv[])
     UMPS::Logging::SpdLog authenticationLogger;
     authenticationLogger.initialize("Authenticator",
                                     authenticatorLogFileName,
-                                    UMPS::Logging::Level::INFO, //options.mVerbosity,
+                                    UMPS::Logging::Level::INFO, // Always log
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
         = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
     std::shared_ptr<UAuth::IAuthenticator> authenticator;
+    std::shared_ptr<UAuth::IAuthenticator> readOnlyAuthenticator{nullptr};
+    std::shared_ptr<UAuth::IAuthenticator> readWriteAuthenticator{nullptr};
     if (options.mZAPOptions.getSecurityLevel() ==
         UAuth::SecurityLevel::Grasslands)
     {
         std::cout << "Creating grasslands authenticator..." << std::endl;
         authenticator
             = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
+        readOnlyAuthenticator
+            = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
+        readWriteAuthenticator
+            = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
     }
     else
     {
         std::cout << "Creating SQLite3 authenticator..." << std::endl;
-        auto sqlite3 = std::make_shared<UAuth::SQLite3Authenticator>
-                       (authenticationLoggerPtr);
+        auto sqlite3
+            = std::make_shared<UAuth::SQLite3Authenticator>
+              (authenticationLoggerPtr, UAuth::UserPrivileges::ReadOnly);
         try
         {
             constexpr bool createIfDoesNotExist = false;
@@ -336,6 +343,17 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
         authenticator = sqlite3; 
+
+        auto readOnly
+            = std::make_shared<UAuth::SQLite3Authenticator>
+                       (UAuth::UserPrivileges::ReadOnly);
+        readOnly->openUsersTable(options.mUserTable, false);
+        auto readWrite
+            = std::make_shared<UAuth::SQLite3Authenticator>
+                       (UAuth::UserPrivileges::ReadWrite);
+        readWrite->openUsersTable(options.mUserTable, false);
+        readOnlyAuthenticator = readOnly;
+        readWriteAuthenticator = readWrite;  
     }
     // Initialize the main connection information service
     Modules modules;
@@ -394,7 +412,7 @@ int main(int argc, char *argv[])
             = std::make_shared<UMPS::Logging::SpdLog> (logger);
         auto proxyBroadcast
             = std::make_unique<UMPS::ProxyBroadcasts::Proxy>
-              (loggerPtr, authenticator);
+              (loggerPtr, readWriteAuthenticator, readOnlyAuthenticator); //authenticator);
         proxyBroadcast->initialize(proxyOptions); 
         auto broadcastKey = "ProxyBroadcasts::" + moduleName;
         modules.mProxyBroadcasts.insert(std::pair(broadcastKey,

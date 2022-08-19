@@ -110,7 +110,7 @@ public:
     std::string mHashedPassword;
     std::string mMatchingPassword;
     std::string mEmail;
-    UserPrivileges mPrivileges = UserPrivileges::READ_ONLY;
+    UserPrivileges mPrivileges = UserPrivileges::ReadOnly;
     int mIdentifier = 0;
     bool mHaveName = false;
     bool mHavePublicKey = false;
@@ -425,15 +425,15 @@ UMPS::Authentication::operator<<(
                         + std::to_string(user.getIdentifier()) + "\n";
     }
     auto privileges = user.getPrivileges();
-    if (privileges == UserPrivileges::READ_ONLY)
+    if (privileges == UserPrivileges::ReadOnly)
     {
         result = result + "   Privileges: read_only\n";
     }
-    else if (privileges == UserPrivileges::READ_WRITE)
+    else if (privileges == UserPrivileges::ReadWrite)
     {
         result = result + "   Privileges: read_write\n"; 
     }
-    else if (privileges == UserPrivileges::ADMINISTRATOR)
+    else if (privileges == UserPrivileges::Administrator)
     {
         result = result + "   Privileges: admin\n";
     }

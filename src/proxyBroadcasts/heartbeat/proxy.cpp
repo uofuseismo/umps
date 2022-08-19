@@ -35,6 +35,7 @@ public:
               std::shared_ptr<UMPS::Logging::ILog> logger,
               std::shared_ptr<UAuth::IAuthenticator> authenticator)
     {
+        mAsymmetricAuthentication = false;
         if (context == nullptr)
         {
             mContext = std::make_shared<UMPS::Messaging::Context> (1);
@@ -71,6 +72,14 @@ public:
         if (mAuthenticatorService->isRunning()){mAuthenticatorService->stop();}
         if (mProxyThread.joinable()){mProxyThread.join();}
         if (mAuthenticatorThread.joinable()){mAuthenticatorThread.join();}
+        if (mFrontendAuthenticatorThread.joinable())
+        {
+            mFrontendAuthenticatorThread.join();
+        }
+        if (mBackendAuthenticatorThread.joinable())
+        {
+            mBackendAuthenticatorThread.join();
+        }
     }
     /// Starts the proxy and authenticator and creates threads
     void start()
@@ -95,11 +104,16 @@ public:
     std::unique_ptr<UXPubXSub::Proxy> mProxy{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> mAuthenticator{nullptr};
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
+    std::unique_ptr<UAuth::Service> mFrontendAuthenticatorService{nullptr};
+    std::unique_ptr<UAuth::Service> mBackendAuthenticatorService{nullptr};
     ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
-    bool mInitialized = false;
+    std::thread mFrontendAuthenticatorThread;
+    std::thread mBackendAuthenticatorThread;
+    bool mInitialized{false};
+    bool mAsymmetricAuthentication{false};
 };
 
 /// C'tor

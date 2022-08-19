@@ -28,15 +28,17 @@ public:
     /// @{
 
     /// @brief Constructor.
-    SQLite3Authenticator();
+    SQLite3Authenticator(const UserPrivileges privileges = UserPrivileges::ReadOnly);
     /// @brief Move constructor.
     /// @param[in] authenticator  The authenticator from which to initialize
     ///                           this class.  On exit, authenticator's behavior
     ///                           is undefined.
-    SQLite3Authenticator(SQLite3Authenticator &&authenticator) noexcept;
+    SQLite3Authenticator(SQLite3Authenticator &&authenticator,
+                         const UserPrivileges privileges = UserPrivileges::ReadOnly) noexcept;
     /// @brief Constructor with a specified logger.
     /// @param[in] logger   The logging utility.
-    explicit SQLite3Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit SQLite3Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger,
+                                  const UserPrivileges privileges = UserPrivileges::ReadOnly);
     /// @}
 
     /// @name Operators

@@ -59,21 +59,21 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[]);
         key.loadFromTextFile(publicKeyFileName);
         user.setPublicKey( std::string{key.getPublicTextKey().data()} );
     }
-    auto privileges = UAuth::UserPrivileges::READ_ONLY;
+    auto privileges = UAuth::UserPrivileges::ReadOnly;
     if (!obj["privileges"].is_null())
     {
         auto textPrivileges = obj["privileges"].get<std::string> ();
         if (textPrivileges.find("admin") != std::string::npos)
         {
-            privileges = UAuth::UserPrivileges::ADMINISTRATOR;
+            privileges = UAuth::UserPrivileges::Administrator;
         }
         else if (textPrivileges.find("read_write") != std::string::npos)
         {
-            privileges = UAuth::UserPrivileges::READ_WRITE;
+            privileges = UAuth::UserPrivileges::ReadWrite;
         }
         else if (textPrivileges.find("read_only") != std::string::npos)
         {
-            privileges = UAuth::UserPrivileges::READ_ONLY; 
+            privileges = UAuth::UserPrivileges::ReadOnly; 
         }
         else
         {

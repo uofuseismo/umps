@@ -142,7 +142,7 @@ TEST(ConnectionInformation, Details)
     const std::string connectionString = "tcp://127.0.0.1:8080";
     auto connectionType = ConnectionType::Broadcast;
     auto securityLevel = UAuth::SecurityLevel::Grasslands;
-    auto privileges = UAuth::UserPrivileges::READ_WRITE;
+    auto privileges = UAuth::UserPrivileges::ReadWrite;
 
     Details details;
 
@@ -204,8 +204,8 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
     std::vector<ConnectionType> connectionTypes{ConnectionType::Broadcast,
                                                 ConnectionType::Service};
     std::vector<UAuth::UserPrivileges>
-        privileges{UAuth::UserPrivileges::READ_WRITE,
-                   UAuth::UserPrivileges::ADMINISTRATOR};
+        privileges{UAuth::UserPrivileges::ReadWrite,
+                   UAuth::UserPrivileges::Administrator};
     std::vector<UAuth::SecurityLevel>
         securityLevels{UAuth::SecurityLevel::Stonehouse,
                        UAuth::SecurityLevel::Woodhouse};
