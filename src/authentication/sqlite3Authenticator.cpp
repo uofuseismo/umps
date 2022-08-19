@@ -785,7 +785,9 @@ public:
                            + " does not match user's " + userName
                            + " password");
         }
-        mLogger->info("Validated user/password");
+        mLogger->info("Validated user/password for user " + userName
+                    + " who has minimum privileges "
+                    + toPrivilegeString(mPrivileges));
         return std::pair(okayStatus(), okayMessage());
     }
     /// Does public key match?
@@ -818,7 +820,10 @@ public:
                            + " but requires "
                            + toPrivilegeString(mPrivileges));
         }
-        mLogger->info("Validated public key");
+        mLogger->info("Validated public key for user "
+                    + returnedUsers[0].getName()
+                    + " who has minimum privileges "
+                    + toPrivilegeString(mPrivileges));
         return std::pair(okayStatus(), okayMessage()); 
     }
 ///private:

@@ -346,11 +346,11 @@ int main(int argc, char *argv[])
 
         auto readOnly
             = std::make_shared<UAuth::SQLite3Authenticator>
-                       (UAuth::UserPrivileges::ReadOnly);
+                       (authenticationLoggerPtr, UAuth::UserPrivileges::ReadOnly);
         readOnly->openUsersTable(options.mUserTable, false);
         auto readWrite
             = std::make_shared<UAuth::SQLite3Authenticator>
-                       (UAuth::UserPrivileges::ReadWrite);
+                       (authenticationLoggerPtr, UAuth::UserPrivileges::ReadWrite);
         readWrite->openUsersTable(options.mUserTable, false);
         readOnlyAuthenticator = readOnly;
         readWriteAuthenticator = readWrite;  
