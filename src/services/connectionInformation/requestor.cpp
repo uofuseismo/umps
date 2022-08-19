@@ -121,7 +121,7 @@ std::vector<Details> Requestor::getAllConnectionDetails() const
         auto detailsMessage
             = static_unique_pointer_cast<AvailableConnectionsResponse>
               (std::move(message));
-        result = std::move(detailsMessage->getDetails());
+        result = detailsMessage->getDetails();
     }
     else
     {
