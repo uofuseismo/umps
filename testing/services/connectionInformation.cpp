@@ -142,7 +142,7 @@ TEST(ConnectionInformation, Details)
     const std::string connectionString = "tcp://127.0.0.1:8080";
     auto connectionType = ConnectionType::Broadcast;
     auto securityLevel = UAuth::SecurityLevel::Grasslands;
-    auto privileges = UAuth::UserPrivileges::ReadWrite;
+    //auto privileges = UAuth::UserPrivileges::ReadWrite;
 
     Details details;
 
