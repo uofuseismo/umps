@@ -4,6 +4,7 @@ enable_testing()
 
 # Some options
 option(EARTHWORM_DEFAULT_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" ON)
+option(WRAP_PYTHON "Compile the Python bindings" OFF)
 
 # Ensure we have necessary packages 
 include(CheckCXXCompilerFlag)
@@ -34,10 +35,10 @@ configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
                ${CMAKE_SOURCE_DIR}/include/umps/version.hpp)
 
 
-include_directories(
-   ${CMAKE_SOURCE_DIR}/include
-   #${TIME_INCLUDE_DIR}
-)
+#include_directories(
+#   ${CMAKE_SOURCE_DIR}/include
+#   #${TIME_INCLUDE_DIR}
+#)
 
 set(BUILD_EW FALSE)
 set(BUILD_MSEED FALSE)
@@ -59,12 +60,6 @@ if (${FindTBB_FOUND})
    set(BUILD_TBB TRUE)
    add_compile_definitions(WITH_TBB)
 endif() 
-
-set(PUBLIC_HEADER_DIRECTORIES
-    ${CMAKE_SOURCE_DIR}/include/umps)
-set(PRIVATE_HEADER_DIRECTORIES
-    ${CMAKE_SOURCE_DIR}/include/private)
-
 
 set(VERSION_SRC
     src/version.cpp)
@@ -210,8 +205,8 @@ target_include_directories(umps
                            PRIVATE ${cppzmq_INCLUDE_DIR}
                            PRIVATE ${SQLite3_INCLUDE_DIRS}
                            PRIVATE Boost::program_options
-                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
-                           PUBLIC $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+                           PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/umps>
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 if (${BUILD_TBB})
     target_include_directories(umps PRIVATE ${TBB_INCLUDE_DIR})
     target_link_libraries(umps PRIVATE ${TBB_LIBRARY})
@@ -235,6 +230,9 @@ set_target_properties(uOperator PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
+target_include_directories(uOperator
+                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+                           PRIVATE Boost::program_options)
 target_link_libraries(uOperator PRIVATE umps Boost::program_options Threads::Threads)
 
 add_executable(packetCache src/modules/services/packetCache.cpp)
@@ -242,13 +240,20 @@ set_target_properties(packetCache PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
+target_include_directories(packetCache
+                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+                           PRIVATE Boost::program_options)
 target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
+
 
 add_executable(incrementer src/modules/services/incrementer.cpp)
 set_target_properties(incrementer PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
+target_include_directories(incrementer
+                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+                           PRIVATE Boost::program_options)
 target_link_libraries(incrementer PRIVATE umps Boost::program_options Threads::Threads)
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
@@ -256,6 +261,9 @@ set_target_properties(uKeyPair PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
+target_include_directories(uKeyPair
+                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+                           PRIVATE Boost::program_options)
 target_link_libraries(uKeyPair PRIVATE Boost::program_options umps)
 
 add_executable(uUserTable src/modules/authentication/userTable.cpp)
@@ -263,7 +271,20 @@ set_target_properties(uUserTable PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO) 
+target_include_directories(uUserTable
+                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+                           PRIVATE Boost::program_options)
 target_link_libraries(uUserTable PRIVATE Boost::program_options umps)
+
+add_executable(uCommand src/modules/uCommand.cpp)
+set_target_properties(uCommand PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_include_directories(uCommand
+                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+                           PRIVATE Boost::program_options)
+target_link_libraries(uCommand PRIVATE Boost::program_options umps)
 
 if (${BUILD_EW})
     add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
@@ -271,6 +292,10 @@ if (${BUILD_EW})
                           CXX_STANDARD 20
                           CXX_STANDARD_REQUIRED YES 
                           CXX_EXTENSIONS NO) 
+    target_include_directories(broadcastWaveRing
+                               PRIVATE ${CMAKE_SOURCE_DIR}/include
+                               PRIVATE Boost::program_options)
+
     target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options Threads::Threads)
 endif()
 
@@ -278,6 +303,7 @@ endif()
 #                                      Python Wrapping                                   #
 ##########################################################################################
 if (WRAP_PYTHON)
+   message("Will build Python bindings")
    find_package(pybind11 REQUIRED)
    add_library(pyumps MODULE
                python/pyumps.cpp
@@ -289,13 +315,14 @@ if (WRAP_PYTHON)
                python/authentication/zapOptions.cpp
                python/proxyBroadcasts/dataPacketSubscriber.cpp
                python/proxyBroadcasts/dataPacketSubscriberOptions.cpp
+               python/proxyBroadcasts/heartbeat.cpp
                python/messaging/publisherSubscriber/publisher.cpp
                python/messaging/publisherSubscriber/subscriberOptions.cpp
                python/messaging/publisherSubscriber/subscriber.cpp)
    target_link_libraries(pyumps PRIVATE pybind11::module umps)
    target_include_directories(pyumps
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/python/include>
-                                      $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+                                      $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
    set_target_properties(pyumps PROPERTIES
                          PREFIX ""
                          CXX_STANDARD 20
@@ -338,7 +365,7 @@ set_target_properties(unitTests PROPERTIES
 target_link_libraries(unitTests PRIVATE umps ${GTEST_BOTH_LIBRARIES})
 target_include_directories(unitTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
-                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 
 # Actually test communication
 set(TEST_COMMUNICATION_SRC
@@ -359,7 +386,7 @@ set_target_properties(commTests PROPERTIES
 target_link_libraries(commTests PRIVATE umps ${GTEST_BOTH_LIBRARIES})
 target_include_directories(commTests
                            PRIVATE ${GTEST_INCLUDE_DIRS}
-                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 
 # Add the tests
 add_test(NAME unitTests
@@ -411,7 +438,7 @@ else()
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
-install(DIRECTORY ${PUBLIC_HEADER_DIRECTORIES}/umps
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/umps
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 ##########################################################################################
 #                                     CPACK Packaging                                    #
