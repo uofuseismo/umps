@@ -104,6 +104,7 @@ set(MODULES_LIBSRC
     src/modules/process.cpp
     src/modules/processManager.cpp
     #src/modules/module.cpp
+    src/services/command/localRequestorOptions.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
@@ -349,6 +350,7 @@ set(TEST_SRC
     testing/services/proxyOptions.cpp
     testing/services/packetCache.cpp
     testing/services/incrementer.cpp
+    testing/services/command.cpp
     testing/services/connectionInformation.cpp
     testing/services/moduleRegistry.cpp
     testing/messaging/authentication.cpp
