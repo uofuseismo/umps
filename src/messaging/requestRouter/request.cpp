@@ -2,7 +2,9 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#ifndef NDEBUG
 #include <cassert>
+#endif
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/requestRouter/request.hpp"

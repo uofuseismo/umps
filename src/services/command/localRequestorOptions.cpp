@@ -1,7 +1,10 @@
 #include <chrono>
 #include <algorithm>
 #include <string>
+#include <filesystem>
 #include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/services/command/commandsRequest.hpp"
+#include "umps/services/command/commandsResponse.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;
@@ -10,6 +13,9 @@ class LocalRequestorOptions::LocalRequestorOptionsImpl
 {
 public:
     std::string mModuleName;
+    std::filesystem::path mIPCDirectory
+        = std::filesystem::path{std::string{std::getenv("HOME")}}
+        / std::filesystem::path{".local/share/UMPS/ipc"};
     std::chrono::milliseconds mReceiveTimeOut{10};
 };
 
@@ -78,6 +84,37 @@ std::string LocalRequestorOptions::getModuleName() const
 bool LocalRequestorOptions::haveModuleName() const noexcept
 {
     return !pImpl->mModuleName.empty();
+}
+
+/// IPC directory
+void LocalRequestorOptions::setIPCDirectory(const std::string &directory)
+{
+    if (directory.empty())
+    {
+        pImpl->mIPCDirectory = "./";
+    }
+    else
+    {
+        if (!std::filesystem::exists(directory))
+        {
+            throw std::invalid_argument("IPC directory: " + directory
+                                      + " does not exist");
+        }
+        pImpl->mIPCDirectory = directory;
+    }
+}
+
+std::string LocalRequestorOptions::getIPCDirectory() const noexcept
+{
+    return pImpl->mIPCDirectory;
+}
+
+std::string LocalRequestorOptions::getIPCFileName() const
+{
+    auto moduleName = getModuleName(); // Throws
+    std::filesystem::path fileName{moduleName + ".ipc"};
+    fileName = std::filesystem::path{getIPCDirectory()} / fileName; 
+    return fileName.string();
 }
 
 /// Time-out

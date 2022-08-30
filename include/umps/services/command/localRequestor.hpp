@@ -12,9 +12,13 @@ namespace UMPS
  {
   class ILog;
  }
- namespace Services::Command
+ namespace Services
  {
-  class LocalRequestorOptions;
+  namespace Command
+  {
+   class LocalRequestorOptions;
+   class CommandsResponse;
+  }
  }
 }
 namespace UMPS::Services::Command
@@ -40,6 +44,21 @@ public:
     /// @brief Constructor with a given context and logger.
     LocalRequestor(std::shared_ptr<UMPS::Messaging::Context> &context,
                    std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Move constructor.
+    /// @param[in,out] requestor  The requestor from which to create this class.
+    ///                           On exit, requestor's behavior is undefined.
+    LocalRequestor(LocalRequestor &&requestor) noexcept;
+    /// @}
+
+    /// @name Operators
+    /// @{
+
+    /// @brief Move assignment oeprator.
+    /// @param[in,out] requestor  The requestor whose memory will be moved
+    ///                           to this.  On exit, requestor's behavior
+    ///                           is undefined.
+    /// @result The memory from the requestor moved to this.
+    LocalRequestor& operator=(LocalRequestor &&requestor) noexcept;
     /// @}
 
     /// @name Initialization
@@ -55,7 +74,16 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}
 
-   
+    /// @name Usage
+    /// @{
+
+    /// @brief Gets the commands for interacting with this program.
+    /// @result A message summarizing the options for interacting with
+    ///         this program.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::unique_ptr<CommandsResponse> getCommands() const;
+    /// @}
+     
     /// @name Destructors
     /// @{
 
@@ -66,9 +94,7 @@ public:
     /// @}
 
     LocalRequestor(const LocalRequestor &) = delete;
-    LocalRequestor(LocalRequestor &&) noexcept = delete;
     LocalRequestor& operator=(const LocalRequestor &) = delete;
-    LocalRequestor& operator=(LocalRequestor &&) noexcept = delete;
 private:
     class LocalRequestorImpl;
     std::unique_ptr<LocalRequestorImpl> pImpl;    

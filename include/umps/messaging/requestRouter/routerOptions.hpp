@@ -2,7 +2,7 @@
 #define UMPS_MESSAGING_REQUESTROUTER_ROUTEROPTIONS_HPP
 #include <memory>
 #include <functional>
-#include "umps/authentication/enums.hpp"
+#include <chrono>
 // Forward declarations
 namespace UMPS
 {
@@ -167,7 +167,6 @@ public:
     void clear() noexcept;
     /// @brief Destructor.
     ~RouterOptions();
-
     /// @}
 private:
     class RouterOptionsImpl;

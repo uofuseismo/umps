@@ -15,6 +15,7 @@
 #include "umps/messageFormats/message.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/messaging/ipcDirectory.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RequestRouter;
@@ -78,6 +79,13 @@ public:
                           (mContext->getContext());
         mServer = std::make_unique<zmq::socket_t> (*contextPtr,
                                                    zmq::socket_type::router);
+    }
+    /// Destructor
+    ~RouterImpl()
+    {
+        stop();
+        std::this_thread::sleep_for(std::chrono::milliseconds {10});
+        ::removeIPCFile(mAddress, &*mLogger);
     }
     /// Start the service
     void start()
@@ -228,10 +236,12 @@ void Router::initialize(const RouterOptions &options)
     pImpl->mOptions.clear();
     pImpl->unbind();
     pImpl->mOptions = options;
-    //  
+    // Options 
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     auto highWaterMark = pImpl->mOptions.getHighWaterMark();
     auto address = pImpl->mOptions.getAddress();
+    // Resolve a directory issue for IPC
+    ::createIPCDirectoryFromConnectionString(address, &*pImpl->mLogger);
     // Set the ZAP options
     zapOptions.setSocketOptions(&*pImpl->mServer);
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();

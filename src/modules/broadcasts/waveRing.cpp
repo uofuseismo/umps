@@ -28,6 +28,10 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/command/commandsRequest.hpp"
+#include "umps/services/command/commandsResponse.hpp"
+#include "umps/services/command/localService.hpp"
+#include "umps/services/command/textRequest.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/context.hpp"
@@ -42,12 +46,32 @@
  
 #define MODULE_NAME "broadcastWaveRing"
 
-
 namespace UAuth = UMPS::Authentication;
 namespace UServices = UMPS::Services;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UModules = UMPS::Modules;
 namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
+
+namespace
+{
+
+/// @result Gets the command line input options as a string.
+[[nodiscard]] std::string getInputOptions() noexcept
+{
+    std::string commands;
+    commands = "Commands:\n";
+    commands = commands + "   quit   Exits the program.\n";
+    commands = commands + "   help   Displays this message.\n";
+    return commands;
+}
+
+/// @resultGets the input line.
+[[nodiscard]] std::string getInputLine() noexcept
+{
+    return std::string{MODULE_NAME} + "$";
+}
+
+}
 
 /// @brief Defines the module options.
 struct ProgramOptions
@@ -211,6 +235,8 @@ public:
         {
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
+        mLocalCommand
+            = std::make_unique<UMPS::Services::Command::LocalService> (mLogger);
         mInitialized = true;
     }
     /// Initialized?
@@ -245,6 +271,7 @@ public:
     {
         setRunning(false);
         if (mBroadcastThread.joinable()){mBroadcastThread.join();}
+        if (mLocalCommand->isRunning()){mLocalCommand->stop();}
     }
     /// @brief Starts the process.
     void start() override
@@ -255,9 +282,11 @@ public:
             throw std::runtime_error("Class not initialized");
         }
         setRunning(true);
-        mLogger->debug("Starting the waveRing broadcast thread...");
+        mLogger->debug("Starting the wave ring broadcast thread...");
         mBroadcastThread = std::thread(&BroadcastPackets::run,
                                        this);
+        mLogger->debug("Starting the local command proxy..."); 
+        //mLocalCommand->start();
     }
     /// Running?
     [[nodiscard]] bool isRunning() const noexcept override
@@ -322,18 +351,60 @@ public:
         }
         mLogger->debug("Earthworm broadcast thread is terminating");
     }
+    // Callback for local interaction
+    std::unique_ptr<UMPS::MessageFormats::IMessage>
+        commandCallback(const std::string &messageType,
+                        const void *data,
+                        size_t length)
+    {
+        namespace USC = UMPS::Services::Command;
+        mLogger->debug("Command request received"); 
+        USC::CommandsRequest commandRequest;
+        USC::TextRequest textRequest;
+        if (messageType == commandRequest.getMessageType())
+        {
+            USC::CommandsResponse commandResponse;
+            commandResponse.setCommands(getInputOptions());
+            try
+            {
+                commandRequest.fromMessage(
+                    static_cast<const char *> (data), length); 
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack command request");
+            }
+            return commandResponse.clone(); 
+        }
+        else if (messageType == textRequest.getMessageType())
+        {
+
+        }
+        else
+        {
+            mLogger->debug("Command callback stopping application");
+            setRunning(false);
+        } 
+        // Return
+        mLogger->error("Unhandled message: " + messageType);
+        USC::CommandsResponse commandResponse; 
+        commandResponse.setCommands(getInputOptions());
+        return commandResponse.clone();
+    }
     mutable std::mutex mMutex;
     std::thread mBroadcastThread;
     std::unique_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher>
          mPacketPublisher{nullptr};
     std::unique_ptr<UMPS::Earthworm::WaveRing> mWaveRing{nullptr};
+    std::unique_ptr<UMPS::Services::Command::LocalService>
+         mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
 
-///--------------------------------------------------------------------------///
+/*
 class CommandProcess : UMPS::Modules::IProcess
 {
 public:
@@ -397,7 +468,7 @@ public:
             if (runInteractive)
             {
                 std::string command;
-                std::cout << getInputLine();
+                std::cout << ::getInputLine();
                 std::cin >> command;
                 if (command == "quit")
                 {
@@ -411,7 +482,7 @@ public:
                         std::cout << "Unknown command: " << command << std::endl;
                         std::cout << std::endl;
                     }
-                    std::cout << getInputOptions();
+                    std::cout << ::getInputOptions();
                 }
             }
             else
@@ -427,6 +498,7 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     bool mKeepRunning{true}; 
 };
+*/
 
 /*
 class BroadcastWaveRing
@@ -814,13 +886,15 @@ int main(int argc, char *argv[])
         logger->error(e.what());
         return EXIT_FAILURE;
     }
+    // Start the command queue
+
     // Run interactive
     while (processManager.isRunning())
     {
         if (runInteractive)
         {
             std::string command;
-            std::cout << CommandProcess::getInputLine();
+            std::cout << getInputLine();
             std::cin >> command;
             if (command == "quit")
             {
@@ -834,7 +908,7 @@ int main(int argc, char *argv[])
                     std::cout << "Unknown command: " << command << std::endl;
                     std::cout << std::endl;
                 }
-                //std::cout << getInputOptions();
+                std::cout << getInputOptions();
             }
         }
         else

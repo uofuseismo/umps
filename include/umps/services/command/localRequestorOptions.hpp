@@ -47,11 +47,21 @@ public:
     [[nodiscard]] std::string getModuleName() const;
     /// @result True indicates the module name was set.
     [[nodiscard]] bool haveModuleName() const noexcept;
+    /// @result The name of the IPC file.
+    /// @Throws std::runtime_erorr if \c haveModuleName() is false.
+    [[nodiscard]] std::string getIPCFileName() const;
     /// @}
 
     /// @name Optional Parameters
     /// @{
 
+    /// @brief Sets the IPC directory that will house IPC files.
+    /// @param[in] directory  The directory where IPC communication file
+    ///                       will exist.
+    /// @throws std::invalid_argument if the directory does not exist.
+    void setIPCDirectory(const std::string &directory);
+    /// @result The directory where the IPC communication files will exist.
+    [[nodiscard]] std::string getIPCDirectory() const noexcept;
     /// @brief Sets the time out for receiving replies from the local module.
     /// @param[in] timeOut  The receive time out.  If this is negative then
     ///                     this program will hang indefinitely until the
