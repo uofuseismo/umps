@@ -142,7 +142,7 @@ void IncrementRequest::setItem(const Item item) noexcept
 #ifndef NDEBUG
        assert(false);
 #else
-       throw std::invalid_argument("Unhandled item");
+       std::cerr << "Unhandled item" << std::endl;
 #endif
    }
 }
