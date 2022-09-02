@@ -1,11 +1,13 @@
 #include <chrono>
 #include <thread>
+#include <filesystem>
 #ifndef NDEBUG
 #include <cassert>
 #endif
 #include "umps/services/command/localService.hpp"
 #include "umps/services/command/localServiceOptions.hpp"
 #include "umps/services/command/localModuleTable.hpp"
+#include "umps/services/command/localModuleDetails.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -36,11 +38,18 @@ public:
             mLogger = logger;
         }
         mRouter = std::make_unique<URequestRouter::Router> (context, mLogger);
+        constexpr bool createIfDoesNotExist = true;
+        mLocalModuleTable.open(createIfDoesNotExist);
     }
     /// Destructor
     ~LocalServiceImpl()
     {
         stop();
+        if (mLocalModuleTable.haveModule(mLocalModuleDetails))
+        {
+            mLocalModuleTable.deleteModule(mLocalModuleDetails);
+        }
+        mLocalModuleTable.close();
     }
     /// Starts the proxy 
     void start()
@@ -51,6 +60,7 @@ public:
 #endif
         mProxyThread = std::thread(&URequestRouter::Router::start,
                                    &*mRouter);
+        mLocalModuleTable.addModule(mLocalModuleDetails);
     }
     /// Stops the proxy and authenticator and joins threads
     void stop()
@@ -64,9 +74,13 @@ public:
     std::unique_ptr<UMPS::Messaging::RequestRouter::Router> mRouter{nullptr};
     UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions; 
     LocalModuleTable mLocalModuleTable;
+    LocalModuleDetails mLocalModuleDetails;
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     const std::string mName{"LocalCommand"};
+    //std::filesystem::path mTableFile 
+    //    = std::filesystem::path{ std::string(std::getenv("HOME"))
+    //                    + "/.local/share/UMPS/tables/localModuleTable.sqlite3"};
     bool mInitialized{false};
 };
 
@@ -120,6 +134,13 @@ void LocalService::initialize(const LocalServiceOptions &options)
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::Service);
     pImpl->mConnectionDetails.setSecurityLevel(
         socketDetails.getSecurityLevel());
+    // Local module details
+    LocalModuleDetails moduleDetails;
+    moduleDetails.setName(options.getModuleName());
+    //moduleDetails.setProcessIdentifier() // Rely on default
+    moduleDetails.setIPCDirectory(options.getIPCDirectory());
+    moduleDetails.setApplicationStatus(ApplicationStatus::Running);
+    pImpl->mLocalModuleDetails = moduleDetails;
     // Done
     pImpl->mInitialized = true;
 }

@@ -374,6 +374,7 @@ void addUserToDatabase(sqlite3 *db, const User &user)
     {
         std::string error = "Failed to add : " + sql + " to table user\n"
                           + "SQLite3 failed with: " + errorMessage;
+        sqlite3_free(errorMessage);
         throw std::runtime_error(error);
     }
 }
@@ -387,6 +388,7 @@ void updateUserToDatabase(sqlite3 *db, const User &user)
     {   
         std::string error = "Failed to update : " + sql + "to table user\n"
                           + "SQLite3 failed with: " + errorMessage;
+        sqlite3_free(errorMessage);
         throw std::runtime_error(error);
     }   
 }
@@ -400,6 +402,7 @@ void deleteUserFromDatabase(sqlite3 *db, const User &user)
     {    
         std::string error = "Failed to delete : " + sql + "to table user\n"
                           + "SQLite3 failed with: " + errorMessage;
+        sqlite3_free(errorMessage);
         throw std::runtime_error(error);
     }
 }

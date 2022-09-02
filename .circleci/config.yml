@@ -24,7 +24,7 @@ jobs:
            name: Build the code
            command: |
             cd build
-            make
+            make -j 2
       - run:
            name: Test the code
            command: |

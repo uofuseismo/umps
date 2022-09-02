@@ -405,8 +405,8 @@ public:
             if (command == "quit")
             {
                 mLogger->debug("Issuing quit command...");
+                response.setResponse("Bye!");
                 response.setReturnCode(USC::CommandReturnCode::Success);
-                setRunning(false);
             }
             else
             {
@@ -414,6 +414,7 @@ public:
                 if (command != "help")
                 {
                     mLogger->debug("Invalid command: " + command);
+                    response.setResponse("Invalid command: " + command);
                     response.setReturnCode(USC::CommandReturnCode::InvalidCommand);
                 }
                 else

@@ -51,9 +51,13 @@ public:
                                                     zmq::socket_type::req);
 */
         // Make the message types
-        std::unique_ptr<UMPS::MessageFormats::IMessage> commandsResponseMessage
-            = std::make_unique<AvailableCommandsResponse> ();
-        mMessageFormats.add(commandsResponseMessage);
+        std::unique_ptr<UMPS::MessageFormats::IMessage>
+            availableCommandsResponseMessage
+               = std::make_unique<AvailableCommandsResponse> ();
+        std::unique_ptr<UMPS::MessageFormats::IMessage> commandsResponse
+            = std::make_unique<CommandResponse> ();
+        mMessageFormats.add(availableCommandsResponseMessage);
+        mMessageFormats.add(commandsResponse);
     }
 /*
     /// @brief Initialized?
@@ -250,4 +254,26 @@ std::unique_ptr<AvailableCommandsResponse> LocalRequestor::getCommands() const
         pImpl->mLogger->warn("Request timed out");
     }
     return result;
+}
+
+std::unique_ptr<CommandResponse> LocalRequestor::issueCommand(
+    const CommandRequest &request)
+{
+    if (!isInitialized())
+    {   
+        throw std::runtime_error("Requestor not initialized");
+    }   
+    std::unique_ptr<CommandResponse> result{nullptr};
+    auto message = pImpl->mRequest->request(request);
+    if (message != nullptr)
+    {
+        result = static_unique_pointer_cast<CommandResponse>
+                 (std::move(message));
+    }
+    else
+    {
+        pImpl->mLogger->warn("Request timed out");
+    }
+    return result;
+
 }

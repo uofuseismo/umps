@@ -12,6 +12,7 @@
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localModuleTable.hpp"
+#include "umps/services/command/localModuleDetails.hpp"
 #include "umps/services/command/localRequestor.hpp"
 #include "umps/services/command/localRequestorOptions.hpp"
 
@@ -22,6 +23,17 @@ int main(int argc, char *argv[])
         = std::make_shared<UMPS::Logging::StdOut> ();
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
     std::unique_ptr<UMPS::Services::Command::LocalRequestor> requestor{nullptr};
+    UMPS::Services::Command::LocalModuleTable moduleTable;
+    std::vector<UMPS::Services::Command::LocalModuleDetails> allModules;
+    try
+    {
+        moduleTable.openReadOnly();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
     while (true)
     {
         std::string command;
@@ -34,9 +46,15 @@ int main(int argc, char *argv[])
         }
         else if (command == "list")
         {
+            allModules = moduleTable.queryAllModules();        
+            for (const auto &m : allModules)
+            {
+                std::cout << m.getName() << std::endl;
+            }
         }
         else if (command.find("connect") == 0)
         {
+            allModules = moduleTable.queryAllModules();
             // Get the module name
             std::vector<std::string> splitCommand;
             boost::split(splitCommand, command, ::isspace);//any_of(std::is_space" "));
@@ -46,7 +64,21 @@ int main(int argc, char *argv[])
                 continue;
             }
             auto moduleName = splitCommand.at(1);
-moduleName = "broadcastWaveRing";
+            // Check the module exists
+            bool found = false;
+            for (const auto &m : allModules)
+            {
+                if (moduleName == m.getName())
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                std::cerr << "Could not find module: " << moduleName << std::endl;
+                continue;
+            } 
             // Now connect
             UMPS::Services::Command::LocalRequestorOptions requestorOptions;
             requestorOptions.setModuleName(moduleName);
@@ -90,7 +122,8 @@ moduleName = "broadcastWaveRing";
                 {
                     UMPS::Services::Command::CommandRequest commandRequest;
                     commandRequest.setCommand(command);
-          
+                    auto response = requestor->issueCommand(commandRequest); 
+                    std::cout << response->getResponse() << std::endl;
                 }
 maintainConnection = false;
             } 

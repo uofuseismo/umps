@@ -131,12 +131,63 @@ TEST(Command, LocalModuleTable)
     bool createIfDoesNotExist = true;
     table.open(tableName, createIfDoesNotExist);
 
-/*
+    const std::string moduleName1{"testModule"};
+    const std::string ipcDirectory1{"./"};
+    const int64_t processIdentifier1{829};
+    const ApplicationStatus applicationStatus1{ApplicationStatus::Running};
+
+    const std::string moduleName2{"anotherTestModule"};
+    const std::string ipcDirectory2{"./"};
+    const int64_t processIdentifier2{19392};
+    const ApplicationStatus applicationStatus2{ApplicationStatus::Running};
+
+    std::vector<LocalModuleDetails> allModulesRef;
+    LocalModuleDetails details1;
+    details1.setName(moduleName1);
+    details1.setIPCDirectory(ipcDirectory1);
+    details1.setProcessIdentifier(processIdentifier1);
+    details1.setApplicationStatus(applicationStatus1);
+    allModulesRef.push_back(details1);
+
+    LocalModuleDetails details2;
+    details2.setName(moduleName2);
+    details2.setIPCDirectory(ipcDirectory2);
+    details2.setProcessIdentifier(processIdentifier2);
+    details2.setApplicationStatus(applicationStatus2);
+    allModulesRef.push_back(details2);
+
+    EXPECT_FALSE(table.haveModule(details1));
+    EXPECT_NO_THROW(table.addModule(details1));
+    EXPECT_TRUE(table.haveModule(details1)); 
+
+    EXPECT_FALSE(table.haveModule(details2));
+    EXPECT_NO_THROW(table.addModule(details2));
+    EXPECT_TRUE(table.haveModule(details2));
+
+    auto allModules = table.queryAllModules();
+    EXPECT_EQ(allModules.size(), allModulesRef.size()); 
+    for (const auto &mRef : allModulesRef)
+    {
+        bool lmatch = false;
+        for (const auto &m : allModules)
+        {
+            if (m.getName() == mRef.getName() &&
+                m.getIPCDirectory() == mRef.getIPCDirectory() &&
+                m.getProcessIdentifier() == mRef.getProcessIdentifier() &&
+                m.getApplicationStatus() == mRef.getApplicationStatus()) 
+            {
+                lmatch = true;
+            }
+        }
+        EXPECT_TRUE(lmatch);
+    }
+
+    EXPECT_NO_THROW(table.deleteModule(details2));
+  
     if (std::filesystem::exists(tableName))
     {
         std::filesystem::remove(tableName);
     }
-*/
 }
 
 }
