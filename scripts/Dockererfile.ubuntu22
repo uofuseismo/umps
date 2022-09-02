@@ -2,7 +2,10 @@ FROM ubuntu:kinetic
 
 USER root
 
-# Install the pre-reqs
+# Install the prerequisites
+# N.B. On a regular system DO NOT USE pip3 install "pybind11[global]".
+#      I do this here simply because it's a docker container, easy,
+#      and nothing of importance is damaged if this messes something up.
 RUN apt-get update &&\
     apt-get install -y wget &&\
     apt-get install -y gcc &&\
@@ -16,7 +19,7 @@ RUN apt-get update &&\
     apt-get install -y pkg-config &&\
     apt-get install -y libsqlite3-dev &&\
     apt-get install -y doxygen &&\
-    pip3 install pybind11 &&\
+    pip3 install "pybind11[global]" &&\
     apt-get install -y libboost-dev &&\
     apt-get install libboost-program-options-dev &&\
     wget https://github.com/gabime/spdlog/archive/refs/tags/v1.10.0.tar.gz &&\
