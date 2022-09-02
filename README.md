@@ -6,9 +6,11 @@
    2. Addresses the network exploration problem with a hub and spoke model.
    3. Can validate connections.
 
+This software was initially presented in On-premises Integration of Machine Learning Models at UUSS - Distributed Computing and Messaging at the SSA 2022 conference.
+
 # Compiling
 
-Currently, the software has only been used on Ubuntu20.  I anticipate there will be no issues for using later flavors of Ubuntu.  However, you may find it difficult to switch to other operating systems since they may have minimal to non-existant C++20 support.  For these instances I recommend installing and using the latest LLVM compiler suite.
+Currently, the software has been compiled on Ubuntu20 and Ubuntu22 however, UMPS has only been used on Ubuntu20.  And while I anticipate there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/OSX.  For these instances I recommend installing and using the latest LLVM compiler suite.  Additionally, the default pathing is not OSX/Windows-friendly so good luck with that.
 
 Regardless, prior to attempting to compile the software you must clear the following dependencies
 
