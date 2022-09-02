@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <mutex>
+#include <vector>
 #include <filesystem>
 #ifndef NDEBUG
 #include <cassert>
