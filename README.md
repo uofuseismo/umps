@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/uofuseismo/umps.svg?style=svg&circle-token=build_status)](https://circleci.com/gh/uofuseismo/umps)
+
 # About 
 
 Utah Message Passing System is a network-seismology-oriented message passing library that
@@ -7,6 +9,17 @@ Utah Message Passing System is a network-seismology-oriented message passing lib
    3. Can validate connections.
 
 This software was initially presented in On-premises Integration of Machine Learning Models at UUSS - Distributed Computing and Messaging at the SSA 2022 conference.
+
+# Status
+
+The software is currently under active development.  An initial release is slated for mid-2023.  The major development pushes right now are:
+
+   1. Improving remote monitoring of and interaction with modules.
+   2. Creating a doxygen-based manual. 
+   3. Migrating some modules to a subsequent library - Utah Real-Time Seismology.
+   4. Continuous delivery.
+
+Expect the API to change without notice.
 
 # Compiling
 
