@@ -27,7 +27,7 @@ RUN apt-get update &&\
     cd spdlog-1.10.0/ &&\
     mkdir build &&\
     cd build &&\
-    cmake .. -DCMAKE_BUILD_TYPE=Release &&\
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DSPDLOG_BUILD_SHARED=ON &&\
     make &&\
     make install &&\
     cd ../.. &&\
