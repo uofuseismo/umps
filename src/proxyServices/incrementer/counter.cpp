@@ -264,12 +264,12 @@ void addItems(sqlite3 *db,
     {
         throw std::runtime_error("Failed to bind text");
     }
-    char *errorMessage = nullptr;
     rc = sqlite3_step(result);
     if (rc != SQLITE_DONE)
     {
-        std::string error = "Failed to update " + item + ": " + errorMessage;
-        sqlite3_free(errorMessage);
+        auto errorMessage = sqlite3_errmsg(db);
+        std::string error = "Failed to update " + item + " with: "
+                          + std::string{errorMessage};
         throw std::runtime_error(error);
     }
     sqlite3_finalize(result);
