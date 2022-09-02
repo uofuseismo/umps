@@ -1,30 +1,30 @@
-#ifndef UMPS_SERVICES_COMMAND_COMMANDSRESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_COMMANDSRESPONSE_HPP
+#ifndef UMPS_SERVICES_COMMAND_AVAILABLECOMMANDSREQUEST_HPP
+#define UMPS_SERVICES_COMMAND_AVAILABLECOMMANDSREQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
-/// @class CommandsResponse "CommandsResponse.hpp" "umps/messageFormats/commandsResponse.hpp"
-/// @brief The text-based interactive program commands.
+/// @class AvailableCommandsRequest "availableCommandsRequest.hpp" "umps/messageFormats/availableCommandsRequest.hpp"
+/// @brief Requests the text-based interactive program commands.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 /// @ingroup Messages_MessageFormats
-class CommandsResponse : public UMPS::MessageFormats::IMessage
+class AvailableCommandsRequest : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    CommandsResponse();
+    AvailableCommandsRequest();
     /// @brief Copy constructor.
     /// @param[in] message  The text message class from which to initialize
     ///                     this class.
-    CommandsResponse(const CommandsResponse &message);
+    AvailableCommandsRequest(const AvailableCommandsRequest &message);
     /// @brief Move constructor.
     /// @param[in,out] message  The text message class from which to
     ///                         initialize this class.  On exit, message's
     ///                         behavior is undefined.
-    CommandsResponse(CommandsResponse &&message) noexcept;
+    AvailableCommandsRequest(AvailableCommandsRequest &&message) noexcept;
     /// @}
 
     /// @name Operators
@@ -33,20 +33,14 @@ public:
     /// @brief Copy assignment.
     /// @param[in] message  The text message class to copy to this.
     /// @result A deep copy of the text message.
-    CommandsResponse& operator=(const CommandsResponse &message);
+    AvailableCommandsRequest& operator=(const AvailableCommandsRequest &message);
     /// @brief Move assignment.
     /// @param[in,out] message  The text message class whose memory will be
     ///                         moved to this.  On exit, messages's behavior is
     ///                         undefined.
     /// @result The memory from message moved to this.
-    CommandsResponse& operator=(CommandsResponse &&message) noexcept;
+    AvailableCommandsRequest& operator=(AvailableCommandsRequest &&message) noexcept;
     /// @}
-
-    /// @brief Sets the available program commands.
-    /// @param[in] commands  The available program commands.
-    void setCommands(const std::string &commands);
-    /// @result The available program commands.
-    [[nodiscard]] std::string getCommands() const noexcept;
 
     /// @name Message Abstract Base Class Properties
     /// @{
@@ -82,11 +76,11 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~CommandsResponse() override;
+    ~AvailableCommandsRequest() override;
     /// @}
 private:
-    class CommandsResponseImpl;
-    std::unique_ptr<CommandsResponseImpl> pImpl;
+    class AvailableCommandsRequestImpl;
+    std::unique_ptr<AvailableCommandsRequestImpl> pImpl;
 };
 }
 #endif

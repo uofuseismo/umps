@@ -104,12 +104,16 @@ set(MODULES_LIBSRC
     src/modules/process.cpp
     src/modules/processManager.cpp
     #src/modules/module.cpp
-    src/services/command/commandsRequest.cpp
-    src/services/command/commandsResponse.cpp
+    src/services/command/availableCommandsRequest.cpp
+    src/services/command/availableCommandsResponse.cpp
+    src/services/command/commandRequest.cpp
+    src/services/command/commandResponse.cpp
+    src/services/command/localModuleDetails.cpp
+    src/services/command/localModuleTable.cpp
     src/services/command/localRequestor.cpp
     src/services/command/localRequestorOptions.cpp
     src/services/command/localService.cpp
-    src/services/command/textRequest.cpp
+    src/services/command/localServiceOptions.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp

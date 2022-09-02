@@ -17,7 +17,9 @@ namespace UMPS
   namespace Command
   {
    class LocalRequestorOptions;
-   class CommandsResponse;
+   class AvailableCommandsResponse;
+   class CommandRequest;
+   class CommandResponse;
   }
  }
 }
@@ -81,7 +83,11 @@ public:
     /// @result A message summarizing the options for interacting with
     ///         this program.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::unique_ptr<CommandsResponse> getCommands() const;
+    [[nodiscard]] std::unique_ptr<AvailableCommandsResponse> getCommands() const;
+    /// @brief Issues a command to the service. 
+    /// @param[in] request  The request to issue to the service.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::unique_ptr<CommandResponse> issueCommand(const CommandRequest &request);
     /// @}
      
     /// @name Destructors

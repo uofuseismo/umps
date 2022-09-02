@@ -3,8 +3,9 @@
 #include <string>
 #include <filesystem>
 #include "umps/services/command/localRequestorOptions.hpp"
-#include "umps/services/command/commandsRequest.hpp"
-#include "umps/services/command/commandsResponse.hpp"
+#include "umps/services/command/availableCommandsRequest.hpp"
+#include "umps/services/command/availableCommandsResponse.hpp"
+#include "umps/services/command/commandRequest.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;

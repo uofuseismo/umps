@@ -112,7 +112,6 @@ public:
         (const std::string &messageType, const void *data, size_t length)> getCallback() const;
     /// @result True indicates the callback was set.
     [[nodiscard]] bool haveCallback() const noexcept;
-
     /// @}
 
     /// @name High Water Mark
@@ -157,7 +156,6 @@ public:
     /// @result The amount of time to wait before timing out in the polling
     ///         operation.
     [[nodiscard]] std::chrono::milliseconds getPollTimeOut() const noexcept;
-
     /// @}
 
     /// @name Destructors

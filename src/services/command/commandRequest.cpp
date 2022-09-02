@@ -2,17 +2,17 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/command/textRequest.hpp"
+#include "umps/services/command/commandRequest.hpp"
 #include "private/isEmpty.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Command::TextRequest"
+#define MESSAGE_TYPE "UMPS::Services::Command::CommandRequest"
 
 using namespace UMPS::Services::Command;
 
 namespace
 {
 
-nlohmann::json toJSONObject(const TextRequest &request)
+nlohmann::json toJSONObject(const CommandRequest &request)
 {
     nlohmann::json obj;
     obj["MessageType"] = request.getMessageType();
@@ -20,9 +20,9 @@ nlohmann::json toJSONObject(const TextRequest &request)
     return obj;
 }
 
-TextRequest objectToCommands(const nlohmann::json &obj)
+CommandRequest objectToCommands(const nlohmann::json &obj)
 {
-    TextRequest request;
+    CommandRequest request;
     if (obj["MessageType"] != request.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
@@ -32,15 +32,15 @@ TextRequest objectToCommands(const nlohmann::json &obj)
 }
 
 /// Create CBOR
-std::string toCBORMessage(const TextRequest &reqeuest)
+std::string toCBORMessage(const CommandRequest &request)
 {
-    auto obj = toJSONObject(reqeuest);
+    auto obj = toJSONObject(request);
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result; 
 }
 
-TextRequest fromCBORMessage(const uint8_t *message, const size_t length)
+CommandRequest fromCBORMessage(const uint8_t *message, const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
     return objectToCommands(obj);
@@ -48,110 +48,110 @@ TextRequest fromCBORMessage(const uint8_t *message, const size_t length)
 
 }
 
-class TextRequest::TextRequestImpl
+class CommandRequest::CommandRequestImpl
 {
 public:
     std::string mCommand;
 };
 
 /// C'tor
-TextRequest::TextRequest() :
-    pImpl(std::make_unique<TextRequestImpl> ())
+CommandRequest::CommandRequest() :
+    pImpl(std::make_unique<CommandRequestImpl> ())
 {
 }
 
 /// Copy c'tor
-TextRequest::TextRequest(const TextRequest &request)
+CommandRequest::CommandRequest(const CommandRequest &request)
 {
     *this = request;
 }
 
 /// Move c'tor
-TextRequest::TextRequest(TextRequest &&request) noexcept
+CommandRequest::CommandRequest(CommandRequest &&request) noexcept
 {
     *this = std::move(request);
 }
 
 /// Copy assignment
-TextRequest& TextRequest::operator=(const TextRequest &reqeuest)
+CommandRequest& CommandRequest::operator=(const CommandRequest &request)
 {
-    if (&reqeuest == this){return *this;}
-    pImpl = std::make_unique<TextRequestImpl> (*reqeuest.pImpl);
+    if (&request == this){return *this;}
+    pImpl = std::make_unique<CommandRequestImpl> (*request.pImpl);
     return *this;
 }
 
 /// Move assignment
-TextRequest& TextRequest::operator=(TextRequest &&reqeuest) noexcept
+CommandRequest& CommandRequest::operator=(CommandRequest &&request) noexcept
 {
-    if (&reqeuest == this){return *this;}
-    pImpl = std::move(reqeuest.pImpl);
+    if (&request == this){return *this;}
+    pImpl = std::move(request.pImpl);
     return *this;
 }
 
 /// Reset class
-void TextRequest::clear() noexcept
+void CommandRequest::clear() noexcept
 {
-    pImpl = std::make_unique<TextRequestImpl> ();
+    pImpl = std::make_unique<CommandRequestImpl> ();
 }
 
 /// Destructor
-TextRequest::~TextRequest() = default;
+CommandRequest::~CommandRequest() = default;
 
 ///  Convert message
-std::string TextRequest::toMessage() const
+std::string CommandRequest::toMessage() const
 {
     return toCBORMessage(*this);
 }
 
-void TextRequest::fromMessage(const std::string &message)
+void CommandRequest::fromMessage(const std::string &message)
 {
     if (message.empty()){throw std::invalid_argument("Message is empty");}
     fromMessage(message.data(), message.size());
 }
 
-void TextRequest::fromMessage(const char *messageIn, const size_t length)
+void CommandRequest::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
     *this = fromCBORMessage(message, length);
 }
 
 /// Copy this class
-std::unique_ptr<UMPS::MessageFormats::IMessage> TextRequest::clone() const
+std::unique_ptr<UMPS::MessageFormats::IMessage> CommandRequest::clone() const
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<TextRequest> (*this);
+        = std::make_unique<CommandRequest> (*this);
     return result;
 }
 
 /// Create an instance of this class 
 std::unique_ptr<UMPS::MessageFormats::IMessage>
-    TextRequest::createInstance() const noexcept
+    CommandRequest::createInstance() const noexcept
 {
     std::unique_ptr<MessageFormats::IMessage> result
-        = std::make_unique<TextRequest> ();
+        = std::make_unique<CommandRequest> ();
     return result;
 }
 
 /// Set command
-void TextRequest::setCommand(const std::string &command)
+void CommandRequest::setCommand(const std::string &command)
 {
     if (::isEmpty(command)){throw std::invalid_argument("Command is empty");}
     pImpl->mCommand = command;
 }
 
-std::string TextRequest::getCommand() const
+std::string CommandRequest::getCommand() const
 {
     if (!haveCommand()){throw std::runtime_error("Command not set");}
     return pImpl->mCommand;
 }
 
-bool TextRequest::haveCommand() const noexcept
+bool CommandRequest::haveCommand() const noexcept
 {
     return !pImpl->mCommand.empty();
 }
 
 /// Message type
-std::string TextRequest::getMessageType() const noexcept
+std::string CommandRequest::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }

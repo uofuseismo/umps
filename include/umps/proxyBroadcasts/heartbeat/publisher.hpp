@@ -47,7 +47,7 @@ public:
     ///       can be made with:
     ///       auto context = std::shared_ptr<UMPS::Messaging::Context> (0).
     explicit Publisher(std::shared_ptr<UMPS::Messaging::Context> &context);
-    /// @brief Construtcs a publisher with a given ZeroMQ context and logger.
+    /// @brief Constructs a publisher with a given ZeroMQ context and logger.
     Publisher(std::shared_ptr<UMPS::Messaging::Context> &context,
               std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.

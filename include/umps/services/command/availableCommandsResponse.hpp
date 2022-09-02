@@ -1,64 +1,57 @@
-#ifndef UMPS_SERVICES_COMMAND_TEXTREQUEST_HPP
-#define UMPS_SERVICES_COMMAND_TEXTREQUEST_HPP
+#ifndef UMPS_SERVICES_COMMAND_AVAILABLECOMMANDSRESPONSE_HPP
+#define UMPS_SERVICES_COMMAND_AVAILABLECOMMANDSRESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
-/// @class TextRequest textRequest.hpp "umps/services/command/textRequest.hpp"
-/// @brief Issues a text-based command to the application.
+/// @class AvailableCommandsResponse "AvailableCommandsResponse.hpp" "umps/messageFormats/availableCommandsResponse.hpp"
+/// @brief The available text-based interactive program commands.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class TextRequest : public UMPS::MessageFormats::IMessage
+/// @ingroup Messages_MessageFormats
+class AvailableCommandsResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    TextRequest();
+    AvailableCommandsResponse();
     /// @brief Copy constructor.
-    /// @param[in] message  The text request message class from which to
-    ///                     initialize this class.
-    TextRequest(const TextRequest &message);
+    /// @param[in] message  The text message class from which to initialize
+    ///                     this class.
+    AvailableCommandsResponse(const AvailableCommandsResponse &message);
     /// @brief Move constructor.
-    /// @param[in,out] message  The text request message class from which to
+    /// @param[in,out] message  The text message class from which to
     ///                         initialize this class.  On exit, message's
     ///                         behavior is undefined.
-    TextRequest(TextRequest &&message) noexcept;
-    /// @}
-
-    /// @name Required Parameters
-    /// @{
-
-    /// @brief The text-based command.
-    /// @param[in] command  The text-based command. 
-    /// @throws std::invalid_argument if the command is empty.
-    void setCommand(const std::string &command);
-    /// @result The text-based command.
-    /// @throws std::runtime_error if \c haveCommand() is false.
-    [[nodiscard]] std::string getCommand() const;
-    /// @result The 
-    [[nodiscard]] bool haveCommand() const noexcept;
+    AvailableCommandsResponse(AvailableCommandsResponse &&message) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment.
-    /// @param[in] message  The text request message class to copy to this.
+    /// @param[in] message  The text message class to copy to this.
     /// @result A deep copy of the text message.
-    TextRequest& operator=(const TextRequest &message);
+    AvailableCommandsResponse& operator=(const AvailableCommandsResponse &message);
     /// @brief Move assignment.
-    /// @param[in,out] message  The text request message class whose memory will
-    ///                         be moved to this.  On exit, messages's behavior
-    ///                         is undefined.
+    /// @param[in,out] message  The text message class whose memory will be
+    ///                         moved to this.  On exit, messages's behavior is
+    ///                         undefined.
     /// @result The memory from message moved to this.
-    TextRequest& operator=(TextRequest &&message) noexcept;
+    AvailableCommandsResponse& operator=(AvailableCommandsResponse &&message) noexcept;
     /// @}
+
+    /// @brief Sets the available program commands.
+    /// @param[in] commands  The available program commands.
+    void setCommands(const std::string &commands);
+    /// @result The available program commands.
+    [[nodiscard]] std::string getCommands() const noexcept;
 
     /// @name Message Abstract Base Class Properties
     /// @{
 
-    /// @brief Converts the text request class to a string message.
+    /// @brief Converts the class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
     /// @note Though the container is a string the message need not be
@@ -73,26 +66,27 @@ public:
     ///                    array whose dimension is [length] 
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
-    /// @throws std::invalid_argument if data is NULL or length is 0. 
+    /// @throws std::invalid_argument if data is NULL or length is 0.
     void fromMessage(const char *data, size_t length) override final;
-    /// @result A message type indicating this is a text request message.
+    /// @result A message type indicating the message type.
     [[nodiscard]] std::string getMessageType() const noexcept override final;
     /// @result A copy of this class.
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
     /// @result An uninitialized instance of this class. 
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept override final;
     /// @}
+
     /// @name Destructors
     /// @{
 
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~TextRequest() override;
+    ~AvailableCommandsResponse() override;
     /// @}
 private:
-    class TextRequestImpl;
-    std::unique_ptr<TextRequestImpl> pImpl;
+    class AvailableCommandsResponseImpl;
+    std::unique_ptr<AvailableCommandsResponseImpl> pImpl;
 };
 }
 #endif

@@ -6,7 +6,6 @@
 #ifndef NDEBUG
 #include <cassert>
 #endif
-#include <zmq.hpp>
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -28,10 +27,12 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
-#include "umps/services/command/commandsRequest.hpp"
-#include "umps/services/command/commandsResponse.hpp"
+#include "umps/services/command/availableCommandsRequest.hpp"
+#include "umps/services/command/availableCommandsResponse.hpp"
+#include "umps/services/command/commandRequest.hpp"
+#include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localService.hpp"
-#include "umps/services/command/textRequest.hpp"
+#include "umps/services/command/localServiceOptions.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/context.hpp"
@@ -207,6 +208,7 @@ class BroadcastPackets : public UMPS::Modules::IProcess
 public:
     BroadcastPackets() = default;
     BroadcastPackets(
+        const std::string &moduleName, 
         std::unique_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher>
              &&packetPublisher,
         std::unique_ptr<UMPS::Earthworm::WaveRing> &&waveRing,
@@ -237,6 +239,15 @@ public:
         }
         mLocalCommand
             = std::make_unique<UMPS::Services::Command::LocalService> (mLogger);
+        UMPS::Services::Command::LocalServiceOptions localServiceOptions;
+        localServiceOptions.setModuleName(moduleName);
+        localServiceOptions.setCallback(
+            std::bind(&BroadcastPackets::commandCallback,
+                      this,
+                      std::placeholders::_1,
+                      std::placeholders::_2,
+                      std::placeholders::_3));
+        mLocalCommand->initialize(localServiceOptions);
         mInitialized = true;
     }
     /// Initialized?
@@ -286,7 +297,7 @@ public:
         mBroadcastThread = std::thread(&BroadcastPackets::run,
                                        this);
         mLogger->debug("Starting the local command proxy..."); 
-        //mLocalCommand->start();
+        mLocalCommand->start();
     }
     /// Running?
     [[nodiscard]] bool isRunning() const noexcept override
@@ -359,37 +370,68 @@ public:
     {
         namespace USC = UMPS::Services::Command;
         mLogger->debug("Command request received"); 
-        USC::CommandsRequest commandRequest;
-        USC::TextRequest textRequest;
-        if (messageType == commandRequest.getMessageType())
+        USC::AvailableCommandsRequest availableCommandsRequest;
+        USC::CommandRequest commandRequest;
+        if (messageType == availableCommandsRequest.getMessageType())
         {
-            USC::CommandsResponse commandResponse;
-            commandResponse.setCommands(getInputOptions());
+            USC::AvailableCommandsResponse response;
+            response.setCommands(getInputOptions());
             try
             {
-                commandRequest.fromMessage(
+                availableCommandsRequest.fromMessage(
                     static_cast<const char *> (data), length); 
             }
             catch (const std::exception &e)
             {
-                mLogger->error("Failed to unpack command request");
+                mLogger->error("Failed to unpack commands request");
             }
-            return commandResponse.clone(); 
+            return response.clone(); 
         }
-        else if (messageType == textRequest.getMessageType())
+        else if (messageType == commandRequest.getMessageType())
         {
-
+            USC::CommandResponse response;
+            try
+            {
+                commandRequest.fromMessage( 
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack text request");
+                response.setReturnCode(
+                    USC::CommandReturnCode::ApplicationError);
+            }
+            auto command = commandRequest.getCommand(); 
+            if (command == "quit")
+            {
+                mLogger->debug("Issuing quit command...");
+                response.setReturnCode(USC::CommandReturnCode::Success);
+                setRunning(false);
+            }
+            else
+            {
+                response.setResponse(getInputOptions());
+                if (command != "help")
+                {
+                    mLogger->debug("Invalid command: " + command);
+                    response.setReturnCode(USC::CommandReturnCode::InvalidCommand);
+                }
+                else
+                {
+                    response.setReturnCode(USC::CommandReturnCode::Success);
+                }
+            }
+            return response.clone();
         }
         else
         {
-            mLogger->debug("Command callback stopping application");
-            setRunning(false);
-        } 
+            mLogger->error("Unhandled message type: " + messageType);
+        }
         // Return
         mLogger->error("Unhandled message: " + messageType);
-        USC::CommandsResponse commandResponse; 
-        commandResponse.setCommands(getInputOptions());
-        return commandResponse.clone();
+        USC::AvailableCommandsResponse commandsResponse; 
+        commandsResponse.setCommands(getInputOptions());
+        return commandsResponse.clone();
     }
     mutable std::mutex mMutex;
     std::thread mBroadcastThread;
@@ -863,7 +905,8 @@ int main(int argc, char *argv[])
                                                              flushRing);
 
         auto broadcastProcess 
-            = std::make_unique<BroadcastPackets> (std::move(packetPublisher), 
+            = std::make_unique<BroadcastPackets> (programOptions.mModuleName,
+                                                  std::move(packetPublisher), 
                                                   std::move(earthwormReader),
                                                   logger);
         processManager.insert(std::move(broadcastProcess)); 

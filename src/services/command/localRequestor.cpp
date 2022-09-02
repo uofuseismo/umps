@@ -5,8 +5,10 @@
 #endif
 #include "umps/services/command/localRequestor.hpp"
 #include "umps/services/command/localRequestorOptions.hpp"
-#include "umps/services/command/commandsRequest.hpp"
-#include "umps/services/command/commandsResponse.hpp"
+#include "umps/services/command/availableCommandsRequest.hpp"
+#include "umps/services/command/availableCommandsResponse.hpp"
+#include "umps/services/command/commandRequest.hpp"
+#include "umps/services/command/commandResponse.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
@@ -50,7 +52,7 @@ public:
 */
         // Make the message types
         std::unique_ptr<UMPS::MessageFormats::IMessage> commandsResponseMessage
-            = std::make_unique<CommandsResponse> ();
+            = std::make_unique<AvailableCommandsResponse> ();
         mMessageFormats.add(commandsResponseMessage);
     }
 /*
@@ -146,6 +148,25 @@ LocalRequestor::LocalRequestor() :
 {
 }
 
+LocalRequestor::LocalRequestor(
+    std::shared_ptr<UMPS::Messaging::Context> &context) :
+    pImpl(std::make_unique<LocalRequestorImpl> (context, nullptr))
+{
+}
+
+LocalRequestor::LocalRequestor(
+    std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<LocalRequestorImpl> (nullptr, logger))
+{
+}
+
+LocalRequestor::LocalRequestor(
+    std::shared_ptr<UMPS::Messaging::Context> &context,
+    std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<LocalRequestorImpl> (context, logger))
+{
+}
+
 /// Move c'tor
 LocalRequestor::LocalRequestor(LocalRequestor &&requestor) noexcept
 {
@@ -210,18 +231,18 @@ bool LocalRequestor::isInitialized() const noexcept
 }
 
 /// Commands
-std::unique_ptr<CommandsResponse> LocalRequestor::getCommands() const
+std::unique_ptr<AvailableCommandsResponse> LocalRequestor::getCommands() const
 {
     if (!isInitialized())
     {
         throw std::runtime_error("Requestor not initialized");
     }
-    std::unique_ptr<CommandsResponse> result{nullptr};
-    CommandsRequest requestMessage;
+    std::unique_ptr<AvailableCommandsResponse> result{nullptr};
+    AvailableCommandsRequest requestMessage;
     auto message = pImpl->mRequest->request(requestMessage);
     if (message != nullptr)
     {
-        result = static_unique_pointer_cast<CommandsResponse>
+        result = static_unique_pointer_cast<AvailableCommandsResponse>
                  (std::move(message));
     }
     else

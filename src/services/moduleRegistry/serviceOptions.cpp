@@ -59,7 +59,7 @@ void ServiceOptions::clear() noexcept
     pImpl->mVerbosity = UMPS::Logging::Level::ERROR;
 }
 
-/// Destrutcor
+/// Destructor
 ServiceOptions::~ServiceOptions() = default;
 
 /// Name

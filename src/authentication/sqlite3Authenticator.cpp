@@ -4,7 +4,6 @@
 #include <vector>
 #include <filesystem>
 #include <set>
-//#include <zmq.hpp>
 #include <sodium/crypto_pwhash.h>
 #include <sqlite3.h>
 #include <cassert>
@@ -368,7 +367,7 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userNameOr
 /// Add user
 void addUserToDatabase(sqlite3 *db, const User &user)
 {
-    auto sql = addUserToRow(user);
+    auto sql = ::addUserToRow(user);
     char *errorMessage = nullptr;
     auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
     if (rc != SQLITE_OK)
@@ -381,7 +380,7 @@ void addUserToDatabase(sqlite3 *db, const User &user)
 /// Update user
 void updateUserToDatabase(sqlite3 *db, const User &user)
 {
-    auto sql = updateUserToRow(user);
+    auto sql = ::updateUserToRow(user);
     char *errorMessage = nullptr;
     auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
     if (rc != SQLITE_OK)
@@ -394,7 +393,7 @@ void updateUserToDatabase(sqlite3 *db, const User &user)
 /// Delete user
 void deleteUserFromDatabase(sqlite3 *db, const User &user)
 {
-    auto sql = deleteUserFromRow(user);
+    auto sql = ::deleteUserFromRow(user);
     char *errorMessage = nullptr;
     auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
     if (rc != SQLITE_OK)
@@ -596,7 +595,7 @@ public:
             if (create)
             {
                 auto [rcCreate, message]
-                    = createBlacklistTable(mBlacklistTable);
+                    = ::createBlacklistTable(mBlacklistTable);
                 if (rcCreate != SQLITE_OK)
                 {
                     auto errorMessage = "Failed to create blacklist table: "
@@ -631,7 +630,7 @@ public:
             if (create)
             {
                 auto [rcCreate, message]
-                    = createWhitelistTable(mWhitelistTable);
+                    = ::createWhitelistTable(mWhitelistTable);
                 if (rcCreate != SQLITE_OK)
                 {
                     auto errorMessage = "Failed to create whitelist table: "
@@ -672,11 +671,11 @@ public:
         if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
         auto userName = user.getName();
         constexpr bool queryUser = true;
-        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
+        auto users = ::queryFromUsersTable(mUsersTable, userName, queryUser);
         if (users.empty())
         {
             mLogger->info("Adding user: " + userName);
-            addUserToDatabase(mUsersTable, user);
+            ::addUserToDatabase(mUsersTable, user);
         }
         else
         {
@@ -689,11 +688,11 @@ public:
         if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
         auto userName = user.getName();
         constexpr bool queryUser = true;
-        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
+        auto users = ::queryFromUsersTable(mUsersTable, userName, queryUser);
         if (users.empty())
         {
             mLogger->info("User does not yet exist.  Adding user: " + userName);
-            addUserToDatabase(mUsersTable, user);
+            ::addUserToDatabase(mUsersTable, user);
         }
         else
         {
@@ -712,16 +711,16 @@ public:
         if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
         auto userName = user.getName();
         constexpr bool queryUser = true;
-        auto users = queryFromUsersTable(mUsersTable, userName, queryUser);
+        auto users = ::queryFromUsersTable(mUsersTable, userName, queryUser);
         if (!users.empty())
         {
 #ifndef NDEBUG
             assert(static_cast<int> (users.size()) == 1);
 #endif
             mLogger->info("Deleting user: " + userName);
-            deleteUserFromDatabase(mUsersTable, users.at(0));
+            ::deleteUserFromDatabase(mUsersTable, users.at(0));
 #ifndef NDEBUG
-            users = queryFromUsersTable(mUsersTable, userName, queryUser);
+            users = ::queryFromUsersTable(mUsersTable, userName, queryUser);
             assert(users.empty());
 #endif
         }
@@ -738,7 +737,7 @@ public:
         if (!mHaveUsersTable){throw std::runtime_error("User table not open");}
         const std::string userName{};
         constexpr bool queryUser = true;
-        return queryFromUsersTable(mUsersTable, userName, queryUser);
+        return ::queryFromUsersTable(mUsersTable, userName, queryUser);
     }
     /// Does user and password match?
     std::pair<std::string, std::string> 
@@ -752,8 +751,8 @@ public:
         }
         // Query all users named userName
         const bool queryUser = true;
-        auto returnedUsers = queryFromUsersTable(mUsersTable, userName,
-                                                 queryUser);
+        auto returnedUsers = ::queryFromUsersTable(mUsersTable, userName,
+                                                   queryUser);
         // No user exists
         if (returnedUsers.empty())
         {
@@ -774,9 +773,10 @@ public:
                              "User: " + userName
                            + " has insufficient privileges."
                            + userName + " has " 
-                           + toPrivilegeString(returnedUsers[0].getPrivileges())
+                           + ::toPrivilegeString(
+                                 returnedUsers[0].getPrivileges())
                            + " but requires "
-                           + toPrivilegeString(mPrivileges));
+                           + ::toPrivilegeString(mPrivileges));
         }
         if (!returnedUsers[0].doesPasswordMatch(password))
         {
@@ -787,7 +787,7 @@ public:
         }
         mLogger->info("Validated user/password for user " + userName
                     + " who has minimum privileges "
-                    + toPrivilegeString(mPrivileges));
+                    + ::toPrivilegeString(mPrivileges));
         return std::pair(okayStatus(), okayMessage());
     }
     /// Does public key match?
@@ -801,8 +801,8 @@ public:
         }
         // Query for this public key
         const bool queryUser = false;
-        auto returnedUsers = queryFromUsersTable(mUsersTable, publicKey,
-                                                 queryUser);
+        auto returnedUsers = ::queryFromUsersTable(mUsersTable, publicKey,
+                                                   queryUser);
         // No user exists
         if (returnedUsers.empty())
         {
@@ -816,14 +816,15 @@ public:
             return std::pair(clientErrorStatus(),
                             "User has insufficient privileges.  "
                            + returnedUsers[0].getName() + " has " 
-                           + toPrivilegeString(returnedUsers[0].getPrivileges())
+                           + ::toPrivilegeString(
+                                 returnedUsers[0].getPrivileges())
                            + " but requires "
-                           + toPrivilegeString(mPrivileges));
+                           + ::toPrivilegeString(mPrivileges));
         }
         mLogger->info("Validated public key for user "
                     + returnedUsers[0].getName()
                     + " who has minimum privileges "
-                    + toPrivilegeString(mPrivileges));
+                    + ::toPrivilegeString(mPrivileges));
         return std::pair(okayStatus(), okayMessage()); 
     }
 ///private:
@@ -858,19 +859,6 @@ SQLite3Authenticator::SQLite3Authenticator(
     pImpl(std::make_unique<AuthenticatorImpl> (logger, privileges))
 {
 }
-
-/*
-Authenticator::Authenticator(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<AuthenticatorImpl> (context))
-{
-}
-
-Authenticator::Authenticator(std::shared_ptr<zmq::context_t> &context,
-                             std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<AuthenticatorImpl> (context, logger))
-{
-}
-*/
 
 /// Destructor
 SQLite3Authenticator::~SQLite3Authenticator() = default;

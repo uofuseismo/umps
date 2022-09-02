@@ -50,6 +50,8 @@ public:
     /// @name Initialization
     /// @{
 
+    /// @brief Sets the local service options.
+    void initialize(const LocalServiceOptions &options);
     /// @}
 
     /// @result True indicates that the service is initialized.

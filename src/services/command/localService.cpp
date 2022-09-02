@@ -4,13 +4,18 @@
 #include <cassert>
 #endif
 #include "umps/services/command/localService.hpp"
+#include "umps/services/command/localServiceOptions.hpp"
+#include "umps/services/command/localModuleTable.hpp"
+#include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Services::Command;
+namespace UAuth = UMPS::Authentication;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 
@@ -57,6 +62,8 @@ public:
 ///private:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Messaging::RequestRouter::Router> mRouter{nullptr};
+    UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions; 
+    LocalModuleTable mLocalModuleTable;
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     const std::string mName{"LocalCommand"};
@@ -83,6 +90,38 @@ LocalService::LocalService(std::shared_ptr<UMPS::Messaging::Context> &context,
                            std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<LocalServiceImpl> (context, logger))
 {
+}
+
+/// Initilialize
+void LocalService::initialize(const LocalServiceOptions &options)
+{
+    if (!options.haveCallback())
+    {
+        throw std::invalid_argument("Callback not set");
+    }
+    if (!options.haveModuleName())
+    {
+        throw std::invalid_argument("Module name not set");
+    }
+    stop(); // Ensure the service is stopped
+    // Initialize the socket
+    auto address = options.getAddress();
+    pImpl->mRouterOptions.setAddress(address);
+    pImpl->mRouterOptions.setCallback(options.getCallback());
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setGrasslandsServer();
+    pImpl->mRouterOptions.setZAPOptions(zapOptions);
+    // Initialize / connect
+    pImpl->mRouter->initialize(pImpl->mRouterOptions);
+    // Get the connection details
+    auto socketDetails = pImpl->mRouter->getSocketDetails();
+    pImpl->mConnectionDetails.setName(getName());
+    pImpl->mConnectionDetails.setSocketDetails(socketDetails);
+    pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::Service);
+    pImpl->mConnectionDetails.setSecurityLevel(
+        socketDetails.getSecurityLevel());
+    // Done
+    pImpl->mInitialized = true;
 }
 
 /// Initialized?
