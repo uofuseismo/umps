@@ -269,9 +269,6 @@ std::string ipResolver(const std::string &serverName)
 ///-------------------------------------------------------------------------///
 int main(int argc, char *argv[])
 {
-    //auto myIPAddress = ipResolver("waldorf.seis.utah.edu");
-    //std::cout << myIPAddress << std::endl;
-    //return 0;
     // Get the ini file from the command line
     bool runInteractive{true};
     std::string iniFile;
