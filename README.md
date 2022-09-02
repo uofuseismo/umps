@@ -39,7 +39,8 @@ The following libraries are required to build the core software
    5.  [ZeroMQ](https://zeromq.org/) v4 is, loosely speaking, a networking library.  ZeroMQ must be compiled with [libsodium](https://github.com/jedisct1/libsodium).  You may be thinking - Earthworm can send messages to and from computers.  That's absolutely true and UMPS can even ingest and produce some Earthworm messages.   Unfortunately, Earthworm's messaging system was never designed to be used as a library.  ZeroMQ was.  ZeroMQ is also provably scalable, actively maintained by a much broader community, has terrific documentation, a very nice API, and can perform user authentication.  It's also dead easy to install or build from source.  
    6.  [cppzmq](https://github.com/zeromq/cppzmq) the header-only C++ interface to ZeroMQ.
    7.  [spdlog](https://github.com/gabime/spdlog) underlies the default logger.  Again, I know, Earthworm can log messages (logit).  But, again, spdlog was built exclusively for logging messages.  Technically, if you really want to use logit then you would simply extend the base class.
-   8.  [GTest](https://github.com/google/googletest) for unit testing.
+   8.  [nlohmann](https://github.com/nlohmann/json) for (de)serializing messages.
+   9.  [GTest](https://github.com/google/googletest) for unit testing.
 
 Ideas on how to obtain these can be gleaned scripts/Dockererfile.ubuntu22.
 
