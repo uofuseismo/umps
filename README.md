@@ -1,6 +1,6 @@
 # About 
 
-[Utah Message Passing System](https://uofuseismo.github.io/umps/) is a network-seismology-oriented message passing library that
+Utah Message Passing System is a network-seismology-oriented message passing library that
 
    1. Allows for multiple communication patterns - e.g., pub/sub, request/reply between different computers on a network.
    2. Addresses the network exploration problem with a hub and spoke model.
