@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <chrono>
-#include <boost/asio.hpp>
 #include "umps/proxyBroadcasts/pick/publisherOptions.hpp"
 #include "umps/proxyBroadcasts/pick/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
