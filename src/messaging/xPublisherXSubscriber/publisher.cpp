@@ -137,6 +137,20 @@ Publisher::Publisher(std::shared_ptr<UMPS::Messaging::Context> &context,
 {
 }
 
+/// Move c'tor
+Publisher::Publisher(Publisher &&publisher) noexcept
+{
+    *this = std::move(publisher);
+}
+
+/// Move assignment
+Publisher& Publisher::operator=(Publisher &&publisher) noexcept
+{
+    if (&publisher == this){return *this;}
+    pImpl = std::move(publisher.pImpl);
+    return *this;
+}
+
 /// Destructor
 Publisher::~Publisher() = default;
 

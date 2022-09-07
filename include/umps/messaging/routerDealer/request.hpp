@@ -84,11 +84,6 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept; 
     /// @brief Sets the message format for receiving responses.
     //void setResponse(std::unique_ptr<UMPS::MessageFormats::IMessage> &message);
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
-    /// @result The connection string.
-    /// @throws std::runtime_error if \c isConnected() is false.
-    [[deprecated]] [[nodiscard]] std::string getConnectionString() const;
     /// @result The details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Request getSocketDetails() const;

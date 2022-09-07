@@ -105,7 +105,7 @@ public:
     void setMessageFormats(const UMPS::MessageFormats::Messages &messageFormats);
     /// @result The message types to which to subscriber.
     /// @throws std::runtime_error if \c haveMessageTypes() is false.
-    UMPS::MessageFormats::Messages getMessageFormats() const;
+    [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const;
     /// @result True indicates the message types have been set.
     [[nodiscard]] bool haveMessageFormats() const noexcept;
     /// @}

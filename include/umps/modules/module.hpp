@@ -1,6 +1,7 @@
 #ifndef UMPS_MODULES_MODULE_HPP
 #define UMPS_MODULES_MODULE_HPP
 #include <memory>
+#include <chrono>
 #include "umps/logging/level.hpp"
 namespace UMPS
 {

@@ -8,13 +8,10 @@ namespace UMPS
  {
   class ZAPOptions;
  }
- namespace Messaging
- {
-  namespace PublisherSubscriber
+ namespace Messaging::PublisherSubscriber
   {
    class SubscriberOptions;
   }
- }
 }
 namespace UMPS::ProxyBroadcasts::DataPacket
 {
@@ -96,7 +93,7 @@ public:
     ///                      zero then the subscriber will immediately return.
     ///                      If this is negative then the subscriber will wait
     ///                      indefinitely until a message is received.
-    void setTimeOut(const std::chrono::milliseconds timeOut) noexcept;
+    void setTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
     /// @result The time out duration in milliseconds.
     [[nodiscard]] std::chrono::milliseconds getTimeOut() const noexcept;
     /// @}

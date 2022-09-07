@@ -110,7 +110,7 @@ UMPS::Messaging::XPublisherXSubscriber::PublisherOptions
 
 /// Timeout
 void PublisherOptions::setTimeOut(
-    const std::chrono::milliseconds timeOut) noexcept
+    const std::chrono::milliseconds &timeOut) noexcept
 {
     pImpl->mOptions.setTimeOut(timeOut);
 }

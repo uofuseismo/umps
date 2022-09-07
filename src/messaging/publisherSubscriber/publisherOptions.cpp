@@ -110,7 +110,7 @@ UAuth::ZAPOptions PublisherOptions::getZAPOptions() const noexcept
 
 /// Timeout
 void PublisherOptions::setTimeOut(
-    const std::chrono::milliseconds timeOut) noexcept
+    const std::chrono::milliseconds &timeOut) noexcept
 {
     constexpr std::chrono::milliseconds zero{0};
     if (timeOut >= zero)

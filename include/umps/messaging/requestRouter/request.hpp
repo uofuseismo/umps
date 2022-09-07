@@ -69,9 +69,6 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept; 
     /// @result The security level of the connection.
     [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
-    /// @result The connection string.
-    /// @throws std::runtime_error if \c isConnected() is false.
-    [[deprecated]] [[nodiscard]] std::string getConnectionString() const;
     /// @result the connection details.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Request getSocketDetails() const;

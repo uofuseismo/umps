@@ -52,11 +52,6 @@ public:
     void initialize(const SubscriberOptions &options);
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
-    /// @result The socket endpoint.
-    /// @throws std::runtime_error if \c isInitialized() is true.
-    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
     /// @result The connection details for this socket.
     /// @throws std::runtime_error if \c isInitialized() is false. 
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Subscriber getSocketDetails() const;

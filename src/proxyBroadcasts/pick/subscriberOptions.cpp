@@ -109,7 +109,7 @@ UAuth::ZAPOptions SubscriberOptions::getZAPOptions() const noexcept
 
 /// Timeout
 void SubscriberOptions::setTimeOut(
-    const std::chrono::milliseconds timeOut) noexcept
+    const std::chrono::milliseconds &timeOut) noexcept
 {
     pImpl->mOptions.setTimeOut(timeOut);
 }

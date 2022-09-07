@@ -67,11 +67,6 @@ public:
     void initialize(const ReplyOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
-    /// @result The connection string.
-    /// @throws std::runtime_error if \c isConnected() is false.
-    [[deprecated]] [[nodiscard]] std::string getConnectionString() const;
     /// @result The details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Reply getSocketDetails() const;

@@ -77,7 +77,7 @@ public:
     ///                      zero then the subscriber will immediately return.
     ///                      If this is negative then the subscriber will wait
     ///                      indefinitely until a message is received.
-    void setTimeOut(const std::chrono::milliseconds timeOut) noexcept;
+    void setTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
     /// @result The time out duration in milliseconds.
     [[nodiscard]] std::chrono::milliseconds getTimeOut() const noexcept;
     /// @}
@@ -90,7 +90,7 @@ public:
     void setZAPOptions(const Authentication::ZAPOptions &options);
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
-    Authentication::ZAPOptions getZAPOptions() const noexcept;
+    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
  
     /// @name Destructors

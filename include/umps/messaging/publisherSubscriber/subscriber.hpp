@@ -45,7 +45,7 @@ public:
     explicit Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a specified context.
     /// @param[in] context  The ZeroMQ context.
-    Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context);
+    explicit Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructs a publisher with a given ZeroMQ context and logger.
     Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context,
                std::shared_ptr<UMPS::Logging::ILog> &logger);

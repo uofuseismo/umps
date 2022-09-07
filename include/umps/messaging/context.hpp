@@ -22,7 +22,7 @@ public:
     ~Context();
 
     /// @result A pointer to the ZeroMQ context.
-    std::uintptr_t getContext() const;
+    [[nodiscard]] std::uintptr_t getContext() const;
 private:
     class ContextImpl;
     std::unique_ptr<ContextImpl> pImpl; 

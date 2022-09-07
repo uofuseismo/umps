@@ -72,10 +72,10 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The address to which the clients will connect.
     /// @throws std::invalid_argument if \c isInitialized() is false.
-    [[nodiscard]] std::string getFrontendAddress() const;
+    //[[deprecated]] [[nodiscard]] std::string getFrontendAddress() const;
     /// @result The address to which the servers will connect.
     /// @throws std::invalid_argument if \c isInitialized() is false.
-    [[nodiscard]] std::string getBackendAddress() const;
+    //[[deprecated]] [[nodiscard]] std::string getBackendAddress() const;
     /// @result The details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Proxy getSocketDetails() const;
@@ -92,7 +92,7 @@ public:
     /// @brief Pauses the proxy.
     /// @note You can restart the proxy by using \c start().
     /// @throws std::runtime_error if \c isInitialized() is false.
-    void pause();
+    //void pause();
     /// @brief Stops the proxy.
     /// @note You will have to reinitialize after calling this.
     void stop();
