@@ -63,7 +63,7 @@ public:
     /// @throws std::runtime_error if the required information is not set. 
     /// @note Though the container is a string the message need not be
     ///       human readable.
-    [[nodiscard]] std::string toMessage() const override final;
+    [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
     /// @param[in] message  The message.
     /// @throws std::runtime_error if the message is invalid.
@@ -74,13 +74,13 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
-    void fromMessage(const char *data, size_t length) override final;
+    void fromMessage(const char *data, size_t length) final;
     /// @result A message type indicating this is a text request message.
-    [[nodiscard]] std::string getMessageType() const noexcept override final;
+    [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result A copy of this class.
-    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const final;
     /// @result An uninitialized instance of this class. 
-    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept override final;
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept final;
     /// @}
     /// @name Destructors
     /// @{

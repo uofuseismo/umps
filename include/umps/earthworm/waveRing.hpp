@@ -1,6 +1,7 @@
 #ifndef UMPS_EARTHWORM_WAVERING_HPP
 #define UMPS_EARTHWORM_WAVERING_HPP
 #include <memory>
+#include <vector>
 namespace UMPS
 {
  namespace Logging

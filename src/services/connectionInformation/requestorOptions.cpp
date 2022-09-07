@@ -86,7 +86,7 @@ void RequestorOptions::setZAPOptions(const UAuth::ZAPOptions &zapOptions)
 
 /// Time out
 void RequestorOptions::setTimeOut(
-    const std::chrono::milliseconds timeOut) noexcept
+    const std::chrono::milliseconds &timeOut) noexcept
 {
     pImpl->mRequestOptions.setTimeOut(timeOut);
 }

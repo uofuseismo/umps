@@ -12,16 +12,13 @@ namespace UMPS
  {
   class ILog;
  }
- namespace Services
- {
-  namespace Command
+ namespace Services::Command
   {
    class LocalRequestorOptions;
    class AvailableCommandsResponse;
    class CommandRequest;
    class CommandResponse;
   }
- }
 }
 namespace UMPS::Services::Command
 {

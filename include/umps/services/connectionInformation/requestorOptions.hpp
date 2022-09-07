@@ -65,7 +65,7 @@ public:
     ///                     received.  If this is 0 then the requestor
     ///                     will return immediately.  Otherwise, the requestor 
     ///                     will wait this many milliseconds prior to returning.
-    void setTimeOut(const std::chrono::milliseconds timeOut) noexcept;
+    void setTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
     /// @result The request options for initializing the requestor.
     [[nodiscard]] UMPS::Messaging::RequestRouter::RequestOptions getRequestOptions() const noexcept;
     /// @brief Initializes the class from an ini file.

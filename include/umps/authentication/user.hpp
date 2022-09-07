@@ -117,7 +117,7 @@ public:
 
     /// @brief Sets the user's privileges.
     /// @param[in] privileges  The user's privileges.
-    void setPrivileges(const UserPrivileges privileges) noexcept;
+    void setPrivileges(UserPrivileges privileges) noexcept;
     /// @result The user's privileges.  By default this is read-only.
     [[nodiscard]] UserPrivileges getPrivileges() const noexcept;
     /// @}
@@ -146,7 +146,7 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    virtual ~User();
+    ~User() override;
     /// @}
 
     /// @name Message Properties
@@ -154,15 +154,15 @@ public:
 
     /// @brief Creates a copy of this class.
     /// @result A copy of this class.
-    [[nodiscard]] std::unique_ptr<IMessage> clone() const override final;
+    [[nodiscard]] std::unique_ptr<IMessage> clone() const final;
     /// @brief Creates an instance of this class.
     [[nodiscard]] std::unique_ptr<IMessage> createInstance() const noexcept final;
     /// @brief Serializes this class into a message.
     [[nodiscard]] std::string toMessage() const final;
     /// @brief Converts this message from a string representation to data.
-    void fromMessage(const char *data, const size_t length) override final;
+    void fromMessage(const char *data, size_t length) final;
     /// @result The message type.
-    [[nodiscard]] std::string getMessageType() const noexcept override final;
+    [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
 
     /// @name Debugging Properties
@@ -171,7 +171,7 @@ public:
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables this.
     /// @result This class converted to a JSON representation.
-    [[nodiscard]] std::string toJSON(const int nIndent =-1) const;
+    [[nodiscard]] std::string toJSON(int nIndent =-1) const;
     /// @result This class converted to  CBOR representation.
     [[nodiscard]] std::string toCBOR() const;
     /// @brief Creates the class from a CBOR message.

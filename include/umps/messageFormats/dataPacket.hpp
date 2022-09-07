@@ -88,7 +88,7 @@ public:
     /// @brief Sets the sampling rate for data in the packet.
     /// @param[in] samplingRate  The sampling rate in Hz.
     /// @throws std::invalid_argument if samplingRate is not positive.
-    void setSamplingRate(const double samplingRate);
+    void setSamplingRate(double samplingRate);
     /// @result The sampling rate of the packet in Hz.
     /// @throws std::runtime_error if \c haveSamplingRate() is false.
     [[nodiscard]] double getSamplingRate() const;
@@ -133,7 +133,7 @@ public:
     /// @throws std::invalid_argument if data is null.
     ///  
     template<typename U>
-        void setData(const int nSamples, const U *data);
+        void setData(int nSamples, const U *data);
     /// @result The time series currently set on the packet. 
     [[nodiscard]] std::vector<T> getData() const noexcept;
     /// @result A pointer to the underlying data packet.  This is an array whose
@@ -147,22 +147,22 @@ public:
     /// @{
 
     /// @result A copy of this class.
-    [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const final;
     /// @result An instance of an uninitialized class.
-    virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
+    [[nodiscard]] std::unique_ptr<IMessage> createInstance() const noexcept final;
     /// @brief Converts the packet class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
     /// @note Though the container is a string the message need not be
     ///       human readable.
-    [[nodiscard]] virtual std::string toMessage() const override final;
+    [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
     /// @param[in] data    The contents of the message.  This is an
     ///                    array whose dimension is [length] 
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
-    void fromMessage(const char *data, const size_t length) override final;
+    void fromMessage(const char *data, size_t length) final;
     /// @result The message type - e.g., "DataPacket".
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
@@ -182,7 +182,7 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
-    void fromCBOR(const uint8_t *data, const size_t length);
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @brief Converts the packet class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.
@@ -190,7 +190,7 @@ public:
     [[nodiscard]] std::string toCBOR() const;
     /// @brief Creates the class from a JSON data packet message.
     /// @throws std::runtime_error if the message is invalid.
-    void fromJSON(const std::string &message);
+    //void fromJSON(const std::string &message);
     /// @brief Converts the data packet class to a JSON message.
     /// @param[in] nIndent  The number of spaces to indent.
     /// @note -1 disables indentation which is preferred for message

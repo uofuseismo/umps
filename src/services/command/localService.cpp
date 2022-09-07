@@ -128,7 +128,7 @@ LocalService::LocalService() :
 {
 }
 
-LocalService::LocalService(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+[[maybe_unused]] LocalService::LocalService(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<LocalServiceImpl> (nullptr, logger))
 {
 }

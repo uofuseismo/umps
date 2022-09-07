@@ -108,43 +108,43 @@ public:
     /// @result The publisher socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::PUBLISHER.
-    SocketDetails::Publisher  getPublisherSocketDetails() const;
+    [[nodiscard]] SocketDetails::Publisher  getPublisherSocketDetails() const;
     /// @result The subscriber socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::SUBSCRIBER.
-    SocketDetails::Subscriber getSubscriberSocketDetails() const;
+    [[nodiscard]] SocketDetails::Subscriber getSubscriberSocketDetails() const;
     /// @result The request socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::REQUEST.
-    SocketDetails::Request getRequestSocketDetails() const;
+    [[nodiscard]] SocketDetails::Request getRequestSocketDetails() const;
     /// @result The reply socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::REPLY
-    SocketDetails::Reply getReplySocketDetails() const;
+    [[nodiscard]] SocketDetails::Reply getReplySocketDetails() const;
     /// @result The router socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::ROUTER.
-    SocketDetails::Router getRouterSocketDetails() const;
+    [[nodiscard]] SocketDetails::Router getRouterSocketDetails() const;
     /// @result The publisher socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::XPUBLISHER.
-    SocketDetails::XPublisher  getXPublisherSocketDetails() const;
+    [[nodiscard]] SocketDetails::XPublisher  getXPublisherSocketDetails() const;
     /// @result The subscriber socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::XSUBSCRIBER.
-    SocketDetails::XSubscriber getXSubscriberSocketDetails() const;
+    [[nodiscard]] SocketDetails::XSubscriber getXSubscriberSocketDetails() const;
     /// @result The proxy socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::PROXY.
-    SocketDetails::Proxy getProxySocketDetails() const;
+    [[nodiscard]] SocketDetails::Proxy getProxySocketDetails() const;
     /// @result The dealer socket details.
     /// @throws std::runtime_error if \c getSocketType() does not equal
     ///         SocketType::DEALER.
-    SocketDetails::Dealer getDealerSocketDetails() const;
+    [[nodiscard]] SocketDetails::Dealer getDealerSocketDetails() const;
     /// @result The socket type.
     /// @note By default this is unknown and will obtain value from the last
     ///       call to \c setSocketDetails().
-    SocketType getSocketType() const noexcept;
+    [[nodiscard]] SocketType getSocketType() const noexcept;
     /// @}
 
     /// @brief Sets the connection type - e.g., a broadcast or service.
@@ -157,7 +157,7 @@ public:
 
     /// @brief The required privileges to connect.
     /// @param[in] privileges  The privileges required to connect.
-    [[deprecated]] void setUserPrivileges(const UMPS::Authentication::UserPrivileges privileges) noexcept;
+    [[deprecated]] void setUserPrivileges(UMPS::Authentication::UserPrivileges privileges) noexcept;
     /// @result The requisite privileges to connect.
     [[deprecated]] [[nodiscard]] UMPS::Authentication::UserPrivileges getUserPrivileges() const noexcept;
 

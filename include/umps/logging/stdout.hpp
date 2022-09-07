@@ -16,7 +16,7 @@ public:
     StdOut();
     /// @brief Copy constructor.
     StdOut(const StdOut &logger);
-    /// @brief Move construtor.
+    /// @brief Move constructor.
     StdOut(StdOut &&logger) noexcept;
 
     /// @brief Copy assignment operator.

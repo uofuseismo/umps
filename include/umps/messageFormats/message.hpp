@@ -23,7 +23,7 @@ public:
     ///       human readable.
     [[nodiscard]] virtual std::string toMessage() const = 0;
     /// @brief Converts this message from a string representation to data.
-    virtual void fromMessage(const char *data, const size_t length) = 0;
+    virtual void fromMessage(const char *data, size_t length) = 0;
     /// @result The message type.
     [[nodiscard]] virtual std::string getMessageType() const noexcept = 0;
 };

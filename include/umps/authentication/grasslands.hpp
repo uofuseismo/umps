@@ -28,19 +28,19 @@ public:
     /// @brief Destructor.
     virtual ~Grasslands();
     /// @result The minimum user privileges.
-    [[nodiscard]] virtual UserPrivileges getMinimumUserPrivileges() const noexcept override final;
+    [[nodiscard]] UserPrivileges getMinimumUserPrivileges() const noexcept final;
     /// @result Determines if the given IP address is blacklisted.
-    [[nodiscard]] virtual std::pair<std::string, std::string> isBlacklisted(
-        const std::string &address) const noexcept override final;
+    [[nodiscard]] std::pair<std::string, std::string> isBlacklisted(
+        const std::string &address) const noexcept final;
     /// @result Determines if the given IP address is whitelisted.
-    [[nodiscard]] virtual std::pair<std::string, std::string> isWhitelisted(
-        const std::string &) const noexcept override final;
+    [[nodiscard]] std::pair<std::string, std::string> isWhitelisted(
+        const std::string &) const noexcept final;
     /// @result Determines if the given username and password are allowed.
-    [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
-        const Certificate::UserNameAndPassword &) const noexcept override final;
+    [[nodiscard]] std::pair<std::string, std::string> isValid(
+        const Certificate::UserNameAndPassword &) const noexcept final;
     /// @result Determines if the given keys are valid.
-    [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
-        const Certificate::Keys &) const noexcept override final;
+    [[nodiscard]] std::pair<std::string, std::string> isValid(
+        const Certificate::Keys &) const noexcept final;
 private:
     class GrasslandsImpl;
     std::unique_ptr<GrasslandsImpl> pImpl;

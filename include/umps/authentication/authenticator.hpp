@@ -30,7 +30,7 @@ public:
     /// @result result.first is the status code where "200" means okay,
     ///         "400" means a client error - i.e., invalid credentials,
     ///         and "500" indicates a server error.
-    ///         result.second is the corresonding message to return via the
+    ///         result.second is the corresponding message to return via the
     ///         ZeroMQ Authentication Protocol.
     [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
         const Certificate::UserNameAndPassword &credentials) const noexcept = 0;
@@ -38,7 +38,7 @@ public:
     /// @result result.first is the status code where "200" means okay,
     ///         "400" means a client error - i.e., invalid credentials,
     ///         and "500" indicates a server error.
-    ///         result.second is the corresonding message to return via the
+    ///         result.second is the corresponding message to return via the
     ///         ZeroMQ Authentication Protocol.
     [[nodiscard]] virtual std::pair<std::string, std::string> isValid(
         const Certificate::Keys &keys) const noexcept = 0;

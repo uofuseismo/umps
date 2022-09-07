@@ -128,7 +128,7 @@ UMPS::MessageFormats::Messages RequestOptions::getMessageFormats() const noexcep
 
 /// Timeout
 void RequestOptions::setTimeOut(
-    const std::chrono::milliseconds timeOut) noexcept
+    const std::chrono::milliseconds &timeOut) noexcept
 {
     constexpr std::chrono::milliseconds zero{0};
     if (timeOut >= zero)

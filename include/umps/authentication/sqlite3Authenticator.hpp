@@ -28,17 +28,17 @@ public:
     /// @{
 
     /// @brief Constructor.
-    SQLite3Authenticator(const UserPrivileges privileges = UserPrivileges::ReadOnly);
+    explicit SQLite3Authenticator(UserPrivileges privileges = UserPrivileges::ReadOnly);
     /// @brief Move constructor.
     /// @param[in] authenticator  The authenticator from which to initialize
     ///                           this class.  On exit, authenticator's behavior
     ///                           is undefined.
     SQLite3Authenticator(SQLite3Authenticator &&authenticator,
-                         const UserPrivileges privileges = UserPrivileges::ReadOnly) noexcept;
+                         UserPrivileges privileges = UserPrivileges::ReadOnly) noexcept;
     /// @brief Constructor with a specified logger.
     /// @param[in] logger   The logging utility.
     explicit SQLite3Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger,
-                                  const UserPrivileges privileges = UserPrivileges::ReadOnly);
+                                  UserPrivileges privileges = UserPrivileges::ReadOnly);
     /// @}
 
     /// @name Operators
@@ -117,7 +117,7 @@ public:
     /// @param[in] address  The address to remove from the blacklist.
     void removeFromBlacklist(const std::string &address) noexcept;
     /// @result True indicates the address is blacklisted.
-    [[nodiscard]] std::pair<std::string, std::string> isBlacklisted(const std::string &address) const noexcept override final;
+    [[nodiscard]] std::pair<std::string, std::string> isBlacklisted(const std::string &address) const noexcept final;
 
     /// @brief Grants access to a certain IP address.
     /// @param[in] address  The address to add to the whitelist.
@@ -127,17 +127,17 @@ public:
     /// @param[in] address  The address to remove from the whitelist.
     void removeFromWhitelist(const std::string &address) noexcept;
     /// @result True indicates the address is whitelisted.
-    [[nodiscard]] virtual std::pair<std::string, std::string> isWhitelisted(const std::string &address) const noexcept override final;
+    [[nodiscard]] std::pair<std::string, std::string> isWhitelisted(const std::string &address) const noexcept final;
     /// @}
 
     [[nodiscard]] std::pair<std::string, std::string> isValid(
-        const Certificate::UserNameAndPassword &credentials) const noexcept override final;
+        const Certificate::UserNameAndPassword &credentials) const noexcept final;
     /// @brief Validates a provided public key.
     [[nodiscard]] std::pair<std::string, std::string> isValid(
-        const Certificate::Keys &keys) const noexcept override final;
+        const Certificate::Keys &keys) const noexcept final;
 
     /// @result The minimum user privileges.
-    [[nodiscard]] virtual UserPrivileges getMinimumUserPrivileges() const noexcept override final;
+    [[nodiscard]] UserPrivileges getMinimumUserPrivileges() const noexcept final;
 
     /// @brief Creates and binds the ZAP socket.
     //void start();

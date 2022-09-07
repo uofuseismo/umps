@@ -90,7 +90,7 @@ public:
     [[nodiscard]] std::vector<LocalModuleDetails> queryAllModules() const;
     /// @result Queries a module.
     /// @param[in] name  The name of the module to query.
-    /// @throws std::runtime_errof if \c haveModule() is false.
+    /// @throws std::runtime_error if \c haveModule() is false.
     [[nodiscard]] LocalModuleDetails queryModule(const std::string &name) const;
 
     /// @names Destructors

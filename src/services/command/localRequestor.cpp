@@ -277,3 +277,8 @@ std::unique_ptr<CommandResponse> LocalRequestor::issueCommand(
     return result;
 
 }
+
+void LocalRequestor::disconnect()
+{
+    pImpl->disconnect();
+}

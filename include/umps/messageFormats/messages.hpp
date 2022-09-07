@@ -77,9 +77,9 @@ public:
     [[nodiscard]] bool empty() const noexcept;
 
     /// @result All the message types in this container.
-    std::map<std::string, std::unique_ptr<IMessage>> get() const noexcept;
+    [[nodiscard]] std::map<std::string, std::unique_ptr<IMessage>> get() const noexcept;
     /// @result The message container corresponding to the message type,
-    std::unique_ptr<IMessage> get(const std::string &messageType) const;
+    [[nodiscard]] std::unique_ptr<IMessage> get(const std::string &messageType) const;
 
     /// @name Destructors
     /// @{

@@ -82,7 +82,9 @@ int main(int argc, char *argv[])
             // Now connect
             UMPS::Services::Command::LocalRequestorOptions requestorOptions;
             requestorOptions.setModuleName(moduleName);
-            requestor = std::make_unique<UMPS::Services::Command::LocalRequestor> (context, logger);
+            requestor
+                = std::make_unique<UMPS::Services::Command::LocalRequestor>
+                  (context, logger);
             bool maintainConnection = true;
             try
             {
@@ -94,7 +96,8 @@ int main(int argc, char *argv[])
                 maintainConnection = false;
             }
             // Now begin interactive loop
-            std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse> commands{nullptr};
+            std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse>
+                commands{nullptr};
             try
             {
                 commands = requestor->getCommands();
@@ -105,7 +108,7 @@ int main(int argc, char *argv[])
                 logger->error(e.what());
                 maintainConnection = false;
             }
-            //  
+            // Connection established - interact with program
             std::cout << "-----------------------------------------------------"
                       << std::endl;
             std::cout << "To terminate session use: hangup" << std::endl;
@@ -122,11 +125,20 @@ int main(int argc, char *argv[])
                 {
                     UMPS::Services::Command::CommandRequest commandRequest;
                     commandRequest.setCommand(command);
-                    auto response = requestor->issueCommand(commandRequest); 
-                    std::cout << response->getResponse() << std::endl;
+                    try
+                    {
+                        auto response = requestor->issueCommand(commandRequest); 
+                        std::cout << response->getResponse() << std::endl;
+                    }
+                    catch (const std::exception &e)
+                    {
+                        logger->error(e.what());
+                        maintainConnection = false;
+                    }
                 }
-maintainConnection = false;
             } 
+            std::cout << "-----------------------------------------------------"
+                      << std::endl;
         }
         else
         {

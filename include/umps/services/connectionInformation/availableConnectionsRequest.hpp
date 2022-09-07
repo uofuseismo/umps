@@ -40,18 +40,18 @@ public:
     /// @{
     /// @brief Create a copy of this class.
     /// @result A copy of this class.
-    [[nodiscard]] std::unique_ptr<IMessage> clone() const override final;
+    [[nodiscard]] std::unique_ptr<IMessage> clone() const final;
     /// @brief Create a clone of this class.
-    [[nodiscard]] std::unique_ptr<IMessage> createInstance() const noexcept override final;
+    [[nodiscard]] std::unique_ptr<IMessage> createInstance() const noexcept final;
     /// @brief Converts this class to a string representation.
     /// @result The class expressed in string format.
     /// @note Though the container is a string the message need not be
     ///       human readable.
-    [[nodiscard]] std::string toMessage() const override final;
+    [[nodiscard]] std::string toMessage() const final;
     /// @brief Converts this message from a string representation to data.
-    void fromMessage(const char *data, const size_t length) override final;
+    void fromMessage(const char *data, size_t length) final;
     /// @result The message type.
-    [[nodiscard]] std::string getMessageType() const noexcept override final;
+    [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
 
     /// @name (De)serialization Utilities
@@ -78,7 +78,7 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
-    void fromCBOR(const uint8_t *data, const size_t length);
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @brief Converts the packet class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.

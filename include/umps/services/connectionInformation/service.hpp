@@ -12,14 +12,11 @@ namespace UMPS
  {
   class Context;
  }
- namespace Services
- {
-  namespace ConnectionInformation
+ namespace Services::ConnectionInformation
   {
    class Details; 
    class ServiceOptions;
   }
- }
  namespace Broadcasts
  {
   class IBroadcast;
@@ -120,23 +117,23 @@ public:
     /// @}
 
     /// @result True indicates that the service is initialized.
-    [[nodiscard]] bool isInitialized() const noexcept override final;
+    [[nodiscard]] bool isInitialized() const noexcept final;
     /// @brief Gets the name of the item being incremented.
     /// @throws std::runtime_error if the class is not initialized.
-    [[nodiscard]] std::string getName() const override final;
+    [[nodiscard]] std::string getName() const final;
     /// @brief Gets the address to submit requests to this service.
     /// @throws std::runtime_error if the class is not running.
-    [[nodiscard]] std::string getRequestAddress() const override final;
+    [[nodiscard]] std::string getRequestAddress() const final;
     /// @result The connection details for connecting to the service.
-    [[nodiscard]] Details getConnectionDetails() const override final;
+    [[nodiscard]] Details getConnectionDetails() const final;
  
     /// @brief Starts the service and authenticator.
     /// @throws std::invalid_argument if \c isInitialized() is false.
-    void start() final override;
+    void start() final;
     /// @result True indicates the service was started and is running.
     [[nodiscard]] bool isRunning() const noexcept;
     /// @brief Stops the service and authenticator.
-    void stop() final override;
+    void stop() final;
 
     /// @name Destructors
     /// @{
