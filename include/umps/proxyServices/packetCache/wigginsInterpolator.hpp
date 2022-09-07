@@ -2,13 +2,10 @@
 #define UMPS_PROXYSERVICES_PACKETCACHE_WIGGINSINTERPOLATOR_HPP
 #include <memory>
 #include <vector>
-namespace UMPS
-{
- namespace MessageFormats
+namespace UMPS::MessageFormats
  {
   template<class T> class DataPacket;
  }
-}
 namespace UMPS::ProxyServices::PacketCache
 {
 /// @class WigginsInterpolator "wigginsInterpolator.hpp" "umps/proxyServices/packetCache/wigginsInterpolator.hpp"
@@ -49,7 +46,7 @@ public:
     /// @param[in] samplingRate  The sampling rate, in Hz, to which the packets
     ///                          will be interpolated. 
     /// @throws std::invalid_argument if this is not positive.
-    void setTargetSamplingRate(const double samplingRate);
+    void setTargetSamplingRate(double samplingRate);
     /// @result The nominal sampling ratein Hz.  By default this is 100 Hz.
     [[nodiscard]] double getTargetSamplingRate() const noexcept;
     /// @}

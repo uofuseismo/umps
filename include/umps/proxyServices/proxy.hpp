@@ -50,9 +50,9 @@ public:
           std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given logger and a frontend and backend
     ///        authenticator.
-    Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
-          std::shared_ptr<UMPS::Authentication::IAuthenticator> &frontendAuthenticator,
-          std::shared_ptr<UMPS::Authentication::IAuthenticator> &backendAuthenticator);
+    //Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+    //      std::shared_ptr<UMPS::Authentication::IAuthenticator> &frontendAuthenticator,
+    //      std::shared_ptr<UMPS::Authentication::IAuthenticator> &backendAuthenticator);
     /// @}
 
     /// @brief Initializes the proxy.

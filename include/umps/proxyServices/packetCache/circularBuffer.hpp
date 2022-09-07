@@ -3,13 +3,10 @@
 #include <memory>
 #include <chrono>
 #include <vector>
-namespace UMPS
-{
- namespace MessageFormats
+namespace UMPS::MessageFormats
  {
   template<class T> class DataPacket;
  }
-}
 namespace UMPS::ProxyServices::PacketCache
 {
 /// @class CircularBuffer "circularBuffer.hpp" "umps/proxyServices/packetCache/circularBuffer.hpp"

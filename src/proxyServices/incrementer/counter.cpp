@@ -8,7 +8,6 @@
 #endif
 #include <sqlite3.h>
 #include "umps/proxyServices/incrementer/counter.hpp"
-#include "private/isEmpty.hpp"
 
 using namespace UMPS::ProxyServices::Incrementer;
 
@@ -32,14 +31,14 @@ class Row
 {
 public:
     Row() = default;
-    Row(const std::string &itemIn,
-        const int64_t valueIn = 0,
-        const int32_t incrementIn = 1,
-        const int64_t initialValueIn = 0) :
-        item(itemIn),
-        value(valueIn),
-        increment(incrementIn),
-        initialValue(initialValueIn)
+    explicit Row(const std::string &itemIn,
+                 const int64_t valueIn = 0,
+                 const int32_t incrementIn = 1,
+                 const int64_t initialValueIn = 0) :
+                 item(itemIn),
+                 value(valueIn),
+                 increment(incrementIn),
+                 initialValue(initialValueIn)
     {
     }
     std::string item;
@@ -77,7 +76,7 @@ Row unpack(sqlite3_stmt *result)
     sql = sql + "increment INTEGER DEFAULT 1, ";
     sql = sql + "initial_value BIG INT DEFAULT 0);"; 
     char *errorMessage = nullptr;
-    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    auto rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &errorMessage);
     std::string outputMessage;
     if (rc != SQLITE_OK)
     {
@@ -91,13 +90,13 @@ Row unpack(sqlite3_stmt *result)
     std::string sql;
     sql = "DROP TABLE IF EXISTS counter";
     char *errorMessage = nullptr;
-    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    auto rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &errorMessage);
     std::string outputMessage;
     if (rc != SQLITE_OK)
     {
         outputMessage = errorMessage;
     }
-    return std::pair(rc, outputMessage);
+    return std::pair{rc, outputMessage};
 }
 
 [[nodiscard]] bool haveItem(sqlite3 *db, const std::string &item)
@@ -105,13 +104,13 @@ Row unpack(sqlite3_stmt *result)
     bool exists = false;
     std::string sql{"SELECT EXISTS(SELECT 1 FROM counter WHERE item = ?);"};
     sqlite3_stmt *result = nullptr;
-    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL); 
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "Failed to prepare query" << std::endl;
         return false;
     }
-    rc = sqlite3_bind_text(result, 1, item.c_str(), item.length(), NULL);
+    rc = sqlite3_bind_text(result, 1, item.c_str(), item.length(), nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "Failed to bind text" << std::endl;
@@ -137,13 +136,13 @@ Row getItem(sqlite3 *db, const std::string &item)
     Row row;
     std::string sql{"SELECT item, value, increment, initial_value FROM counter WHERE item = ?;"};
     sqlite3_stmt *result = nullptr;
-    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL); 
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "Failed to prepare query" << std::endl;
         return row;
     }
-    rc = sqlite3_bind_text(result, 1, item.c_str(), item.length(), NULL);
+    rc = sqlite3_bind_text(result, 1, item.c_str(), item.length(), nullptr);
     if (rc != SQLITE_OK)
     {
         std::cerr << "Failed to bind text" << std::endl;
@@ -170,7 +169,7 @@ void getItems(sqlite3 *db, std::vector<Row> *rows)
     rows->reserve(1024);
     std::string sql{"SELECT item, value, increment, initial_value FROM counter;"};
     sqlite3_stmt *result = nullptr;
-    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL); 
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, nullptr);
     if (rc != SQLITE_OK)
     {   
         throw std::runtime_error("Failed to prepare query in getItems");
@@ -192,7 +191,7 @@ void addItem(sqlite3 *db,
     sql = sql + row.toString();
     sql = sql + " ;";
     char *errorMessage = nullptr;
-    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    auto rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &errorMessage);
     if (rc != SQLITE_OK)
     {
         std::string error = "Failed to add: " + sql + " to counter table";
@@ -216,12 +215,12 @@ void addItems(sqlite3 *db,
     std::string sql{"INSERT INTO counter(item, value, increment, initial_value) VALUES "};
     for (int i = 0; i < n; i++)
     {
-        sql = sql + rows[i].toString();
-        if (i < n - 1){sql = sql + ",";}
+        sql += rows[i].toString();
+        if (i < n - 1){sql += + ",";}
     }
     sql = sql + " ;";
     char *errorMessage = nullptr;
-    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    auto rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &errorMessage);
     if (rc != SQLITE_OK)
     {
         std::string error = "Failed to add: " + sql + " to counter table";
@@ -249,7 +248,7 @@ void addItems(sqlite3 *db,
     int64_t nextValue = row.value + row.increment;
     std::string sql = "UPDATE counter SET value = ? WHERE item = ?;";
     sqlite3_stmt *result = nullptr;
-    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL); 
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, nullptr);
     if (rc != SQLITE_OK)
     {
         throw std::runtime_error("Failed to prepare query update query");
@@ -259,7 +258,7 @@ void addItems(sqlite3 *db,
     {
         throw std::runtime_error("Failed to bind integer");
     }
-    rc = sqlite3_bind_text(result, 2, item.c_str(), item.length(), NULL);
+    rc = sqlite3_bind_text(result, 2, item.c_str(), item.length(), nullptr);
     if (rc != SQLITE_OK)
     {
         throw std::runtime_error("Failed to bind text");
@@ -355,13 +354,12 @@ public:
     /// Update item
     [[nodiscard]] int64_t updateItem(const std::string &item)
     {
-        int64_t result = 0;
         std::scoped_lock lock(mMutex);
         if (!::haveItem(mCounterTable, item))
         {
             throw std::invalid_argument(item + " does not exist");
         }
-        result = ::updateItem(mCounterTable, item); 
+        auto result = ::updateItem(mCounterTable, item);
         return result;
     }
     /// Opens the counter table 
@@ -450,6 +448,20 @@ Counter::Counter() :
 {
 }
 
+/// Move c'tor
+Counter::Counter(Counter &&counter) noexcept
+{
+    *this = std::move(counter);
+}
+
+/// Move assignment
+Counter& Counter::operator=(Counter &&counter) noexcept
+{
+    if (&counter == this){return *this;}
+    pImpl = std::move(counter.pImpl);
+    return *this;
+}
+
 /// Destructor
 Counter::~Counter() = default;
 
@@ -526,7 +538,7 @@ int64_t Counter::getNextValue(const std::string &item)
     return nextValue;
 }
 
-/// Get next value? 
+/// Get next value?
 //int64_t Counter::getCurrentValue()
 
 /*

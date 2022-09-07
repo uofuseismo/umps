@@ -77,24 +77,24 @@ public:
     /// @{
 
     /// @result A copy of this class.
-    [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const override final;
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const final;
     /// @result An instance of an uninitialized class.
-    [[nodiscard]] virtual std::unique_ptr<IMessage> createInstance() const noexcept override final;
+    [[nodiscard]] std::unique_ptr<IMessage> createInstance() const noexcept final;
     /// @brief Converts the request class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
     /// @note Though the container is a string the message need not be
     ///       human readable.
-    [[nodiscard]] virtual std::string toMessage() const override final;
+    [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
     /// @param[in] data    The contents of the message.  This is an
     ///                    array whose dimension is [length] 
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
-    virtual void fromMessage(const char *data, size_t length) override final;
+    void fromMessage(const char *data, size_t length) final;
     /// @result The message type.
-    [[nodiscard]] virtual std::string getMessageType() const noexcept final;
+    [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @}
 
     /// @name Debugging Utilities
@@ -122,7 +122,7 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
-    void fromCBOR(const uint8_t *data, const size_t length);
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @brief Converts the request class to a CBOR message.
     /// @result The class expressed in Compressed Binary Object Representation
     ///         (CBOR) format.

@@ -66,11 +66,6 @@ public:
     /// @param[in] address  The address of the backend.
     /// @throws std::invalid_argument if this is empty.
     void setBackendAddress(const std::string &address);
-    /// @result The backend's IP address.
-    /// @throws std::runtime_error if \c haveBackendAddress() is false.
-    [[nodiscard]] std::string getBackendAddress() const;
-    /// @result True indicates the backend address was set.
-    [[nodiscard]] bool haveBackendAddress() const noexcept;
     /// @}  
 
     /// @name Name of the Proxy

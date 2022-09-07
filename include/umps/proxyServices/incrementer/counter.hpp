@@ -80,7 +80,7 @@ public:
     /// @{
 
     /// @result The items being incremented. 
-    std::set<std::string> getItems() const noexcept;
+    [[nodiscard]] std::set<std::string> getItems() const noexcept;
 
     /// @brief This function is intended to provide the next available
     ///        unique identifier for the item of interest.
