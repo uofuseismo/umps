@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     auto zapOptions = options.mZAPOptions;
     // Create logger
     UMPS::Logging::StdOut logger;
-    logger.setLevel(options.mVerbosity); //UMPS::Logging::Level::INFO);
+    logger.setLevel(options.mVerbosity);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     // Get the connection details
@@ -241,6 +241,14 @@ ProgramOptions parseInitializationFile(const std::string &iniFile)
     {
         throw std::invalid_argument("proxyServiceName not set");
     }
+
+    options.dataBroadcastName = propertyTree.get<std::string>
+                                (section + ".dataBroadcastName", "");
+    if (options.dataBroadcastName.empty())
+    {
+        throw std::invalid_argument("dataBroadcastName not set");
+    }
+
     options.maxPackets = propertyTree.get<int> (section + ".maxPackets",
                                                 options.maxPackets);
 

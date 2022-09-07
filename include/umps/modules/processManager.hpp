@@ -45,6 +45,8 @@ public:
 
     /// @brief Attempts to start all processes.
     void start();
+    /// @brief The main thread waits until a stop command is issued by a process.
+    void handleMainThread();
     /// @result True indicates the processes are running.
     [[nodiscard]] bool isRunning() const noexcept;
     /// @brief Attempts to stop all processes.

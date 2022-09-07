@@ -83,6 +83,35 @@ std::string addLocalModule(const LocalModuleDetails &row)
     return sql;
 }
 
+/// @result A command to update a row
+std::string updateLocalModule(const LocalModuleDetails &row)
+{
+    std::string sql = "UPDATE local_modules SET ";
+    if (row.haveName())
+    {
+        sql = sql + "module = '" + row.getName() + "',";
+    }
+    else
+    {
+        throw std::invalid_argument("Module name not set");
+    }
+
+    if (row.haveName())
+    {
+        sql = sql + "ipc_file = '" + row.getIPCFileName() + "', ";
+    }
+    else
+    {
+        throw std::invalid_argument("IPC file not set");
+    }
+    sql = sql + "process_identifier = "
+        + std::to_string(row.getProcessIdentifier()) + ", ";
+    sql = sql + "status = "
+           + std::to_string(static_cast<int> (row.getApplicationStatus()));
+    sql = sql + " WHERE module = '" + row.getName() + "';";
+    return sql;
+}
+
 /// Add module
 void addModule(sqlite3 *db, const LocalModuleDetails &module)
 {
@@ -92,6 +121,22 @@ void addModule(sqlite3 *db, const LocalModuleDetails &module)
     if (rc != SQLITE_OK)
     {
         std::string error = "Failed to add : " + sql
+                          + " to table local_modules\n"
+                          + "SQLite3 failed with: " + errorMessage;
+        sqlite3_free(errorMessage);
+        throw std::runtime_error(error);
+    }
+}
+
+/// Update module
+void updateModule(sqlite3 *db, const LocalModuleDetails &module)
+{
+    auto sql = ::updateLocalModule(module);
+    char *errorMessage = nullptr;
+    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    if (rc != SQLITE_OK)
+    {
+        std::string error = "Failed to add : " + sql 
                           + " to table local_modules\n"
                           + "SQLite3 failed with: " + errorMessage;
         sqlite3_free(errorMessage);
@@ -184,7 +229,6 @@ int deleteModule(sqlite3 *db, const std::string &moduleName)
     return 0;
 }
 
-
 }
 
 class LocalModuleTable::LocalModuleTableImpl
@@ -274,6 +318,12 @@ public:
         std::scoped_lock lock(mMutex);
         return mHaveTable;
     }
+    /// True indicates the table is read-only
+    [[nodiscard]] bool isReadOnly() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mReadOnly;
+    }
     /// Module exists?
     bool haveModule(const std::string &details)
     {
@@ -299,6 +349,29 @@ public:
         std::scoped_lock lock(mMutex);
         ::addModule(mTableHandle, details);
     }
+    /// Update a module
+    void updateModule(const LocalModuleDetails &details)
+    {
+        if (!details.haveName())
+        {
+            throw std::invalid_argument("Module name not set");
+        }
+        if (!haveTable())
+        {
+            throw std::runtime_error("Local module table not open");
+        }
+        if (isReadOnly()){throw std::runtime_error("Database is readonly");}
+        if (haveModule(details.getName()))
+        {
+std::cout << "update" << std::endl;
+            std::scoped_lock lock(mMutex);
+            ::updateModule(mTableHandle, details);
+        }
+        else
+        {
+            addModule(details);
+        }
+    }
     /// Delete module
     void deleteModule(const std::string &moduleName)
     {
@@ -306,7 +379,7 @@ public:
         {
             throw std::runtime_error("Local module table not open");
         }
-        if (mReadOnly){throw std::runtime_error("Database is readonly");}
+        if (isReadOnly()){throw std::runtime_error("Database is readonly");}
         std::scoped_lock lock(mMutex);
         ::deleteModule(mTableHandle, moduleName);
     }
@@ -424,13 +497,24 @@ void LocalModuleTable::addModule(const LocalModuleDetails &details)
     pImpl->addModule(details);
 }
 
+/// Update module
+void LocalModuleTable::updateModule(const LocalModuleDetails &details)
+{
+    if (!isOpen()){throw std::runtime_error("Table not open");}
+    if (!details.haveName())
+    {
+        throw std::invalid_argument("Module name not set");
+    }
+    pImpl->updateModule(details);
+}
+
 /// Delete module
 void LocalModuleTable::deleteModule(const LocalModuleDetails &details)
 {
     if (!details.haveName())
     {
         throw std::invalid_argument("Module name not set");
-    }   
+    }
     deleteModule(details.getName());
 }
 
@@ -454,4 +538,11 @@ std::vector<LocalModuleDetails> LocalModuleTable::queryAllModules() const
 void LocalModuleTable::close() noexcept
 {
     pImpl->closeTable();
+}
+
+/// Read-only?
+bool LocalModuleTable::isReadOnly() const
+{
+    if (!isOpen()){throw std::runtime_error("Table not open");}
+    return pImpl->isReadOnly();
 }

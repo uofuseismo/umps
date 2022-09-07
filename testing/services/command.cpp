@@ -141,6 +141,11 @@ TEST(Command, LocalModuleTable)
     const int64_t processIdentifier2{19392};
     const ApplicationStatus applicationStatus2{ApplicationStatus::Running};
 
+    const std::string moduleName3{"anotherTestModule"};
+    const std::string ipcDirectory3{"./"};
+    const int64_t processIdentifier3{processIdentifier1 + processIdentifier2};
+    const ApplicationStatus applicationStatus3{ApplicationStatus::Unknown};
+
     std::vector<LocalModuleDetails> allModulesRef;
     LocalModuleDetails details1;
     details1.setName(moduleName1);
@@ -155,6 +160,12 @@ TEST(Command, LocalModuleTable)
     details2.setProcessIdentifier(processIdentifier2);
     details2.setApplicationStatus(applicationStatus2);
     allModulesRef.push_back(details2);
+
+    LocalModuleDetails details3;
+    details3.setName(moduleName3);
+    details3.setIPCDirectory(ipcDirectory3);
+    details3.setProcessIdentifier(processIdentifier3);
+    details3.setApplicationStatus(applicationStatus3);
 
     EXPECT_FALSE(table.haveModule(details1));
     EXPECT_NO_THROW(table.addModule(details1));
@@ -183,7 +194,33 @@ TEST(Command, LocalModuleTable)
     }
 
     EXPECT_NO_THROW(table.deleteModule(details2));
-  
+    EXPECT_FALSE(table.haveModule(details2));
+    EXPECT_NO_THROW(table.addModule(details2));
+    EXPECT_TRUE(table.haveModule(details2));
+    EXPECT_NO_THROW(table.updateModule(details3));
+    EXPECT_TRUE(table.haveModule(details3));
+ 
+    allModules = table.queryAllModules();
+    allModulesRef.at(0) = details1;
+    allModulesRef.at(1) = details3; 
+    EXPECT_EQ(allModules.size(), allModulesRef.size());
+    for (const auto &mRef : allModulesRef)
+    {   
+        bool lmatch = false;
+        for (const auto &m : allModules)
+        {
+            if (m.getName() == mRef.getName() &&
+                m.getIPCDirectory() == mRef.getIPCDirectory() &&
+                m.getProcessIdentifier() == mRef.getProcessIdentifier() &&
+                m.getApplicationStatus() == mRef.getApplicationStatus()) 
+            {
+                lmatch = true;
+            }
+        }
+        EXPECT_TRUE(lmatch);
+    }
+   
+ 
     if (std::filesystem::exists(tableName))
     {
         std::filesystem::remove(tableName);

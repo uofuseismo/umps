@@ -1,5 +1,7 @@
 #ifndef UMPS_MODULES_PROCESS_HPP
 #define UMPS_MODULES_PROCESS_HPP
+#include <functional>
+#include <memory>
 namespace UMPS::Modules
 {
 /// @class Process "process.hpp" "umps/modules/process.hpp"
@@ -10,6 +12,9 @@ namespace UMPS::Modules
 class IProcess
 {
 public:
+    /// @brief Constructor.
+    IProcess();
+
     /// @result The name of the process.
     [[nodiscard]] virtual std::string getName() const noexcept;
     /// @brief Starts the process. 
@@ -21,8 +26,19 @@ public:
     virtual void stop() = 0;
     /// @result True indicates the process is running.
     [[nodiscard]] virtual bool isRunning() const noexcept = 0;
+
+    /// @brief Sets the stop callback if this process needs to stop the program.
+    void setStopCallback(const std::function<void ()> &callback);
+    /// @brief Issues the stop command by calling the callback.
+    /// @note By default this will do nothing unless \c setStopCallback()
+    ///       was called.
+    void issueStopCommand();
+
     /// @brief Destructor.
     virtual ~IProcess();
+private:
+    class IProcessImpl;
+    std::unique_ptr<IProcessImpl> pImpl;
 };
 }
 #endif
