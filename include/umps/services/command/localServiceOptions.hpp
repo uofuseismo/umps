@@ -114,6 +114,20 @@ public:
     [[nodiscard]] std::string getIPCDirectory() const noexcept;
     /// @}
 
+    /// @name Module Table Directory
+    /// @{
+
+    /// @brief Sets the sqlite3 file name that will hold the currently running
+    ///        local module information.
+    /// @param[in] fileName  The name of the sqlite3 file with the local_module
+    ///                      table.
+    /// @throws std::runtime_error if the directory to contain the file cannot
+    ///         be made.
+    void setLocalModuleTable(const std::string &fileName);
+    /// @result The sqlite3 file that contains the local_modules table.
+    [[nodiscard]] std::string getLocalModuleTable() const noexcept;
+    /// @}
+
     /// @name Destructors
     /// @{
 

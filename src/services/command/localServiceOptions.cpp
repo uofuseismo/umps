@@ -11,6 +11,9 @@ public:
     std::filesystem::path mIPCDirectory
         = std::filesystem::path{std::string{std::getenv("HOME")}}
         / std::filesystem::path{".local/share/UMPS/ipc"};
+    std::filesystem::path mLocalModuleTable
+        = std::filesystem::path{ std::string(std::getenv("HOME")) }
+        / std::filesystem::path{".local/share/UMPS/tables/localModuleTable.sqlite3"};
     std::function<
         std::unique_ptr<UMPS::MessageFormats::IMessage>
         (const std::string &messageType, const void *contents,
@@ -125,6 +128,33 @@ void LocalServiceOptions::setIPCDirectory(const std::string &directory)
 std::string LocalServiceOptions::getIPCDirectory() const noexcept
 {
     return pImpl->mIPCDirectory;
+}
+
+/// Module table file
+void LocalServiceOptions::setLocalModuleTable(const std::string &fileName)
+{
+    if (std::filesystem::exists(fileName))
+    {
+        pImpl->mLocalModuleTable = fileName;
+        return;
+    }
+    // Ensure directory exists
+    std::filesystem::path path{fileName};
+    auto parentPath = path.parent_path();
+    if (parentPath.empty())
+    {
+        pImpl->mLocalModuleTable = "./" + fileName;
+        return;
+    }
+    if (!std::filesystem::create_directories(parentPath))
+    {
+        throw std::runtime_error("Failed to create directory: " + fileName);
+    }
+}
+
+std::string LocalServiceOptions::getLocalModuleTable() const noexcept
+{
+    return pImpl->mLocalModuleTable;
 }
 
 /// Reset class

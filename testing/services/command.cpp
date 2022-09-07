@@ -15,6 +15,26 @@ namespace
 
 using namespace UMPS::Services::Command;
 
+bool operator==(const LocalModuleDetails &a,
+                const LocalModuleDetails &b)
+{
+    if (a.haveName() == b.haveName())
+    {
+        if (a.haveName())
+        {
+            if (a.getName() != b.getName()){return false;}
+        }
+    }
+    else
+    {
+        return false;
+    }
+    if (a.getIPCDirectory() != b.getIPCDirectory()){return false;}     
+    if (a.getProcessIdentifier() != b.getProcessIdentifier()){return false;}
+    if (a.getApplicationStatus() != b.getApplicationStatus()){return false;}
+    return true;
+}
+
 TEST(Command, LocalModuleDetails)
 {
     LocalModuleDetails details;
@@ -167,13 +187,13 @@ TEST(Command, LocalModuleTable)
     details3.setProcessIdentifier(processIdentifier3);
     details3.setApplicationStatus(applicationStatus3);
 
-    EXPECT_FALSE(table.haveModule(details1));
+    EXPECT_FALSE(table.haveModule(details1.getName()));
     EXPECT_NO_THROW(table.addModule(details1));
-    EXPECT_TRUE(table.haveModule(details1)); 
+    EXPECT_TRUE(table.haveModule(details1.getName())); 
 
-    EXPECT_FALSE(table.haveModule(details2));
+    EXPECT_FALSE(table.haveModule(details2.getName()));
     EXPECT_NO_THROW(table.addModule(details2));
-    EXPECT_TRUE(table.haveModule(details2));
+    EXPECT_TRUE(table.haveModule(details2.getName()));
 
     auto allModules = table.queryAllModules();
     EXPECT_EQ(allModules.size(), allModulesRef.size()); 
@@ -182,6 +202,8 @@ TEST(Command, LocalModuleTable)
         bool lmatch = false;
         for (const auto &m : allModules)
         {
+            if (mRef == m){lmatch = true;}
+            /*
             if (m.getName() == mRef.getName() &&
                 m.getIPCDirectory() == mRef.getIPCDirectory() &&
                 m.getProcessIdentifier() == mRef.getProcessIdentifier() &&
@@ -189,16 +211,17 @@ TEST(Command, LocalModuleTable)
             {
                 lmatch = true;
             }
+            */
         }
         EXPECT_TRUE(lmatch);
     }
 
     EXPECT_NO_THROW(table.deleteModule(details2));
-    EXPECT_FALSE(table.haveModule(details2));
+    EXPECT_FALSE(table.haveModule(details2.getName()));
     EXPECT_NO_THROW(table.addModule(details2));
-    EXPECT_TRUE(table.haveModule(details2));
+    EXPECT_TRUE(table.haveModule(details2.getName()));
     EXPECT_NO_THROW(table.updateModule(details3));
-    EXPECT_TRUE(table.haveModule(details3));
+    EXPECT_TRUE(table.haveModule(details3.getName()));
  
     allModules = table.queryAllModules();
     allModulesRef.at(0) = details1;
@@ -209,6 +232,8 @@ TEST(Command, LocalModuleTable)
         bool lmatch = false;
         for (const auto &m : allModules)
         {
+            if (mRef == m){lmatch = true;}
+            /*
             if (m.getName() == mRef.getName() &&
                 m.getIPCDirectory() == mRef.getIPCDirectory() &&
                 m.getProcessIdentifier() == mRef.getProcessIdentifier() &&
@@ -216,10 +241,13 @@ TEST(Command, LocalModuleTable)
             {
                 lmatch = true;
             }
+            */
         }
         EXPECT_TRUE(lmatch);
     }
-   
+
+    auto details3Back = table.queryModule(details3.getName());
+    EXPECT_TRUE(details3Back == details3);
  
     if (std::filesystem::exists(tableName))
     {

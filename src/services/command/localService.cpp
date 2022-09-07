@@ -1,5 +1,7 @@
+#include <iostream>
 #include <chrono>
 #include <thread>
+#include <csignal>
 #include <filesystem>
 #ifndef NDEBUG
 #include <cassert>
@@ -38,16 +40,27 @@ public:
             mLogger = logger;
         }
         mRouter = std::make_unique<URequestRouter::Router> (context, mLogger);
-        constexpr bool createIfDoesNotExist = true;
-        mLocalModuleTable.open(createIfDoesNotExist);
+    }
+    /// Open the module table
+    void openModuleTable(const std::string &fileName,
+                         const bool createIfDoesNotExist = true)
+    {
+        if (mLocalModuleTable.isOpen()){mLocalModuleTable.close();}
+        mLocalModuleTable.open(fileName, createIfDoesNotExist);
+        mTableFile = fileName;
+    } 
+    void openModuleTable(const bool createIfDoesNotExist = true)
+    {
+        auto fileName = mTableFile.string(); 
+        openModuleTable(fileName, createIfDoesNotExist);
     }
     /// Destructor
     ~LocalServiceImpl()
     {
         stop();
-        if (mLocalModuleTable.haveModule(mLocalModuleDetails))
+        if (mLocalModuleTable.haveModule(mLocalModuleDetails.getName()))
         {
-            mLocalModuleTable.deleteModule(mLocalModuleDetails);
+            mLocalModuleTable.deleteModule(mLocalModuleDetails.getName());
         }
         mLocalModuleTable.close();
     }
@@ -58,9 +71,34 @@ public:
 #ifndef NDEBUG
         assert(mRouter->isInitialized());
 #endif
+        // Module exists - check if it is dead
+        if (mLocalModuleTable.haveModule(mLocalModuleDetails.getName()))
+        {
+            mLogger->debug("Module: " + mLocalModuleDetails.getName()
+                         + " exists.  Checking if dead...");
+            auto existingModuleDetails
+                = mLocalModuleTable.queryModule(mLocalModuleDetails.getName());
+            auto pid
+                = static_cast<pid_t>
+                  (existingModuleDetails.getProcessIdentifier());
+            auto rc = kill(pid, 0);
+            // Module exists and is running
+            if (rc == 0)
+            {
+                throw std::invalid_argument("Process exists");
+            }
+            else // Module is dead - overwrite it's details
+            {
+                mLocalModuleTable.updateModule(mLocalModuleDetails);
+            }
+        }
+        else // New module
+        {
+            mLocalModuleTable.addModule(mLocalModuleDetails);
+        }
+        // Okay - start it
         mProxyThread = std::thread(&URequestRouter::Router::start,
                                    &*mRouter);
-        mLocalModuleTable.addModule(mLocalModuleDetails);
     }
     /// Stops the proxy and authenticator and joins threads
     void stop()
@@ -78,9 +116,9 @@ public:
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     const std::string mName{"LocalCommand"};
-    //std::filesystem::path mTableFile 
-    //    = std::filesystem::path{ std::string(std::getenv("HOME"))
-    //                    + "/.local/share/UMPS/tables/localModuleTable.sqlite3"};
+    std::filesystem::path mTableFile
+        = std::filesystem::path{ std::string(std::getenv("HOME"))
+                        + "/.local/share/UMPS/tables/localModuleTable.sqlite3"};
     bool mInitialized{false};
 };
 
@@ -118,6 +156,10 @@ void LocalService::initialize(const LocalServiceOptions &options)
         throw std::invalid_argument("Module name not set");
     }
     stop(); // Ensure the service is stopped
+    // Initialize the local process table
+    constexpr bool createModuleTableIfDoesNotExist = true;
+    auto moduleTableFile = options.getLocalModuleTable();
+    pImpl->openModuleTable(moduleTableFile, createModuleTableIfDoesNotExist);
     // Initialize the socket
     auto address = options.getAddress();
     pImpl->mRouterOptions.setAddress(address);

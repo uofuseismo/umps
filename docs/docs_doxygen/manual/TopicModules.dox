@@ -17,9 +17,10 @@ Let's explore in greater detail what a process is and must do
 
 <P>
 A process consists of a few very simple items
-  - A module can be started by either explictly calling <EM>start</EM> or by using the () operator.  In this abstract base class, the default implementation of the operator is to simply call <EM>start</EM>.
-  - A module can be stopped with <EM>stop</EM>.
-  - A module must be able to report whether or not it is currently running with <EM>isRunning</EM>.
+  - A process can be started by either explictly calling <EM>start</EM> or by using the () operator.  In this abstract base class, the default implementation of the operator is to simply call <EM>start</EM>.
+  - A process can be stopped with <EM>stop</EM>.
+  - A process must be able to report whether or not it is currently running with <EM>isRunning</EM>.
+  - A process may be provided a callback so that it can signal the uCommand is requesting a program termination.  This is typically leveraged by the process that handles local interaction from uCommand.
 </P>
 
 <P>
@@ -29,6 +30,12 @@ A potential point of confusion is that a process \a can \a be multi-threaded.  W
 <br><br>
 
 Naturally, it would be convenient to collect all of our processes in one container.  This the job of the ProcessManager.  Specifically, the process manager is a collection of unique processes.  At the time of writing, the process manager is very simple.  It basically can hold, run, and stop all processes.  In time however, we hope it will do really cool things like detect and restart dead processes.
+
+<br><br>
+
+<P>
+An important process that you should implement is the command process.  One extraordinary benefit of embracing messaging is that you can actually run a module in the background with, say, nohup, and then login to that server at a later time and still interact with that module using uCommand.  Note, uCommand uses IPC communication and is only usable by the same user on the same machine that is running the program; this is not a limitation of ZeroMQ IPC's implementation but a security consideration.  But why stop there?  Since the module can interact locally it can also easily be extended to interact with a privileged user on the network.  Again, the module could interact with anyone on the network but again, for security reasons and not limitations of ZeroMQ, we require the user issuing commands to remote modules be privileged.
+</P>
 
 <br><br>
 

@@ -55,7 +55,7 @@ public:
     /// @param[in] details  The module to determine if in the table.
     /// @throws std::runtime_error if \c isOpen() is false.
     /// @throws std::invalid_argument if details.haveName() is false.
-    [[nodiscard]] bool haveModule(const LocalModuleDetails &details) const;
+    //[[nodiscard]] bool haveModule(const LocalModuleDetails &details) const;
     /// @result True indicates the module exists.
     /// @param[in] moduleName  The name of module to determine if in the table. 
     /// @throws std::runtime_error if \c isOpen() is false.
@@ -88,6 +88,10 @@ public:
     /// @brief Queries all modules.
     /// @result All the local modules in the module table.
     [[nodiscard]] std::vector<LocalModuleDetails> queryAllModules() const;
+    /// @result Queries a module.
+    /// @param[in] name  The name of the module to query.
+    /// @throws std::runtime_errof if \c haveModule() is false.
+    [[nodiscard]] LocalModuleDetails queryModule(const std::string &name) const;
 
     /// @names Destructors
     /// @{

@@ -199,6 +199,38 @@ std::vector<LocalModuleDetails> queryAllModules(sqlite3 *db)
     return allDetails;
 }
 
+/// Query specific module
+LocalModuleDetails queryModule(sqlite3 *db, const std::string &moduleName)
+{
+    LocalModuleDetails details;
+    std::string sql{"SELECT * FROM local_modules WHERE module = ? LIMIT 1;"};
+    sqlite3_stmt *result = nullptr;
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+    if (rc != SQLITE_OK)
+    {
+        std::string error = "Failed to prepare : " + sql
+                          + " statement.";
+        throw std::runtime_error(error);
+    }
+    rc = sqlite3_bind_text(result, 1, moduleName.c_str(),
+                           moduleName.length(), NULL);
+    if (rc != SQLITE_OK)
+    {
+        sqlite3_finalize(result);
+        throw std::runtime_error("Failed to set moduleName");
+    }
+    char *errorMessage = nullptr;
+    rc = sqlite3_step(result);
+    details = ::rowToDetails(result);
+    sqlite3_finalize(result);
+    if (rc != SQLITE_ROW)
+    {
+        sqlite3_free(errorMessage);
+        throw std::runtime_error("Failed to query module: " + moduleName);
+    }
+    return details;
+}
+
 /// Delete module
 int deleteModule(sqlite3 *db, const std::string &moduleName)
 {
@@ -325,7 +357,7 @@ public:
         return mReadOnly;
     }
     /// Module exists?
-    bool haveModule(const std::string &details)
+    bool haveModule(const std::string &details) const
     {
         if (!haveTable())
         {
@@ -363,7 +395,6 @@ public:
         if (isReadOnly()){throw std::runtime_error("Database is readonly");}
         if (haveModule(details.getName()))
         {
-std::cout << "update" << std::endl;
             std::scoped_lock lock(mMutex);
             ::updateModule(mTableHandle, details);
         }
@@ -383,7 +414,7 @@ std::cout << "update" << std::endl;
         std::scoped_lock lock(mMutex);
         ::deleteModule(mTableHandle, moduleName);
     }
-    /// Update a module
+    /// Query all modules
     std::vector<LocalModuleDetails> queryAllModules() const
     {
         if (!haveTable())
@@ -393,6 +424,21 @@ std::cout << "update" << std::endl;
         std::scoped_lock lock(mMutex);
         return ::queryAllModules(mTableHandle);
     }
+    /// Query a specific momdule
+    LocalModuleDetails queryModule(const std::string &moduleName) const
+    {
+        if (!haveTable())
+        {
+            throw std::runtime_error("Local module table not open");
+        }
+        if (!haveModule(moduleName))
+        {
+            throw std::invalid_argument("Module " + moduleName
+                                      + " not in table");
+        }
+        std::scoped_lock lock(mMutex);
+        return ::queryModule(mTableHandle, moduleName);
+    } 
     static std::filesystem::path defaultFileName()
     {
         return std::filesystem::path{ std::string(std::getenv("HOME"))
@@ -467,6 +513,7 @@ bool LocalModuleTable::isOpen() const noexcept
 }
 
 /// Module exists?
+/*
 bool LocalModuleTable::haveModule(const LocalModuleDetails &details) const
 {
     if (!details.haveName())
@@ -475,7 +522,8 @@ bool LocalModuleTable::haveModule(const LocalModuleDetails &details) const
     }
     return haveModule(details.getName());
 }
- 
+*/
+/// Module exists? 
 bool LocalModuleTable::haveModule(const std::string &moduleName) const
 {
     if (!isOpen()){return false;}
@@ -490,7 +538,7 @@ void LocalModuleTable::addModule(const LocalModuleDetails &details)
     {
         throw std::invalid_argument("Module name not set");
     }
-    if (haveModule(details))
+    if (haveModule(details.getName()))
     {
         throw std::runtime_error("Module: " + details.getName() + " exists");
     }
@@ -532,6 +580,13 @@ std::vector<LocalModuleDetails> LocalModuleTable::queryAllModules() const
 {
     if (!isOpen()){throw std::runtime_error("Table not open");}
     return pImpl->queryAllModules();
+}
+
+/// Query a module
+LocalModuleDetails LocalModuleTable::queryModule(const std::string &name) const
+{
+    if (!isOpen()){throw std::runtime_error("Table not open");}
+    return pImpl->queryModule(name);
 }
 
 /// Closes the table
