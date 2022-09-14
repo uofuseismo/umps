@@ -7,6 +7,7 @@ option(EARTHWORM_DEFAULT_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" ON)
 option(WRAP_PYTHON "Compile the Python bindings" OFF)
 
 # Ensure we have necessary packages 
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 include(CheckCXXCompilerFlag)
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)
@@ -15,7 +16,7 @@ find_package(cppzmq REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
-find_package(Doxygen)
+#find_package(Doxygen)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 #set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
@@ -114,6 +115,8 @@ set(MODULES_LIBSRC
     src/services/command/localRequestorOptions.cpp
     src/services/command/localService.cpp
     src/services/command/localServiceOptions.cpp
+    src/services/command/remoteProxy.cpp
+    src/services/command/remoteProxyOptions.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
     #src/services/connectionInformation/availableBroadcastsResponse.cpp
     src/services/connectionInformation/availableConnectionsRequest.cpp
@@ -381,6 +384,7 @@ target_include_directories(unitTests
 # Actually test communication
 set(TEST_COMMUNICATION_SRC
     testing/communication/main.cpp
+    testing/communication/remoteCommand.cpp
     testing/communication/pubsub.cpp
     testing/communication/authentication.cpp
     testing/communication/requestRouter.cpp

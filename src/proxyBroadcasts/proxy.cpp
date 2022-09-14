@@ -32,9 +32,9 @@ class Proxy::ProxyImpl
 public:
     /// Constructors
     ProxyImpl() = delete;
-    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger,
-              std::shared_ptr<UAuth::IAuthenticator> authenticator)
+    ProxyImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+              const std::shared_ptr<UMPS::Logging::ILog> &logger,
+              const std::shared_ptr<UAuth::IAuthenticator> &authenticator)
     {
         if (context == nullptr)
         {
@@ -65,11 +65,11 @@ public:
         mAuthenticatorService = std::make_unique<UAuth::Service>
                                 (mContext, mLogger, mAuthenticator);
     }
-    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> frontendContext,
-              std::shared_ptr<UMPS::Messaging::Context> backendContext,
-              std::shared_ptr<UMPS::Logging::ILog> logger,
-              std::shared_ptr<UAuth::IAuthenticator> frontendAuthenticator,
-              std::shared_ptr<UAuth::IAuthenticator> backendAuthenticator)
+    ProxyImpl(const std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
+              const std::shared_ptr<UMPS::Messaging::Context> &backendContext,
+              const std::shared_ptr<UMPS::Logging::ILog> &logger,
+              const std::shared_ptr<UAuth::IAuthenticator> &frontendAuthenticator,
+              const std::shared_ptr<UAuth::IAuthenticator> &backendAuthenticator)
     {
         // Handle context
         if (frontendContext == nullptr)
