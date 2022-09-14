@@ -37,7 +37,7 @@ std::string pwhashString(
     unsigned long long opslimit = crypto_pwhash_OPSLIMIT_SENSITIVE,
     unsigned long long memlimit = crypto_pwhash_MEMLIMIT_SENSITIVE)
 {
-    std::array<char, crypto_pwhash_STRBYTES> work;
+    std::array<char, crypto_pwhash_STRBYTES> work{};
     std::fill(work.begin(), work.end(), '\0');
     auto rc = crypto_pwhash_str(work.data(),
                                 password.c_str(), password.size(),

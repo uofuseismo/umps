@@ -15,6 +15,10 @@ namespace UMPS
  {
   class Context;
  }
+ namespace Services
+ {
+  class RemoteProxyOptions;
+ }
 }
 namespace UMPS::Services::Command
 {
@@ -36,6 +40,12 @@ public:
                 std::shared_ptr<UMPS::Authentication::IAuthenticator> &frontendAuthenticator,
                 std::shared_ptr<UMPS::Authentication::IAuthenticator> &backendAuthenticator);
     /// @}
+
+    /// @brief Initializes the proxy.
+    /// @throws std::invalid_argument if the frontend and backend address are not set.
+    void initialize(const RemoteProxyOptions &options);
+    /// @result True indicates the class is initialized.
+    [[nodiscard]] bool isInitialized() const noexcept;
 
     /// @name Destructors
     /// @{

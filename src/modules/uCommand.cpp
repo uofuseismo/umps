@@ -1,12 +1,9 @@
 #include <iostream>
 #include <string>
-#include <chrono>
 #include <filesystem>
-#include <thread>
 #include <vector>
 #include <boost/algorithm/string.hpp>
 #include "umps/messaging/context.hpp"
-#include "umps/messageFormats/message.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
@@ -17,7 +14,7 @@
 #include "umps/services/command/localRequestorOptions.hpp"
 
 
-int main(int argc, char *argv[])
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
     std::shared_ptr<UMPS::Logging::ILog> logger
         = std::make_shared<UMPS::Logging::StdOut> ();
@@ -129,6 +126,10 @@ int main(int argc, char *argv[])
                     {
                         auto response = requestor->issueCommand(commandRequest); 
                         std::cout << response->getResponse() << std::endl;
+                        if (command == "quit")
+                        {
+                            maintainConnection = false;
+                        }
                     }
                     catch (const std::exception &e)
                     {

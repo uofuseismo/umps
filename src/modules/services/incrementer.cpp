@@ -8,7 +8,6 @@
 #include <filesystem>
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
-#include "umps/logging/spdlog.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"

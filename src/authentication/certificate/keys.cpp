@@ -1,14 +1,11 @@
 #include <iostream>
 #include <string>
 #include <array>
-#include <algorithm>
 #include <fstream>
 #include <filesystem>
-#include <cstring>
 #include <ctime>
 #include <chrono>
 #include <zmq.h>
-#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include "umps/authentication/certificate/keys.hpp"
 
@@ -18,10 +15,13 @@ namespace
 {
 std::string createTimeStamp()
 {
+    /*
     typedef std::chrono::duration<int,
         std::ratio_multiply<std::chrono::hours::period,
         std::ratio<24> >::type> days;
+    */
     auto now = std::chrono::system_clock::now();
+    /*
     std::chrono::system_clock::duration tp = now.time_since_epoch();
     auto d = std::chrono::duration_cast<days>(tp);
     tp -= d;
@@ -31,6 +31,7 @@ std::string createTimeStamp()
     tp -= m;
     auto s = duration_cast<std::chrono::seconds> (tp);
     tp -= s;
+    */
     //std::cout << d.count() << "d " << h.count() << ':'
     //          << m.count() << ':' << s.count();
     time_t tt = std::chrono::system_clock::to_time_t(now);
@@ -44,7 +45,7 @@ std::string createTimeStamp()
             utc_tm.tm_hour,
             utc_tm.tm_min,
             utc_tm.tm_sec);
-    return std::string(cDate);
+    return cDate;
 }
 
 void createRootDirectoryFromFileName(const std::string &fileName)
@@ -67,12 +68,12 @@ class Keys::KeysImpl
 {
 public:
     std::string mMetadata;
-    std::array<uint8_t, 32> mPublicKey;
-    std::array<uint8_t, 32> mPrivateKey;
-    std::array<char, 41> mPublicText;
-    std::array<char, 41> mPrivateText;
-    bool mHavePublicKey = false;
-    bool mHavePrivateKey = false;
+    std::array<uint8_t, 32> mPublicKey{};
+    std::array<uint8_t, 32> mPrivateKey{};
+    std::array<char, 41> mPublicText{};
+    std::array<char, 41> mPrivateText{};
+    bool mHavePublicKey{false};
+    bool mHavePrivateKey{false};
 };
 
 /// C'tor
@@ -123,8 +124,8 @@ void Keys::clear() noexcept
 /// Creates a keypair
 void Keys::create()
 {
-    std::array<char, 41> publicText; 
-    std::array<char, 41> privateText;
+    std::array<char, 41> publicText{};
+    std::array<char, 41> privateText{};
     auto rc = zmq_curve_keypair(publicText.data(), privateText.data());
     if (rc != 0)
     {
@@ -153,7 +154,7 @@ void Keys::setPublicKey(const std::array<char, 41> &key)
 {
     pImpl->mHavePublicKey = false;
     pImpl->mPublicText = key;
-    std::array<char, 42> workKey;
+    std::array<char, 42> workKey{};
     std::fill(workKey.begin(), workKey.end(), '\0');
     std::copy(key.begin(), key.end(), workKey.begin());
     auto result = zmq_z85_decode(pImpl->mPublicKey.data(),
@@ -201,7 +202,7 @@ void Keys::setPrivateKey(const std::array<char, 41> &key)
 {
     pImpl->mHavePrivateKey = false;
     pImpl->mPrivateText = key;
-    std::array<char, 42> workKey;
+    std::array<char, 42> workKey{};
     std::fill(workKey.begin(), workKey.end(), '\0');
     std::copy(key.begin(), key.end(), workKey.begin());
     auto result = zmq_z85_decode(pImpl->mPrivateKey.data(),
@@ -360,7 +361,7 @@ void Keys::loadFromTextFile(const std::string &fileName)
             if (line.empty()){continue;} // Empty line
             if (line[0] == '#'){continue;} // Skip comments
             // Looking for something of the form: variable = "stuff"
-            auto foundEquals = line.find("="); // First equality
+            auto foundEquals = line.find('='); // First equality
             if (foundEquals == std::string::npos){continue;}
             auto foundQuote = line.find('"'); // First quote
             // First quote should come after first equality
@@ -389,7 +390,7 @@ void Keys::loadFromTextFile(const std::string &fileName)
                 privateKey = line.substr(foundQuote + 1, length);
                 continue;
             }
-            continue; 
+            //continue;
         }
         infl.close();
         if (!metadata.empty()){setMetadata(metadata);}
@@ -397,7 +398,7 @@ void Keys::loadFromTextFile(const std::string &fileName)
         {
             if (publicKey.size() == 40)
             {
-                std::array<char, 41> key;
+                std::array<char, 41> key{};
                 std::copy(publicKey.begin(), publicKey.end(), key.begin());
                 key.back() = '\0';
                 setPublicKey(key);
@@ -411,7 +412,7 @@ void Keys::loadFromTextFile(const std::string &fileName)
         {
             if (privateKey.size() == 40)
             {
-                std::array<char, 41> key;
+                std::array<char, 41> key{};
                 std::copy(privateKey.begin(), privateKey.end(), key.begin());
                 key.back() = '\0';
                 setPrivateKey(key);

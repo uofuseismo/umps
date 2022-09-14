@@ -275,14 +275,14 @@ public:
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mControlAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
     //int mHighWaterMark = 4*1024;
-    bool mHaveFrontend = false;
-    bool mHaveBackend = false;
-    bool mHaveControl = false;
-    bool mStarted = false;
-    bool mPaused = false;
-    bool mInitialized = false;
+    bool mHaveFrontend{false};
+    bool mHaveBackend{false};
+    bool mHaveControl{false};
+    bool mStarted{false};
+    bool mPaused{false};
+    bool mInitialized{false};
 };
 
 /// C'tor

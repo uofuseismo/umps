@@ -7,22 +7,16 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
 #include "umps/proxyServices/packetCache/service.hpp"
-#include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyServices/packetCache/dataRequest.hpp"
-#include "umps/proxyServices/packetCache/dataResponse.hpp"
-#include "umps/proxyServices/packetCache/sensorRequest.hpp"
-#include "umps/proxyServices/packetCache/sensorResponse.hpp"
 #include "umps/proxyServices/packetCache/replier.hpp"
 #include "umps/proxyServices/packetCache/replierOptions.hpp"
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
-#include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/proxyBroadcasts/dataPacket/subscriber.hpp"
-#include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
@@ -33,9 +27,6 @@
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/logging/spdlog.hpp"
 #include "umps/logging/stdout.hpp"
-#include "private/threadSafeQueue.hpp"
-#include "private/staticUniquePointerCast.hpp"
-#include "private/isEmpty.hpp"
 
 namespace UPacketCache = UMPS::ProxyServices::PacketCache;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;

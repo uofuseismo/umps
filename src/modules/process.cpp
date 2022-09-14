@@ -12,7 +12,7 @@ public:
     }
 ///private:
     std::function<void ()> mStopCallback{
-        std::bind(&IProcessImpl::defaultStopCallback, this)};
+        [this] { defaultStopCallback(); }};
 };
 
 /// C'tor

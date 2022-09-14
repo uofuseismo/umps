@@ -14,7 +14,8 @@ class ProcessManager::ProcessManagerImpl
 {
 public:
     /// C'tor
-    ProcessManagerImpl(std::shared_ptr<UMPS::Logging::ILog> logger)
+    explicit ProcessManagerImpl(
+        const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (logger == nullptr)
         {
@@ -88,8 +89,7 @@ public:
         process->stop();
         if (isRunning()){process->start();} // Adding while hot
         process->setStopCallback(
-            std::bind(&ProcessManagerImpl::issueStopNotification,
-                      this));
+            [this] { issueStopNotification(); });
         mLogger->debug("Adding process: " + process->getName());
         std::lock_guard<std::mutex> lockGuard(mMutex);
         mProcesses.insert(std::pair<std::string, std::unique_ptr<IProcess>>
