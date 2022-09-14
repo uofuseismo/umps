@@ -8,6 +8,8 @@
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localModuleTable.hpp"
+#include "umps/services/command/remoteProxyOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
 
 namespace
@@ -33,6 +35,28 @@ bool operator==(const LocalModuleDetails &a,
     if (a.getProcessIdentifier() != b.getProcessIdentifier()){return false;}
     if (a.getApplicationStatus() != b.getApplicationStatus()){return false;}
     return true;
+}
+
+TEST(Command, RemoteProxyOptions)
+{
+    UMPS::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseServer();
+    const std::string frontend{"tcp://127.0.0.1:8080"};
+    const std::string backend{"tcp://127.0.0.2:8080"};
+    const int frontendHWM{100};
+    const int backendHWM{200};
+    RemoteProxyOptions options;
+    EXPECT_NO_THROW(options.setFrontendAddress(frontend));
+    EXPECT_NO_THROW(options.setBackendAddress(backend));
+    options.setFrontendHighWaterMark(frontendHWM);
+    options.setBackendHighWaterMark(backendHWM);
+    options.setZAPOptions(zapOptions);
+
+    RemoteProxyOptions cOptions(options);
+    EXPECT_EQ(cOptions.getFrontendAddress(), frontend);
+    EXPECT_EQ(cOptions.getBackendAddress(), backend);
+    EXPECT_EQ(cOptions.getFrontendHighWaterMark(), frontendHWM);
+    EXPECT_EQ(cOptions.getBackendHighWaterMark(), backendHWM);
 }
 
 TEST(Command, LocalModuleDetails)

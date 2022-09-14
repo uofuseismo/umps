@@ -15,7 +15,7 @@ namespace UMPS
  {
   class Context;
  }
- namespace Services
+ namespace Services::Command
  {
   class RemoteProxyOptions;
  }
