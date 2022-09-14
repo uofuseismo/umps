@@ -1,12 +1,7 @@
-#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
 #include <zmq.hpp>
-#include <zmq_addon.hpp>
-#ifndef NDEBUG
-#include <cassert>
-#endif
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/context.hpp"
@@ -18,7 +13,6 @@
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/log.hpp"
-#include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -57,8 +51,8 @@ public:
     }
     */
     /// C'tor
-    PublisherImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                  std::shared_ptr<UMPS::Logging::ILog> logger)
+    PublisherImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+                  const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {

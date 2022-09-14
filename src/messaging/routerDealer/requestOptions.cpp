@@ -1,6 +1,5 @@
 #include <map>
 #include <string>
-#include <chrono>
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"

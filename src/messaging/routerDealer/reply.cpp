@@ -1,4 +1,3 @@
-#include <iostream>
 #include <mutex>
 #include <string>
 #include <functional>
@@ -8,12 +7,10 @@
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messaging/context.hpp"
-#include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/stdout.hpp"
-#include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -51,8 +48,8 @@ public:
     }
     */
     /// C'tor
-    ReplyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger)
+    ReplyImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+              const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {
@@ -261,8 +258,8 @@ void Reply::start()
             auto messageContents = reinterpret_cast<const void *>
                                    (messagesReceived.at(1).data());
             auto messageSize = messagesReceived.at(1).size();
-            std::string responseMessageType{""};
-            std::string responseMessage{""};
+            std::string responseMessageType;
+            std::string responseMessage;
             try
             {
                 auto response = pImpl->mCallback(messageType,

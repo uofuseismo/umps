@@ -5,14 +5,11 @@
 #include <fstream>
 #include <filesystem>
 #include <boost/program_options.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
 #include <nlohmann/json.hpp>
 #include "umps/authentication/sqlite3Authenticator.hpp"
 #include "umps/authentication/user.hpp"
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
-#include "private/isEmpty.hpp"
 
 namespace UAuth = UMPS::Authentication;
 
@@ -40,9 +37,9 @@ ProgramOptions parseCommandLineOptions(int argc, char *argv[]);
     std::ifstream inFile(fileName);
     nlohmann::json obj;
     inFile >> obj;
-    std::string name = obj["name"].get<std::string> (); 
+    auto name = obj["name"].get<std::string> ();
     user.setName(name); // Throws
-    std::string email = obj["email"].get<std::string> (); 
+    auto email = obj["email"].get<std::string> ();
     user.setEmail(email); // Throws
     if (!obj["password"].is_null())
     {

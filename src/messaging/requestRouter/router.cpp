@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <thread>
 #include <mutex>
@@ -11,7 +10,6 @@
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/authentication/zapOptions.hpp"
-#include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/logging/stdout.hpp"
@@ -54,8 +52,8 @@ public:
     }
     */
     /// C'tor
-    RouterImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-               std::shared_ptr<UMPS::Logging::ILog> logger)
+    RouterImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+               const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {
@@ -142,13 +140,12 @@ public:
     std::chrono::milliseconds mPollTimeOutMS{10};
     mutable std::mutex mMutex;
     std::string mAddress;
-    int mHighWaterMark = 100; 
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
-    bool mBound = false;
-    bool mRunning = false; 
-    bool mConnected = false;
-    bool mHaveCallback = false;
-    bool mInitialized = false;
+    int mHighWaterMark{100};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    bool mBound{false};
+    bool mRunning{false};
+    bool mHaveCallback{false};
+    bool mInitialized{false};
 };
 
 /// C'tor

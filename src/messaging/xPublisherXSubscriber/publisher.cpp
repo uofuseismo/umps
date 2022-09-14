@@ -44,8 +44,8 @@ public:
     }
     */
     /// C'tor
-    PublisherImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                  std::shared_ptr<UMPS::Logging::ILog> logger)
+    PublisherImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+                  const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {

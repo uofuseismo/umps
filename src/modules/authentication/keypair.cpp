@@ -1,19 +1,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <array>
 #include <fstream>
 #include <filesystem>
 #include <boost/program_options.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
 #include "umps/authentication/certificate/keys.hpp"
 
 struct ProgramOptions
 {
     std::string mPublicKeyFile = "publicKey.key";
     std::string mPrivateKeyFile = "privateKey.key";
-    std::string mMetadata = "";
+    std::string mMetadata;
     int mError = 0;
 };
 

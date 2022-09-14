@@ -20,41 +20,7 @@ namespace UAuth = UMPS::Authentication;
 class Proxy::ProxyImpl
 {
 public:
-/*
-    ProxyImpl(std::shared_ptr<zmq::context_t> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger, int) //:
-        //mControlContext(std::make_unique<zmq::context_t> (0)),
-        //mControl( std::make_unique<zmq::socket_t> (*mControlContext,
-//                                                   zmq::socket_type::sub))//,
-//        mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
-//                                                   zmq::socket_type::pub))
-    {
-        // Ensure the context gets made
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        // Make the logger
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        // Now make the sockets
-        mFrontend = std::make_unique<zmq::socket_t> (*mContext,
-                                                     zmq::socket_type::router);
-        mFrontend->set(zmq::sockopt::router_mandatory, 1);
-        mBackend = std::make_unique<zmq::socket_t> (*mContext,
-                                                    zmq::socket_type::dealer);
-    }
-*/
+    /// C'tor
     ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
               std::shared_ptr<UMPS::Logging::ILog> logger)
     {
@@ -190,54 +156,6 @@ public:
             mHaveBackend = false;
         }   
     }
-    /// Disconnect control
-    void disconnectControl()
-    {
-/*
-        if (mHaveControl)
-        {
-            mLogger->debug("Disconnecting from current control: "
-                         + mControlAddress);
-            mControl->disconnect(mControlAddress);
-            mHaveControl = false;
-        }
-*/
-    }
-    /// Connect control
-    void connectControl()
-    {
-/*
-        // This is very unlikely to generate a collision
-        std::ostringstream address;
-        address << static_cast<void const *> (this);
-        auto nowMuSec = std::chrono::duration_cast<std::chrono::microseconds>
-                  (std::chrono::system_clock::now().time_since_epoch()).count();
-        mControlAddress = "inproc://"
-                        + std::to_string(nowMuSec)
-                        + " _" + address.str()
-                        + "_routerdealer_control";
-        try
-        {
-            mLogger->debug("Attempting to bind to control: "
-                         + mControlAddress);
-            mControl->connect(mControlAddress);
-            // The command will issue simple commands without topics so listen
-            // to `everything.' 
-            mControl->set(zmq::sockopt::subscribe, std::string(""));
-            mControl->set(zmq::sockopt::linger, 1);
-            mCommand->bind(mControlAddress);
-            mHaveControl = true;
-        }
-        catch (const std::exception &e) 
-        {
-            auto errorMsg = "Proxy failed to bind to control: "
-                           + mControlAddress
-                          + ".\nZeroMQ failed with:\n" + std::string(e.what());
-            mLogger->error(errorMsg);
-            throw std::runtime_error(errorMsg);
-        }
-*/
-    }
     /// Update socket details
     void updateSocketDetails()
     {
@@ -253,14 +171,9 @@ public:
     }
 ///private:
     mutable std::mutex mMutex;
-//    std::unique_ptr<zmq::context_t> mControlContext{nullptr};
-//    std::unique_ptr<zmq::socket_t> mControl{nullptr};
-//    std::unique_ptr<zmq::socket_t> mCommand{nullptr};
-
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::unique_ptr<zmq::socket_t> mFrontend{nullptr};
     std::unique_ptr<zmq::socket_t> mBackend{nullptr};
-
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     ProxyOptions mOptions;
     UCI::SocketDetails::Proxy mSocketDetails;
@@ -283,13 +196,6 @@ Proxy::Proxy() :
 {
 }
 
-/*
-Proxy::Proxy(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<ProxyImpl> (context, nullptr, 0))
-{
-}
-*/
-
 Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<ProxyImpl> (context, nullptr)) 
 {
@@ -299,14 +205,6 @@ Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ProxyImpl> (nullptr, logger))
 {
 }
-
-/*
-Proxy::Proxy(std::shared_ptr<zmq::context_t> &context,
-             std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ProxyImpl> (context, logger, 0))
-{
-}
-*/
 
 Proxy::Proxy(std::shared_ptr<UMPS::Messaging::Context> &context,
              std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -332,7 +230,6 @@ void Proxy::initialize(const ProxyOptions &options)
     pImpl->mSocketDetails.clear();
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
-    //pImpl->disconnectControl();
     // Create zap options
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mFrontend);
@@ -340,7 +237,6 @@ void Proxy::initialize(const ProxyOptions &options)
     // (Re)Establish connections
     pImpl->bindBackend();
     pImpl->bindFrontend();
-    //pImpl->connectControl();
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
     pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
@@ -349,6 +245,7 @@ void Proxy::initialize(const ProxyOptions &options)
 void Proxy::start()
 {
     if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
+    stop(); // Ensure proxy is stopped before starting
     // Poll setup
     constexpr size_t nPollItems = 2;
     zmq::pollitem_t items[] = 
@@ -420,7 +317,6 @@ void Proxy::start()
                                      zmq::socket_ref(),
                                      *pImpl->mControl);
                 pImpl->mLogger->debug("Exiting steerable proxy");
-                pImpl->disconnectControl();
                 pImpl->setStarted(false);
             }
             catch (const zmq::error_t &e) //std::exception &e) 
@@ -432,12 +328,10 @@ void Proxy::start()
                 pImpl->mLogger->error(errorMsg);
                 try
                 {
-                    pImpl->disconnectControl();
                     pImpl->disconnectBackend();
                     pImpl->disconnectFrontend();
                     pImpl->bindBackend();
                     pImpl->bindFrontend();
-                    pImpl->connectControl();
                     pImpl->updateSocketDetails();
                     pImpl->setStarted(false);
                 }
@@ -490,7 +384,6 @@ void Proxy::stop()
                               zmq::send_flags::none);
         pImpl->disconnectFrontend();
         pImpl->disconnectBackend();
-        //pImpl->disconnectControl();
     }   
     pImpl->mInitialized = false;
     pImpl->setStarted(false);

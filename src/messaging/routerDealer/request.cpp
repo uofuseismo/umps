@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <thread>
 #include <mutex>
@@ -13,7 +12,6 @@
 #include "umps/messageFormats/messages.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/logging/stdout.hpp"
-#include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -51,8 +49,8 @@ public:
     }
     */
     /// C'tor
-    RequestImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger)
+    RequestImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+                const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {

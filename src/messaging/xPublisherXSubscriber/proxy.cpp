@@ -1,10 +1,8 @@
-#include <iostream>
 #include <string>
 #include <array>
 #include <mutex>
 #include <chrono>
 #include <zmq.hpp>
-#include <zmq_addon.hpp>
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/context.hpp"
@@ -16,7 +14,6 @@
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/logging/stdout.hpp"
-#include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::XPublisherXSubscriber;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -42,9 +39,9 @@ void checkOptions(const ProxyOptions &options)
 class Proxy::ProxyImpl
 {
 public:
-    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> frontendContext,
-              std::shared_ptr<UMPS::Messaging::Context> backendContext,
-              std::shared_ptr<UMPS::Logging::ILog> logger) :
+    ProxyImpl(const std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
+              const std::shared_ptr<UMPS::Messaging::Context> &backendContext,
+              const std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mControlContext(std::make_unique<zmq::context_t> (0)),
         mControl( std::make_unique<zmq::socket_t> (*mControlContext,
                                                    zmq::socket_type::sub)),

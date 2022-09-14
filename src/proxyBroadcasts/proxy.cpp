@@ -72,30 +72,21 @@ public:
               std::shared_ptr<UAuth::IAuthenticator> backendAuthenticator)
     {
         // Handle context
-        if (frontendContext == nullptr &&
-            backendContext == nullptr)
+        if (frontendContext == nullptr)
         {
             mFrontendContext = std::make_shared<UMPS::Messaging::Context> (1);
-            mBackendContext  = std::make_shared<UMPS::Messaging::Context> (1);
         }
         else
         {
-            if (frontendContext == nullptr)
-            {
-                mFrontendContext = std::make_shared<UMPS::Messaging::Context> (1);
-            }
-            else
-            {
-                mFrontendContext = frontendContext;
-            }
-            if (backendContext == nullptr)
-            {
-                mBackendContext = std::make_shared<UMPS::Messaging::Context> (1);
-            }
-            else
-            {
-                mBackendContext = backendContext;
-            }
+            mFrontendContext = frontendContext;
+        }
+        if (backendContext == nullptr)
+        {
+            mBackendContext = std::make_shared<UMPS::Messaging::Context> (1);
+        }
+        else
+        {
+            mBackendContext = backendContext;
         }
 #ifndef NDEBUG
         assert(mFrontendContext != nullptr);
@@ -131,7 +122,7 @@ public:
         }
 #ifndef NDEBUG
         assert(mFrontendAuthenticator != nullptr);
-        assert(mBackendAuthenticator != nullptr);
+        assert(mBackendAuthenticator  != nullptr);
 #endif
         mProxy = std::make_unique<UXPubXSub::Proxy> (mFrontendContext,
                                                      mBackendContext,

@@ -1,10 +1,8 @@
-#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
-#include <unistd.h>
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/context.hpp"
@@ -14,7 +12,6 @@
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/logging/stdout.hpp"
-#include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -52,8 +49,8 @@ public:
     }
     */
     /// C'tor
-    SubscriberImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                   std::shared_ptr<UMPS::Logging::ILog> logger)
+    SubscriberImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+                   const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {
@@ -104,7 +101,6 @@ public:
     UCI::SocketDetails::Subscriber mSocketDetails;
     std::string mAddress;
     UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
-    bool mMadeContext = true;
     bool mInitialized = false;
     bool mConnected = false;
 };
