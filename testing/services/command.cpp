@@ -9,6 +9,8 @@
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localModuleTable.hpp"
 #include "umps/services/command/remoteProxyOptions.hpp"
+#include "umps/services/command/terminateRequest.hpp"
+#include "umps/services/command/terminateResponse.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
 
@@ -167,6 +169,30 @@ TEST(Command, CommandResponse)
     EXPECT_EQ(response.getMessageType(),
               "UMPS::Services::Command::CommandResponse");
 }
+
+TEST(Command, TerminateRequest)
+{
+    TerminateRequest request;
+
+    TerminateRequest rCopy;
+    EXPECT_NO_THROW(rCopy.fromMessage(request.toMessage()));
+    EXPECT_EQ(rCopy.getMessageType(),
+              "UMPS::Services::Command::TerminateRequest");
+}
+
+TEST(Command, TerminateResponse)
+{
+    TerminateResponse response;
+    const auto returnCode = TerminateReturnCode::ApplicationError;
+    response.setReturnCode(returnCode);
+
+    TerminateResponse rCopy;
+    EXPECT_NO_THROW(rCopy.fromMessage(response.toMessage()));
+    EXPECT_EQ(rCopy.getReturnCode(), returnCode);
+    EXPECT_EQ(rCopy.getMessageType(),
+              "UMPS::Services::Command::TerminateResponse");
+}
+
 
 TEST(Command, LocalModuleTable)
 {

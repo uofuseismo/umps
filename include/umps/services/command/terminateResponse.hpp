@@ -1,74 +1,66 @@
-#ifndef UMPS_SERVICES_COMMAND_COMMANDRESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_COMMANDRESPONSE_HPP
+#ifndef UMPS_SERVICES_COMMAND_TERMINATERESPONSE_HPP
+#define UMPS_SERVICES_COMMAND_TERMINATERESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
 /// @brief The services return code accompanying the response.
-enum class CommandReturnCode
+enum class TerminateReturnCode
 {
     Success = 0,         /*!< Indicates the command was successful. */
-    InvalidCommand = 1,  /*!< Indicates the command was invalid. */
-    ApplicationError = 2 /*!< The code is valid but the application threw an error. */
+    InvalidCommand = 1,  /*!< The command is invalid. */
+    ApplicationError = 2 /*!< The terminate request is valid but the
+                              application could not process the request. */
 };
-/// @class CommandResponse commandResponse.hpp "umps/services/command/commandResponse.hpp"
-/// @brief The response from a text-based command.
+/// @class TerminateResponse terminateResponse.hpp "umps/services/command/quitResponse.hpp"
+/// @brief A request to terminate the application.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class CommandResponse : public UMPS::MessageFormats::IMessage
+class TerminateResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    CommandResponse();
+    TerminateResponse();
     /// @brief Copy constructor.
     /// @param[in] message  The text request message class from which to
     ///                     initialize this class.
-    CommandResponse(const CommandResponse &message);
+    TerminateResponse(const TerminateResponse &message);
     /// @brief Move constructor.
     /// @param[in,out] message  The text request message class from which to
     ///                         initialize this class.  On exit, message's
     ///                         behavior is undefined.
-    CommandResponse(CommandResponse &&message) noexcept;
-    /// @}
-
-    /// @name Required Parameters
-    /// @{
-
-    /// @brief The text-based response to the command.
-    /// @param[in] command  The text-based response.
-    /// @throws std::invalid_argument if the response is empty.
-    void setResponse(const std::string &response);
-    /// @result The text-based response.
-    /// @throws std::runtime_error if \c haveResponse() is false.
-    [[nodiscard]] std::string getResponse() const;
-    /// @result True indicates the response was set.
-    [[nodiscard]] bool haveResponse() const noexcept;
-
-    /// @brief Sets the return code.
-    /// @param[in] code  The return code.
-    void setReturnCode(CommandReturnCode code) noexcept;
-    /// @result The return code.
-    [[nodiscard]] CommandReturnCode getReturnCode() const;
-    /// @result True indicates the return code is set.
-    [[nodiscard]] bool haveReturnCode() const noexcept;
+    TerminateResponse(TerminateResponse &&message) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment.
-    /// @param[in] message  The text request message class to copy to this.
-    /// @result A deep copy of the text message.
-    CommandResponse& operator=(const CommandResponse &message);
+    /// @param[in] message  The message class to copy to this.
+    /// @result A deep copy of the message.
+    TerminateResponse& operator=(const TerminateResponse &message);
     /// @brief Move assignment.
-    /// @param[in,out] message  The text request message class whose memory will
+    /// @param[in,out] message  The response message class whose memory will
     ///                         be moved to this.  On exit, messages's behavior
     ///                         is undefined.
     /// @result The memory from message moved to this.
-    CommandResponse& operator=(CommandResponse &&message) noexcept;
+    TerminateResponse& operator=(TerminateResponse &&message) noexcept;
     /// @}
+
+    /// @name Required Parameters
+    /// @{
+
+    /// @brief Sets the return code.
+    /// @param[in] code  The return code.
+    void setReturnCode(TerminateReturnCode code) noexcept;
+    /// @result The return code.
+    [[nodiscard]] TerminateReturnCode getReturnCode() const;
+    /// @result True indicates the return code is set.
+    [[nodiscard]] bool haveReturnCode() const noexcept;
+    /// @}
+
 
     /// @name Message Abstract Base Class Properties
     /// @{
@@ -104,11 +96,11 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~CommandResponse() override;
+    ~TerminateResponse() override;
     /// @}
-private:
-    class CommandResponseImpl;
-    std::unique_ptr<CommandResponseImpl> pImpl;
+public:
+    class TerminateResponseImpl;
+    std::unique_ptr<TerminateResponseImpl> pImpl;
 };
 }
 #endif

@@ -34,6 +34,8 @@
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localService.hpp"
 #include "umps/services/command/localServiceOptions.hpp"
+#include "umps/services/command/terminateRequest.hpp"
+#include "umps/services/command/terminateResponse.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
 #include "umps/messaging/context.hpp"
@@ -264,6 +266,7 @@ public:
     {
         stop();
     }
+    /// @result True indicates this should keep running
     [[nodiscard]] bool keepRunning() const
     {
         std::scoped_lock lock(mMutex);
@@ -276,7 +279,7 @@ public:
         mKeepRunning = running;
     }
     /// @brief Gets the process name.
-    std::string getName() const noexcept override
+    [[nodiscard]] std::string getName() const noexcept override
     {
         return "BroadcastPackets";
     }
@@ -375,6 +378,7 @@ public:
         mLogger->debug("Command request received"); 
         USC::AvailableCommandsRequest availableCommandsRequest;
         USC::CommandRequest commandRequest;
+        USC::TerminateRequest terminateRequest;
         if (messageType == availableCommandsRequest.getMessageType())
         {
             USC::AvailableCommandsResponse response;
@@ -389,6 +393,22 @@ public:
                 mLogger->error("Failed to unpack commands request");
             }
             return response.clone(); 
+        }
+        else if (messageType == terminateRequest.getMessageType())
+        {
+            USC::TerminateResponse response;
+            try
+            {
+                terminateRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack terminate request");
+            }
+            issueStopCommand(); 
+            response.setReturnCode(USC::TerminateReturnCode::Success);
+            return response.clone();
         }
         else if (messageType == commandRequest.getMessageType())
         {
@@ -409,7 +429,7 @@ public:
             {
                 mLogger->debug("Issuing quit command...");
                 issueStopCommand(); 
-                response.setResponse("Bye!");
+                response.setResponse("Bye!  But next time use the terminate command.");
                 response.setReturnCode(USC::CommandReturnCode::Success);
             }
             else
@@ -446,7 +466,6 @@ public:
     std::unique_ptr<UMPS::Services::Command::LocalService>
          mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::condition_variable endProcessing;
     std::chrono::seconds mBroadcastInterval{1};
     bool mKeepRunning{true};
     bool mInitialized{false};

@@ -18,6 +18,8 @@ namespace UMPS
    class AvailableCommandsResponse;
    class CommandRequest;
    class CommandResponse;
+   class TerminateRequest;
+   class TerminateResponse;
   }
 }
 namespace UMPS::Services::Command
@@ -81,10 +83,13 @@ public:
     ///         this program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] std::unique_ptr<AvailableCommandsResponse> getCommands() const;
-    /// @brief Issues a command to the service. 
-    /// @param[in] request  The request to issue to the service.
+    /// @brief Issues a command to the program.
+    /// @param[in] request  The request to issue to the program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] std::unique_ptr<CommandResponse> issueCommand(const CommandRequest &request);
+    /// @brief Issues a remote-termination command to the program.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::unique_ptr<TerminateResponse> issueTerminateCommand() const;
     /// @}
      
     /// @name Destructors

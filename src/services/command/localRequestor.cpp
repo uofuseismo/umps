@@ -6,6 +6,8 @@
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
+#include "umps/services/command/terminateRequest.hpp"
+#include "umps/services/command/terminateResponse.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
@@ -29,8 +31,11 @@ public:
                = std::make_unique<AvailableCommandsResponse> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> commandsResponse
             = std::make_unique<CommandResponse> ();
+        std::unique_ptr<UMPS::MessageFormats::IMessage> terminateResponse
+            = std::make_unique<TerminateResponse> ();
         mMessageFormats.add(availableCommandsResponseMessage);
         mMessageFormats.add(commandsResponse);
+        mMessageFormats.add(terminateResponse);
     }
     /// @brief Disconnect
     void disconnect()
@@ -177,10 +182,31 @@ std::unique_ptr<CommandResponse> LocalRequestor::issueCommand(
         pImpl->mLogger->warn("Request timed out");
     }
     return result;
+}
 
+std::unique_ptr<TerminateResponse> LocalRequestor::issueTerminateCommand() const
+{
+    if (!isInitialized())
+    {
+        throw std::runtime_error("Requestor not initialized");
+    }
+    std::unique_ptr<TerminateResponse> result{nullptr};
+    TerminateRequest requestMessage;
+    auto message = pImpl->mRequest->request(requestMessage);
+    if (message != nullptr)
+    {
+        result = static_unique_pointer_cast<TerminateResponse>
+                 (std::move(message));
+    }
+    else
+    {
+        pImpl->mLogger->warn("Request timed out");
+    }
+    return result;
 }
 
 void LocalRequestor::disconnect()
 {
     pImpl->disconnect();
 }
+

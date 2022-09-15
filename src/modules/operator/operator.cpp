@@ -25,6 +25,12 @@
 #include "umps/messaging/context.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
+#include "umps/services/command/availableCommandsRequest.hpp"
+#include "umps/services/command/availableCommandsResponse.hpp"
+#include "umps/services/command/commandRequest.hpp"
+#include "umps/services/command/commandResponse.hpp"
+#include "umps/services/command/localService.hpp"
+#include "umps/services/command/localServiceOptions.hpp"
 #include "umps/services/connectionInformation/serviceOptions.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -34,41 +40,49 @@
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
 #include "umps/services/moduleRegistry/serviceOptions.hpp"
 #include "umps/services/moduleRegistry/service.hpp"
-//#include "umps/services/incrementer/service.hpp"
-//#include "umps/services/incrementer/parameters.hpp"
+#include "umps/modules/process.hpp"
 #include "umps/modules/processManager.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/proxyBroadcasts/proxy.hpp"
 #include "umps/proxyBroadcasts/proxyOptions.hpp"
-//#include "umps/proxyBroadcasts/dataPacket/proxy.hpp"
-//#include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
-//#include "umps/proxyBroadcasts/heartbeat/proxy.hpp"
-//#include "umps/proxyBroadcasts/heartbeat/proxyOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisherProcess.hpp"
 #include "umps/proxyServices/proxy.hpp"
 #include "umps/proxyServices/proxyOptions.hpp"
-//#include "umps/proxyServices/packetCache/proxy.hpp"
-//#include "umps/proxyServices/packetCache/proxyOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
+
+#define MODULE_NAME "uOperator"
 
 namespace UAuth = UMPS::Authentication;
 namespace UCI = UMPS::Services::ConnectionInformation;
 
+/// @result Gets the command line input options as a string.
+[[nodiscard]] std::string getInputOptions() noexcept
+{
+    std::string commands;
+    commands = "Commands:\n";
+    commands = commands + "   quit   Exits the program.\n";
+    commands = commands + "   help   Displays this message.\n";
+    commands = commands + "   list   Lists the running services.\n";
+    return commands;
+}
+
+/// @resultGets the input line.
+[[nodiscard]] std::string getInputLine() noexcept
+{
+    return std::string{MODULE_NAME} + "$";
+}
+
 struct ProgramOptions
 {
-    //std::vector<UMPS::Services::Incrementer::Parameters> mIncrementerParameters;
-    //std::vector<UMPS::ProxyServices::PacketCache::ProxyOptions> mPacketCacheOptions;
     std::vector<UMPS::ProxyServices::ProxyOptions> mProxyServiceOptions;
     std::vector<UMPS::ProxyBroadcasts::ProxyOptions> mProxyBroadcastOptions;
     std::vector<std::pair<int, bool>> mAvailablePorts;
     UCI::ServiceOptions mConnectionInformationOptions;
     UMPS::Services::ModuleRegistry::ServiceOptions mModuleRegistryOptions;
-    //UMPS::ProxyBroadcasts::DataPacket::ProxyOptions mDataPacketParameters;
-    //UMPS::ProxyBroadcasts::Heartbeat::ProxyOptions mHeartbeatParameters;
     UAuth::ZAPOptions mZAPOptions;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
@@ -84,13 +98,10 @@ struct Modules
 {
     std::map<std::string, std::unique_ptr<UMPS::Services::IService>>
         mServices;
-    //std::vector<std::unique_ptr<UMPS::Broadcasts::IBroadcast>> mBroadcasts;
     std::map<std::string, std::unique_ptr<UMPS::ProxyBroadcasts::Proxy>>
         mProxyBroadcasts;
     std::map<std::string, std::unique_ptr<UMPS::ProxyServices::Proxy>>
         mProxyServices;
-    //std::unique_ptr<UMPS::Broadcasts::DataPacket::Broadcast> mDataPacketBroadcast;
-    //std::unique_ptr<UMPS::Broadcasts::IBroadcast> mHeartbeatBroadcast;
     std::unique_ptr<UCI::Service> mConnectionInformation;
 };
 
@@ -263,6 +274,79 @@ std::string ipResolver(const std::string &serverName)
     return myIPAddress;
 }
 */
+
+class Operator : public UMPS::Modules::IProcess
+{
+public:
+    Operator() = default;
+    /// Destructor
+    ~Operator()
+    {
+        stop();
+    }
+    /// @result The module name
+    [[nodiscard]] std::string getName() const noexcept override
+    {
+        return "Operator";
+    }
+    /// @result True indicates this should keep running
+    [[nodiscard]] bool keepRunning() const
+    {   
+        std::scoped_lock lock(mMutex);
+        return mKeepRunning; 
+    }
+    /// @brief Toggles this as running or not running
+    void setRunning(const bool running)
+    {   
+        std::lock_guard<std::mutex> lockGuard(mMutex);
+        mKeepRunning = running;
+    }
+    /// @brief Stops the process.
+    void stop() override
+    {   
+        setRunning(false);
+    //    if (mBroadcastThread.joinable()){mBroadcastThread.join();}
+    //    if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+    }
+    /// Running?
+    [[nodiscard]] bool isRunning() const noexcept override
+    {
+        return keepRunning();
+    }
+    /// Callback for local interaction
+    // Callback for local interaction
+    std::unique_ptr<UMPS::MessageFormats::IMessage>
+        commandCallback(const std::string &messageType,
+                        const void *data,
+                        size_t length)
+    {
+        namespace USC = UMPS::Services::Command;
+        mLogger->debug("Command request received");
+        USC::AvailableCommandsRequest availableCommandsRequest;
+        USC::CommandRequest commandRequest;
+        if (messageType == availableCommandsRequest.getMessageType())
+        {
+            USC::AvailableCommandsResponse response;
+            response.setCommands(getInputOptions());
+            try
+            {
+                availableCommandsRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack commands request");
+            }
+            return response.clone();
+        }
+    } 
+    mutable std::mutex mMutex;
+    std::unique_ptr<UMPS::Services::Command::LocalService>
+         mLocalCommand{nullptr};
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    bool mKeepRunning{true};
+    bool mInitialized{false};
+};
 
 ///-------------------------------------------------------------------------///
 ///                                 Main Program                            ///
@@ -528,15 +612,12 @@ int main(int argc, char *argv[])
     // Main program loop
     while (true)
     {
-        std::cout << std::endl << "uOperator$";
+        std::cout << getInputLine() << std::endl;
         std::string command;
         std::cin >> command;
         if (command == "help")
         {
-            std::cout << "Commands:" << std::endl;
-            std::cout << "  quit - exits the program" << std::endl;
-            std::cout << "  help - shows this message" << std::endl;
-            std::cout << "  list - lists the running services" << std::endl;
+            std::cout << getInputOptions() << std::endl;
         }
         else if (command == "quit")
         {
@@ -767,61 +848,6 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     // Now the heartbeat broadcast
 
     //logger->debug("Creating heartbeat process...");
-    // Next get all the counters
-/*
-    auto counters = makePropertyList(propertyTree, "Counters");
-    // Parse the options for each counter
-    for (const auto &counter : counters)
-    {
-        UMPS::Services::Incrementer::Parameters counterOptions;
-        try
-        {
-            counterOptions.parseInitializationFile(iniFile, counter);
-        }
-        catch (const std::exception &e) 
-        {
-           std::cerr << "Failed to read incrementer options for: " << counter
-                     << " Failed with:\n" << e.what() << std::endl;
-        }
-        // Assign an IP address
-        if (!counterOptions.haveClientAccessAddress())
-        {
-            auto counterAddress = makeNextAvailableAddress(
-                                      options.mAvailablePorts, 
-                                      options.mAddress,
-                                      &usedAddresses,
-                                      connectionType);
-            counterOptions.setClientAccessAddress(counterAddress);
-        }
-#ifndef NDEBUG
-        assert(counterOptions.haveClientAccessAddress());
-#endif
-        counterOptions.setZAPOptions(options.mZAPOptions);
-        options.mIncrementerParameters.push_back(std::move(counterOptions));
-    }
-*/
-    // Parse the packetcache options
-/*
-    auto packetCaches = makePropertyList(propertyTree, "PacketCaches");
-    for (const auto &packetCache : packetCaches)
-    {
-        auto frontendAddress = makeNextAvailableAddress(
-                                    options.mAvailablePorts,
-                                    options.mAddress,
-                                    &usedAddresses,
-                                    connectionType);
-        auto backendAddress = makeNextAvailableAddress(
-                                    options.mAvailablePorts,
-                                    options.mAddress,
-                                    &usedAddresses,
-                                    connectionType);
-        UMPS::ProxyServices::PacketCache::ProxyOptions packetCacheProxyOptions;
-        packetCacheProxyOptions.setName(packetCache); 
-        packetCacheProxyOptions.setFrontendAddress(frontendAddress);
-        packetCacheProxyOptions.setBackendAddress(backendAddress);
-        options.mPacketCacheOptions.push_back(packetCacheProxyOptions);
-    }
-*/
     // Parse the proxyBroadcasts
     auto proxyBroadcasts = makePropertyList(propertyTree, "ProxyBroadcasts");
     for (const auto &proxyBroadcast : proxyBroadcasts)
@@ -902,73 +928,5 @@ ProgramOptions parseIniFile(const std::string &iniFile)
         options.mProxyServiceOptions.push_back(proxyOptions);
         usedAddresses.insert(newAddress);
     }
-/*
-    // Parse the datapacket broadcast options 
-    UMPS::ProxyBroadcasts::DataPacket::ProxyOptions dataPacketOptions;
-    try
-    {
-        dataPacketOptions.parseInitializationFile(iniFile, "Broadcasts:DataPackets");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Failed to read datapacket broadcast options."
-                  << "Failed with:\n" << e.what()  << std::endl;
-    }
-    if (!dataPacketOptions.haveFrontendAddress())
-    {
-        auto frontendAddress = makeNextAvailableAddress(
-                                    options.mAvailablePorts,
-                                    options.mAddress,
-                                    connectionType);
-        dataPacketOptions.setFrontendAddress(frontendAddress);
-    } 
-    if (!dataPacketOptions.haveBackendAddress())
-    {
-        auto backendAddress = makeNextAvailableAddress(
-                                    options.mAvailablePorts,
-                                    options.mAddress,
-                                    connectionType);
-        dataPacketOptions.setBackendAddress(backendAddress);
-    }
-    dataPacketOptions.setZAPOptions(options.mZAPOptions);
-    if (dataPacketOptions.haveFrontendAddress() &&
-        dataPacketOptions.haveBackendAddress())
-    {
-        options.mDataPacketParameters = dataPacketOptions;
-    }
-    // Parse the heartbeat broadcast options
-    UMPS::ProxyBroadcasts::Heartbeat::ProxyOptions heartbeatOptions;
-    try
-    {
-        heartbeatOptions.parseInitializationFile(iniFile, "ProxyBroadcasts:Heartbeat");
-    }
-    catch (const std::exception &e) 
-    {   
-        std::cerr << "Failed to read heartbeat broadcast options."
-                  << "Failed with:\n" << e.what()  << std::endl;
-    }   
-    if (!heartbeatOptions.haveFrontendAddress())
-    {   
-        auto frontendAddress = makeNextAvailableAddress(
-                                    options.mAvailablePorts,
-                                    options.mAddress,
-                                    connectionType);
-        heartbeatOptions.setFrontendAddress(frontendAddress);
-    }   
-    if (!heartbeatOptions.haveBackendAddress())
-    {   
-        auto backendAddress = makeNextAvailableAddress(
-                                    options.mAvailablePorts,
-                                    options.mAddress,
-                                    connectionType);
-        heartbeatOptions.setBackendAddress(backendAddress);
-    }
-    heartbeatOptions.setZAPOptions(options.mZAPOptions);
-    if (heartbeatOptions.haveFrontendAddress() &&
-        heartbeatOptions.haveBackendAddress())
-    {   
-        options.mHeartbeatParameters = heartbeatOptions;
-    }
-*/
     return options;
 }

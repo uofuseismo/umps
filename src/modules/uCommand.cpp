@@ -12,6 +12,7 @@
 #include "umps/services/command/localModuleDetails.hpp"
 #include "umps/services/command/localRequestor.hpp"
 #include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/services/command/terminateResponse.hpp"
 
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
@@ -116,7 +117,19 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 std::getline(std::cin, command);
                 if (command == "hangup")
                 {
+                    std::cout << "Hanging up on " << moduleName << std::endl;
                     maintainConnection = false;
+                }
+                else if (command == "quit")
+                {
+                    maintainConnection = false;
+                    auto response = requestor->issueTerminateCommand();
+                    if (response->getReturnCode() !=
+                        UMPS::Services::Command::TerminateReturnCode::Success)
+                    {
+                        std::cerr << "Error terminating: " << moduleName
+                                  << std::endl;
+                    }
                 }
                 else
                 {
