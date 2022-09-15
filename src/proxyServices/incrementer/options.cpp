@@ -14,13 +14,14 @@ class Options::OptionsImpl
 {
 public:
     UAuth::ZAPOptions mZAPOptions;
-    std::string mSqlite3FileName = std::string(std::getenv("HOME"))
-                                 + "/.local/share/UMPS/tables/counter.sqlite3";
+    std::filesystem::path mSqlite3FileName{
+        std::string(std::getenv("HOME"))
+      + "/.local/share/UMPS/tables/counter.sqlite3"};
     std::string mBackendAddress;
-    int64_t mInitialValue = 0;
-    int mIncrement = 1;
-    bool mDeleteIfExists = false;
-    UMPS::Logging::Level mVerbosity = UMPS::Logging::Level::ERROR;
+    int64_t mInitialValue{0};
+    int mIncrement{1};
+    bool mDeleteIfExists{false};
+    //UMPS::Logging::Level mVerbosity{UMPS::Logging::Level::ERROR};
 };
 
 /// C'tor
@@ -203,6 +204,7 @@ int64_t Options::getInitialValue() const noexcept
     return pImpl->mInitialValue;
 }
 
+/*
 /// Verbosity
 void Options::setVerbosity(const UMPS::Logging::Level verbosity) noexcept
 {
@@ -213,6 +215,7 @@ UMPS::Logging::Level Options::getVerbosity() const noexcept
 {
     return pImpl->mVerbosity;
 }
+*/
 
 /// ZAP Options
 void Options::setZAPOptions(const UAuth::ZAPOptions &zapOptions) noexcept
@@ -257,10 +260,10 @@ void Options::parseInitializationFile(const std::string &iniFile,
     auto initialValue = propertyTree.get<int> (section + ".initialValue", 0);
     options.setInitialValue(initialValue);
 
-    auto defaultVerbosity = static_cast<int> (options.getVerbosity());
-    auto verbosity = propertyTree.get<int> (section + ".verbosity",
-                                            defaultVerbosity);
-    options.setVerbosity(static_cast<UMPS::Logging::Level> (verbosity));
+    //auto defaultVerbosity = static_cast<int> (options.getVerbosity());
+    //auto verbosity = propertyTree.get<int> (section + ".verbosity",
+    //                                        defaultVerbosity);
+    //options.setVerbosity(static_cast<UMPS::Logging::Level> (verbosity));
     // Got everything and didn't throw -> copy to this
     *this = std::move(options);
 }

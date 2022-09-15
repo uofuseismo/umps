@@ -27,8 +27,8 @@ class Service::ServiceImpl
 public:
     /// Constructors
     ServiceImpl() = delete;
-    ServiceImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger)
+    ServiceImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+                const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {
@@ -111,6 +111,17 @@ Service::Service() :
 
 Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<ServiceImpl> (nullptr, logger))
+{
+}
+
+Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context) :
+    pImpl(std::make_unique<ServiceImpl> (context, nullptr))
+{
+}
+
+Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context,
+                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (context, logger))
 {
 }
 

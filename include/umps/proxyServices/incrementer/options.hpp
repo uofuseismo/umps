@@ -1,7 +1,6 @@
 #ifndef UMPS_PROXYSERVICES_INCREMENTER_OPTIONS_HPP
 #define UMPS_PROXYSERVICES_INCREMENTER_OPTIONS_HPP
 #include <memory>
-#include "umps/logging/level.hpp"
 namespace UMPS::Authentication
 {
  class ZAPOptions;
@@ -56,7 +55,7 @@ public:
     ///         exist cannot be parsed, does not have the specified section,
     ///         or has incorrect information.
     void parseInitializationFile(const std::string &fileName,
-                                 const std::string &section);
+                                 const std::string &section = "Incrementer");
 
     /// @name Required Options
     /// @{
@@ -126,9 +125,9 @@ public:
 
     /// @brief Sets the verbosity. 
     /// @param[in] verbosity   The verbosity.
-    void setVerbosity(UMPS::Logging::Level verbosity) noexcept;
+    //void setVerbosity(UMPS::Logging::Level verbosity) noexcept;
     /// @result The verbosity of the conter.
-    [[nodiscard]] UMPS::Logging::Level getVerbosity() const noexcept;
+    //[[nodiscard]] UMPS::Logging::Level getVerbosity() const noexcept;
 
     /// @brief Sets the ZeroMQ Authentication Protocol options.
     /// @param[in] zapOptions  The ZAP options.

@@ -1,4 +1,3 @@
-#include <iostream>
 #include <mutex>
 #include <thread>
 #include <string>
@@ -19,7 +18,6 @@
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
-#include "umps/modules/operator/readZAPOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/threadSafeQueue.hpp"
 
@@ -31,7 +29,7 @@ class PublisherProcess::PublisherProcessImpl
 public:
     /// @brief C'tor.
     explicit PublisherProcessImpl(
-        std::shared_ptr<UMPS::Logging::ILog> logger) :
+        const std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mLogger(logger)
     {
         if (logger == nullptr)
@@ -108,12 +106,26 @@ public:
     void sendMyStatus()
     {
         mLogger->debug("Heartbeat okay status thread starting...");
+        // I'm forcing this to be something large - seconds
         auto interval = mOptions.getInterval();
+        // To make this seem responsive wake up every 0.1 seconds
+        constexpr std::chrono::milliseconds fineInterval{500};
+        std::chrono::milliseconds waitTime{0};
         while (keepRunning())
         {
-            std::this_thread::sleep_for(interval);
-            mStatus.setTimeStampToNow();
-            mStatusQueue.push(mStatus);
+            // I should continue to wait.  But not too long incase someone
+            // terminates the program.
+            if (waitTime < interval)
+            {
+                std::this_thread::sleep_for(fineInterval);
+                waitTime = waitTime + fineInterval;
+            }
+            else // My turn to do something
+            {
+                mStatus.setTimeStampToNow();
+                mStatusQueue.push(mStatus);
+                waitTime = std::chrono::milliseconds {0}; // Reset
+            }
         }
         mLogger->debug("Heartbeat okay status thread exiting...");
     }
@@ -121,6 +133,8 @@ public:
     void start()
     {
         stop(); // Make sure everything stopped
+        // Indicate this should be running
+        setRunning(true);
         // Return to default status message
         mStatus.setModule(mModule);
         mStatus.setModuleStatus(ModuleStatus::Alive);

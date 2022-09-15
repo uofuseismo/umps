@@ -288,7 +288,10 @@ public:
     {
         setRunning(false);
         if (mBroadcastThread.joinable()){mBroadcastThread.join();}
-        if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+        if (mLocalCommand != nullptr)
+        {
+            if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+        }
     }
     /// @brief Starts the process.
     void start() override
@@ -533,7 +536,9 @@ int main(int argc, char *argv[])
                  programOptions.mDataPacketBroadcastName).getAddress();
         UMPS::ProxyBroadcasts::DataPacket::PublisherOptions
             packetPublisherOptions;
-        auto packetPublisher = std::make_unique<UMPS::ProxyBroadcasts::DataPacket::Publisher> (context, logger);
+        auto packetPublisher
+             = std::make_unique<UMPS::ProxyBroadcasts::DataPacket::Publisher>
+               (context, logger);
         packetPublisherOptions.setAddress(packetAddress);
         packetPublisherOptions.setZAPOptions(programOptions.mZAPOptions);
         packetPublisher->initialize(packetPublisherOptions);

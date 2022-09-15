@@ -3,12 +3,6 @@
 #include <chrono>
 #include "umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
-#include "umps/proxyBroadcasts/heartbeat/publisherOptions.hpp"
-#include "umps/services/connectionInformation/requestor.hpp"
-#include "umps/services/connectionInformation/requestorOptions.hpp"
-#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
-#include "umps/messaging/requestRouter/requestOptions.hpp"
-#include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::ProxyBroadcasts::Heartbeat;

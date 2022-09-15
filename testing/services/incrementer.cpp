@@ -37,7 +37,7 @@ TEST(Incrementer, Options)
     UMPSIC::Options options; 
     options.setSqlite3FileName("tables/counter.sqlite3");
     options.setBackendAddress("tcp://localhost:5560");
-    options.setVerbosity(UMPS::Logging::Level::DEBUG);
+    //options.setVerbosity(UMPS::Logging::Level::DEBUG);
     options.setInitialValue(42);
     options.setIncrement(84);
 
@@ -48,7 +48,7 @@ TEST(Incrementer, Options)
     EXPECT_EQ(options.getInitialValue(), 42);
     EXPECT_EQ(options.getIncrement(), 84);
     EXPECT_EQ(options.getBackendAddress(), "tcp://localhost:5560");
-    EXPECT_EQ(options.getVerbosity(), UMPS::Logging::Level::DEBUG); //static_cast<UMPS::Logging::Level> (2));
+    //EXPECT_EQ(options.getVerbosity(), UMPS::Logging::Level::DEBUG); //static_cast<UMPS::Logging::Level> (2));
 }
 
 TEST(Incrementer, RequestOptions)

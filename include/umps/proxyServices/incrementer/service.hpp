@@ -7,9 +7,9 @@ namespace UMPS
  {
   class ILog;
  }
- namespace Authentication
+ namespace Messaging
  {
-  class IAuthenticator;
+  class Context;
  }
 }
 namespace UMPS::ProxyServices::Incrementer
@@ -28,6 +28,11 @@ public:
     Service();
     /// @brief Constructor with a given logger.
     explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructor with a given context and a stdout logger.
+    explicit Service(std::shared_ptr<UMPS::Messaging::Context> &context);
+    /// @brief Constructor with a given logger and context.
+    Service(std::shared_ptr<UMPS::Messaging::Context> &context,
+            std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
      
     /// @brief Initializes the service.
