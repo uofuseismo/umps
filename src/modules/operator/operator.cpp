@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <mutex>
 #ifndef NDEBUG
 #include <cassert>
 #endif
