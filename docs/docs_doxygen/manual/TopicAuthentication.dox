@@ -1,0 +1,59 @@
+namespace UMPS
+{
+/*!
+\page TopicAuthentication Authentication
+\ingroup Authentication_chapter
+
+<p>
+This section details the concept of authentication in UMPS.  The reason it exists is somewhat fortuitous.  Soon after UMPS development commenced the University of Utah announced some pretty stringent, new security rules to prevent deparments from getting ransom-wared.  As a result, the first major diversion in UMPS was validating it could withstand an external security audit.  This does not however mean you need to understand the authentication mechanisms since the default UMPS behavior is to be completely open.  If that's okay for your project then go to another section.
+</p>
+
+<br></br>
+We break the documentation into three main components based on your job function.
+
+   1. Since most users will be interested in connection to the uOperator.  All typical users need to know is know how a bit about \ref Authentication_ZAP and, possibly, where to get the uOperator's public key.
+   2. A smaller subset of users will be system administrators.  SysAds need to understand how to interact with the \ref Authentication_UserTable (i.e., add, generate, and remove credentials).
+   3. Lastly, a strange few may want to read the uOperator source code.  Those sadists will have to understand how an \ref Authentication_Authenticator works.
+
+<br></br>
+
+You're still here.  Okay, in general, there are five \ref Authentication_SecurityLevels which, in ZeroMQ parlance, are
+
+   - Grasslands
+       -  This is the default setting.  In Grasslands all connections are open.  If you are running a private network and are satisfied with the castle-and-moat pattern then you can stop reading.
+   - Strawhouse
+       -  Connections to uOperator will be validated based on IP addresses.  This is a good first step but a minimally competent attacker can easily spoof an IP.
+   - Woodhouse
+       -  Connections to uOperator will have their IP validated __and__ their username/password validated.  This is a slow process and, since at the time of writing, the passwords are not encrypted the credentials can be stolen while on the wire.  Also, comparing a password with a salted password stored in a database is an expensive and slow activity.  To prove this to yourself, try logging out and in of your computer. 
+   - Stonehouse
+       -  Connections to uOperator will have their IP validated __and__ their public/private key validated.  Not only is this fast it is very secure since the public keys are encrypted by ZeroMQ.  Plus, the encryption is a throw-away which means, even if someone breaks it, they can't use it again.  Loosely speaking, you generate a private/public keypair, install your public key on the server, and copy the server's public key to your machine.
+   - Ironhouse
+       -  This is easy because it isn't implemented.  But this requires the client to authenticate on the server and the server to authenticate on the client.
+
+It is important to note a ZeroMQ limitation - uOperator will have **only** one security level for all connections.  Despite the fact that there is only one security level, it is not true that all message proxies should be available to all users.  Consequently, UMPS has a notion of \ref Authentication_UserPrivileges which are
+
+   - Read-Only
+       - All users have this privilege.  Basically, it means that they can subscribe to broadcasts.  This is great for the users that just want to see a some data feeds.  Such users would typically be writing user interfaces or external data monitoring tools. 
+   - Read-Write
+       - Any actual user of the system should have read-write access.  They can read from and write to broadcasts as well as use services. 
+   - Administrator
+       - Administrator-level users can do everything read-write users can do.  However, there are a few special messaging utilities that allow for remote module interaction that only administrator-level users can utilize.
+
+*/
+
+/*!
+\page TopicAuthentication_Keypairs Generating Key Pairs
+\ingroup Authentication_uKeyPair
+
+     uKeyPair
+
+*/
+
+/*!
+\page TopicAuthentication_Certficiate Certificates
+\ingroup Authentication_Certificate
+\section Topic_Authentication_Certificate_Overview Overview
+
+*/
+
+}

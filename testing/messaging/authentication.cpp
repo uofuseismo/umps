@@ -81,7 +81,7 @@ TEST(Messaging, CertificateUserNameAndPassword)
 
     std::string passwordInteractive;
     EXPECT_NO_THROW(passwordInteractive =
-                    plainTextCopy.getHashedPassword(Certificate::HashLevel::INTERACTIVE));
+                    plainTextCopy.getHashedPassword(Certificate::HashLevel::Interactive));
     //std::cout << passwordInteractive << std::endl;
 }
 
@@ -357,7 +357,7 @@ TEST(Messaging, SQLite3Authenticator)
 
         // In real-life use a more secure method
         auto hashedPassword =
-           plainText.getHashedPassword(Certificate::HashLevel::INTERACTIVE);
+           plainText.getHashedPassword(Certificate::HashLevel::Interactive);
         // Build up the user
         User user;
         user.setName(plainText.getUserName());

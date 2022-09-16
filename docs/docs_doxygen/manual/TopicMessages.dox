@@ -26,6 +26,8 @@ As a user defining your own message type you must derive from this class and imp
     - The message type is also passed onto ZeroMQ.  Loosely speaking, our messages are like emails in that they contain a subject and a body.  Specifically, the message type is the subject and the body is the serialized payload.  Reading the only subjects allows certain components of ZeroMQ to not have to read entire messages off the wire in certain communication paradigms.
   - createInstance
     - This is the first part of magic.  The UMPS interfaces to ZeroMQ return abstract-base message classes.  But those classes really have to correspond to a specific type of message class.
+  - getVersion
+    - It may happen that different components of your system are updated at different times but your message formats slightly change.  A clever behind-the-scenes parser can use the message version to great effect to deal with this problem.
   - clone
     - This is the second part of magic.  The abstract-base message classes being returned from our ZeroMQ interfaces need to have the correct content and not be unpopulated classes.
 

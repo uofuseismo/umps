@@ -50,6 +50,33 @@ namespace UMPS {
     \ingroup MessagingPatterns_ReqRep */
 
 /** \defgroup Authentication_chapter Authentication */
+ 
+/** \defgroup Authentication_SecurityLevels Security Levels
+    \brief Defines the various supported security levels in UMPS.
+    \ignroup Authentication_chapter */
+/** \defgroup Authentication_UserPrivileges User Privileges
+    \brief Defines the minimum required user-privileges to access various messaging relays.
+    \ingroup Authentication_chapter */
+/** \defgroup Authentication_ZAP ZeroMQ Authentication Protocol
+    \brief Options for the interacting with the ZeroMQ authentication protocol.
+    \ingroup Authentication_chapter */
+/** \defgroup Authentication_Certificate Cerficates
+    \brief The class defining how credentials are stored and how they map to various security levels.
+    \ingroup Authentication_ZAP */
+/** \defgroup Authentication_Service Authentication Service
+    \brief Authentication services are run by the uOperator.  Whenever a connection is formed, the ZeroMQ will call this service which, in turn, calls the authenticator to validate the connection.
+    \ingroup Authentication_chapter */
+/** \defgroup Authentication_Authenticator Authenticator
+    \brief The authenticator implements the requisite business logic to validate a connection.  It is called by the service.
+    \ingroup Authentication_Service */
+/** \defgroup Authentication_UserTable User Table
+    \brief On the server, all user credentials are stored in a single database.  This program facilitates interaction with that database.
+    \ingroup Authentication_chapter */
+/** \defgroup Authentication_User User
+    \brief This defines a user - who is someone who can be added to the database.
+    \ingroup  Authentication_UserTable */
+
+
 
 /** \defgroup Modules_chapter Modules */
 /** \defgroup Modules_ModuleBaseClass Module Base Class

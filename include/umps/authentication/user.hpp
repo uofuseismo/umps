@@ -15,6 +15,7 @@ namespace UMPS::Authentication
 /// @class User "user.hpp" "umps/authentication/user.hpp"
 /// @brief This class defines a user (row) in the user authentication table.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_User
 class User : public UMPS::MessageFormats::IMessage
 {
 public:

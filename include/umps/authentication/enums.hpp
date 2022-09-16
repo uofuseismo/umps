@@ -5,6 +5,7 @@ namespace UMPS::Authentication
 /// @class SecurityLevel "enums.hpp" "umps/authentication/enums.hpp"
 /// @brief Defines the security level of a connection.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_SecurityLevels
 enum class SecurityLevel
 {
     Grasslands = 0,  /*!< No validation. */
@@ -19,6 +20,7 @@ enum class SecurityLevel
 /// @class UserPrivileges "enums.hpp" "umps/authentication/enums.hpp"
 /// @brief Defines the user's privileges.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_UserPrivileges
 enum class UserPrivileges
 {
     ReadOnly = 0,      /*!< The user has read-only permissions. */

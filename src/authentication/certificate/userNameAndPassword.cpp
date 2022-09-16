@@ -13,10 +13,10 @@ namespace
 
 int hashLevelToIndex(const HashLevel level)
 {
-    if (level == HashLevel::INTERACTIVE){return 0;}
-    if (level == HashLevel::MODERATE){return 1;}
+    if (level == HashLevel::Interactive){return 0;}
+    if (level == HashLevel::Moderate){return 1;}
 #ifndef NDEBUG
-    assert(level == HashLevel::SENSITIVE);
+    assert(level == HashLevel::Sensitive);
 #endif
     return 2;
 }
@@ -57,11 +57,11 @@ class UserNameAndPassword::UserNameAndPasswordImpl
 public:
     std::string mUserName;
     std::string mPassword;
-    std::array<std::string, 3> mHashedPassword;
+    std::array<std::string, 3> mHashedPassword{};
     std::array<bool, 3> mHaveHashedPassword{false, false, false};
-    HashLevel mHashLevel = HashLevel::SENSITIVE;
-    bool mHaveUserName = false;
-    bool mHavePassword = false;
+    HashLevel mHashLevel{HashLevel::Sensitive};
+    bool mHaveUserName{false};
+    bool mHavePassword{false};
 };
 
 /// C'tor
@@ -113,7 +113,7 @@ void UserNameAndPassword::clear() noexcept
     {
         pwd.clear();
     }
-    pImpl->mHashLevel = HashLevel::SENSITIVE;
+    pImpl->mHashLevel = HashLevel::Sensitive;
     pImpl->mHaveUserName = false;
     pImpl->mHavePassword = false;
     std::fill(pImpl->mHaveHashedPassword.begin(), 
@@ -171,24 +171,24 @@ std::string UserNameAndPassword::getHashedPassword(
     auto idx = hashLevelToIndex(level);
     if (pImpl->mHaveHashedPassword[idx]){return pImpl->mHashedPassword[idx];}
     auto password = getPassword();
-    if (level == HashLevel::SENSITIVE)
+    if (level == HashLevel::Sensitive)
     {
         pImpl->mHashedPassword[idx]
             = pwhashString(password,
                            crypto_pwhash_OPSLIMIT_SENSITIVE,
                            crypto_pwhash_MEMLIMIT_SENSITIVE);
     }
-    else if (level == HashLevel::INTERACTIVE)
+    else if (level == HashLevel::Interactive)
     {
         pImpl->mHashedPassword[idx] 
             = pwhashString(password,
                            crypto_pwhash_OPSLIMIT_INTERACTIVE,
                            crypto_pwhash_MEMLIMIT_INTERACTIVE);
     }
-    else //if (level == SENSITIVE)
+    else //if (level == Sensitive)
     {
 #ifndef NDEBUG
-        assert(level == HashLevel::MODERATE);
+        assert(level == HashLevel::Moderate);
 #endif
         pImpl->mHashedPassword[idx] 
             = pwhashString(password,

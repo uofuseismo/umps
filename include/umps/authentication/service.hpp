@@ -27,6 +27,7 @@ namespace UMPS::Authentication
 /// @note This draws ideas from auth/thread.py in the Python ZMQ implementation
 ///       as well as brettviren's cppzmq-houses examples.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_Authenticator
 class Service
 {
 public:

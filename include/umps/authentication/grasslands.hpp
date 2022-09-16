@@ -18,6 +18,7 @@ namespace UMPS::Authentication
 /// @brief This is a default authenticator that will allow all connections.
 /// @note If you are serious about validating users then do not use this class.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_Authenticator
 class Grasslands : public IAuthenticator
 {
 public:

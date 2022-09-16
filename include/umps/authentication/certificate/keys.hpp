@@ -8,6 +8,7 @@ namespace UMPS::Authentication::Certificate
 /// @brief A class for managing a public/private key-based certificates
 ///        authenticating a client or server with ZeroMQ and libsodium.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_Certificate
 class Keys
 {
 public:

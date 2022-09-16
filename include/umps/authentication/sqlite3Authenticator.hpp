@@ -21,6 +21,7 @@ namespace UMPS::Authentication
 /// @class SQLite3Authenticator "sqlite3Authenticator.hpp" "umps/authentication/sqlite3Authenticator.hpp"
 /// @brief Performs user authentication against a SQLite3 database.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_Authenticator
 class SQLite3Authenticator : public IAuthenticator
 {
 public:

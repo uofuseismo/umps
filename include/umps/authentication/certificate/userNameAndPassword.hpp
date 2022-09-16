@@ -10,6 +10,7 @@ namespace UMPS::Authentication::Certificate
 ///       transmission so if an unauthorized person is monitoring network
 ///       traffic then these credentials can be stolen. 
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_Certificate
 class UserNameAndPassword
 {
 public:
@@ -73,7 +74,7 @@ public:
     ///                   when creating a hashed variant of the password.
     /// @result The hashed variant of the password.
     /// @throws std::runtime_error if \c havePassword() is false.
-    [[nodiscard]] std::string getHashedPassword(HashLevel level = HashLevel::SENSITIVE) const;
+    [[nodiscard]] std::string getHashedPassword(HashLevel level = HashLevel::Sensitive) const;
     /// @}
 
     /// @name Destructors

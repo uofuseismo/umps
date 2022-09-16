@@ -17,6 +17,7 @@ namespace UMPS::Authentication
 /// @brief This the base class that defines an authenticator.  
 /// @note This is based on the pyzmq implementation in base.py
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_Authenticator
 class IAuthenticator
 {
 public:

@@ -17,6 +17,7 @@ namespace UMPS::Authentication
 /// @class ZAPOptions "zapOptions.hpp" "umps/authentication/zapOptions.hpp"
 /// @brief Defines options for using the ZeroMQ authentication protocol.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Authentication_ZAP
 class ZAPOptions
 {
 public:
