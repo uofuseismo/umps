@@ -55,16 +55,15 @@ public:
     //      std::shared_ptr<UMPS::Authentication::IAuthenticator> &backendAuthenticator);
     /// @}
 
+    /// @name Initialization
+    /// @{
+
     /// @brief Initializes the proxy.
     /// @param[in] options  The proxy options.  At a minimum, this must 
     ///                     contain the frontend and backend address
     ///                     as well as the service's name.
     /// @throws std::invalid_argument if the options are invalid.
     void initialize(const ProxyOptions &options);
-
-    /// @name Initialization
-    /// @{
-
     /// @result True indicates that the proxy is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The name of the proxy broadcast.
@@ -75,6 +74,7 @@ public:
 
     /// @name Starts the proxy.
     /// @{
+
     /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
     void start();

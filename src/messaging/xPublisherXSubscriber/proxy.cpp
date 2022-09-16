@@ -249,7 +249,7 @@ public:
         xPub.setAddress(mBackendAddress);
         xPub.setSecurityLevel(mSecurityLevel);
         xPub.setConnectOrBind(UCI::ConnectOrBind::Connect);
-        mSocketDetails.setSocketPair(std::pair(xSub, xPub));
+        mSocketDetails.setSocketPair(std::pair{xSub, xPub});
     }
 ///private:
     mutable std::mutex mMutex;

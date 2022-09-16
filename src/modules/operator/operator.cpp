@@ -32,6 +32,8 @@
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localService.hpp"
 #include "umps/services/command/localServiceOptions.hpp"
+#include "umps/services/command/remoteProxy.hpp"
+#include "umps/services/command/remoteProxyOptions.hpp"
 #include "umps/services/connectionInformation/serviceOptions.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -613,7 +615,7 @@ int main(int argc, char *argv[])
     // Main program loop
     while (true)
     {
-        std::cout << getInputLine() << std::endl;
+        std::cout << getInputLine();// << std::endl;
         std::string command;
         std::cin >> command;
         if (command == "help")

@@ -265,12 +265,18 @@ void Proxy::start()
                 zmq::multipart_t messagesReceived(*pImpl->mFrontend);
                 messagesReceived.send(*pImpl->mBackend);
             }
-            catch (const zmq::error_t &e) //std::exception &e) 
+            catch (const zmq::error_t &e)
             {
                 auto errorMsg = "Frontend to backend proxy error.  "
                               + std::string("ZeroMQ failed with:\n")
                               + std::string(e.what())
                               + " Error Code = " + std::to_string(e.num());
+                pImpl->mLogger->error(errorMsg);
+            }
+            catch (std::exception &e)
+            {
+                auto errorMsg = "Frontend to backend proxy std error:  "
+                              + std::string(e.what());
                 pImpl->mLogger->error(errorMsg);
             }
         }
@@ -281,12 +287,18 @@ void Proxy::start()
                 zmq::multipart_t messagesReceived(*pImpl->mBackend);
                 messagesReceived.send(*pImpl->mFrontend);
             }
-            catch (const zmq::error_t &e) //std::exception &e) 
+            catch (const zmq::error_t &e)
             {
                 auto errorMsg = "Backend to frontend proxy error.  "
                               + std::string("ZeroMQ failed with:\n")
                               + std::string(e.what())
                               + " Error Code = " + std::to_string(e.num());
+                pImpl->mLogger->error(errorMsg);
+            }
+            catch (std::exception &e) 
+            {
+                auto errorMsg = "Backend to frontend proxy std error:  "
+                              + std::string(e.what());
                 pImpl->mLogger->error(errorMsg);
             }
         }
