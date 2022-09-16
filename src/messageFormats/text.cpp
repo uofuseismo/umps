@@ -3,7 +3,6 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include "umps/messageFormats/text.hpp"
-#include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::MessageFormats::Text"
 

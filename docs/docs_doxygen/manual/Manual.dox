@@ -53,7 +53,7 @@ namespace UMPS {
  
 /** \defgroup Authentication_SecurityLevels Security Levels
     \brief Defines the various supported security levels in UMPS.
-    \ignroup Authentication_chapter */
+    \ingroup Authentication_chapter */
 /** \defgroup Authentication_UserPrivileges User Privileges
     \brief Defines the minimum required user-privileges to access various messaging relays.
     \ingroup Authentication_chapter */
@@ -69,12 +69,16 @@ namespace UMPS {
 /** \defgroup Authentication_Authenticator Authenticator
     \brief The authenticator implements the requisite business logic to validate a connection.  It is called by the service.
     \ingroup Authentication_Service */
-/** \defgroup Authentication_UserTable User Table
+
+/** \defgroup Authentication_Utilities Utilities
+    \brief Programs for interacting adding/updating/removing users from the users table and generating key-pairs.
+    \ingroup Authentication_chapter */ 
+/** \defgroup Authentication_Utilities_UserTable User Table
     \brief On the server, all user credentials are stored in a single database.  This program facilitates interaction with that database.
-    \ingroup Authentication_chapter */
+    \ingroup Authentication_Utilities */
 /** \defgroup Authentication_User User
     \brief This defines a user - who is someone who can be added to the database.
-    \ingroup  Authentication_UserTable */
+    \ingroup  Authentication_Utilities_UserTable */
 
 
 

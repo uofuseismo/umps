@@ -1,10 +1,8 @@
-#include <iostream>
 #include <string>
 #include <array>
 #include <set>
 #include <thread>
 #include <mutex>
-#include <sqlite3.h>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/authentication/service.hpp"
@@ -59,9 +57,9 @@ public:
         makeEndPointName();
     }
     */
-    ServiceImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger,
-                std::shared_ptr<IAuthenticator> authenticator) :
+    ServiceImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+                const std::shared_ptr<UMPS::Logging::ILog> &logger,
+                const std::shared_ptr<IAuthenticator> &authenticator) :
         mContext(context),
         mLogger(logger),
         mAuthenticator(authenticator)
@@ -182,8 +180,8 @@ void Service::start()
         pImpl->mLogger->warn("Service is running.  Attemping to stop.");
         stop();
     }
-    zmq::context_t *contextPtr{nullptr};
-    contextPtr
+    //zmq::context_t *contextPtr{nullptr};
+    auto contextPtr
         = reinterpret_cast<zmq::context_t *> (pImpl->mContext->getContext());
     zmq::socket_t pipe(*contextPtr, zmq::socket_type::pair);
     pipe.set(zmq::sockopt::linger, 1);
@@ -352,7 +350,7 @@ void Service::start()
                     {
                         auto keyPtr = reinterpret_cast<const uint8_t *>
                                       (messageReceived.at(6).data());
-                        std::array<uint8_t, 32> publicKey;
+                        std::array<uint8_t, 32> publicKey{};
                         std::copy(keyPtr, keyPtr + 32, publicKey.data());
                         Certificate::Keys key;
                         try
@@ -396,7 +394,7 @@ void Service::start()
             else
             {
                 pImpl->mLogger->debug("Blocking connection from: " + ipAddress);
-            } 
+            }
             // Format result.  The order is defined in:
             // https://rfc.zeromq.org/spec/27/
             zmq::multipart_t reply;

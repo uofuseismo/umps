@@ -1,5 +1,4 @@
 #include <ostream>
-#include <iostream>
 #include <string>
 #include <sodium/crypto_pwhash.h>
 #include <nlohmann/json.hpp>
@@ -60,20 +59,20 @@ nlohmann::json toJSONObject(const User &user)
     return obj;
 }
 
-User objectToUser(const nlohmann::json obj)
+User objectToUser(const nlohmann::json &obj)
 {
     User user;
     if (obj["MessageType"] != user.getMessageType())
     {
         throw std::invalid_argument("Message has invalid message type");
     }
-    std::string name = obj["Name"].get<std::string> ();
+    auto name = obj["Name"].get<std::string> ();
     if (!name.empty()){user.setName(name);}
-    std::string email = obj["Email"].get<std::string> ();
+    auto email = obj["Email"].get<std::string> ();
     if (!email.empty()){user.setEmail(email);}
-    std::string password = obj["HashedPassword"].get<std::string> ();
+    auto password = obj["HashedPassword"].get<std::string> ();
     if (!password.empty()){user.setHashedPassword(password);}
-    std::string publicKey = obj["PublicKey"].get<std::string> ();
+    auto publicKey = obj["PublicKey"].get<std::string> ();
     if (static_cast<int> (publicKey.length()) == 40)
     {
         user.setPublicKey(publicKey);
@@ -203,7 +202,10 @@ bool User::haveEmail() const noexcept
 /// Public key
 void User::setPublicKey(const std::string &publicKey)
 {
-    if (isEmpty(publicKey)){std::invalid_argument("Public key is empty");}
+    if (isEmpty(publicKey))
+    {
+        throw std::invalid_argument("Public key is empty");
+    }
     if (static_cast<int> (publicKey.length()) != getKeyLength())
     {
         throw std::invalid_argument("Public key length must be "
@@ -227,7 +229,10 @@ bool User::havePublicKey() const noexcept
 /// Password
 void User::setHashedPassword(const std::string &password)
 {
-    if (isEmpty(password)){std::invalid_argument("Password is empty");}
+    if (isEmpty(password))
+    {
+        throw std::invalid_argument("Password is empty");
+    }
     if (static_cast<int> (password.length()) > getMaximumHashedStringLength())
     {
         throw std::invalid_argument("Password length cannot exceed "
@@ -261,13 +266,13 @@ UserPrivileges User::getPrivileges() const noexcept
 }
 
 /// Hashed string length
-int User::getMaximumHashedStringLength() const noexcept
+int User::getMaximumHashedStringLength() noexcept
 {
     return crypto_pwhash_STRBYTES;
 }
 
 /// Text key length
-int User::getKeyLength() const noexcept
+int User::getKeyLength() noexcept
 {
     return 40;
 }
@@ -291,7 +296,7 @@ bool User::doesPasswordMatch(const std::string &password) const noexcept
         return (password == pImpl->mMatchingPassword);
     }
     auto hashedPassword = getHashedPassword();
-    std::array<char, crypto_pwhash_STRBYTES> str;
+    std::array<char, crypto_pwhash_STRBYTES> str{};
     std::fill(str.begin(), str.end(), '\0');
     std::copy(hashedPassword.begin(), hashedPassword.end(), str.begin());
     auto error = crypto_pwhash_str_verify(str.data(),

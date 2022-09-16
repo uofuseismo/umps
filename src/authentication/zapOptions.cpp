@@ -1,5 +1,7 @@
 #include <string>
+#ifndef NDEBUG
 #include <cassert>
+#endif
 #include <zmq.hpp>
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/certificate/keys.hpp"
@@ -13,7 +15,7 @@ namespace
 
 void setStrawhouseSocketOptions(zmq::socket_t *socket,
                                 const bool isAuthenticationServer,
-                                const std::string zapDomain)
+                                const std::string &zapDomain)
 {
     if (isAuthenticationServer)
     {
@@ -317,7 +319,9 @@ void ZAPOptions::setSocketOptions(zmq::socket_t *socket) const
     }
     else
     {
+#ifndef NDEBUG
         assert(false);
+#endif
         throw std::runtime_error("Security level not handled");
     }
 }

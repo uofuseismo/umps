@@ -73,21 +73,21 @@ User rowToUser(sqlite3_stmt *result)
     std::string name(reinterpret_cast<const char *> (sqlite3_column_text(result, 1)));
     user.setName(name);
     // Email
-    if (sqlite3_column_text(result, 2) != NULL)
+    if (sqlite3_column_text(result, 2) != nullptr)
     {
         std::string email(reinterpret_cast<const char *>
                           (sqlite3_column_text(result, 2)));
         user.setEmail(email);
     }
     // Hashed password
-    if (sqlite3_column_text(result, 3) != NULL)
+    if (sqlite3_column_text(result, 3) != nullptr)
     {
         std::string hashedPassword = (reinterpret_cast<const char *>
                                       (sqlite3_column_text(result, 3)));
         user.setHashedPassword(hashedPassword);
     }
     // Public key 
-    if (sqlite3_column_text(result, 4) != NULL)
+    if (sqlite3_column_text(result, 4) != nullptr)
     {
         std::string publicKey(reinterpret_cast<const char *>
                               (sqlite3_column_text(result, 4)));
@@ -217,7 +217,7 @@ std::pair<int, std::string> createUsersTable(sqlite3 *db)
         outputMessage = errorMessage;
         sqlite3_free(errorMessage);
     }
-    return std::pair(rc, outputMessage);
+    return std::pair{rc, outputMessage};
 }
 /// Creates the blacklist table
 std::pair<int, std::string> createBlacklistTable(sqlite3 *db)
@@ -233,7 +233,7 @@ std::pair<int, std::string> createBlacklistTable(sqlite3 *db)
         outputMessage = errorMessage;
         sqlite3_free(errorMessage);
     }
-    return std::pair(rc, outputMessage);
+    return std::pair{rc, outputMessage};
 }
 /// Creates the whitelist table
 std::pair<int, std::string> createWhitelistTable(sqlite3 *db)
@@ -249,7 +249,7 @@ std::pair<int, std::string> createWhitelistTable(sqlite3 *db)
         outputMessage = errorMessage;
         sqlite3_free(errorMessage);
     }
-    return std::pair(rc, outputMessage);
+    return std::pair{rc, outputMessage};
 }
 /// Is it whitelisted?
 bool checkWhitelisted(sqlite3 *db, const std::string &ip)
@@ -262,7 +262,7 @@ bool checkWhitelisted(sqlite3 *db, const std::string &ip)
     }
     std::string sql = "SELECT ip FROM whitelist;";
     sqlite3_stmt *result = nullptr;
-    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+    auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, nullptr);
     if (rc != SQLITE_OK){return matches;}
     while (true)
     {
@@ -320,7 +320,7 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userNameOr
     if (userNameOrKey.empty())
     {
         sql = "SELECT id, name, email, password, public_key, privileges FROM user;";
-        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, nullptr);
         if (rc != SQLITE_OK)
         {
             std::cerr << "Failed to prepare query" << std::endl;
@@ -338,14 +338,14 @@ std::vector<User> queryFromUsersTable(sqlite3 *db, const std::string &userNameOr
         {
             sql = "SELECT id, name, email, password, public_key, privileges FROM user WHERE public_key = ?;";
         }
-        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
+        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, nullptr);
         if (rc != SQLITE_OK)
         {
             std::cerr << "Failed to prepare query" << std::endl; 
             return users;
         }
         rc = sqlite3_bind_text(result, 1, userNameOrKey.c_str(),
-                               userNameOrKey.length(), NULL);
+                               static_cast<int> (userNameOrKey.length()), nullptr);
         if (rc != SQLITE_OK)
         {
             std::cerr << "Failed to bind text" << std::endl;
@@ -369,7 +369,7 @@ void addUserToDatabase(sqlite3 *db, const User &user)
 {
     auto sql = ::addUserToRow(user);
     char *errorMessage = nullptr;
-    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    auto rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &errorMessage);
     if (rc != SQLITE_OK)
     {
         std::string error = "Failed to add : " + sql + " to table user\n"
@@ -383,7 +383,7 @@ void updateUserToDatabase(sqlite3 *db, const User &user)
 {
     auto sql = ::updateUserToRow(user);
     char *errorMessage = nullptr;
-    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    auto rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &errorMessage);
     if (rc != SQLITE_OK)
     {   
         std::string error = "Failed to update : " + sql + "to table user\n"
@@ -397,7 +397,7 @@ void deleteUserFromDatabase(sqlite3 *db, const User &user)
 {
     auto sql = ::deleteUserFromRow(user);
     char *errorMessage = nullptr;
-    auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
+    auto rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &errorMessage);
     if (rc != SQLITE_OK)
     {    
         std::string error = "Failed to delete : " + sql + "to table user\n"
@@ -759,39 +759,39 @@ public:
         // No user exists
         if (returnedUsers.empty())
         {
-            return std::pair(clientErrorStatus(),
-                            "User: " + userName + " does not exist");
+            return std::pair{clientErrorStatus(),
+                            "User: " + userName + " does not exist"};
         }
 #ifndef NDEBUG 
         assert(static_cast<int> (returnedUsers.size()) == 1); 
 #endif
         if (!returnedUsers[0].haveHashedPassword())
         {
-            return std::pair(clientErrorStatus(),
-                             "User: " + userName + " does not have password");
+            return std::pair{clientErrorStatus(),
+                             "User: " + userName + " does not have password"};
         }
         if (returnedUsers[0].getPrivileges() < mPrivileges)
         {
-            return std::pair(clientErrorStatus(),
+            return std::pair{clientErrorStatus(),
                              "User: " + userName
                            + " has insufficient privileges."
                            + userName + " has " 
                            + ::toPrivilegeString(
                                  returnedUsers[0].getPrivileges())
                            + " but requires "
-                           + ::toPrivilegeString(mPrivileges));
+                           + ::toPrivilegeString(mPrivileges)};
         }
         if (!returnedUsers[0].doesPasswordMatch(password))
         {
-            return std::pair(clientErrorStatus(),
+            return std::pair{clientErrorStatus(),
                              "Given password: " + password
                            + " does not match user's " + userName
-                           + " password");
+                           + " password"};
         }
         mLogger->info("Validated user/password for user " + userName
                     + " who has minimum privileges "
                     + ::toPrivilegeString(mPrivileges));
-        return std::pair(okayStatus(), okayMessage());
+        return std::pair{okayStatus(), okayMessage()};
     }
     /// Does public key match?
     std::pair<std::string, std::string>
@@ -816,19 +816,19 @@ public:
 #endif
         if (returnedUsers[0].getPrivileges() < mPrivileges)
         {
-            return std::pair(clientErrorStatus(),
+            return std::pair{clientErrorStatus(),
                             "User has insufficient privileges.  "
                            + returnedUsers[0].getName() + " has " 
                            + ::toPrivilegeString(
                                  returnedUsers[0].getPrivileges())
                            + " but requires "
-                           + ::toPrivilegeString(mPrivileges));
+                           + ::toPrivilegeString(mPrivileges)};
         }
         mLogger->info("Validated public key for user "
                     + returnedUsers[0].getName()
                     + " who has minimum privileges "
                     + ::toPrivilegeString(mPrivileges));
-        return std::pair(okayStatus(), okayMessage()); 
+        return std::pair{okayStatus(), okayMessage()};
     }
 ///private:
     mutable std::mutex mMutex;

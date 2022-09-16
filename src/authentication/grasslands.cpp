@@ -47,7 +47,7 @@ std::pair<std::string, std::string> Grasslands::isBlacklisted(
         pImpl->mLogger->info("Grasslands address: "
                            + address + " is not blacklisted");
     }
-    return std::pair(okayStatus(), okayMessage());
+    return std::pair{okayStatus(), okayMessage()};
 }   
 
 std::pair<std::string, std::string> Grasslands::isWhitelisted(
@@ -58,7 +58,7 @@ std::pair<std::string, std::string> Grasslands::isWhitelisted(
         pImpl->mLogger->info("Grasslands address: "
                            + address + " is whitelisted");
     }
-    return std::pair(okayStatus(), okayMessage());
+    return std::pair{okayStatus(), okayMessage()};
 }
 
 std::pair<std::string, std::string> Grasslands::isValid(
@@ -76,7 +76,7 @@ std::pair<std::string, std::string> Grasslands::isValid(
             pImpl->mLogger->info("Grasslands user is allowed");
         }
     }
-    return std::pair(okayStatus(), okayMessage());
+    return std::pair{okayStatus(), okayMessage()};
 }
 
 std::pair<std::string, std::string> Grasslands::isValid(
@@ -86,7 +86,7 @@ std::pair<std::string, std::string> Grasslands::isValid(
     {
         pImpl->mLogger->info("Grasslands user public key is allowed");
     }
-    return std::pair(okayStatus(), okayMessage());
+    return std::pair{okayStatus(), okayMessage()};
 }   
 
 UserPrivileges Grasslands::getMinimumUserPrivileges() const noexcept

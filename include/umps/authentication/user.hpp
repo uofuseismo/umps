@@ -137,9 +137,9 @@ public:
     /// @}
 
     /// @result The length of a hashed string.
-    [[nodiscard]] int getMaximumHashedStringLength() const noexcept;
+    [[nodiscard]] static int getMaximumHashedStringLength() noexcept;
     /// @result The length of the public key.
-    [[nodiscard]] int getKeyLength() const noexcept;
+    [[nodiscard]] static int getKeyLength() noexcept;
 
     /// @name Destructors
     /// @{
