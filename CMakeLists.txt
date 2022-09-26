@@ -117,6 +117,8 @@ set(MODULES_LIBSRC
     src/services/command/localServiceOptions.cpp
     src/services/command/remoteProxy.cpp
     src/services/command/remoteProxyOptions.cpp
+    src/services/command/remoteRequestor.cpp
+    src/services/command/remoteRequestorOptions.cpp
     src/services/command/terminateRequest.cpp
     src/services/command/terminateResponse.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp

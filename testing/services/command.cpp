@@ -3,6 +3,7 @@
 #include <chrono>
 #include "umps/services/command/localModuleDetails.hpp"
 #include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/services/command/remoteRequestorOptions.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
@@ -11,6 +12,7 @@
 #include "umps/services/command/remoteProxyOptions.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
 
@@ -83,11 +85,26 @@ TEST(Command, LocalModuleDetails)
     EXPECT_EQ(dCopy.getIPCFileName(), ipcFile); 
 }
 
-TEST(Command, LocalRequestorCommands)
+TEST(COmmand, RemoteRequestorOptions)
+{
+    const std::string address = "tcp://127.0.0.1:8080";
+    const std::chrono::milliseconds timeOut{234}; 
+    RemoteRequestorOptions options;
+    EXPECT_NO_THROW(options.setAddress(address));
+    options.setReceiveTimeOut(timeOut);
+
+    RemoteRequestorOptions copy(options);
+    auto rOptions = copy.getOptions();
+    EXPECT_EQ(rOptions.getAddress(), address);
+    EXPECT_EQ(rOptions.getTimeOut(), timeOut);
+}
+
+TEST(Command, LocalRequestorOptions)
 {
     const std::string moduleName{"example"};
     const std::string directory{"./"};
     const std::string ipcFileName{"./example.ipc"};
+    const std::string address = "ipc://./example.ipc";
     const std::chrono::milliseconds timeOut{234};
     LocalRequestorOptions options;
     EXPECT_NO_THROW(options.setModuleName(moduleName));
@@ -96,12 +113,13 @@ TEST(Command, LocalRequestorCommands)
 
     LocalRequestorOptions copy(options);
     EXPECT_EQ(copy.getModuleName(), moduleName);
-    EXPECT_EQ(copy.getReceiveTimeOut(), timeOut);
     EXPECT_EQ(copy.getIPCDirectory(), directory);
     EXPECT_EQ(copy.getIPCFileName(), ipcFileName);
 
     options.clear();
-    EXPECT_EQ(options.getReceiveTimeOut(), std::chrono::milliseconds {10});
+    auto rOptions = copy.getOptions().getOptions();
+    EXPECT_EQ(rOptions.getAddress(), address);
+    EXPECT_EQ(rOptions.getTimeOut(), timeOut);
 }
 
 TEST(Command, CommandsRequest)

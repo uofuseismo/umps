@@ -3,9 +3,7 @@
 #include <string>
 #include <filesystem>
 #include "umps/services/command/localRequestorOptions.hpp"
-#include "umps/services/command/availableCommandsRequest.hpp"
-#include "umps/services/command/availableCommandsResponse.hpp"
-#include "umps/services/command/commandRequest.hpp"
+#include "umps/services/command/remoteRequestorOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;
@@ -13,11 +11,29 @@ using namespace UMPS::Services::Command;
 class LocalRequestorOptions::LocalRequestorOptionsImpl
 {
 public:
+    [[nodiscard]] std::string getIPCFileName() const
+    {
+        if (mModuleName.empty())
+        {
+            throw std::runtime_error("Module name not set");
+        }
+        std::filesystem::path fileName{mModuleName + ".ipc"};
+        fileName = mIPCDirectory / fileName; 
+        return fileName;
+    }
+    void updateAddress()
+    {
+        if (!mModuleName.empty() && !mIPCDirectory.empty())
+        {
+            auto address = "ipc://" + getIPCFileName();
+            mOptions.setAddress(address);
+        }
+    }
     std::string mModuleName;
     std::filesystem::path mIPCDirectory
         = std::filesystem::path{std::string{std::getenv("HOME")}}
         / std::filesystem::path{".local/share/UMPS/ipc"};
-    std::chrono::milliseconds mReceiveTimeOut{10};
+    RemoteRequestorOptions mOptions;
 };
 
 /// C'tor
@@ -74,6 +90,7 @@ void LocalRequestorOptions::setModuleName(const std::string &name)
     pImpl->mModuleName = name;
     std::remove_if(pImpl->mModuleName.begin(),
                    pImpl->mModuleName.end(), ::isspace);
+    pImpl->updateAddress();
 }
 
 std::string LocalRequestorOptions::getModuleName() const
@@ -103,6 +120,7 @@ void LocalRequestorOptions::setIPCDirectory(const std::string &directory)
         }
         pImpl->mIPCDirectory = directory;
     }
+    pImpl->updateAddress();
 }
 
 std::string LocalRequestorOptions::getIPCDirectory() const noexcept
@@ -112,21 +130,22 @@ std::string LocalRequestorOptions::getIPCDirectory() const noexcept
 
 std::string LocalRequestorOptions::getIPCFileName() const
 {
-    auto moduleName = getModuleName(); // Throws
-    std::filesystem::path fileName{moduleName + ".ipc"};
-    fileName = std::filesystem::path{getIPCDirectory()} / fileName; 
-    return fileName.string();
+    return pImpl->getIPCFileName();
+    //auto moduleName = getModuleName(); // Throws
+    //std::filesystem::path fileName{moduleName + ".ipc"};
+    //fileName = std::filesystem::path{getIPCDirectory()} / fileName; 
+    //return fileName.string();
 }
 
 /// Time-out
 void LocalRequestorOptions::setReceiveTimeOut(
     const std::chrono::milliseconds &timeOut)
 {
-    pImpl->mReceiveTimeOut = timeOut;
+    pImpl->mOptions.setReceiveTimeOut(timeOut);
 } 
 
-std::chrono::milliseconds
-LocalRequestorOptions::getReceiveTimeOut() const noexcept
+/// Requestor options
+RemoteRequestorOptions LocalRequestorOptions::getOptions() const
 {
-    return pImpl->mReceiveTimeOut;
+    return pImpl->mOptions;
 }

@@ -1,29 +1,29 @@
-#ifndef UMPS_SERVICES_COMMAND_LOCALREQUESTOROPTIONS_HPP
-#define UMPS_SERVICES_COMMAND_LOCALREQUESTOROPTIONS_HPP
+#ifndef UMPS_SERVICES_COMMAND_REMOTEREQUESTOROPTIONS_HPP
+#define UMPS_SERVICES_COMMAND_REMOTEREQUESTOROPTIONS_HPP
 #include <memory>
 #include <chrono>
-namespace UMPS::Services::Command
+namespace UMPS::Messaging::RequestRouter
 {
- class RemoteRequestorOptions;
+ class RequestOptions;
 }
 namespace UMPS::Services::Command
 {
-/// @class LocalRequestorOptions "localRequestorOptions.hpp" "umps/services/command/localRequestorOptions.hpp"
+/// @class RemoteRequestorOptions "localRequestorOptions.hpp" "umps/services/command/localRequestorOptions.hpp"
 /// @brief This sets the parameters for the utility that will allow users to 
 ///        interact locally with a program.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class LocalRequestorOptions
+class RemoteRequestorOptions
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    LocalRequestorOptions();
+    RemoteRequestorOptions();
     /// @brief Copy constructor.
-    LocalRequestorOptions(const LocalRequestorOptions &options);
+    RemoteRequestorOptions(const RemoteRequestorOptions &options);
     /// @brief Move constructor.
-    LocalRequestorOptions(LocalRequestorOptions &&options) noexcept;
+    RemoteRequestorOptions(RemoteRequestorOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -32,40 +32,28 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of the input options. 
-    LocalRequestorOptions& operator=(const LocalRequestorOptions &options);
+    RemoteRequestorOptions& operator=(const RemoteRequestorOptions &options);
     /// @brief Move assignment operator.
     /// @param[in,out] options  The options class whose memory will be moved to
     ///                         this.  On exit, options's behavior is undefined.
     /// @result The memory from options moved to this.
-    LocalRequestorOptions& operator=(LocalRequestorOptions &&options) noexcept;
+    RemoteRequestorOptions& operator=(RemoteRequestorOptions &&options) noexcept;
     /// @}
 
     /// @name Required Parameters
     /// @{
 
-    /// @brief Sets the locally running module name with which to interact.
-    /// @param[in] name  The name of the module.
+    /// @brief Sets the address of the proxy to which commands will be submitted.
+    /// @param[in] address   The address.
     /// @throws std::invalid_argument if name is empty.
-    void setModuleName(const std::string &name);
-    /// @result The name of the local module with which to interact.
-    [[nodiscard]] std::string getModuleName() const;
-    /// @result True indicates the module name was set.
-    [[nodiscard]] bool haveModuleName() const noexcept;
-    /// @result The name of the IPC file.
-    /// @Throws std::runtime_erorr if \c haveModuleName() is false.
-    [[nodiscard]] std::string getIPCFileName() const;
+    void setAddress(const std::string &address);
+    /// @result True indicates the address was set.
+    [[nodiscard]] bool haveAddress() const noexcept;
     /// @}
 
     /// @name Optional Parameters
     /// @{
 
-    /// @brief Sets the IPC directory that will house IPC files.
-    /// @param[in] directory  The directory where IPC communication file
-    ///                       will exist.
-    /// @throws std::invalid_argument if the directory does not exist.
-    void setIPCDirectory(const std::string &directory);
-    /// @result The directory where the IPC communication files will exist.
-    [[nodiscard]] std::string getIPCDirectory() const noexcept;
     /// @brief Sets the time out for receiving replies from the local module.
     /// @param[in] timeOut  The receive time out.  If this is negative then
     ///                     this program will hang indefinitely until the
@@ -78,8 +66,9 @@ public:
     void setReceiveTimeOut(const std::chrono::milliseconds &timeOut);
     /// @}
 
-    /// @result The request options.
-    [[nodiscard]] RemoteRequestorOptions getOptions() const;
+    /// @result The requestor options.
+    /// @throws std::runtime_error if \c haveAddress() is false.
+    [[nodiscard]] UMPS::Messaging::RequestRouter::RequestOptions getOptions() const;
 
     /// @name Destructors
     /// @{
@@ -87,11 +76,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~LocalRequestorOptions(); 
+    ~RemoteRequestorOptions(); 
     /// @} 
 private:
-    class LocalRequestorOptionsImpl;
-    std::unique_ptr<LocalRequestorOptionsImpl> pImpl;
+    class RemoteRequestorOptionsImpl;
+    std::unique_ptr<RemoteRequestorOptionsImpl> pImpl;
 };
 }
 #endif
