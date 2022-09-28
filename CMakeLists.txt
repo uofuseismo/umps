@@ -448,7 +448,7 @@ endif()
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/umps
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        #"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
         COMPONENT ${PROJECT_NAME})

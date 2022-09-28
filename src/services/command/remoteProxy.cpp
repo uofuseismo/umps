@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <mutex>
 #include <thread>
@@ -171,8 +172,7 @@ public:
             = std::make_unique<UAuth::Service>
               (mContext, mLogger, mAuthenticator);
         // I only care about connections on the dealer
-        mDealerMonitor = std::make_unique<Monitor> (mBackend,
-                                                    mLogger);
+        mDealerMonitor = std::make_unique<Monitor> (mBackend, mLogger);
     }
     /// C'tor for asymmetric authentication
     RemoteProxyImpl(
@@ -257,8 +257,7 @@ public:
                mLogger,
                mBackendAuthenticator);
         // I only care about connections on the dealer
-        mDealerMonitor = std::make_unique<Monitor> (mBackend,
-                                                    mLogger);
+        mDealerMonitor = std::make_unique<Monitor> (mBackend, mLogger);
     }
     /// Bind the frontend
     void bindFrontend()
