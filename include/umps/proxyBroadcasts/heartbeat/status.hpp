@@ -95,6 +95,11 @@ public:
     ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
+    /// @param[in] message   The status message.
+    /// @throws std::runtime_error if the message is invalid.
+    /// @throws std::invalid_argmument if message.empty() is true.
+    void fromMessage(const std::string &message) final;
+    /// @brief Creates the class from a message.
     /// @param[in] data    The contents of the message.  This is an
     ///                    array whose dimension is [length] 
     /// @param[in] length  The length of data.
@@ -103,6 +108,8 @@ public:
     void fromMessage(const char *data, size_t length) final;
     /// @result A message type indicating this is a heartbeat status message.
     [[nodiscard]] std::string getMessageType() const noexcept final;
+    /// @result The message version.
+    [[nodiscard]] std::string getMessageVersion() const noexcept final;
     /// @result A copy of this class.
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const final;
     /// @result An uninitialized instance of this class. 
@@ -134,7 +141,7 @@ public:
     /// @param[in] length  The length of data.
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0.
-    virtual void fromCBOR(const uint8_t *data, size_t length);
+    void fromCBOR(const uint8_t *data, size_t length);
     /// @}
 
     /// @name Destructors

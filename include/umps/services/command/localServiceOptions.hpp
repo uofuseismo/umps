@@ -13,7 +13,7 @@ namespace UMPS
 }
 namespace UMPS::Services::Command
 {
-/// @class LocalService "localService.hpp" "umps/services/command/localService.hpp"
+/// @class LocalServiceOptions "localServiceOptions.hpp" "umps/services/command/localServiceOptions.hpp"
 /// @brief This class allows a background application to interact with a user.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class LocalServiceOptions

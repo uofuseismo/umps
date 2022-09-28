@@ -123,7 +123,7 @@ TEST(Incrementer, IncrementRequest)
 
     auto msg = request.toMessage();
     UMPSIC::IncrementRequest rCopy;
-    rCopy.fromMessage(msg.data(), msg.size());
+    EXPECT_NO_THROW(rCopy.fromMessage(msg)); //msg.data(), msg.size());
     EXPECT_EQ(rCopy.getItem(), item);
     EXPECT_EQ(rCopy.getIdentifier(), id);
 
@@ -143,7 +143,7 @@ TEST(Incrementer, ItemsRequest)
 
     auto msg = request.toMessage();
     UMPSIC::ItemsRequest rCopy;
-    rCopy.fromMessage(msg.data(), msg.size());
+    EXPECT_NO_THROW(rCopy.fromMessage(msg)); //msg.data(), msg.size());
     EXPECT_EQ(rCopy.getIdentifier(), id);
 
     request.clear();
@@ -161,7 +161,7 @@ TEST(Incrementer, ItemsResponse)
 
     auto msg = response.toMessage();
     UMPSIC::ItemsResponse rCopy;
-    rCopy.fromMessage(msg.data(), msg.size());
+    EXPECT_NO_THROW(rCopy.fromMessage(msg)); //msg.data(), msg.size());
     EXPECT_EQ(rCopy.getItems().size(), items.size());
     EXPECT_EQ(rCopy.getItems(), items);
     EXPECT_EQ(rCopy.getIdentifier(), id);
@@ -186,7 +186,7 @@ TEST(Incrementer, IncrementResponse)
     auto msg = response.toMessage();
 
     UMPSIC::IncrementResponse rCopy;
-    rCopy.fromMessage(msg.data(), msg.size());
+    EXPECT_NO_THROW(rCopy.fromMessage(msg)); //msg.data(), msg.size());
     EXPECT_EQ(rCopy.getValue(), value);
     EXPECT_EQ(rCopy.getIdentifier(), id);
     EXPECT_EQ(rCopy.getReturnCode(), code);

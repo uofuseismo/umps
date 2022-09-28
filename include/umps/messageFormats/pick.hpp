@@ -169,6 +169,11 @@ public:
     /// @note Though the container is a string the message need not be
     ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
+    /// @breif Creates the class from a message.
+    /// @param[in] message  The contents of the message.
+    /// @throws std::runtime_error if the message is invalid.
+    /// @throws std::invalid_argument if data.empty() is true.
+    void fromMessage(const std::string &message) final;
     /// @brief Creates the class from a message.
     /// @param[in] data    The contents of the message.  This is an
     ///                    array whose dimension is [length] 
@@ -182,6 +187,8 @@ public:
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> clone() const final;
     /// @result An uninitialized instance of this class. 
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> createInstance() const noexcept final;
+    /// @result The message version.
+    [[nodiscard]] std::string getMessageVersion() const noexcept final;
     /// @}
 
     /// @name Debugging Utilities

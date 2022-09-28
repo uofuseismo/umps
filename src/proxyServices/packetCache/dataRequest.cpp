@@ -8,6 +8,7 @@
 #include "private/applications/packetCache.hpp"
 
 #define MESSAGE_TYPE "UMPS::ProxyServices::PacketCache::DataRequest"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::ProxyServices::PacketCache;
 
@@ -20,6 +21,7 @@ nlohmann::json toJSONObject(const DataRequest &request)
     // Essential stuff (this will throw): 
     // Network/Station/Channel/Location
     obj["MessageType"] = request.getMessageType();
+    obj["MessageVersion"] = request.getMessageVersion();
     obj["Network"] = request.getNetwork();
     obj["Station"] = request.getStation();
     obj["Channel"] = request.getChannel();
@@ -127,6 +129,12 @@ DataRequest::~DataRequest() = default;
 std::string DataRequest::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
+}
+
+/// Message version
+std::string DataRequest::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
 }
 
 /// Network
@@ -287,6 +295,12 @@ void DataRequest::fromCBOR(const uint8_t *data, const size_t length)
 std::string DataRequest::toMessage() const
 {
     return toCBOR();
+}
+
+void DataRequest::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
 }
 
 void DataRequest::fromMessage(const char *messageIn, const size_t length)

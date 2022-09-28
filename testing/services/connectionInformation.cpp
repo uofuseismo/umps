@@ -185,7 +185,7 @@ TEST(ConnectionInformation, AvailableConnectionsRequest)
     auto msg = request.toMessage();
  
     AvailableConnectionsRequest requestCopy;
-    requestCopy.fromMessage(msg.data(), msg.size());
+    EXPECT_NO_THROW(requestCopy.fromMessage(msg)); //msg.data(), msg.size());
     EXPECT_EQ(request.getMessageType(), requestCopy.getMessageType());
 }
 
@@ -233,7 +233,7 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
     auto message = response.toMessage();
  
     AvailableConnectionsResponse responseCopy;
-    responseCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(responseCopy.fromMessage(message)); //message.data(), message.size());
  
     EXPECT_EQ(responseCopy.getMessageType(), response.getMessageType());
     EXPECT_EQ(responseCopy.getReturnCode(),  response.getReturnCode());

@@ -334,7 +334,7 @@ TEST(PacketCache, SensorRequest)
  
     auto message = request.toMessage();
     PC::SensorRequest requestCopy;
-    requestCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(requestCopy.fromMessage(message)); //message.data(), message.size());
     EXPECT_EQ(requestCopy.getIdentifier(), id);
 }
 
@@ -355,7 +355,7 @@ TEST(PacketCache, SensorResponse)
  
     auto message = response.toMessage();
     PC::SensorResponse responseCopy;
-    responseCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(responseCopy.fromMessage(message)); //message.data(), message.size());
     EXPECT_EQ(responseCopy.getIdentifier(), id); 
     EXPECT_EQ(responseCopy.getReturnCode(), rc);
     // There's really no guarantee how the names come back
@@ -401,7 +401,7 @@ TEST(PacketCache, DataRequest)
 
     auto message = request.toMessage();
     PC::DataRequest requestCopy;
-    requestCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(requestCopy.fromMessage(message)); //message.data(), message.size());
     EXPECT_EQ(requestCopy.getNetwork(), network);
     EXPECT_EQ(requestCopy.getStation(), station);
     EXPECT_EQ(requestCopy.getChannel(), channel);
@@ -447,7 +447,7 @@ TEST(PacketCache, BulkDataRequest)
 
     auto message = bulkRequest.toMessage();
     PC::BulkDataRequest bulkRequestCopy;
-    bulkRequestCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(bulkRequestCopy.fromMessage(message)); //message.data(), message.size());
 
     EXPECT_EQ(bulkRequestCopy.getNumberOfDataRequests(), nRequests);
     EXPECT_EQ(bulkRequestCopy.getIdentifier(), id);
@@ -504,7 +504,7 @@ TEST(PacketCache, DataResponse)
     // Reconstitute the class from a message 
     auto message = response.toMessage(); 
     PC::DataResponse<double> responseCopy;
-    EXPECT_NO_THROW(responseCopy.fromMessage(message.data(), message.size()));
+    EXPECT_NO_THROW(responseCopy.fromMessage(message)); //message.data(), message.size()));
     EXPECT_EQ(responseCopy.getIdentifier(), id);
     EXPECT_EQ(responseCopy.getReturnCode(), rc);
     EXPECT_EQ(responseCopy.getMessageType(), 
@@ -520,7 +520,7 @@ TEST(PacketCache, DataResponse)
     std::reverse(packetsBack.begin(), packetsBack.end());
     response.setPackets(packetsBack);
     message = response.toMessage();
-    responseCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(responseCopy.fromMessage(message)); //message.data(), message.size());
     packetsBack = responseCopy.getPackets();
     for (size_t i = 0; i < packetsBack.size(); ++i)
     {
@@ -601,7 +601,7 @@ TEST(PacketCache, BulkDataResponse)
     // Reconsitute the bulk response
     auto message = bulkResponse.toMessage();
     PC::BulkDataResponse brCopy;
-    brCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(brCopy.fromMessage(message)); //message.data(), message.size());
 
     EXPECT_EQ(brCopy.getMessageType(),
               "UMPS::ProxyServices::PacketCache::BulkDataResponse"); 

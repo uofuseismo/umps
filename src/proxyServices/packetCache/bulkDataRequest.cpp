@@ -10,6 +10,7 @@
 #include "private/applications/packetCache.hpp"
 
 #define MESSAGE_TYPE "UMPS::ProxyServices::PacketCache::BulkDataRequest"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::ProxyServices::PacketCache;
 
@@ -78,6 +79,7 @@ nlohmann::json toJSONObject(const BulkDataRequest &request)
 {
     nlohmann::json obj;
     obj["MessageType"] = request.getMessageType();
+    obj["MessageVersion"] = request.getMessageVersion();
     auto nRequests = request.getNumberOfDataRequests();
     const auto requestsPtr = request.getDataRequestsPointer();
     if (nRequests > 0)
@@ -218,6 +220,12 @@ std::string BulkDataRequest::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+std::string BulkDataRequest::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+
 /// Data requests
 void BulkDataRequest::addDataRequest(const DataRequest &request)
 {
@@ -330,6 +338,12 @@ void BulkDataRequest::fromCBOR(const uint8_t *data, const size_t length)
 std::string BulkDataRequest::toMessage() const
 {
     return toCBOR();
+}
+
+void BulkDataRequest::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
 }
 
 void BulkDataRequest::fromMessage(const char *messageIn, const size_t length)

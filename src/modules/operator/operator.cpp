@@ -41,8 +41,8 @@
 #include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/services/connectionInformation/socketDetails/proxy.hpp"
-#include "umps/services/moduleRegistry/serviceOptions.hpp"
-#include "umps/services/moduleRegistry/service.hpp"
+//#include "umps/services/moduleRegistry/serviceOptions.hpp"
+//#include "umps/services/moduleRegistry/service.hpp"
 #include "umps/modules/process.hpp"
 #include "umps/modules/processManager.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
@@ -85,7 +85,7 @@ struct ProgramOptions
     std::vector<UMPS::ProxyBroadcasts::ProxyOptions> mProxyBroadcastOptions;
     std::vector<std::pair<int, bool>> mAvailablePorts;
     UCI::ServiceOptions mConnectionInformationOptions;
-    UMPS::Services::ModuleRegistry::ServiceOptions mModuleRegistryOptions;
+    //UMPS::Services::ModuleRegistry::ServiceOptions mModuleRegistryOptions;
     UAuth::ZAPOptions mZAPOptions;
     std::string mLogDirectory = "./logs";
     std::string mTablesDirectory = std::string(std::getenv("HOME"))
@@ -456,6 +456,7 @@ int main(int argc, char *argv[])
     connectionInformation->initialize(options.mConnectionInformationOptions);
     modules.mConnectionInformation = std::move(connectionInformation);
     // Initialize the module registry service
+/*
     auto moduleRegistryLogFileName = options.mLogDirectory + "/" 
                                    + "moduleRegistry.log";
     UMPS::Logging::SpdLog moduleRegistryLogger;
@@ -482,6 +483,7 @@ int main(int argc, char *argv[])
     {
         std::cerr << e.what() << std::endl;
     }
+*/
     // Start the proxy broadcasts
     for (const auto &proxyOptions : options.mProxyBroadcastOptions)
     {
@@ -843,11 +845,13 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     options.mConnectionInformationOptions.setClientAccessAddress(address);
     options.mAvailablePorts.at(0).second = false;
     // Next, the module registry
+/*
     address = connectionType + options.mAddress
             + ":" + std::to_string(options.mAvailablePorts.at(1).first);
     options.mModuleRegistryOptions.setZAPOptions(options.mZAPOptions);
     options.mModuleRegistryOptions.setClientAccessAddress(address);
     options.mAvailablePorts.at(1).second = false;
+*/
     // Now the heartbeat broadcast
 
     //logger->debug("Creating heartbeat process...");

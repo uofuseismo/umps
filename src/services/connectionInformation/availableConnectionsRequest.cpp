@@ -4,6 +4,7 @@
 using namespace UMPS::Services::ConnectionInformation;
 
 #define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableConnectionsRequest"
+#define MESSAGE_VERSION "1.0.0"
 
 namespace
 {
@@ -12,6 +13,7 @@ nlohmann::json toJSONObject(const AvailableConnectionsRequest &request)
 {
     nlohmann::json obj;
     obj["MessageType"] = request.getMessageType();
+    obj["MessageVersion"] = request.getMessageVersion();
     return obj;
 }
 
@@ -97,6 +99,12 @@ std::string AvailableConnectionsRequest::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+std::string AvailableConnectionsRequest::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+
 /// Clone
 std::unique_ptr<UMPS::MessageFormats::IMessage> 
     AvailableConnectionsRequest::clone() const
@@ -119,6 +127,13 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 std::string AvailableConnectionsRequest::toMessage() const
 {
     return toCBOR();
+}
+
+
+void AvailableConnectionsRequest::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
 }
 
 void AvailableConnectionsRequest::fromMessage(const char *messageIn,

@@ -84,7 +84,7 @@ TYPED_TEST(DataPacketTest, DataPacket)
     auto traceMessage = packetCopy.toMessage();
     packetCopy.clear();
     EXPECT_EQ(packetCopy.getNumberOfSamples(), 0);
-    packetCopy.fromMessage(traceMessage.data(), traceMessage.size());
+    EXPECT_NO_THROW(packetCopy.fromMessage(traceMessage)); //traceMessage.data(), traceMessage.size());
     EXPECT_EQ(packetCopy.getMessageType(), MESSAGE_TYPE);
     EXPECT_EQ(packetCopy.getStartTime(), startTimeMuS);
     EXPECT_NEAR(packetCopy.getSamplingRate(), samplingRate, tol);

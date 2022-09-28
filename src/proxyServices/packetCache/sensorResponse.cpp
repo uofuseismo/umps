@@ -8,6 +8,7 @@
 #include "umps/proxyServices/packetCache/sensorResponse.hpp"
 
 #define MESSAGE_TYPE "UMPS::ProxyServices::PacketCache::SensorResponse"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::ProxyServices::PacketCache;
 
@@ -18,6 +19,7 @@ nlohmann::json toJSONObject(const SensorResponse &response)
 {
     nlohmann::json obj;
     obj["MessageType"] = response.getMessageType();
+    obj["MessageVersion"] = response.getMessageVersion();
     auto messageNames = response.getNames();
     if (!messageNames.empty())
     {
@@ -120,6 +122,12 @@ std::string SensorResponse::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+std::string SensorResponse::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+
 /// Identifier
 void SensorResponse::setIdentifier(const uint64_t identifier) noexcept
 {
@@ -196,6 +204,13 @@ void SensorResponse::fromCBOR(const uint8_t *data, const size_t length)
 std::string SensorResponse::toMessage() const
 {
     return toCBOR();
+}
+
+
+void SensorResponse::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
 }
 
 void SensorResponse::fromMessage(const char *messageIn, const size_t length)

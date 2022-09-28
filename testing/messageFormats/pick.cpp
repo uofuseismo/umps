@@ -87,7 +87,7 @@ TEST(PickTest, Pick)
 
     pick.clear();
     auto message = pickCopy.toMessage();
-    EXPECT_NO_THROW(pick.fromMessage(message.data(), message.size()));
+    EXPECT_NO_THROW(pick.fromMessage(message));//message.data(), message.size()));
     EXPECT_EQ(pick.getIdentifier(), pickID);
     EXPECT_NEAR(pick.getTime(), time, 1.e-10);
     EXPECT_EQ(pick.getNetwork(), network);

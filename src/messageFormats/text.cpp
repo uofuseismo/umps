@@ -5,6 +5,7 @@
 #include "umps/messageFormats/text.hpp"
 
 #define MESSAGE_TYPE "UMPS::MessageFormats::Text"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::MessageFormats;
 
@@ -15,6 +16,7 @@ nlohmann::json toJSONObject(const Text &text)
 {
     nlohmann::json obj;
     obj["MessageType"] = text.getMessageType();
+    obj["MessageVersion"] = text.getMessageVersion();
     obj["Contents"] = text.getContents();
     return obj;
 }
@@ -113,6 +115,12 @@ std::string Text::toMessage() const
     return toCBORMessage(*this);
 }
 
+void Text::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());   
+}
+
 void Text::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -142,3 +150,8 @@ std::string Text::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+std::string Text::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}

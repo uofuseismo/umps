@@ -26,6 +26,7 @@
 #endif
  
 #define MESSAGE_TYPE "UMPS::Earthworm::TraceBuf2"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::Earthworm;
 
@@ -349,6 +350,7 @@ nlohmann::json toJSONObject(const TraceBuf2<T> &tb)
 {
     nlohmann::json obj;
     obj["MessageType"] = tb.getMessageType();
+    obj["MessageVersion"] = tb.getMessageVersion();
     obj["Network"] = tb.getNetwork();
     obj["Station"] = tb.getStation();
     obj["Channel"] = tb.getChannel();
@@ -911,6 +913,13 @@ std::string TraceBuf2<T>::toMessage() const
 }
 
 template<class T>
+void TraceBuf2<T>::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
+}
+
+template<class T>
 void TraceBuf2<T>::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -922,6 +931,13 @@ template<class T>
 std::string TraceBuf2<T>::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
+}
+
+/// Message type
+template<class T>
+std::string TraceBuf2<T>::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
 }
 
 /// Swap 

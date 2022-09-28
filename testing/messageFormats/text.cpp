@@ -23,7 +23,7 @@ TEST(TextTest, Text)
     auto textMessage = textCopy.toMessage();
     textCopy.clear();
     EXPECT_TRUE(textCopy.getContents().empty());
-    textCopy.fromMessage(textMessage.data(), textMessage.size());  
+    EXPECT_NO_THROW(textCopy.fromMessage(textMessage));
     EXPECT_EQ(textCopy.getContents(), contents); 
 }
 

@@ -8,6 +8,7 @@
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::ProxyBroadcasts::Heartbeat::Status"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::ProxyBroadcasts::Heartbeat;
 
@@ -50,6 +51,7 @@ nlohmann::json toJSONObject(const Status &status)
 {
     nlohmann::json obj;
     obj["MessageType"] = status.getMessageType();
+    obj["MessageVersion"] = status.getMessageVersion();
     obj["Module"] = status.getModule();
     obj["HostName"] = status.getHostName();
     obj["ModuleStatus"] = static_cast<int> (status.getModuleStatus());
@@ -145,6 +147,12 @@ void Status::clear() noexcept
 std::string Status::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
+}
+
+/// Message version
+std::string Status::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
 }
 
 /// Status
@@ -291,6 +299,11 @@ void Status::fromCBOR(const uint8_t *data, const size_t length)
 std::string Status::toMessage() const
 {
     return toCBOR();
+}
+
+void Status::fromMessage(const std::string &message)
+{
+    fromMessage(message.data(), message.size());
 }
 
 void Status::fromMessage(const char *messageIn, const size_t length)

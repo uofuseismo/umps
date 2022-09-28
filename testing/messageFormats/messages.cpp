@@ -32,12 +32,17 @@ public:
         std::string result;
         return result;
     }
+    void fromMessage(const std::string &m){fromMessage(m.data(), m.size());}
     void fromMessage(const char *data, const size_t length)
     {
     }
     [[nodiscard]] std::string getMessageType() const noexcept
     {
         return "Message1";
+    }
+    [[nodiscard]] std::string getMessageVersion() const noexcept
+    {
+        return "1.0.0";
     }
 };
 
@@ -61,14 +66,19 @@ public:
     {   
         std::string result;
         return result;
-    }   
+    }
+    void fromMessage(const std::string &m){fromMessage(m.data(), m.size());}
     void fromMessage(const char *data, const size_t length)
     {   
     }   
     [[nodiscard]] std::string getMessageType() const noexcept
     {   
         return "Message2";
-    }   
+    }
+    [[nodiscard]] std::string getMessageVersion() const noexcept
+    {
+        return "2.0.0";
+    }
 };
 
 class Message3 : public IMessage
@@ -91,14 +101,19 @@ public:
     {   
         std::string result;
         return result;
-    }   
+    }
+    void fromMessage(const std::string &m){fromMessage(m.data(), m.size());}
     void fromMessage(const char *data, const size_t length)
     {   
     }   
     [[nodiscard]] std::string getMessageType() const noexcept
     {   
         return "Message3";
-    }   
+    }
+    [[nodiscard]] std::string getMessageVersion() const noexcept
+    {
+        return "3.0.0";
+    }
 };
 
 TEST(Messages, Messages)

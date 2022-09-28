@@ -95,7 +95,7 @@ TEST(BroadcastHeartbeat, Status)
 
     auto message = status.toMessage();
     Status statusCopy;
-    statusCopy.fromMessage(message.data(), message.size());
+    EXPECT_NO_THROW(statusCopy.fromMessage(message)); //message.data(), message.size());
 
     EXPECT_EQ(statusCopy.getModule(), module);
     EXPECT_EQ(statusCopy.getModuleStatus(), moduleStatus);

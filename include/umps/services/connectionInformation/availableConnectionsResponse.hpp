@@ -76,10 +76,14 @@ public:
     /// @note Though the container is a string the message need not be
     ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
+    /// @brief Converts this message from a string representation to a class.
+    void fromMessage(const std::string &message) final;
     /// @brief Converts this message from a string representation to data.
     void fromMessage(const char *data, size_t length) final;
     /// @result The message type.
     [[nodiscard]] std::string getMessageType() const noexcept final;
+    /// @result The message version.
+    [[nodiscard]] std::string getMessageVersion() const noexcept final;
     /// @}
 
     /// @name (De)serialization Utilities

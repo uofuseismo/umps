@@ -8,6 +8,7 @@
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::MessageFormats::DataPacket"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::MessageFormats;
 
@@ -19,6 +20,7 @@ nlohmann::json toJSONObject(const DataPacket<T> &packet)
 {
     nlohmann::json obj;
     obj["MessageType"] = packet.getMessageType();
+    obj["MessageVersion"] = packet.getMessageVersion();
     obj["Network"] = packet.getNetwork();
     obj["Station"] = packet.getStation();
     obj["Channel"] = packet.getChannel();
@@ -462,6 +464,13 @@ std::string DataPacket<T>::toMessage() const
 }
 
 template<class T>
+void DataPacket<T>::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());   
+}
+
+template<class T>
 void DataPacket<T>::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -506,6 +515,14 @@ std::string DataPacket<T>::toJSON(const int nIndent) const
     auto result = obj.dump(nIndent);
     return result;
 }
+
+/// Message version
+template<class T>
+std::string DataPacket<T>::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+
 
 ///--------------------------------------------------------------------------///
 ///                            Template Instantiation                        ///

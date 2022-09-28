@@ -4,6 +4,7 @@
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::Services::Command::CommandRequest"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::Services::Command;
 
@@ -14,6 +15,7 @@ nlohmann::json toJSONObject(const CommandRequest &request)
 {
     nlohmann::json obj;
     obj["MessageType"] = request.getMessageType();
+    obj["MessageVersion"] = request.getMessageVersion();
     obj["Command"] = request.getCommand(); 
     return obj;
 }
@@ -152,5 +154,11 @@ bool CommandRequest::haveCommand() const noexcept
 std::string CommandRequest::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
+}
+
+/// Message version
+std::string CommandRequest::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
 }
 

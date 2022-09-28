@@ -6,6 +6,7 @@
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::Authentication::User"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::Authentication;
 
@@ -15,6 +16,8 @@ nlohmann::json toJSONObject(const User &user)
 {
     nlohmann::json obj;
     obj["MessageType"] = user.getMessageType();
+    obj["MessageVersion"] = user.getMessageVersion();
+    // User
     if (user.haveName())
     {
          obj["Name"] = user.getName();
@@ -23,6 +26,7 @@ nlohmann::json toJSONObject(const User &user)
     {
          obj["Name"] = nullptr;
     }
+    // Email
     if (user.haveEmail())
     {
         obj["Email"] = user.getEmail();
@@ -31,6 +35,7 @@ nlohmann::json toJSONObject(const User &user)
     {
         obj["Email"] = nullptr;
     }
+    // Password
     if (user.haveHashedPassword())
     {
         obj["HashedPassword"] = user.getHashedPassword();
@@ -39,6 +44,7 @@ nlohmann::json toJSONObject(const User &user)
     {
         obj["HashedPassword"] = nullptr;
     }
+    // Public key
     if (user.havePublicKey())
     {
         obj["PublicKey"] = user.getPublicKey();
@@ -47,6 +53,7 @@ nlohmann::json toJSONObject(const User &user)
     {
         obj["PublicKey"] = nullptr;
     }
+    // User Identifier
     if (user.haveIdentifier())
     {
         obj["Identifier"] = user.getIdentifier();
@@ -371,6 +378,12 @@ std::string User::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+std::string User::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+
 /// Copy this class
 std::unique_ptr<UMPS::MessageFormats::IMessage> User::clone() const
 {
@@ -386,6 +399,11 @@ std::string User::toMessage() const
 }
 
 /// Create class from message
+void User::fromMessage(const std::string &message)
+{
+    fromMessage(message.data(), message.size());
+}
+
 void User::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);

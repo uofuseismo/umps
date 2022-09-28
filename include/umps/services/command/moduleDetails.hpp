@@ -1,10 +1,10 @@
-#ifndef UMPS_SERVICES_MODULEREGISTRY_MODULEDETAILS_HPP
-#define UMPS_SERVICES_MODULEREGISTRY_MODULEDETAILS_HPP
+#ifndef UMPS_SERVICES_COMMAND_MODULEDETAILS_HPP
+#define UMPS_SERVICES_COMMAND_MODULEDETAILS_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::Services::ModuleRegistry
+namespace UMPS::Services::Command
 {
-/// @class ModuleDetails moduleDetails.hpp "umps/services/moduleRegistry/moduleDetails.hpp"
+/// @class ModuleDetails moduleDetails.hpp "umps/services/command/moduleDetails.hpp"
 /// @brief Defines the module properties.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ModuleDetails

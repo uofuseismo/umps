@@ -68,6 +68,7 @@ set(LOGGING_SRC
     src/logging/stdout.cpp
     src/logging/spdlog.cpp)
 set(MESSAGE_FORMAT_SRC
+    src/messageFormats/message.cpp
     src/messageFormats/messages.cpp
     src/messageFormats/dataPacket.cpp
     src/messageFormats/pick.cpp
@@ -115,6 +116,7 @@ set(MODULES_LIBSRC
     src/services/command/localRequestorOptions.cpp
     src/services/command/localService.cpp
     src/services/command/localServiceOptions.cpp
+    src/services/command/moduleDetails.cpp
     src/services/command/remoteProxy.cpp
     src/services/command/remoteProxyOptions.cpp
     src/services/command/remoteRequestor.cpp
@@ -140,13 +142,13 @@ set(MODULES_LIBSRC
     src/services/connectionInformation/socketDetails/xPublisher.cpp
     src/services/connectionInformation/socketDetails/xSubscriber.cpp
     src/services/connectionInformation/details.cpp
-    src/services/moduleRegistry/moduleDetails.cpp
-    src/services/moduleRegistry/serviceOptions.cpp
-    src/services/moduleRegistry/registeredModulesRequest.cpp
-    src/services/moduleRegistry/registeredModulesResponse.cpp
-    src/services/moduleRegistry/registrationRequest.cpp
-    src/services/moduleRegistry/registrationResponse.cpp
-    src/services/moduleRegistry/service.cpp
+    #src/services/moduleRegistry/moduleDetails.cpp
+    #src/services/moduleRegistry/serviceOptions.cpp
+    #src/services/moduleRegistry/registeredModulesRequest.cpp
+    #src/services/moduleRegistry/registeredModulesResponse.cpp
+    #src/services/moduleRegistry/registrationRequest.cpp
+    #src/services/moduleRegistry/registrationResponse.cpp
+    #src/services/moduleRegistry/service.cpp
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
     #src/proxyBroadcasts/dataPacket/proxy.cpp
@@ -368,7 +370,7 @@ set(TEST_SRC
     testing/services/incrementer.cpp
     testing/services/command.cpp
     testing/services/connectionInformation.cpp
-    testing/services/moduleRegistry.cpp
+    #testing/services/moduleRegistry.cpp
     testing/messaging/authentication.cpp
     testing/messaging/options.cpp
     )

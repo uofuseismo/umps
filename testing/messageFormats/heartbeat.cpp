@@ -60,7 +60,7 @@ TEST(HeartbeatTest, Status)
 
     status.clear();
     auto msg = statusCopy.toMessage();
-    status.fromMessage(msg.data(), msg.size());
+    EXPECT_NO_THROW(status.fromMessage(msg));//msg.data(), msg.size());
     EXPECT_EQ(status.getMessageType(),  MESSAGE_TYPE);
     EXPECT_EQ(status.getModule(),       moduleName);
     EXPECT_EQ(status.getHostName(),     hostName);

@@ -8,6 +8,7 @@
 #include "umps/proxyServices/incrementer/itemsResponse.hpp"
 
 #define MESSAGE_TYPE "UMPS::ProxyServices::Incrementer::ItemsResponse"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::ProxyServices::Incrementer;
 
@@ -19,6 +20,7 @@ nlohmann::json toJSONObject(const ItemsResponse &response)
     nlohmann::json obj;
     // Essential stuff (this will throw): 
     obj["MessageType"] = response.getMessageType();
+    obj["MessageVersion"] = response.getMessageVersion();
     if (response.haveItems())
     {
         obj["Value"] = response.getItems();
@@ -202,6 +204,12 @@ std::string ItemsResponse::toMessage() const
 }
 
 /// Convert from message
+void ItemsResponse::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
+}
+
 void ItemsResponse::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -230,3 +238,9 @@ std::string ItemsResponse::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 } 
+
+/// Message version
+std::string ItemsResponse::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}

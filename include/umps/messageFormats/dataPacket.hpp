@@ -157,6 +157,8 @@ public:
     ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
+    void fromMessage(const std::string &message) final;
+    /// @brief Creates the class from a message.
     /// @param[in] data    The contents of the message.  This is an
     ///                    array whose dimension is [length] 
     /// @param[in] length  The length of data.
@@ -165,6 +167,8 @@ public:
     void fromMessage(const char *data, size_t length) final;
     /// @result The message type - e.g., "DataPacket".
     [[nodiscard]] std::string getMessageType() const noexcept final;
+    /// @result The message version.
+    [[nodiscard]] std::string getMessageVersion() const noexcept final;
     /// @}
 
     /// @name Debugging Utilities

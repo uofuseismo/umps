@@ -17,6 +17,7 @@ using namespace UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
 #define MESSAGE_TYPE "UMPS::Services::ConnectionInformation::AvailableConnectionsResponse"
+#define MESSAGE_VERSION "1.0.0"
 
 namespace
 {
@@ -455,6 +456,7 @@ nlohmann::json toJSONObject(const AvailableConnectionsResponse &response)
     nlohmann::json obj;
     auto details = response.getDetails();
     obj["MessageType"] = response.getMessageType();
+    obj["MessageVersion"] = response.getMessageVersion();
     obj["ReturnCode"] = static_cast<int> (response.getReturnCode());
     nlohmann::json detailsObj;
     for (const auto &detail : details)
@@ -566,6 +568,12 @@ std::string AvailableConnectionsResponse::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+std::string AvailableConnectionsResponse::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+
 /// Clone
 std::unique_ptr<UMPS::MessageFormats::IMessage> 
     AvailableConnectionsResponse::clone() const
@@ -619,6 +627,12 @@ void AvailableConnectionsResponse::setReturnCode(
 ReturnCode AvailableConnectionsResponse::getReturnCode() const noexcept
 {
     return pImpl->mReturnCode;
+}
+
+void AvailableConnectionsResponse::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
 }
 
 void AvailableConnectionsResponse::fromMessage(const char *messageIn,

@@ -6,6 +6,7 @@
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::MessageFormats::Pick"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::MessageFormats;
 
@@ -18,6 +19,7 @@ nlohmann::json toJSONObject(const Pick &pick)
     // Essential stuff (this will throw): 
     // Network/Station/Channel/Location
     obj["MessageType"] = pick.getMessageType();
+    obj["MessageVersion"] = pick.getMessageVersion();
     obj["Network"] = pick.getNetwork();
     obj["Station"] = pick.getStation();
     obj["Channel"] = pick.getChannel();
@@ -360,6 +362,12 @@ std::string Pick::toMessage() const
     return toCBOR();
 }
 
+void Pick::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());   
+}
+
 void Pick::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -388,3 +396,10 @@ std::string Pick::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
+
+/// Message version
+std::string Pick::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+

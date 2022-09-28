@@ -1,11 +1,11 @@
-#ifndef PRIVATE_SERVICES_PACKDETAILS_HPP
-#define PRIVATE_SERVICES_PACKDETAILS_HPP
+#ifndef PRIVATE_SERVICES_MODULEDETAILS_HPP
+#define PRIVATE_SERVICES_MODULEDETAILS_HPP
 #include <nlohmann/json.hpp>
-#include "umps/services/moduleRegistry/moduleDetails.hpp"
+#include "umps/services/command/moduleDetails.hpp"
 namespace
 {
 [[nodiscard]] nlohmann::json
-    pack(const UMPS::Services::ModuleRegistry::ModuleDetails &details)
+    pack(const UMPS::Services::Command::ModuleDetails &details)
 {
     nlohmann::json obj;
     obj["ModuleName"] = details.getName(); // Throws
@@ -15,10 +15,10 @@ namespace
     obj["Machine"] = details.getMachine();
     return obj;
 }
-[[nodiscard]] UMPS::Services::ModuleRegistry::ModuleDetails
+[[nodiscard]] UMPS::Services::Command::ModuleDetails
     unpack(const nlohmann::json &obj)
 {
-    UMPS::Services::ModuleRegistry::ModuleDetails details;
+    UMPS::Services::Command::ModuleDetails details;
     details.setName(obj["ModuleName"].get<std::string> ());
     details.setExecutableName(obj["Executable"].get<std::string> ());
     details.setProcessIdentifier(obj["ProcessIdentifier"].get<int64_t> ());

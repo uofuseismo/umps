@@ -5,6 +5,7 @@
 #include "umps/services/command/availableCommandsResponse.hpp"
 
 #define MESSAGE_TYPE "UMPS::Services::Command::AvailableCommandsResponse"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::Services::Command;
 
@@ -15,6 +16,7 @@ nlohmann::json toJSONObject(const AvailableCommandsResponse &response)
 {
     nlohmann::json obj;
     obj["MessageType"] = response.getMessageType();
+    obj["MessageVersion"] = response.getMessageVersion();
     obj["Commands"] = response.getCommands();
     return obj;
 }
@@ -157,5 +159,11 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 std::string AvailableCommandsResponse::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
+}
+
+/// Message version
+std::string AvailableCommandsResponse::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
 }
 

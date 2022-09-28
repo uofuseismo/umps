@@ -9,6 +9,7 @@
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::ProxyServices::Incrementer::IncrementRequest"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::ProxyServices::Incrementer;
 
@@ -20,6 +21,7 @@ nlohmann::json toJSONObject(const IncrementRequest &request)
     nlohmann::json obj;
     // Essential stuff (this will throw): 
     obj["MessageType"] = request.getMessageType();
+    obj["MessageVersion"] = request.getMessageVersion();
     obj["Item"] = request.getItem(); // Throws
     // Other stuff
     obj["Identifier"] = request.getIdentifier();
@@ -213,6 +215,12 @@ std::string IncrementRequest::toMessage() const
     return toCBOR();
 }
 
+void IncrementRequest::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
+}
+
 void IncrementRequest::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
@@ -241,3 +249,10 @@ std::string IncrementRequest::getMessageType() const noexcept
 {
     return MESSAGE_TYPE;
 }
+
+/// Message version
+std::string IncrementRequest::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+

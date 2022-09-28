@@ -1,16 +1,9 @@
 #ifndef UMPS_SERVICES_COMMAND_LOCALMODULEDETAILS_HPP
 #define UMPS_SERVICES_COMMAND_LOCALMODULEDETAILS_HPP
 #include <memory>
-#include "umps/messageFormats/message.hpp"
+#include "umps/services/command/enums.hpp"
 namespace UMPS::Services::Command
 {
-/// @brief Defines the application's status.
-enum class ApplicationStatus : int
-{
-    Running = 0,     /*!< This indicates the application is running. */
-    NotRunning = 1,  /*!< This indicates the application is not running. */
-    Unknown = 2      /*!< This indicates the application's status is unknown. */
-};
 /// @class LocalModuleDetails "localModuleDetails.hpp "umps/services/moduleRegistry/localModuleDetails.hpp"
 /// @brief Defines the locally running module properties.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

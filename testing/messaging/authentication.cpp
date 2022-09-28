@@ -198,7 +198,7 @@ TEST(Messaging, User)
 
     user.setIdentifier(id);
     auto message = user.toMessage();
-    userCopy.fromMessage(message.c_str(), message.size());
+    EXPECT_NO_THROW(userCopy.fromMessage(message)); //message.c_str(), message.size());
     EXPECT_EQ(userCopy.getIdentifier(), id);
     EXPECT_EQ(userCopy.getName(), name);
     EXPECT_EQ(userCopy.getEmail(), email);

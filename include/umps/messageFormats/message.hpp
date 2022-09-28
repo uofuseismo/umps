@@ -1,5 +1,6 @@
 #ifndef UMPS_MESSAGEFORMATS_MESSAGE_HPP
 #define UMPS_MESSAGEFORMATS_MESSAGE_HPP
+#include <memory>
 namespace UMPS::MessageFormats
 {
 /// @class IMessage "message.hpp" "umps/messageFormats/message.hpp"
@@ -11,7 +12,7 @@ class IMessage
 {
 public:
     /// @brief Destructor.
-    virtual ~IMessage() = default;
+    virtual ~IMessage();
     /// @brief Create a copy of this class.
     /// @result A copy of this class.
     [[nodiscard]] virtual std::unique_ptr<IMessage> clone() const = 0;
@@ -22,10 +23,14 @@ public:
     /// @note Though the container is a string the message need not be
     ///       human readable.
     [[nodiscard]] virtual std::string toMessage() const = 0;
-    /// @brief Converts this message from a string representation to data.
+    /// @brief Converst this message from a string representation to a class.
+    virtual void fromMessage(const std::string &message) = 0;
+    /// @brief Converts this message from a string representation to a class.
     virtual void fromMessage(const char *data, size_t length) = 0;
     /// @result The message type.
     [[nodiscard]] virtual std::string getMessageType() const noexcept = 0;
+    /// @result The message version.
+    [[nodiscard]] virtual std::string getMessageVersion() const noexcept = 0;
 };
 }
 #endif

@@ -10,6 +10,7 @@
 #include "private/applications/packetCache.hpp"
 
 #define MESSAGE_TYPE "UMPS::ProxyServices::PacketCache::BulkDataResponse"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::ProxyServices::PacketCache;
 
@@ -22,6 +23,7 @@ nlohmann::json toJSONObject(
 {
     nlohmann::json obj;
     obj["MessageType"] = response.getMessageType();
+    obj["MessageVersion"] = response.getMessageVersion();
     auto nDataResponses = response.getNumberOfDataResponses();
     obj["NumberOfDataResponses"] = nDataResponses;
     if (nDataResponses > 0)
@@ -332,6 +334,13 @@ std::string BulkDataResponse<T>::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+template<class T>
+std::string BulkDataResponse<T>::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
+
 /// Create JSON
 template<class T>
 std::string BulkDataResponse<T>::toJSON(const int nIndent) const
@@ -380,6 +389,13 @@ template<class T>
 std::string BulkDataResponse<T>::toMessage() const
 {
     return toCBOR();
+}
+
+template<class T>
+void BulkDataResponse<T>::fromMessage(const std::string &message)
+{
+    if (message.empty()){throw std::invalid_argument("Message is empty");}
+    fromMessage(message.data(), message.size());
 }
 
 template<class T>

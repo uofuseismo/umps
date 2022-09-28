@@ -12,6 +12,7 @@
 #include "umps/services/command/remoteProxyOptions.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
+#include "umps/services/command/moduleDetails.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
@@ -85,7 +86,7 @@ TEST(Command, LocalModuleDetails)
     EXPECT_EQ(dCopy.getIPCFileName(), ipcFile); 
 }
 
-TEST(COmmand, RemoteRequestorOptions)
+TEST(Command, RemoteRequestorOptions)
 {
     const std::string address = "tcp://127.0.0.1:8080";
     const std::chrono::milliseconds timeOut{234}; 
@@ -211,6 +212,28 @@ TEST(Command, TerminateResponse)
               "UMPS::Services::Command::TerminateResponse");
 }
 
+TEST(Command, ModuleDetails)
+{
+    const std::string moduleName{"TestModule"};
+    const std::string machine{"TestMachine"};
+    const std::string executable{"TestApp"};
+    int64_t pid{1234};
+    int64_t ppid{12345};
+    ModuleDetails details;
+ 
+    EXPECT_NO_THROW(details.setName(moduleName));
+    details.setExecutableName(executable);
+    details.setMachine(machine);
+    details.setProcessIdentifier(pid);
+    details.setParentProcessIdentifier(ppid);
+
+    ModuleDetails dcopy(details);
+    EXPECT_EQ(details.getExecutableName(), executable);
+    EXPECT_EQ(details.getName(), moduleName);
+    EXPECT_EQ(details.getMachine(), machine);
+    EXPECT_EQ(details.getProcessIdentifier(), pid);
+    EXPECT_EQ(details.getParentProcessIdentifier(), ppid);
+}
 
 TEST(Command, LocalModuleTable)
 {

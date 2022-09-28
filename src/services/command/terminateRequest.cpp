@@ -4,6 +4,7 @@
 #include "private/isEmpty.hpp"
 
 #define MESSAGE_TYPE "UMPS::Services::Command::TerminateRequest"
+#define MESSAGE_VERSION "1.0.0"
 
 using namespace UMPS::Services::Command;
 
@@ -14,6 +15,7 @@ nlohmann::json toJSONObject(const TerminateRequest &request)
 {
     nlohmann::json obj;
     obj["MessageType"] = request.getMessageType();
+    obj["MessageVersion"] = request.getMessageVersion();
     return obj;
 }
 
@@ -134,3 +136,8 @@ std::string TerminateRequest::getMessageType() const noexcept
     return MESSAGE_TYPE;
 }
 
+/// Message version
+std::string TerminateRequest::getMessageVersion() const noexcept
+{
+    return MESSAGE_VERSION;
+}
