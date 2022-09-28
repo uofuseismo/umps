@@ -1,13 +1,13 @@
-#ifndef UMPS_PROXYSERVICES_INCREMENTER_REPLIEROPTIONS_HPP
-#define UMPS_PROXYSERVICES_INCREMENTER_REPLIEROPTIONS_HPP
+#ifndef UMPS_SERVICES_COMMAND_REMOTEREPLIEROPTIONS_HPP
+#define UMPS_SERVICES_COMMAND_REMOTEREPLIEROPTIONS_HPP
 #include <memory>
 #include <chrono>
+#include <functional>
 // Forward declarations
 namespace UMPS
 {
  namespace MessageFormats
  {
-  class Messages;
   class IMessage;
  }
  namespace Messaging::RouterDealer
@@ -19,28 +19,29 @@ namespace UMPS
   class ZAPOptions;
  }
 }
-namespace UMPS::ProxyServices::Incrementer
+namespace UMPS::Services::Command
 {
-/// @class ReplierOptions "replierOptions.hpp" "umps/proxyServices/packetCache/replierOptions.hpp"
-/// @brief Defines the options for the incremeter's replier mechanism.
+/// @class RemoteReplierOptions "remoteReplierOptions.hpp" "umps/command/remoteReplierOptions.hpp"
+/// @brief Defines the options for the thread managing remote activity to
+///        respond.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class ReplierOptions
+class RemoteReplierOptions
 {
 public:
     /// @name Constructor
     /// @{
 
     /// @brief Constructor.
-    ReplierOptions();
+    RemoteReplierOptions();
     /// @brief Copy constructor.
     /// @param[in] options  The options class from which to initialize
     ///                     this class.
-    ReplierOptions(const ReplierOptions &options);
+    RemoteReplierOptions(const RemoteReplierOptions &options);
     /// @brief Move constructor.
     /// @param[in,out] options  The options class from which to initialize
     ///                         this class.  On exit, options's behavior
     ///                         is undefined.
-    ReplierOptions(ReplierOptions &&options) noexcept;
+    RemoteReplierOptions(RemoteReplierOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -48,14 +49,13 @@ public:
 
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
-    /// @result A deep copy of options.
-    ReplierOptions& operator=(const ReplierOptions &options);
+    /// @result A deep copy of the options.
+    RemoteReplierOptions& operator=(const RemoteReplierOptions &options);
     /// @brief Move assignment operator.
-    /// @param[in,out] options  The options class whose memory will be moved
-    ///                         to this.  On exit, options's behavior is
-    ///                         undefined.
+    /// @param[in,out] options  The options class whose memory will be moved to
+    ///                         this.  On exit, options's behavior is undefined.
     /// @result The memory from options moved to this.
-    ReplierOptions& operator=(ReplierOptions &&options) noexcept;
+    RemoteReplierOptions& operator=(RemoteReplierOptions &&options) noexcept;
     /// @}
 
     /// @name Address (Required)
@@ -66,25 +66,29 @@ public:
     /// @param[in] address  The address of the dealer to which to connect.
     /// @throws std::invalid_argument if address is blank.
     void setAddress(const std::string &address);
-    /// @result The address to which to connect this service.
-    /// @throws std::runtime_error if \c haveAddress() is false.
-    [[nodiscard]] std::string getAddress() const;
     /// @result True indicates that the address was set.
     [[nodiscard]] bool haveAddress() const noexcept;
     /// @}
 
+    /// @name Callback (Required)
+    /// @{
+
+    /// @brief The callback function that processes requests.
+    void setCallback(const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+                                         (const std::string &messageType, const void *data, size_t length)> &callback);
+    /// @result True indicates the callback was set.
+    [[nodiscard]] bool haveCallback() const noexcept;
+    /// }
+
     /// @name High Water Mark
     /// @{
 
-    /// @brief Influences the maximum number of request messages to cache
-    ///        on the socket.
+    /// @brief Influences the maximum number of messages to cache on the socket.
     /// @param[in] highWaterMark  The approximate max number of messages to 
     ///                           cache on the socket.  0 will set this to
     ///                           "infinite".
     /// @throws std::invalid_argument if highWaterMark is negative.
     void setHighWaterMark(int highWaterMark);
-    /// @result The high water mark.  The default is 0.
-    [[nodiscard]] int getHighWaterMark() const noexcept;
     /// @}
 
     /// @name ZeroMQ Authentication Protocol
@@ -94,12 +98,12 @@ public:
     /// @param[in] options  The ZAP options which will define the socket's
     ///                     security protocol.
     void setZAPOptions(const Authentication::ZAPOptions &options);
-    /// @result The ZAP options.
-    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
     /// @result The reply options.
-    [[nodiscard]] UMPS::Messaging::RouterDealer::ReplyOptions getReplyOptions() const noexcept;
+    /// @throws std::runtime_error if \c haveAddress() or \c haveCallback()
+    ///         is false.
+    [[nodiscard]] UMPS::Messaging::RouterDealer::ReplyOptions getOptions() const;
 
     /// @name Destructors
     /// @{
@@ -107,11 +111,11 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~ReplierOptions();
+    ~RemoteReplierOptions();
     /// @}
 private:
-    class ReplierOptionsImpl;
-    std::unique_ptr<ReplierOptionsImpl> pImpl;
+    class RemoteReplierOptionsImpl;
+    std::unique_ptr<RemoteReplierOptionsImpl> pImpl;
 };
 }
 #endif

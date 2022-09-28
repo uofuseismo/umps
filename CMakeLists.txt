@@ -19,12 +19,10 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 #find_package(Doxygen)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
-#set(FindTime_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
-set(FindEarthworm_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
-set(FindTBB_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindZeroMQ REQUIRED)
-#find_package(FindTime REQUIRED)
+set(FindEarthworm_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
+set(FindTBB_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindEarthworm)
 if (${FindEarthworm_FOUND})
    find_package(FindMiniSEED)
@@ -35,11 +33,6 @@ find_package(FindTBB)
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
                ${CMAKE_SOURCE_DIR}/include/umps/version.hpp)
 
-
-#include_directories(
-#   ${CMAKE_SOURCE_DIR}/include
-#   #${TIME_INCLUDE_DIR}
-#)
 
 set(BUILD_EW FALSE)
 set(BUILD_MSEED FALSE)
@@ -82,7 +75,6 @@ set(MESSAGING_SRC
     src/authentication/zapOptions.cpp
     src/authentication/certificate/keys.cpp
     src/authentication/certificate/userNameAndPassword.cpp
-    #src/authentication/generateKeyPair.cpp
     src/messaging/context.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/publisherOptions.cpp
@@ -121,6 +113,8 @@ set(MODULES_LIBSRC
     src/services/command/remoteProxyOptions.cpp
     src/services/command/remoteRequestor.cpp
     src/services/command/remoteRequestorOptions.cpp
+    src/services/command/remoteReplier.cpp
+    src/services/command/remoteReplierOptions.cpp 
     src/services/command/terminateRequest.cpp
     src/services/command/terminateResponse.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
@@ -425,6 +419,19 @@ endif()
 #                                         Installation                                   #
 ##########################################################################################
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION "${version}"
+    COMPATIBILITY AnyNewerVersion
+)
+# create config file
+#configure_package_config_file(
+    #${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+    #"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    #INSTALL_DESTINATION cmake
+    #"${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+#)
 if (WRAP_PYTHON)
    install(TARGETS umps pyumps
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -440,6 +447,11 @@ else()
 endif()
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/umps
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+        COMPONENT ${PROJECT_NAME})
 ##########################################################################################
 #                                     CPACK Packaging                                    #
 ##########################################################################################

@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 #include <unistd.h>
 #include <errno.h>
 #include <boost/asio/ip/host_name.hpp>
@@ -161,4 +162,27 @@ void ModuleDetails::setExecutableName(const std::string &name) noexcept
 std::string ModuleDetails::getExecutableName() const noexcept
 {
     return pImpl->mExecutable;
+}
+
+/// Print out the module details
+std::ostream&
+UMPS::Services::Command::operator<<(std::ostream &os,
+                                    const ModuleDetails &details)
+{
+    std::stringstream result;
+    result << "Module Details:" << std::endl;
+    if (details.haveName())
+    {
+        result << "  Name: " << details.getName() << std::endl;
+    }
+    else
+    {
+        result << "  Name: Undefined" << std::endl;
+    }
+    result << "  Executable: " << details.getExecutableName() << std::endl;
+    result << "  Process Identifier: "
+           << details.getProcessIdentifier() << std::endl;
+    result << "  Parent Process Identifier: "
+           << details.getParentProcessIdentifier() << std::endl;
+    return os << result.str();
 }

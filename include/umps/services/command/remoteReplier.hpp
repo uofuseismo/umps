@@ -1,6 +1,7 @@
-#ifndef UMPS_PROXYSERVICES_INCREMENTER_REPLIER_HPP
-#define UMPS_PROXYSERVICES_INCREMENTER_REPLIER_HPP
+#ifndef UMPS_SERVICES_COMMAND_REMOTEREPLIER_HPP
+#define UMPS_SERVICES_COMMAND_REMOTEREPLIER_HPP
 #include <memory>
+#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -16,30 +17,31 @@ namespace UMPS
  {
   class Reply;
  }
- namespace ProxyServices::Incrementer
+ namespace Services::Command
  {
-  class ReplierOptions;
-  class Counter;
+  class RemoteReplierOptions;
  }
 }
-namespace UMPS::ProxyServices::Incrementer
+namespace UMPS::Services::Command
 {
 /// @class Replier "replier.hpp" "umps/proxyServices/incrementer/replier.hpp"
 /// @brief A replier mechanism for the server in the incrementer.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Replier
+class RemoteReplier
 {
 public:
     /// @name Constructors
     /// @{
 
-    Replier();
-    /// @brief Constructs a request socket with the given logger.
+    RemoteReplier();
+    /// @brief Constructs a reply socket with a given context.
+    explicit RemoteReplier(std::shared_ptr<UMPS::Messaging::Context> &context);
+    /// @brief Constructs a reply socket with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
-    explicit Replier(std::shared_ptr<UMPS::Logging::ILog> &logger);
-    /// @brief Constructs a request socket with a given logger and context.
-    Replier(std::shared_ptr<UMPS::Messaging::Context> &context,
-            std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit RemoteReplier(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    /// @brief Constructs a reply socket with a given logger and context.
+    RemoteReplier(std::shared_ptr<UMPS::Messaging::Context> &context,
+                  std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @name Step 1: Initialization
@@ -47,11 +49,8 @@ public:
 
     /// @brief Initializes the reply.
     /// @param[in] options  The reply options.
-    /// @param[in] counter  A reference to the underlying counter used by the
-    ///                     callback.
     /// @throws std::invalid_argument if the endpoint is not set.
-    void initialize(const ReplierOptions &options,
-                    std::shared_ptr<Counter> &counter);
+    void initialize(const RemoteReplierOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The details for connecting to this socket.
@@ -62,15 +61,9 @@ public:
     /// @name Step 2: Start the Replier Service
     /// @{
 
-    /// @brief Starts the reply service.  The service will poll on messages
-    ///        from the dealer, process the messages with the provided callback,
-    ///        and return the result to the dealer to propagate via the router
-    ///        back to the client. 
+    /// @brief Starts a thread to respond to requests from the dealer.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    /// @note This will spin off a thread that runs in the background so it
-    ///       is important to \c stop() the service.
     void start();
-
     /// @result True indicates that the reply service is running.
     [[nodiscard]] bool isRunning() const noexcept;
     /// @}
@@ -86,16 +79,16 @@ public:
     /// @{
 
     /// @brief Destructor.
-    ~Replier();
+    ~RemoteReplier();
     /// @}
 
-    Replier(const Replier &reply) = delete;
-    Replier(Replier &&reply) noexcept = delete;
-    Replier& operator=(const Replier &reply) = delete;
-    Replier& operator=(Replier &&reply) noexcept = delete;
+    RemoteReplier(const RemoteReplier &) = delete;
+    RemoteReplier(RemoteReplier &&) noexcept = delete;
+    RemoteReplier& operator=(const RemoteReplier &) = delete;
+    RemoteReplier& operator=(RemoteReplier &&) noexcept = delete;
 private:
-    class ReplierImpl;
-    std::unique_ptr<ReplierImpl> pImpl;
+    class RemoteReplierImpl;
+    std::unique_ptr<RemoteReplierImpl> pImpl;
 };
 }
 #endif

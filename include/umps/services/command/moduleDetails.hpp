@@ -1,6 +1,7 @@
 #ifndef UMPS_SERVICES_COMMAND_MODULEDETAILS_HPP
 #define UMPS_SERVICES_COMMAND_MODULEDETAILS_HPP
 #include <memory>
+#include <ostream>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
@@ -97,5 +98,6 @@ private:
     class ModuleDetailsImpl;
     std::unique_ptr<ModuleDetailsImpl> pImpl;
 };
+std::ostream& operator<<(std::ostream &os, const ModuleDetails &details);
 }
 #endif
