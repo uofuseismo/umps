@@ -22,34 +22,6 @@ namespace UAuth = UMPS::Authentication;
 class Request::RequestImpl
 {
 public:
-    /*
-    /// C'tor
-    RequestImpl(std::shared_ptr<zmq::context_t> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger, int)
-    {   
-        // Ensure the context gets made
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        // Make the logger
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        // Now make the socket
-        mClient = std::make_unique<zmq::socket_t> (*mContext,
-                                                   zmq::socket_type::req);
-    }
-    */
     /// C'tor
     RequestImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
                 const std::shared_ptr<UMPS::Logging::ILog> &logger)
@@ -94,10 +66,10 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::string mAddress;
     UCI::SocketDetails::Request mSocketDetails;
-    int mHighWaterMark = 200;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
-    bool mInitialized = false;
-    bool mConnected = false;
+    int mHighWaterMark{200};
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    bool mInitialized{false};
+    bool mConnected{false};
 };
 
 /// C'tor
@@ -111,25 +83,10 @@ Request::Request(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
-/*
-Request::Request(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<RequestImpl> (context, nullptr, 0))
-{
-}
-*/
-
 Request::Request(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<RequestImpl> (context, nullptr)) 
 {
 }
-
-/*
-Request::Request(std::shared_ptr<zmq::context_t> &context,
-                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RequestImpl> (context, logger, 0))
-{
-}
-*/
 
 Request::Request(std::shared_ptr<UMPS::Messaging::Context> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -168,8 +125,8 @@ void Request::initialize(const RequestOptions &options)
     {
         pImpl->mClient->set(zmq::sockopt::rcvtimeo, timeOut);
     }
-    // Bind
-    pImpl->mLogger->debug("Attempting to connect to: " + address);
+    // Connect
+    pImpl->mLogger->debug("Request attempting to connect to: " + address);
     try
     {
         pImpl->mClient->connect(address);
@@ -180,7 +137,7 @@ void Request::initialize(const RequestOptions &options)
                                + ".  Failed with: "
                                + std::string{e.what()});
     }
-    pImpl->mLogger->debug("Connected to: " + address + "!");
+    pImpl->mLogger->debug("Request connected to: " + address + "!");
     // Resolve end point
     pImpl->mAddress = address;
     if (address.find("tcp") != std::string::npos ||
@@ -191,6 +148,7 @@ void Request::initialize(const RequestOptions &options)
     pImpl->updateSocketDetails();
     pImpl->mConnected = true;
     pImpl->mInitialized = true;
+    pImpl->mLogger->debug("Request socket initialized!"); 
 }
 
 /// Initialized?

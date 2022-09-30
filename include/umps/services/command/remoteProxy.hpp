@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_REMOTEPROXY_HPP
-#define UMPS_SERVICES_COMMAND_REMOTEPROXY_HPP
+#ifndef UMPS_SERVICES_COMMAND_REMOTE_PROXY_HPP
+#define UMPS_SERVICES_COMMAND_REMOTE_PROXY_HPP
 #include <memory>
 namespace UMPS
 {
@@ -67,6 +67,8 @@ public:
 
     /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
+    /// @note This will spin off a thread so the calling program must
+    ///       call \c stop().
     void start();
     /// @result True indicates the proxy is running.
     [[nodiscard]] bool isRunning() const noexcept;

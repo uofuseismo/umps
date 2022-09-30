@@ -33,11 +33,11 @@ public:
     /// @name Constructors
     /// @{
 
+    /// @brief Constructor.
     RemoteReplier();
     /// @brief Constructs a reply socket with a given context.
     explicit RemoteReplier(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructs a reply socket with the given logger.
-    /// @param[in] logger  A pointer to the application's logger.
     explicit RemoteReplier(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructs a reply socket with a given logger and context.
     RemoteReplier(std::shared_ptr<UMPS::Messaging::Context> &context,

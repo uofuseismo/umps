@@ -92,7 +92,7 @@ public:
         }
         else
         {
-            if (mLogger->getLevel() >= UMPS::Logging::Level::DEBUG)
+            if (mLogger->getLevel() >= UMPS::Logging::Level::Debug)
             {
                 mLogger->debug("Updating: " + name);
             }

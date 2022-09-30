@@ -67,22 +67,22 @@ StdOut::~StdOut() = default;
 void StdOut::setLevel(const Level level) noexcept
 {
     pImpl->mLevel = level;
-    if (level == Level::ERROR)
+    if (level == Level::Error)
     {
         //spdlog::set_level(spdlog::level::err);
         pImpl->mLogger->set_level(spdlog::level::err);
     }
-    else if (level == Level::WARN)
+    else if (level == Level::Warn)
     {
         //spdlog::set_level(spdlog::level::debug);
         pImpl->mLogger->set_level(spdlog::level::warn);
     }
-    else if (level == Level::INFO)
+    else if (level == Level::Info)
     {
         //spdlog::set_level(spdlog::level::info);
         pImpl->mLogger->set_level(spdlog::level::info);
     }
-    else if (level == Level::DEBUG)
+    else if (level == Level::Debug)
     {
         //spdlog::set_level(spdlog::level::debug);
         pImpl->mLogger->set_level(spdlog::level::debug);
@@ -102,7 +102,7 @@ Level StdOut::getLevel() const noexcept
 /// Info
 void StdOut::info(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::INFO)
+    if (pImpl->mLevel >= Level::Info)
     {
         //std::cout << message << std::endl;
         //spdlog::info(message);
@@ -113,7 +113,7 @@ void StdOut::info(const std::string &message)
 /// Warn
 void StdOut::warn(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::WARN)
+    if (pImpl->mLevel >= Level::Warn)
     {
         //std::cout << message << std::endl;
         //spdlog::warn(message);
@@ -124,7 +124,7 @@ void StdOut::warn(const std::string &message)
 /// Error
 void StdOut::error(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::ERROR)
+    if (pImpl->mLevel >= Level::Error)
     {
         //std::cerr << message << std::endl;
         //spdlog::error(message);
@@ -135,7 +135,7 @@ void StdOut::error(const std::string &message)
 /// Debug
 void StdOut::debug(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::DEBUG)
+    if (pImpl->mLevel >= Level::Debug)
     {
         //std::cerr << message << std::endl;
         //spdlog::debug(message);

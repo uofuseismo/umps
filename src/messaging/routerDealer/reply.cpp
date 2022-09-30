@@ -20,34 +20,6 @@ class Reply::ReplyImpl
 {
 public:
     /// C'tor
-    /*
-    ReplyImpl(std::shared_ptr<zmq::context_t> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger, int)
-    {
-        // Ensure the context gets made
-        if (context == nullptr)
-        {   
-            mContext = std::make_shared<zmq::context_t> (1);
-        }   
-        else
-        {   
-            mContext = context;
-        }   
-        // Make the logger
-        if (logger == nullptr)
-        {   
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
-        }   
-        else
-        {   
-            mLogger = logger;
-        }   
-        // Now make the socket
-        mServer = std::make_unique<zmq::socket_t> (*mContext,
-                                                   zmq::socket_type::rep);
-    }
-    */
-    /// C'tor
     ReplyImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
               const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
@@ -89,14 +61,14 @@ public:
     // Disconnect
     void disconnect()
     {
-       std::scoped_lock lock(mMutex);
-       if (mConnected)
-       {
-           mServer->disconnect(mAddress);
-           mAddress.clear();
-           mSocketDetails.clear();
-           mConnected = false;
-       }
+        std::scoped_lock lock(mMutex);
+        if (mConnected)
+        {
+            mServer->disconnect(mAddress);
+            mAddress.clear();
+            mSocketDetails.clear();
+            mConnected = false;
+        }
     }
     /// Update socket details
     void updateSocketDetails()
@@ -121,11 +93,11 @@ public:
     // Timeout in milliseconds.  0 means return immediately while -1 means
     // wait indefinitely.
     std::chrono::milliseconds mPollTimeOutMS{10};
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
-    bool mHaveCallback = false;
-    bool mRunning = false;
-    bool mConnected = false;
-    bool mInitialized = false;
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    bool mHaveCallback{false};
+    bool mRunning{false};
+    bool mConnected{false};
+    bool mInitialized{false};
 };
 
 /// C'tor
@@ -139,25 +111,10 @@ Reply::Reply(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 {
 }
 
-/*
-Reply::Reply(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<ReplyImpl> (context, nullptr, 0))
-{
-}
-*/
-
 Reply::Reply(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<ReplyImpl> (context, nullptr)) 
 {
 }
-
-/*
-Reply::Reply(std::shared_ptr<zmq::context_t> &context,
-             std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<ReplyImpl> (context, logger, 0))
-{
-}
-*/
 
 Reply::Reply(std::shared_ptr<UMPS::Messaging::Context> &context,
              std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -194,11 +151,18 @@ void Reply::initialize(const ReplyOptions &options)
     // Set the high water mark
     pImpl->mServer->set(zmq::sockopt::rcvhwm, highWaterMark);
     pImpl->mServer->set(zmq::sockopt::sndhwm, highWaterMark);
+    if (pImpl->mOptions.haveRoutingIdentifier())
+    {
+        pImpl->mServer->set(zmq::sockopt::routing_id,
+                            pImpl->mOptions.getRoutingIdentifier());
+    }
     // Set the callback 
     pImpl->mCallback = pImpl->mOptions.getCallback();
     pImpl->mHaveCallback = true;
     // Connect 
+    pImpl->mLogger->debug("Reply attempting to connect to: " + address);
     pImpl->mServer->connect(address);
+    pImpl->mLogger->debug("Reply connected to: " + address);
     // Resolve end point
     pImpl->mAddress = address;
     if (address.find("tcp") != std::string::npos ||
@@ -209,6 +173,7 @@ void Reply::initialize(const ReplyOptions &options)
     pImpl->mConnected = true; 
     pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
+    pImpl->mLogger->debug("Reply initialized!");
 }
 
 /// Initialized?
@@ -241,7 +206,7 @@ void Reply::start()
             // Get the next message
             zmq::multipart_t messagesReceived(*pImpl->mServer);
             //if (messagesReceived.empty()){continue;}
-            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            if (logLevel >= UMPS::Logging::Level::Debug)
             {
                 pImpl->mLogger->debug("Reply received message!");
             }
@@ -284,7 +249,7 @@ void Reply::start()
                 pImpl->mLogger->error("Error in callback/serialization: "
                                    + std::string(e.what()));
             }
-            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            if (logLevel >= UMPS::Logging::Level::Debug)
             {
                 pImpl->mLogger->debug("Replying...");
                 

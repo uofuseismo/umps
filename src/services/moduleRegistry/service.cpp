@@ -73,7 +73,7 @@ public:
         callback(const std::string &messageType,
                  const void *messageContents, const size_t length) noexcept
     {
-        if (mLogger->getLevel() >= UMPS::Logging::Level::DEBUG)
+        if (mLogger->getLevel() >= UMPS::Logging::Level::Debug)
         {
             mLogger->debug("ServiceImpl::callback: Message of type: "
                          + messageType

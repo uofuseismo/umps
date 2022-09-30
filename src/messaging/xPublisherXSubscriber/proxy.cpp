@@ -14,6 +14,7 @@
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/messaging/ipcDirectory.hpp"
 
 using namespace UMPS::Messaging::XPublisherXSubscriber;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -99,6 +100,12 @@ public:
         mBackend = std::make_unique<zmq::socket_t> (*backendContextPtr,
                                                     zmq::socket_type::xpub);
     }
+    /// Destructor
+    ~ProxyImpl()
+    {
+        disconnectFrontend();
+        disconnectBackend();
+    }
     void setStarted(const bool status)
     {
        std::scoped_lock lock(mMutex);
@@ -113,6 +120,7 @@ public:
     {
         if (mHaveFrontend)
         {
+            ::removeIPCFile(mFrontendAddress, &*mLogger);
             mLogger->debug("Disconnecting from current frontend: "
                          + mFrontendAddress);
             mFrontend->disconnect(mFrontendAddress);
@@ -123,6 +131,7 @@ public:
     {
         if (mHaveBackend)
         {
+            ::removeIPCFile(mBackendAddress, &*mLogger);
             mLogger->debug("Disconnecting from current backend: "
                          + mBackendAddress);
             mBackend->disconnect(mBackendAddress);
@@ -143,9 +152,11 @@ public:
     void bindBackend()
     {
         mBackendAddress = mOptions.getBackendAddress();
+        // Resolve a directory issue for IPC
+        ::createIPCDirectoryFromConnectionString(mBackendAddress, &*mLogger);
         try
         {
-            mLogger->debug("Attempting to bind to backend: "
+            mLogger->debug("xPubSubProxy proxy attempting to bind to backend: "
                          + mBackendAddress);
             mBackend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getBackendHighWaterMark();
@@ -155,7 +166,7 @@ public:
         }
         catch (const std::exception &e)
         {
-            auto errorMsg = "Proxy failed to bind to backend: "
+            auto errorMsg = "xPubSubProxy proxy failed to bind to backend: "
                           + mBackendAddress
                           + ".\nZeroMQ failed with:\n" + std::string(e.what());
             mLogger->error(errorMsg);
@@ -174,9 +185,11 @@ public:
     void bindFrontend()
     {
         mFrontendAddress = mOptions.getFrontendAddress();
+        // Resolve a directory issue for IPC
+        ::createIPCDirectoryFromConnectionString(mFrontendAddress, &*mLogger);
         try 
         {
-            mLogger->debug("Attempting to bind to frontend: "
+            mLogger->debug("xPubSubProxy proxy attempting to bind to frontend: "
                          + mFrontendAddress);
             mFrontend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getFrontendHighWaterMark();
@@ -186,7 +199,7 @@ public:
         }
         catch (const std::exception &e)
         {
-            auto errorMsg = "Proxy failed to bind to frontend: "
+            auto errorMsg = "xPubSubProxy proxy failed to bind to frontend: "
                           + mFrontendAddress + ".\nZeroMQ failed with:\n"
                           + std::string(e.what());
             mLogger->error(errorMsg);
@@ -222,7 +235,7 @@ public:
                          + mControlAddress);
             mControl->connect(mControlAddress);
             // The command will issue simple commands without topics so listen
-            // to `everything.' 
+            // to everything.
             mControl->set(zmq::sockopt::subscribe, std::string(""));
             mControl->set(zmq::sockopt::linger, 1);
             mCommand->bind(mControlAddress);
@@ -264,9 +277,9 @@ public:
     std::shared_ptr<UMPS::Messaging::Context> mFrontendContext{nullptr};
     // This context handles communication with the subscribers.
     std::shared_ptr<UMPS::Messaging::Context> mBackendContext{nullptr};
-    // The front is an xsub that faces the internal servers
+    // The front is an xSub that faces the internal servers
     std::unique_ptr<zmq::socket_t> mFrontend{nullptr};
-    // The backend is an xpub that faces the external clients
+    // The backend is an xPub that faces the external clients
     std::unique_ptr<zmq::socket_t> mBackend{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     // Options

@@ -17,15 +17,33 @@
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Services::Command;
+namespace URequestRouter = UMPS::Messaging::RequestRouter;
 
 class RemoteRequestor::RemoteRequestorImpl
 {
 public:
     /// @brief Constructor
     RemoteRequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                       std::shared_ptr<UMPS::Logging::ILog> logger) :
-        mRequest(std::make_unique<UMPS::Messaging::RequestRouter::Request> (context, logger))
+                       std::shared_ptr<UMPS::Logging::ILog> logger)
     {
+        if (logger == nullptr)
+        {
+            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+        }
+        else
+        {
+            mLogger = logger; 
+        }
+        if (context == nullptr)
+        {
+            mContext = std::make_shared<UMPS::Messaging::Context> (1);
+        }
+        else
+        {
+            mContext = context;
+        }
+        mRequest
+            = std::make_unique<URequestRouter::Request> (mContext, mLogger);
         // Make the message types
         std::unique_ptr<UMPS::MessageFormats::IMessage>
             availableCommandsResponseMessage
@@ -44,7 +62,7 @@ public:
         mRequest->disconnect();
     }
     UMPS::MessageFormats::Messages mMessageFormats;
-    std::unique_ptr<UMPS::Messaging::RequestRouter::Request> mRequest{nullptr};
+    std::unique_ptr<URequestRouter::Request> mRequest{nullptr};
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     RemoteRequestorOptions mRemoteRequestorOptions;

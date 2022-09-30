@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+#include <sstream>
 #include "umps/services/command/remoteReplierOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -9,6 +12,13 @@ namespace URouterDealer = UMPS::Messaging::RouterDealer;
 class RemoteReplierOptions::RemoteReplierOptionsImpl
 {
 public:
+    RemoteReplierOptionsImpl()
+    {
+        std::ostringstream address;
+        address << static_cast<void const *> (this);
+        auto routingIdentifier = "module_" + address.str();
+        mOptions.setRoutingIdentifier(routingIdentifier);
+    }
     URouterDealer::ReplyOptions mOptions;
 };
 

@@ -1,4 +1,6 @@
+#include <iostream>
 #include <map>
+#include <cmath>
 #include <string>
 #include <functional>
 #include <chrono>
@@ -22,6 +24,7 @@ public:
          const size_t length)
     > mCallback;
     std::string mAddress;
+    std::string mRoutingIdentifier;
     int mHighWaterMark = 0;
     bool mHaveCallback = false;
 };
@@ -114,6 +117,30 @@ void ReplyOptions::setHighWaterMark(const int highWaterMark)
 int ReplyOptions::getHighWaterMark() const noexcept
 {
     return pImpl->mHighWaterMark;
+}
+
+/// Sets the routing id
+void ReplyOptions::setRoutingIdentifier(const std::string &identifier)
+{
+    if (identifier.empty()){return;}
+    constexpr size_t maxLength{255};
+    size_t stringLength = std::min(identifier.size(), maxLength);
+    std::string temp{identifier, 0, stringLength};
+    pImpl->mRoutingIdentifier = temp;
+}
+
+std::string ReplyOptions::getRoutingIdentifier() const
+{
+    if (!haveRoutingIdentifier())
+    {
+        throw std::runtime_error("Routing identifier not set");
+    }
+    return pImpl->mRoutingIdentifier;
+}
+
+bool ReplyOptions::haveRoutingIdentifier() const noexcept
+{
+    return !pImpl->mRoutingIdentifier.empty();
 }
 
 /*

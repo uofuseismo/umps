@@ -113,6 +113,23 @@ public:
     [[nodiscard]] int getHighWaterMark() const noexcept;
     /// @}
 
+    /// @name Routing Identifier
+    /// @{
+
+    /// @brief This provides a way for a reply socket to identify itself for the
+    ///        benefit of the proxy that must route messages to specific 
+    ///        endpoints.  For most applications this is not required.
+    /// @param[in] identifier  The reply socket identifier.  If
+    ///                        identifier.size() exceeds 255 then it will be
+    ///                        truncated.
+    void setRoutingIdentifier(const std::string &identifier);
+    /// @result The routing identifier.
+    /// @throws std::runtime_error if \c haveRoutingIdentifier() is false.
+    [[nodiscard]] std::string getRoutingIdentifier() const;
+    /// @result True indicates the routing identifier was set.
+    [[nodiscard]] bool haveRoutingIdentifier() const noexcept;
+    /// @}
+
     /// @name ZeroMQ Authentication Protocol
     /// @{
 

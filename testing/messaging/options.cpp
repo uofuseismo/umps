@@ -223,6 +223,7 @@ TEST(Messaging, RouterDealerReplyOptions)
     RouterDealer::ReplyOptions options; 
     int hwm = 240;
     const std::string address = "tcp://127.0.0.2:5556";
+    const std::string routingIdentifier{"tempIdentifier"};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
     std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
@@ -230,17 +231,20 @@ TEST(Messaging, RouterDealerReplyOptions)
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setRoutingIdentifier(routingIdentifier));
     //EXPECT_NO_THROW(options.addMessageFormat(pickMessage));
     
     RouterDealer::ReplyOptions optionsCopy(options); 
-    EXPECT_EQ(options.getHighWaterMark(), hwm);
-    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
+    EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::Strawhouse);
-    EXPECT_EQ(options.getAddress(), address);
+    EXPECT_EQ(optionsCopy.getAddress(), address);
     //EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
+    EXPECT_EQ(optionsCopy.getRoutingIdentifier(), routingIdentifier);
 
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), 0);
+    EXPECT_FALSE(options.haveRoutingIdentifier());
 }
 
 }

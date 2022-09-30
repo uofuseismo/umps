@@ -1,4 +1,3 @@
-#include <iostream>
 #include <mutex>
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
@@ -12,6 +11,7 @@
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/messaging/ipcDirectory.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -21,8 +21,8 @@ class Proxy::ProxyImpl
 {
 public:
     /// C'tor
-    ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger)
+    ProxyImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
+              const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         if (context == nullptr)
         {
@@ -50,6 +50,12 @@ public:
         mBackend = std::make_unique<zmq::socket_t> (*contextPtr,
                                                     zmq::socket_type::dealer);
     } 
+    ///Destructor
+    ~ProxyImpl()
+    {   
+        disconnectFrontend();
+        disconnectBackend();
+    }
     /// Note whether the proxy was started / stopped
     void setStarted(const bool running)
     {
@@ -66,9 +72,11 @@ public:
     void bindFrontend()
     {
         mFrontendAddress = mOptions.getFrontendAddress();
+        // Resolve a directory issue for IPC
+        ::createIPCDirectoryFromConnectionString(mFrontendAddress, &*mLogger);
         try
         {
-            mLogger->debug("Attempting to bind to frontend: "
+            mLogger->debug("Proxy attempting to bind to frontend: "
                          + mFrontendAddress);
             mFrontend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getFrontendHighWaterMark();
@@ -102,9 +110,11 @@ public:
     void bindBackend()
     {
         mBackendAddress = mOptions.getBackendAddress();
+        // Resolve a directory issue for IPC
+        ::createIPCDirectoryFromConnectionString(mBackendAddress, &*mLogger);
         try
         {
-            mLogger->debug("Attempting to bind to backend: "
+            mLogger->debug("Proxy attempting to bind to backend: "
                          + mBackendAddress);
             mBackend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getBackendHighWaterMark();
@@ -136,9 +146,10 @@ public:
     }
     /// Disconnect frontend
     void disconnectFrontend()
-    {   
+    {
         if (mHaveFrontend)
         {
+            ::removeIPCFile(mFrontendAddress, &*mLogger);
             mLogger->debug("Disconnecting from current frontend: "
                          + mFrontendAddress);
             mFrontend->disconnect(mFrontendAddress);
@@ -150,6 +161,7 @@ public:
     {
         if (mHaveBackend)
         {
+            ::removeIPCFile(mBackendAddress, &*mLogger);
             mLogger->debug("Disconnecting from current backend: "
                          + mBackendAddress);
             mBackend->disconnect(mBackendAddress);

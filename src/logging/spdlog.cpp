@@ -15,19 +15,19 @@ namespace
 /// Converts the UMPS logging level to something spdlog understands.
 spdlog::level::level_enum levelToLevel(const Level level)
 {
-    if (level == Level::ERROR)
+    if (level == Level::Error)
     {
         return spdlog::level::err;
     }
-    else if (level == Level::WARN)
+    else if (level == Level::Warn)
     {
         return spdlog::level::warn;
     }
-    else if (level == Level::INFO)
+    else if (level == Level::Info)
     {
         return spdlog::level::info;
     }
-    else if (level == Level::DEBUG)
+    else if (level == Level::Debug)
     {
         return spdlog::level::debug;
     }
@@ -153,7 +153,7 @@ void SpdLog::initialize(const std::string &loggerName,
 /// Info
 void SpdLog::info(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::INFO && pImpl->mLogger)
+    if (pImpl->mLevel >= Level::Info && pImpl->mLogger)
     {
         //spdlog::info(message);
         pImpl->mLogger->info(message);
@@ -164,7 +164,7 @@ void SpdLog::info(const std::string &message)
 /// Warn
 void SpdLog::warn(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::WARN && pImpl->mLogger)
+    if (pImpl->mLevel >= Level::Warn && pImpl->mLogger)
     {
         //spdlog::warn(message);
         pImpl->mLogger->warn(message);
@@ -175,7 +175,7 @@ void SpdLog::warn(const std::string &message)
 /// Error
 void SpdLog::error(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::ERROR && pImpl->mLogger)
+    if (pImpl->mLevel >= Level::Error && pImpl->mLogger)
     {
         //spdlog::error(message);
         pImpl->mLogger->error(message);
@@ -186,7 +186,7 @@ void SpdLog::error(const std::string &message)
 /// Debug
 void SpdLog::debug(const std::string &message)
 {
-    if (pImpl->mLevel >= Level::DEBUG && pImpl->mLogger)
+    if (pImpl->mLevel >= Level::Debug && pImpl->mLogger)
     {
         //spdlog::debug(message);
         pImpl->mLogger->debug(message);

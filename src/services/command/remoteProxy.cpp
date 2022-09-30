@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
+#include <set>
 #include <mutex>
 #include <thread>
 #include <chrono>
 #include <zmq.hpp>
+#include <zmq_addon.hpp>
 #ifndef NDEBUG
 #include <cassert>
 #endif
@@ -21,6 +23,7 @@
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/messaging/ipcDirectory.hpp"
 
 //#define SOCKET_MONITOR_DEALER_ADDRESS "inproc://monitor.dealer"
 
@@ -33,7 +36,9 @@ namespace
 class Monitor : public zmq::monitor_t
 {
 public:
+    /// Remove default c'tor
     Monitor() = delete;
+    /// Constructor
     Monitor(std::shared_ptr<zmq::socket_t> &backend,
             std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mBackend(backend),
@@ -41,51 +46,54 @@ public:
     {
         createInprocAddress();
     }
+    /// Destructor
     ~Monitor() override
     {
         stop();
     }
-    void stop()
-    {
-        if (mMonitorThread.joinable()){mMonitorThread.join();}
-    } 
-    void startMonitor()
-    {
-        monitor(*mBackend,
-                mMonitorAddress,
-                ZMQ_EVENT_ACCEPTED |
-                ZMQ_EVENT_CLOSED |
-                ZMQ_EVENT_DISCONNECTED);
-    }
-    void start()
-    {
-        mMonitorThread = std::thread(&Monitor::startMonitor,
-                                     this);
-    } 
-/*
-    void start()
-    {
-        while (keepRunning())
-        {
-            check_event(-1);
-        }
-    }
+    /// Stop the monitor
     void stop()
     {
         setRunning(false);
+        if (mMonitorThread.joinable()){mMonitorThread.join();}
+    }
+    /// Start the monitor
+    void start()
+    {
+        stop();
+        mLogger->debug("Starting thread to monitor: " + getMonitorAddress());
+        setRunning(true);
+        mMonitorThread = std::thread([this]()
+            {
+                const std::chrono::microseconds timeOut{100};
+                init(*this->mBackend, this->mMonitorAddress,
+                     ZMQ_EVENT_ACCEPTED |
+                     ZMQ_EVENT_CLOSED |
+                     ZMQ_EVENT_DISCONNECTED);
+                while (this->keepRunning())
+                {
+                    check_event(timeOut.count());
+                }
+                mLogger->debug("Monitor thread exited loop");
+            });
+    } 
+    [[nodiscard]] bool keepRunning() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mKeepRunning;
     }
     void setRunning(const bool run)
     {
         std::scoped_lock lock(mMutex);
         mKeepRunning = run;
-    } 
-*/
+    }
     void on_monitor_started() override
     {
-        mLogger->debug("Monitor started");
+        mLogger->debug("Monitor thread started");
     }
-    void on_event_accepted(const zmq_event_t &, const char *addr) final
+    void on_event_accepted(const zmq_event_t &event, const char *addr) final
     {
+        std::cout << event.event << " " << event.value << " " << std::hex << event.value << std::endl;
         mLogger->debug("Monitor: Event opened: " + std::string{addr});
     }
     void on_event_closed(const zmq_event_t &, const char *addr) final
@@ -96,6 +104,7 @@ public:
     {
         mLogger->debug("Monitor: Event disconnected: " + std::string{addr});
     }
+    /// @result The inproc address to talk to the background thread
     [[nodiscard]] std::string getMonitorAddress() const noexcept
     {
         return mMonitorAddress;
@@ -116,6 +125,8 @@ public:
                         + "_monitor_dealer";
     }
 ///private:
+    mutable std::mutex mMutex; 
+    std::set<std::string> mAddresses;
     std::shared_ptr<zmq::socket_t> mBackend{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::string mMonitorAddress;
@@ -259,14 +270,23 @@ public:
         // I only care about connections on the dealer
         mDealerMonitor = std::make_unique<Monitor> (mBackend, mLogger);
     }
+    /// Destructor
+    ~RemoteProxyImpl()
+    {
+        stop();
+        mDealerMonitor->stop();
+    }
     /// Bind the frontend
     void bindFrontend()
     {
         mFrontendAddress = mOptions.getFrontendAddress();
+        // Resolve a directory issue for IPC
+        ::createIPCDirectoryFromConnectionString(mFrontendAddress, &*mLogger);
         try
         {
-            mLogger->debug("Attempting to bind to frontend: "
-                         + mFrontendAddress);
+            mLogger->debug(
+                "Remote request proxy attempting to bind to frontend: "
+              + mFrontendAddress);
             mFrontend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getFrontendHighWaterMark();
             if (hwm > 0)
@@ -279,7 +299,7 @@ public:
         }
         catch (const std::exception &e)
         {
-            auto errorMsg = "Proxy failed to bind to frontend: "
+            auto errorMsg = "Remote request proxy failed to bind to frontend: "
                           + mFrontendAddress + ".\nZeroMQ failed with:\n"
                           + std::string(e.what());
             mLogger->error(errorMsg);
@@ -299,10 +319,13 @@ public:
     void bindBackend()
     {
         mBackendAddress = mOptions.getBackendAddress();
+        // Resolve a directory issue for IPC
+        ::createIPCDirectoryFromConnectionString(mBackendAddress, &*mLogger);
         try
         {
-            mLogger->debug("Attempting to bind to backend: "
-                         + mBackendAddress);
+            mLogger->debug(
+                "Remote request proxy attempting to bind to backend: "
+              + mBackendAddress);
             mBackend->set(zmq::sockopt::linger, 0);
             int hwm = mOptions.getBackendHighWaterMark();
             if (hwm >= 0)
@@ -315,7 +338,7 @@ public:
         }
         catch (const std::exception &e)
         {
-            auto errorMsg = "Proxy failed to bind to backend: "
+            auto errorMsg = "Remote request proxy failed to bind to backend: "
                           + mBackendAddress
                           + ".\nZeroMQ failed with:\n" + std::string(e.what());
             mLogger->error(errorMsg);
@@ -336,6 +359,7 @@ public:
     {
         if (mHaveFrontend)
         {
+            ::removeIPCFile(mFrontendAddress, &*mLogger);
             mLogger->debug("Disconnecting from current frontend: "
                          + mFrontendAddress);
             mFrontend->disconnect(mFrontendAddress);
@@ -347,6 +371,7 @@ public:
     {
         if (mHaveBackend)
         {
+            ::removeIPCFile(mBackendAddress, &*mLogger);
             mLogger->debug("Disconnecting from current backend: "
                          + mBackendAddress);
             mBackend->disconnect(mBackendAddress);
@@ -356,7 +381,98 @@ public:
     /// Starts the monitor
     void startMonitor()
     {
+        mLogger->debug("Remote request proxy starting backend monitor...");
         mDealerMonitor->start();
+        mLogger->debug("Remote request proxy monitor started");
+    }
+    /// Stops the mointor
+    void stopMonitor()
+    {
+        mDealerMonitor->stop();
+    }
+    /// Starts the poller
+    void runPoller()
+    {
+        // Poll setup
+        constexpr size_t nPollItems = 2;
+        zmq::pollitem_t items[] =
+        {
+            {mFrontend->handle(), 0, ZMQ_POLLIN, 0},
+            {mBackend->handle(),  0, ZMQ_POLLIN, 0}
+        };
+        // Run
+        while (isRunning())
+        {
+            zmq::poll(&items[0], nPollItems, mPollTimeOut); 
+            // This is a request message -> route it to the right place
+            if (items[0].revents & ZMQ_POLLIN)
+            {
+//std::cout << "frontend received" << std::endl;
+                try
+                {
+                    zmq::multipart_t messagesReceived(*mFrontend);
+std::cout << "Received: " << messagesReceived << std::endl << std::endl;//messagesReceived.front().size() << std::endl;
+                    messagesReceived.send(*mBackend);
+                }
+                catch (const zmq::error_t &e)
+                {
+                    auto errorMsg = "Frontend to backend proxy error.  "
+                                  + std::string("ZeroMQ failed with:\n")
+                                  + std::string(e.what())
+                                  + " Error Code = " + std::to_string(e.num());
+                    mLogger->error(errorMsg);
+                }
+                catch (std::exception &e) 
+                {
+                    auto errorMsg = "Frontend to backend proxy std error:  "
+                                  + std::string(e.what());
+                    mLogger->error(errorMsg);
+                }
+            }
+            // This is a response message -> send it back to the requestor
+            if (items[1].revents & ZMQ_POLLIN)
+            {
+//std::cout << "backend received" << std::endl;
+                try
+                {
+                    zmq::multipart_t messagesReceived(*mBackend);
+
+//const auto identity = reinterpret_cast<const char *> (messagesReceived.front().data());
+//std::string identity{reinterpret_cast<const char *> ( messagesReceived.front().data() ), messagesReceived.front().size()};
+//std::cout << "Return: " << messagesReceived.front().size() << " (" << identity << ")" << std::endl;
+ //messagesReceived.front().str() << std::endl;
+std::cout <<"Returned: " << messagesReceived << std::endl << std::endl;
+                    messagesReceived.send(*mFrontend);
+                }
+                catch (const zmq::error_t &e) //std::exception &e) 
+                {
+                    auto errorMsg = "Backend to frontend proxy error.  "
+                                  + std::string("ZeroMQ failed with:\n")
+                                  + std::string(e.what())
+                                  + " Error Code = " + std::to_string(e.num());
+                    mLogger->error(errorMsg); 
+                }
+                catch (std::exception &e)
+                {
+                    auto errorMsg = "Backend to frontend proxy std error:  "
+                                  + std::string(e.what());
+                    mLogger->error(errorMsg);
+                }
+            } 
+        }
+    }
+    /// Starts the proxy
+    void start()
+    {
+        stop(); 
+        setRunning(true);
+        mProxyThread = std::thread(&RemoteProxyImpl::runPoller, this);
+    }
+    /// Stops the proxy
+    void stop()
+    {
+        setRunning(false);
+        if (mProxyThread.joinable()){mProxyThread.join();}
     }
     /// Update connection details
     void updateConnectionDetails()
@@ -394,7 +510,7 @@ public:
         mConnectionDetails.setSecurityLevel(securityLevel);
     }
     /// Note whether the proxy was started / stopped
-    void setStarted(const bool running)
+    void setRunning(const bool running)
     {
         std::scoped_lock lock(mMutex);
         mRunning = running;
@@ -439,6 +555,8 @@ public:
     std::string mBackendAddress;
     std::string mMonitorAddress;
     const std::string mProxyName{"RemoteCommandProxy"};
+    std::thread mProxyThread;
+    std::chrono::milliseconds mPollTimeOut{10};
     bool mHaveBackend{false};
     bool mHaveFrontend{false};
     bool mRunning{false};
@@ -492,6 +610,7 @@ void RemoteProxy::initialize(const RemoteProxyOptions &options)
     pImpl->mOptions = options;
     pImpl->mInitialized = false;
     // Disconnect from old connections
+    pImpl->stopMonitor();
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
     // Connect
@@ -500,7 +619,9 @@ void RemoteProxy::initialize(const RemoteProxyOptions &options)
     // Resolve the socket details
     pImpl->updateConnectionDetails();
     // Ready to rock
+    pImpl->startMonitor();
     pImpl->mInitialized = true;
+    pImpl->mLogger->debug("Remote request proxy initialized!");
 }
 
 /// Initilalized?
@@ -529,18 +650,13 @@ UCI::Details RemoteProxy::getConnectionDetails() const
 // Stops the proxy
 void RemoteProxy::stop()
 {
-/*
-    if (pImpl->isStarted())
-    {   
-        pImpl->mLogger->debug("Terminating proxy...");
-        pImpl->mCommand->send(zmq::str_buffer("TERMINATE"),
-                              zmq::send_flags::none);
-        pImpl->disconnectFrontend();
-        pImpl->disconnectBackend();
-    }   
-    pImpl->mInitialized = false;
-    pImpl->mStarted = false;
-*/
+    pImpl->setRunning(false);
+}
+
+/// Is the proxy running?
+bool RemoteProxy::isRunning() const noexcept
+{
+    return pImpl->isRunning();
 }
 
 /// Start the proxy
@@ -555,14 +671,19 @@ void RemoteProxy::start()
         {pImpl->mFrontend->handle(), 0, ZMQ_POLLIN, 0}, 
         {pImpl->mBackend->handle(),  0, ZMQ_POLLIN, 0}
     };
-    pImpl->setStarted(true);
+    //pImpl->setRunning(true);
+    //pImpl->mLogger->debug("Remote proxy thread beginning polling loop...");
+    pImpl->start();    
 /*
     while (isRunning())
-    {   
-        zmq::poll(&items[0], nPollItems, pImpl->mPollTimeOutMS); 
+    {
+        zmq::poll(&items[0], nPollItems, pImpl->mPollTimeOut); 
         // This is a request message -> route it to the right place
         if (items[0].revents & ZMQ_POLLIN)
         {
+std::cout << "frontend received" << std::endl;
+*/
+/*
             try
             {
                 zmq::multipart_t messagesReceived(*pImpl->mFrontend);
@@ -587,10 +708,15 @@ std::cout << "frontend received" << std::endl;
                               + std::string(e.what());
                 pImpl->mLogger->error(errorMsg);
             }
+*/
+/*
         }
         // This is a response message -> send it back to the requestor
         if (items[1].revents & ZMQ_POLLIN)
         {
+std::cout << "backend received" << std::endl;
+*/
+/*
             try
             {
                 zmq::multipart_t messagesReceived(*pImpl->mBackend);
@@ -615,7 +741,10 @@ std::cout << "backend received" << std::endl;
                               + std::string(e.what());
                 pImpl->mLogger->error(errorMsg);
             }
+*/
+/*
         }
     } // Loop
+    pImpl->mLogger->debug("Remote request thread exited polling loop.");
 */
 }

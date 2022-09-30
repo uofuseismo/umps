@@ -23,34 +23,6 @@ namespace UAuth = UMPS::Authentication;
 class Router::RouterImpl
 {
 public:
-    /*
-    /// C'tor
-    RouterImpl(std::shared_ptr<zmq::context_t> context,
-               std::shared_ptr<UMPS::Logging::ILog> logger, int )
-    {
-        // Ensure the context gets made
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        // Make the logger
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        // Now make the socket
-        mServer = std::make_unique<zmq::socket_t> (*mContext,
-                                                   zmq::socket_type::router);
-    }
-    */
     /// C'tor
     RouterImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
                const std::shared_ptr<UMPS::Logging::ILog> &logger)
@@ -144,7 +116,6 @@ public:
     UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
     bool mBound{false};
     bool mRunning{false};
-    bool mHaveCallback{false};
     bool mInitialized{false};
 };
 
@@ -161,27 +132,12 @@ Router::Router(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 }
 
 /// C'tor
-/*
-Router::Router(std::shared_ptr<zmq::context_t> &context) :
-    pImpl(std::make_unique<RouterImpl> (context, nullptr, 0))
-{
-}
-*/
-
 Router::Router(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<RouterImpl> (context, nullptr))
 {
 }
 
 /// C'tor
-/*
-Router::Router(std::shared_ptr<zmq::context_t> &context,
-                 std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RouterImpl> (context, logger, 0))
-{
-}
-*/
-
 Router::Router(std::shared_ptr<UMPS::Messaging::Context> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<RouterImpl> (context, logger)) 
@@ -247,7 +203,6 @@ void Router::initialize(const RouterOptions &options)
     pImpl->mServer->set(zmq::sockopt::sndhwm, highWaterMark); 
     // Set the callback 
     pImpl->mCallback = pImpl->mOptions.getCallback(); 
-    pImpl->mHaveCallback = true;
     // Bind
     pImpl->mServer->bind(address);
     // Resolve end point
@@ -292,7 +247,7 @@ void Router::start()
             // Get the next message
             zmq::multipart_t messagesReceived(*pImpl->mServer);
             if (messagesReceived.empty()){continue;}
-            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            if (logLevel >= UMPS::Logging::Level::Debug)
             {
                 pImpl->mLogger->debug("Message received!");
             }
@@ -340,7 +295,7 @@ std::cout << messagesReceived.at(3).to_string() << std::endl;
             {
                 pImpl->mLogger->warn("Router received empty message");
             }
-            if (logLevel >= UMPS::Logging::Level::DEBUG)
+            if (logLevel >= UMPS::Logging::Level::Debug)
             {
                 pImpl->mLogger->debug("Replying...");
             }
