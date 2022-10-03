@@ -202,7 +202,7 @@ public:
             {
                  {{mServer->handle(), 0, ZMQ_POLLIN, 0}}
             };
-            zmq::poll(pollItems.data(), pollItems.size(), mPollTimeOut.count());
+            zmq::poll(pollItems.data(), pollItems.size(), mPollTimeOut);
             // Got something
             if (pollItems[0].revents & ZMQ_POLLIN)
             {
