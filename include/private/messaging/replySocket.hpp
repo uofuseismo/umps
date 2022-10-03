@@ -282,7 +282,7 @@ public:
     {
         auto messageType = message.getMessageType();
         if (messageType.empty())
-        {   
+        {
             mLogger->warn("Message type is empty");
         }
         auto messageContents = message.toMessage();
@@ -334,7 +334,7 @@ public:
     > mCallback;
     std::thread mPollThread;
     std::string mAddress;
-    std::chrono::microseconds mPollTimeOut{10000};
+    std::chrono::milliseconds mPollTimeOut{10};
     UMPS::Services::ConnectionInformation::SocketDetails::Reply mSocketDetails;
     bool mConnected{false};
     bool mRunning{false};
