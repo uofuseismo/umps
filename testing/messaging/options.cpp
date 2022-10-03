@@ -1,5 +1,6 @@
 #include <string>
 #include "umps/authentication/zapOptions.hpp"
+#include "umps/messaging/socketOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
@@ -18,6 +19,50 @@ namespace
 
 using namespace UMPS::Messaging;
 namespace UAuth = UMPS::Authentication;
+
+TEST(Messaging, SocketOptions)
+{
+    const std::string address{"tcp://127.0.0.1:5556"};
+    const std::string routingID{"temp_client"}; 
+    const int sendHWM{1};
+    const int recvHWM{2}; 
+    const std::chrono::milliseconds sendTimeOut{31};
+    const std::chrono::milliseconds recvTimeOut{32};
+    const std::chrono::milliseconds lingerPeriod{-5}; // Resolve to -1
+    UAuth::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseClient();
+
+    SocketOptions options;
+    EXPECT_NO_THROW(options.setAddress(address)); 
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendHWM));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(recvHWM));
+    options.setSendTimeOut(sendTimeOut);
+    options.setReceiveTimeOut(recvTimeOut);
+    options.setZAPOptions(zapOptions);
+    options.setRoutingIdentifier(routingID);
+    options.setLingerPeriod(lingerPeriod);
+
+    SocketOptions copy(options);
+    EXPECT_EQ(copy.getAddress(), address);
+    EXPECT_EQ(copy.getSendHighWaterMark(), sendHWM);
+    EXPECT_EQ(copy.getReceiveHighWaterMark(), recvHWM);
+    EXPECT_EQ(copy.getSendTimeOut(), sendTimeOut);
+    EXPECT_EQ(copy.getReceiveTimeOut(), recvTimeOut);
+    EXPECT_EQ(copy.getRoutingIdentifier(), routingID);
+    EXPECT_EQ(copy.getLingerPeriod(), std::chrono::milliseconds {-1});
+    EXPECT_EQ(copy.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+
+    options.clear();
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
+    EXPECT_EQ(options.getSendHighWaterMark(), 0);
+    EXPECT_EQ(options.getReceiveTimeOut(), std::chrono::milliseconds {-1});
+    EXPECT_EQ(options.getSendTimeOut(), std::chrono::milliseconds {-1});
+    EXPECT_EQ(options.getLingerPeriod(), std::chrono::milliseconds {-1});
+    EXPECT_FALSE(options.haveRoutingIdentifier());
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              UAuth::SecurityLevel::Grasslands); 
+}
 
 TEST(Messaging, PubSubPublisherOptions)
 {
