@@ -1,8 +1,7 @@
-#ifndef UMPS_SERVICES_COMMAND_MODULEDETAILS_HPP
-#define UMPS_SERVICES_COMMAND_MODULEDETAILS_HPP
+#ifndef UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
+#define UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
 #include <memory>
 #include <ostream>
-#include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
 /// @class ModuleDetails moduleDetails.hpp "umps/services/command/moduleDetails.hpp"

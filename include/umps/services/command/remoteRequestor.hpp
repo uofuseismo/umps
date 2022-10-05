@@ -16,6 +16,7 @@ namespace UMPS
   {
    class RemoteRequestorOptions;
    class AvailableCommandsResponse;
+   class AvailableModulesResponse;
    class CommandRequest;
    class CommandResponse;
    class TerminateRequest;
@@ -77,6 +78,10 @@ public:
     /// @name Usage
     /// @{
 
+    /// @brief Gets the available registered modules with which to communicate.
+    /// @result A message with the available modules.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    [[nodiscard]] std::unique_ptr<AvailableModulesResponse> getAvailableModules() const;
     /// @brief Gets the commands for interacting with this program.
     /// @result A message summarizing the options for interacting with
     ///         this program.

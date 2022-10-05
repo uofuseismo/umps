@@ -285,7 +285,7 @@ void Proxy::start()
                               + " Error Code = " + std::to_string(e.num());
                 pImpl->mLogger->error(errorMsg);
             }
-            catch (std::exception &e)
+            catch (const std::exception &e)
             {
                 auto errorMsg = "Frontend to backend proxy std error:  "
                               + std::string(e.what());
@@ -307,7 +307,7 @@ void Proxy::start()
                               + " Error Code = " + std::to_string(e.num());
                 pImpl->mLogger->error(errorMsg);
             }
-            catch (std::exception &e) 
+            catch (const std::exception &e) 
             {
                 auto errorMsg = "Backend to frontend proxy std error:  "
                               + std::string(e.what());

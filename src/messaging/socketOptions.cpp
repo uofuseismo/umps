@@ -105,7 +105,7 @@ std::string SocketOptions::getAddress() const
 {
     if (!haveAddress())
     {
-        throw std::invalid_argument("Frontend address not set");
+        throw std::invalid_argument("Address not set");
     }
     return pImpl->mAddress;
 }

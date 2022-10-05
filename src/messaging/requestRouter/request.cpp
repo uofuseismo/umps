@@ -225,7 +225,8 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
         throw std::runtime_error("Unhandled response type: "
                                + responseMessageType);
     }
-    const auto payload = static_cast<char *> (responseReceived.at(1).data());
+    const auto payload
+         = static_cast<const char *> (responseReceived.at(1).data());
     auto responseLength = responseReceived.at(1).size();
     auto response = pImpl->mMessageFormats.get(responseMessageType);
     try

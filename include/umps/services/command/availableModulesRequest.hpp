@@ -1,29 +1,41 @@
-#ifndef UMPS_SERVICES_COMMAND_AVAILABLE_COMMANDS_REQUEST_HPP
-#define UMPS_SERVICES_COMMAND_AVAILABLE_COMMANDS_REQUEST_HPP
+#ifndef UMPS_SERVICES_COMMAND_AVAILABLE_MODULES_REQUEST_HPP
+#define UMPS_SERVICES_COMMAND_AVAILABLE_MODULES_REQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
-/// @class AvailableCommandsRequest "availableCommandsRequest.hpp" "umps/messageFormats/availableCommandsRequest.hpp"
-/// @brief Requests the text-based interactive program commands.
+/// @class AvailableModulesRequest "availableModulesRequest.hpp" "umps/messageFormats/availableModulesRequest.hpp"
+/// @brief Requests the available modules that have been registered with the
+///        remote module monitoring service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class AvailableCommandsRequest : public UMPS::MessageFormats::IMessage
+class AvailableModulesRequest : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    AvailableCommandsRequest();
+    AvailableModulesRequest();
     /// @brief Copy constructor.
     /// @param[in] message  The text message class from which to initialize
     ///                     this class.
-    AvailableCommandsRequest(const AvailableCommandsRequest &message);
+    AvailableModulesRequest(const AvailableModulesRequest &message);
     /// @brief Move constructor.
     /// @param[in,out] message  The text message class from which to
     ///                         initialize this class.  On exit, message's
     ///                         behavior is undefined.
-    AvailableCommandsRequest(AvailableCommandsRequest &&message) noexcept;
+    AvailableModulesRequest(AvailableModulesRequest &&message) noexcept;
+    /// @}
+
+    /// @name Optional Parameters
+    /// @{
+
+    /// @brief Sets a request identifier.  This can be useful for resolving
+    ///        asynchronous requests.
+    /// @param[in] identifier  The request identifier.
+    void setIdentifier(int64_t identifier) noexcept;
+    /// @result The request identifier.
+    [[nodiscard]] int64_t getIdentifier() const noexcept;
     /// @}
 
     /// @name Operators
@@ -32,13 +44,13 @@ public:
     /// @brief Copy assignment.
     /// @param[in] message  The text message class to copy to this.
     /// @result A deep copy of the text message.
-    AvailableCommandsRequest& operator=(const AvailableCommandsRequest &message);
+    AvailableModulesRequest& operator=(const AvailableModulesRequest &message);
     /// @brief Move assignment.
     /// @param[in,out] message  The text message class whose memory will be
     ///                         moved to this.  On exit, messages's behavior is
     ///                         undefined.
     /// @result The memory from message moved to this.
-    AvailableCommandsRequest& operator=(AvailableCommandsRequest &&message) noexcept;
+    AvailableModulesRequest& operator=(AvailableModulesRequest &&message) noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -51,7 +63,7 @@ public:
     ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
-    /// @param[in] message  The message.
+    /// @param[in] message  The message from which to create this class.
     /// @throws std::runtime_error if the message is invalid.
     void fromMessage(const std::string &message) final;
     /// @brief Creates the class from a message.
@@ -77,11 +89,11 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~AvailableCommandsRequest() override;
+    ~AvailableModulesRequest() override;
     /// @}
-private:
-    class AvailableCommandsRequestImpl;
-    std::unique_ptr<AvailableCommandsRequestImpl> pImpl;
+public:
+    class AvailableModulesRequestImpl;
+    std::unique_ptr<AvailableModulesRequestImpl> pImpl;
 };
 }
 #endif

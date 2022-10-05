@@ -1,58 +1,57 @@
-#ifndef UMPS_SERVICES_COMMAND_COMMANDREQUEST_HPP
-#define UMPS_SERVICES_COMMAND_COMMANDREQUEST_HPP
+#ifndef UMPS_SERVICES_COMMAND_REGISTRATION_REQUEST_HPP
+#define UMPS_SERVICES_COMMAND_REGISTRATION_REQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
-/// @class CommandRequest commandRequest.hpp "umps/services/command/commandRequest.hpp"
-/// @brief Issues a text-based command to the application.
+ class ModuleDetails;
+}
+namespace UMPS::Services::Command
+{
+/// @class RegistrationRequest registrationRequest.hpp "umps/services/command/registrationRequest.hpp"
+/// @brief Allows servers to request becoming a registered modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class CommandRequest : public UMPS::MessageFormats::IMessage
+class RegistrationRequest : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    CommandRequest();
+    RegistrationRequest();
     /// @brief Copy constructor.
-    /// @param[in] message  The text request message class from which to
-    ///                     initialize this class.
-    CommandRequest(const CommandRequest &message);
+    /// @param[in] request  The request from which to initialize this class.
+    RegistrationRequest(const RegistrationRequest &request);
     /// @brief Move constructor.
-    /// @param[in,out] message  The text request message class from which to
-    ///                         initialize this class.  On exit, message's
-    ///                         behavior is undefined.
-    CommandRequest(CommandRequest &&message) noexcept;
-    /// @}
-
-    /// @name Required Parameters
-    /// @{
-
-    /// @brief The text-based command.
-    /// @param[in] command  The text-based command. 
-    /// @throws std::invalid_argument if the command is empty.
-    void setCommand(const std::string &command);
-    /// @result The text-based command.
-    /// @throws std::runtime_error if \c haveCommand() is false.
-    [[nodiscard]] std::string getCommand() const;
-    /// @result The 
-    [[nodiscard]] bool haveCommand() const noexcept;
+    /// @param[in,out] details  The request from which to initialize this class.
+    ///                         On exit, details's behavior is undefined.
+    RegistrationRequest(RegistrationRequest &&request) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment.
-    /// @param[in] message  The text request message class to copy to this.
-    /// @result A deep copy of the text message.
-    CommandRequest& operator=(const CommandRequest &message);
+    /// @param[in] request  The request to copy to this.
+    /// @result A deep copy of the request.
+    RegistrationRequest& operator=(const RegistrationRequest &request);
     /// @brief Move assignment.
-    /// @param[in,out] message  The text request message class whose memory will
-    ///                         be moved to this.  On exit, messages's behavior
-    ///                         is undefined.
-    /// @result The memory from message moved to this.
-    CommandRequest& operator=(CommandRequest &&message) noexcept;
+    /// @param[in,out] request  The request whose memory will be moved to this.
+    ///                         On exit, request's behavior is undefined.
+    /// @result The memory from request moved to this.
+    RegistrationRequest& operator=(RegistrationRequest &&request) noexcept;
+    /// @}
+
+    /// @name Module Details (Required)
+    /// @{
+
+    /// @throws std::invalid_argument if details.haveName() is false.
+    void setModuleDetails(const ModuleDetails &details);
+    /// @result The module details.
+    /// @throws std::runtime_error if \c haveModuleDetails() is false.
+    [[nodiscard]] ModuleDetails getModuleDetails() const;
+    /// @result True indicates the module details were set.
+    [[nodiscard]] bool haveModuleDetails() const noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -86,14 +85,14 @@ public:
     /// @name Destructors
     /// @{
 
-    /// @brief Resets the class and releases all memory.
+    /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~CommandRequest() override;
+    ~RegistrationRequest();
     /// @}
 private:
-    class CommandRequestImpl;
-    std::unique_ptr<CommandRequestImpl> pImpl;
+    class RegistrationRequestImpl;
+    std::unique_ptr<RegistrationRequestImpl> pImpl;
 };
 }
 #endif

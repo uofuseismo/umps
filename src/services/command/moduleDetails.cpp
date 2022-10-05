@@ -5,15 +5,9 @@
 #include <boost/asio/ip/host_name.hpp>
 #include <nlohmann/json.hpp>
 #include "umps/services/command/moduleDetails.hpp"
-#include "private/services/moduleDetails.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;
-
-namespace
-{
-
-}
 
 class ModuleDetails::ModuleDetailsImpl
 {

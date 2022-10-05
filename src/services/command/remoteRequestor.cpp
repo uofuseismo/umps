@@ -5,11 +5,14 @@
 #include "umps/services/command/localRequestorOptions.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
+#include "umps/services/command/availableModulesRequest.hpp"
+#include "umps/services/command/availableModulesResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 #include "umps/messageFormats/messages.hpp"
+#include "umps/messageFormats/failure.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/context.hpp"
@@ -46,15 +49,22 @@ public:
             = std::make_unique<URequestRouter::Request> (mContext, mLogger);
         // Make the message types
         std::unique_ptr<UMPS::MessageFormats::IMessage>
-            availableCommandsResponseMessage
+            availableCommandsResponse
                = std::make_unique<AvailableCommandsResponse> ();
+        std::unique_ptr<UMPS::MessageFormats::IMessage>
+            availableModulesResponse
+               = std::make_unique<AvailableModulesResponse> (); 
         std::unique_ptr<UMPS::MessageFormats::IMessage> commandsResponse
             = std::make_unique<CommandResponse> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> terminateResponse
             = std::make_unique<TerminateResponse> ();
-        mMessageFormats.add(availableCommandsResponseMessage);
+        std::unique_ptr<UMPS::MessageFormats::IMessage> failureResponse
+            = std::make_unique<UMPS::MessageFormats::Failure> ();
+        mMessageFormats.add(availableCommandsResponse);
+        mMessageFormats.add(availableModulesResponse);
         mMessageFormats.add(commandsResponse);
         mMessageFormats.add(terminateResponse);
+        mMessageFormats.add(failureResponse);
     }
     /// @brief Disconnect
     void disconnect()
@@ -131,6 +141,29 @@ void RemoteRequestor::initialize(const RemoteRequestorOptions &options)
 bool RemoteRequestor::isInitialized() const noexcept
 {
     return pImpl->mRequest->isInitialized();
+}
+
+/// Available modules
+std::unique_ptr<AvailableModulesResponse>
+    RemoteRequestor::getAvailableModules() const
+{
+    if (!isInitialized())
+    {   
+        throw std::runtime_error("Requestor not initialized");
+    }
+    std::unique_ptr<AvailableModulesResponse> result{nullptr};
+    AvailableModulesRequest requestMessage;
+    auto message = pImpl->mRequest->request(requestMessage);
+    if (message != nullptr)
+    {
+        result = static_unique_pointer_cast<AvailableModulesResponse>
+                 (std::move(message));
+    }
+    else
+    {
+        pImpl->mLogger->warn("Request timed out");
+    }
+    return result;
 }
 
 /// Commands

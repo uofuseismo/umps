@@ -1,30 +1,59 @@
-#ifndef UMPS_SERVICES_COMMAND_AVAILABLE_COMMANDS_REQUEST_HPP
-#define UMPS_SERVICES_COMMAND_AVAILABLE_COMMANDS_REQUEST_HPP
+#ifndef UMPS_SERVICES_COMMAND_AVAILABLE_MODULES_RESPONSE_HPP
+#define UMPS_SERVICES_COMMAND_AVAILABLE_MODULES_RESPONSE_HPP
 #include <memory>
+#include <vector>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
-/// @class AvailableCommandsRequest "availableCommandsRequest.hpp" "umps/messageFormats/availableCommandsRequest.hpp"
-/// @brief Requests the text-based interactive program commands.
-/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class AvailableCommandsRequest : public UMPS::MessageFormats::IMessage
+ class ModuleDetails;
+}
+namespace UMPS::Services::Command
 {
+/// @class AvailableModulesResponse "availableModulesResponse.hpp" "umps/messageFormats/availableModulesResponse.hpp"
+/// @brief Returns the available modules that have been registered with the
+///        remote module monitoring service.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+class AvailableModulesResponse : public UMPS::MessageFormats::IMessage
+{
+private:
+    using ModuleType = std::vector<ModuleDetails>;
+public:
+    using iterator = typename ModuleType::iterator;
+    using const_iterator = typename ModuleType::const_iterator;
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    AvailableCommandsRequest();
+    AvailableModulesResponse();
     /// @brief Copy constructor.
     /// @param[in] message  The text message class from which to initialize
     ///                     this class.
-    AvailableCommandsRequest(const AvailableCommandsRequest &message);
+    AvailableModulesResponse(const AvailableModulesResponse &message);
     /// @brief Move constructor.
     /// @param[in,out] message  The text message class from which to
     ///                         initialize this class.  On exit, message's
     ///                         behavior is undefined.
-    AvailableCommandsRequest(AvailableCommandsRequest &&message) noexcept;
+    AvailableModulesResponse(AvailableModulesResponse &&message) noexcept;
     /// @}
+
+    /// @brief Sets the available modules with which to interact.
+    /// @param[in] modules  The available modules.
+    /// @throws std::invalid_argument if the module name of any module is
+    ///         not set.
+    void setModules(const std::vector<ModuleDetails> &modules);
+    /// @param[in,out] modules  The available modules.
+    /// @throws std::invalid_argument if the module name of any module is
+    ///         not set.
+    void setModules(std::vector<ModuleDetails> &&modules);
+    /// @result The available modules.
+    [[nodiscard]] std::vector<ModuleDetails> getModules() const;
+
+    /// @brief Sets the identifier specified in the request.
+    /// @param[in] identifier  The request identifier.
+    void setIdentifier(int64_t identifier) noexcept;
+    /// @result The request identifier.
+    [[nodiscard]] int64_t getIdentifier() const noexcept;
 
     /// @name Operators
     /// @{
@@ -32,13 +61,24 @@ public:
     /// @brief Copy assignment.
     /// @param[in] message  The text message class to copy to this.
     /// @result A deep copy of the text message.
-    AvailableCommandsRequest& operator=(const AvailableCommandsRequest &message);
+    AvailableModulesResponse& operator=(const AvailableModulesResponse &message);
     /// @brief Move assignment.
     /// @param[in,out] message  The text message class whose memory will be
     ///                         moved to this.  On exit, messages's behavior is
     ///                         undefined.
     /// @result The memory from message moved to this.
-    AvailableCommandsRequest& operator=(AvailableCommandsRequest &&message) noexcept;
+    AvailableModulesResponse& operator=(AvailableModulesResponse &&message) noexcept;
+
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
+    ModuleDetails& at(size_t pos);
+    const ModuleDetails& at(size_t pos) const;
+    ModuleDetails& operator[](size_t pos);
+    const ModuleDetails& operator[](size_t pos) const;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -51,7 +91,7 @@ public:
     ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
-    /// @param[in] message  The message.
+    /// @param[in] message  The message from which to create this class.
     /// @throws std::runtime_error if the message is invalid.
     void fromMessage(const std::string &message) final;
     /// @brief Creates the class from a message.
@@ -77,11 +117,11 @@ public:
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~AvailableCommandsRequest() override;
+    ~AvailableModulesResponse() override;
     /// @}
-private:
-    class AvailableCommandsRequestImpl;
-    std::unique_ptr<AvailableCommandsRequestImpl> pImpl;
+public:
+    class AvailableModulesResponseImpl;
+    std::unique_ptr<AvailableModulesResponseImpl> pImpl;
 };
 }
 #endif

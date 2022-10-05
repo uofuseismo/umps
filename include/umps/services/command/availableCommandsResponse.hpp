@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_AVAILABLECOMMANDSRESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_AVAILABLECOMMANDSRESPONSE_HPP
+#ifndef UMPS_SERVICES_COMMAND_AVAILABLE_COMMANDS_RESPONSE_HPP
+#define UMPS_SERVICES_COMMAND_AVAILABLE_COMMANDS_RESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
@@ -7,7 +7,6 @@ namespace UMPS::Services::Command
 /// @class AvailableCommandsResponse "AvailableCommandsResponse.hpp" "umps/messageFormats/availableCommandsResponse.hpp"
 /// @brief The available text-based interactive program commands.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Messages_MessageFormats
 class AvailableCommandsResponse : public UMPS::MessageFormats::IMessage
 {
 public:

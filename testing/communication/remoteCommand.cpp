@@ -2,6 +2,7 @@
 #include <chrono>
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
+#include "umps/services/command/availableModulesResponse.hpp"
 #include "umps/services/command/remoteProxy.hpp"
 #include "umps/services/command/remoteProxyOptions.hpp"
 #include "umps/services/command/remoteRequestor.hpp"
@@ -15,7 +16,7 @@
 #include <gtest/gtest.h>
 
 #define FRONTEND "tcp://127.0.0.1:5000"
-#define BACKEND  "tcp://*:5001" //127.0.0.1:5001"
+#define BACKEND  "tcp://127.0.0.1:5001"
 #define MODULE_NAME "TestModule"
 
 namespace
@@ -53,7 +54,9 @@ public:
         callback(const std::string &messageType,
                  const void *data, size_t length)
     {
+std::cout << "in callback" << std::endl;
         AvailableCommandsRequest availableCommandsRequest;
+        //RegistrationResponse registrationResponse;
         if (messageType == availableCommandsRequest.getMessageType())
         {
             AvailableCommandsResponse response;
@@ -93,7 +96,7 @@ void replier()
 
     Response response;
     RemoteReplierOptions options;
-    options.setAddress("tcp://127.0.0.1:5001");//BACKEND);
+    options.setAddress(BACKEND);
     options.setCallback(std::bind(&Response::callback,
                                   &response,
                                   std::placeholders::_1,
@@ -122,10 +125,13 @@ void requestor()
     // Give proxy and respondor a chance to initialize
     std::this_thread::sleep_for(std::chrono::milliseconds {20});
     requestor.initialize(options);
-    for (int i = 0; i < 3; ++i)
+    auto modules = requestor.getAvailableModules();
+/*
+    for (int i = 0; i < 1; ++i)
     {
         requestor.getCommands();
     }
+*/
 }
 
 TEST(RemoteCommand, RemoteCommand)
@@ -135,7 +141,7 @@ TEST(RemoteCommand, RemoteCommand)
 //auto rep2 = std::thread(replier);
 //auto rep3 = std::thread(replier);
     auto requestorThread = std::thread(requestor); // Ask last
-//    auto r2 = std::thread(requestor); 
+//    auto r2 = std::thread(requestor);
      
     requestorThread.join();
 //r2.join();

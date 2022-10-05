@@ -16,7 +16,8 @@ public:
     /// @param[in] nInputOutputThreads  The number of input/output threads.
     ///                                 This is typically 1 for each Gb/s
     ///                                 of communication.  However, if this is
-    ///                                 for IPC communication this can be 0.
+    ///                                 for inproc communication then this can
+    ///                                 be 0.
     explicit Context(int nInputOutputThreads);
     /// @brief Destructor.
     ~Context();

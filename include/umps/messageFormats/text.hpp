@@ -1,5 +1,5 @@
-#ifndef UMPS_MESSAGEFORMATS_GENERIC_HPP
-#define UMPS_MESSAGEFORMATS_GENERIC_HPP
+#ifndef UMPS_MESSAGEFORMATS_TEXT_HPP
+#define UMPS_MESSAGEFORMATS_TEXT_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::MessageFormats

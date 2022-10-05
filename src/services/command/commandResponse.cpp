@@ -29,7 +29,8 @@ CommandResponse objectToCommands(const nlohmann::json &obj)
         throw std::invalid_argument("Message has invalid message type");
     }
     response.setResponse(obj["Response"]);
-    response.setReturnCode(static_cast<CommandReturnCode> (obj["ReturnCode"]));
+    response.setReturnCode(
+        static_cast<CommandReturnCode> (obj["ReturnCode"].get<int> ()));
     return response;
 }
 

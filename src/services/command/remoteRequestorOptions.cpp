@@ -12,7 +12,7 @@ class RemoteRequestorOptions::RemoteRequestorOptionsImpl
 public:
     RemoteRequestorOptionsImpl()
     {
-        mOptions.setTimeOut(std::chrono::milliseconds {10});
+        mOptions.setTimeOut(std::chrono::milliseconds {1000});
     }
     UMPS::Messaging::RequestRouter::RequestOptions mOptions;
 };

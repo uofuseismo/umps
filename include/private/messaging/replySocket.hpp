@@ -20,6 +20,7 @@
 #include "private/messaging/ipcDirectory.hpp"
 namespace
 {
+/*
 /// @brief This is a base implementation for a reply socket.
 class ReplySocket
 {
@@ -339,5 +340,6 @@ public:
     bool mConnected{false};
     bool mRunning{false};
 };
+*/
 }
 #endif

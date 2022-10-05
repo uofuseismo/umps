@@ -6,6 +6,8 @@
 #include "umps/services/command/remoteRequestorOptions.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
+#include "umps/services/command/availableModulesRequest.hpp"
+#include "umps/services/command/availableModulesResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localModuleTable.hpp"
@@ -39,6 +41,30 @@ bool operator==(const LocalModuleDetails &a,
     if (a.getIPCDirectory() != b.getIPCDirectory()){return false;}     
     if (a.getProcessIdentifier() != b.getProcessIdentifier()){return false;}
     if (a.getApplicationStatus() != b.getApplicationStatus()){return false;}
+    return true;
+}
+
+bool operator==(const ModuleDetails &a,
+                const ModuleDetails &b)
+{
+    if (a.haveName() == b.haveName())
+    {
+        if (a.haveName())
+        {
+            if (a.getName() != b.getName()){return false;}
+        }
+    }
+    else
+    {
+        return false;
+    }
+    if (a.getExecutableName() != b.getExecutableName()){return false;}
+    if (a.getMachine() != b.getMachine()){return false;}
+    if (a.getProcessIdentifier() != b.getProcessIdentifier()){return false;}
+    if (a.getParentProcessIdentifier() != b.getParentProcessIdentifier())
+    {
+        return false;
+    }
     return true;
 }
 
@@ -122,6 +148,7 @@ TEST(Command, LocalRequestorOptions)
     EXPECT_EQ(rOptions.getAddress(), address);
     EXPECT_EQ(rOptions.getTimeOut(), timeOut);
 }
+
 
 TEST(Command, CommandsRequest)
 {
@@ -233,6 +260,62 @@ TEST(Command, ModuleDetails)
     EXPECT_EQ(details.getMachine(), machine);
     EXPECT_EQ(details.getProcessIdentifier(), pid);
     EXPECT_EQ(details.getParentProcessIdentifier(), ppid);
+}
+
+TEST(Command, AvailableModulesRequest)
+{
+    const int64_t identifier{48233};
+    AvailableModulesRequest request;
+    request.setIdentifier(identifier);
+
+    AvailableModulesRequest rCopy;
+    EXPECT_NO_THROW(rCopy.fromMessage(request.toMessage()));
+    EXPECT_EQ(rCopy.getIdentifier(), identifier);
+    EXPECT_EQ(rCopy.getMessageType(),
+              "UMPS::Services::Command::AvailableModulesRequest");
+
+    request.clear();
+    EXPECT_EQ(request.getIdentifier(), 0); 
+}
+
+TEST(Command, AvailableModulesResponse)
+{
+    std::vector<ModuleDetails> details(2);
+    details[0].setName("mod1");
+    details[0].setExecutableName("exec1");
+    details[0].setMachine("test1.machine.com");
+    details[0].setProcessIdentifier(3234);
+    details[0].setParentProcessIdentifier(3245);
+
+    details[1].setName("mod2");
+    details[1].setExecutableName("exec2");
+    details[0].setMachine("test2.machine.com");
+    details[1].setProcessIdentifier(4234);
+    details[1].setParentProcessIdentifier(4245);
+
+
+    const int64_t identifier{83832};
+    AvailableModulesResponse response;
+    response.setIdentifier(identifier);
+    EXPECT_NO_THROW(response.setModules(details));
+
+    AvailableModulesResponse rCopy;
+    EXPECT_NO_THROW(rCopy.fromMessage(response.toMessage()));
+    EXPECT_EQ(rCopy.getIdentifier(), identifier); 
+    auto dCopy = rCopy.getModules();
+    EXPECT_EQ(details.size(), dCopy.size());
+    for (const auto &d1 : details)
+    {
+        bool lMatch{false};
+        for (const auto &d2 : dCopy)
+        {
+            if (d1 == d2){lMatch = true;}
+        }
+        EXPECT_TRUE(lMatch);
+    }
+    response.clear();
+    EXPECT_EQ(response.getMessageType(),
+              "UMPS::Services::Command::AvailableModulesResponse");
 }
 
 TEST(Command, LocalModuleTable)
