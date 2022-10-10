@@ -15,6 +15,7 @@
 #include "umps/services/command/remoteProxy.hpp"
 #include "umps/services/command/remoteProxyOptions.hpp"
 #include "umps/services/command/registrationRequest.hpp"
+#include "umps/services/command/registrationResponse.hpp"
 #include "umps/services/command/moduleDetails.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/authenticator.hpp"
@@ -533,42 +534,48 @@ std::cout << messagesReceived << " " << messagesReceived.size() << std::endl;
                         // This is a registration request
                         if (messageType == registrationRequest.getMessageType())
                         {
-                            registrationRequest.fromMessage(messagesReceived.at(2).to_string());
-                            auto workerAddress = messagesReceived.at(0).to_string();
-                            auto moduleIdentifier = messagesReceived.at(1).to_string();
+                            // Initialize the response
+                            RegistrationResponse registrationResponse;
+                            registrationResponse.setReturnCode(
+                                RegistrationReturnCode::Success);
+                            returnToClient = false; // Going back to backend
+                            // Deserialize the request
+                            registrationRequest.fromMessage(
+                                messagesReceived.at(2).to_string());
+                            auto workerAddress
+                                = messagesReceived.at(0).to_string();
+                            auto moduleIdentifier
+                                = messagesReceived.at(1).to_string();
+                            // Attempt to register the module
                             //auto moduleName = registrationRequest.getName();
                             if (!mModules.contains(moduleIdentifier))
                             {
                                 mModules.insert(std::pair {moduleIdentifier, workerAddress});
                             }
-                            returnToClient = false;
-                            messagesReceived.send(*mBackend);
-/*
-std::cout << "Received from backend: " << messagesReceived << std::endl;
-std::cout << "registration request" << std::endl;
-zmq::multipart_t zmqResponse;
-auto returnAddress = messagesReceived.pop();
-auto messageType = messagesReceived.pop();
-zmqResponse.add(std::move(returnAddress));
-zmqResponse.add(std::move(messageType));
-
-                 zmqResponse.send(*mBackend); // Reply to backend 
-*/
+                            // Create a reply and send it
+                            zmq::multipart_t registrationReply;
+                            registrationReply.addstr(workerAddress);
+                            //registrationReply.addstr(""); // Empty frame
+                            registrationReply.addstr(
+                                registrationResponse.getMessageType());
+                            registrationReply.addstr(
+                                registrationResponse.toMessage());
+                            registrationReply.send(*mBackend);
                         }
                     }
                     if (returnToClient)
                     {
-std::cout <<"Returned: " << messagesReceived << std::endl << std::endl;
+                        messagesReceived.send(*mFrontend);
+/*
                         zmq::multipart_t reply;
                         auto clientAddress = messagesReceived[0].to_string();
                         reply.addstr(clientAddress);
-                        reply.addstr("");
+                        reply.addstr(""); // Empty frame
                         reply.addstr(messagesReceived.at(1).to_string());
-//                        reply.addstr("");
-//                        reply.addstr(messagesReceived.at(2).to_string());
-std::cout << reply << std::endl;
+                        //reply.addstr("");
+                        //reply.addstr(messagesReceived.at(2).to_string());
                         reply.send(*mFrontend);
-//                        messagesReceived.send(*mFrontend);
+*/
                     }
                 }
                 catch (const zmq::error_t &e)

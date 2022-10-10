@@ -10,7 +10,7 @@
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/messageFormats/pick.hpp"
+#include "umps/messageFormats/text.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 
@@ -22,6 +22,11 @@ namespace UAuth = UMPS::Authentication;
 
 TEST(Messaging, SocketOptions)
 {
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
+        = std::make_unique<UMPS::MessageFormats::Text> ();
+    UMPS::MessageFormats::Messages messageFormats;
+    EXPECT_NO_THROW(messageFormats.add(textMessage));
+
     const std::string address{"tcp://127.0.0.1:5556"};
     const std::string routingID{"temp_client"}; 
     const int sendHWM{1};
@@ -41,6 +46,7 @@ TEST(Messaging, SocketOptions)
     options.setZAPOptions(zapOptions);
     options.setRoutingIdentifier(routingID);
     options.setLingerPeriod(lingerPeriod);
+    EXPECT_NO_THROW(options.setMessageFormats(messageFormats));
 
     SocketOptions copy(options);
     EXPECT_EQ(copy.getAddress(), address);
@@ -52,6 +58,7 @@ TEST(Messaging, SocketOptions)
     EXPECT_EQ(copy.getLingerPeriod(), std::chrono::milliseconds {-1});
     EXPECT_EQ(copy.getZAPOptions().getSecurityLevel(),
               zapOptions.getSecurityLevel());
+    EXPECT_TRUE(copy.getMessageFormats().contains(textMessage));
 
     options.clear();
     EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
@@ -88,11 +95,11 @@ TEST(Messaging, PubSubPublisherOptions)
 TEST(Messaging, PubSubSubscriberOptions)
 {
     UMPS::MessageFormats::Messages messageTypes;
-    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
-        = std::make_unique<UMPS::MessageFormats::Pick> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
+        = std::make_unique<UMPS::MessageFormats::Text> ();
     std::unique_ptr<UMPS::MessageFormats::IMessage> packetMessage
         = std::make_unique<UMPS::MessageFormats::DataPacket<double>> ();
-    EXPECT_NO_THROW(messageTypes.add(pickMessage));
+    EXPECT_NO_THROW(messageTypes.add(textMessage));
     EXPECT_NO_THROW(messageTypes.add(packetMessage));
     const std::string address = "tcp://127.0.0.1:5555";
     const int highWaterMark = 120;
@@ -111,7 +118,7 @@ TEST(Messaging, PubSubSubscriberOptions)
     EXPECT_EQ(optionsCopy.getTimeOut(), timeOut);
     EXPECT_TRUE(optionsCopy.haveMessageTypes());
     auto messagesBack = optionsCopy.getMessageTypes();
-    EXPECT_TRUE(messagesBack.contains(pickMessage));
+    EXPECT_TRUE(messagesBack.contains(textMessage));
     EXPECT_TRUE(messagesBack.contains(packetMessage));
 
     options.clear();
@@ -179,15 +186,15 @@ TEST(Messaging, RequestRouterRequestOptions)
     const std::chrono::milliseconds timeOut{120};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
-    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
-        = std::make_unique<UMPS::MessageFormats::Pick> (); 
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
+        = std::make_unique<UMPS::MessageFormats::Text> (); 
     //UMPS::MessageFormats::Messages messageFormats;
-    //messageFormats.add(pickMessage);
+    //messageFormats.add(textMessage);
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setTimeOut(timeOut));
-    EXPECT_NO_THROW(options.addMessageFormat(pickMessage));//messageFormats));
+    EXPECT_NO_THROW(options.addMessageFormat(textMessage));
     
     RequestRouter::RequestOptions optionsCopy(options); 
     EXPECT_EQ(options.getHighWaterMark(), hwm);
@@ -195,7 +202,7 @@ TEST(Messaging, RequestRouterRequestOptions)
               UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(options.getAddress(), address);
     EXPECT_EQ(options.getTimeOut(), timeOut);
-    EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
+    EXPECT_TRUE(options.getMessageFormats().contains(textMessage));
 
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), 0); 
@@ -239,10 +246,10 @@ TEST(Messaging, RouterDealerRequestOptions)
     //const std::chrono::milliseconds timeOut{120};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
-    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
-        = std::make_unique<UMPS::MessageFormats::Pick> (); 
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
+        = std::make_unique<UMPS::MessageFormats::Text> (); 
     UMPS::MessageFormats::Messages messageFormats;
-    messageFormats.add(pickMessage);
+    messageFormats.add(textMessage);
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
@@ -255,7 +262,7 @@ TEST(Messaging, RouterDealerRequestOptions)
               UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(options.getAddress(), address);
     //EXPECT_EQ(options.getTimeOut(), timeOut);
-    EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
+    EXPECT_TRUE(options.getMessageFormats().contains(textMessage));
 
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), 0); 
@@ -271,20 +278,20 @@ TEST(Messaging, RouterDealerReplyOptions)
     const std::string routingIdentifier{"tempIdentifier"};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
-    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessage
-        = std::make_unique<UMPS::MessageFormats::Pick> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
+        = std::make_unique<UMPS::MessageFormats::Text> ();
     EXPECT_NO_THROW(options.setHighWaterMark(hwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setRoutingIdentifier(routingIdentifier));
-    //EXPECT_NO_THROW(options.addMessageFormat(pickMessage));
+    //EXPECT_NO_THROW(options.addMessageFormat(textMessage));
     
     RouterDealer::ReplyOptions optionsCopy(options); 
     EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
     EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(optionsCopy.getAddress(), address);
-    //EXPECT_TRUE(options.getMessageFormats().contains(pickMessage));
+    //EXPECT_TRUE(options.getMessageFormats().contains(textMessage));
     EXPECT_EQ(optionsCopy.getRoutingIdentifier(), routingIdentifier);
 
     options.clear();

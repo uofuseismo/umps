@@ -61,6 +61,7 @@ set(LOGGING_SRC
     src/logging/stdout.cpp
     src/logging/spdlog.cpp)
 set(MESSAGE_FORMAT_SRC
+    src/messageFormats/failure.cpp
     src/messageFormats/message.cpp
     src/messageFormats/messages.cpp
     src/messageFormats/dataPacket.cpp
@@ -76,6 +77,7 @@ set(MESSAGING_SRC
     src/authentication/certificate/keys.cpp
     src/authentication/certificate/userNameAndPassword.cpp
     src/messaging/context.cpp
+    src/messaging/socketOptions.cpp
     src/messaging/publisherSubscriber/publisher.cpp
     src/messaging/publisherSubscriber/publisherOptions.cpp
     src/messaging/publisherSubscriber/subscriber.cpp
@@ -100,6 +102,8 @@ set(MODULES_LIBSRC
     #src/modules/module.cpp
     src/services/command/availableCommandsRequest.cpp
     src/services/command/availableCommandsResponse.cpp
+    src/services/command/availableModulesRequest.cpp
+    src/services/command/availableModulesResponse.cpp
     src/services/command/commandRequest.cpp
     src/services/command/commandResponse.cpp
     src/services/command/localModuleDetails.cpp
@@ -109,6 +113,8 @@ set(MODULES_LIBSRC
     src/services/command/localService.cpp
     src/services/command/localServiceOptions.cpp
     src/services/command/moduleDetails.cpp
+    src/services/command/registrationRequest.cpp
+    src/services/command/registrationResponse.cpp
     src/services/command/remoteProxy.cpp
     src/services/command/remoteProxyOptions.cpp
     src/services/command/remoteRequestor.cpp
@@ -353,6 +359,7 @@ set(TEST_SRC
     testing/messageFormats/heartbeat.cpp
     testing/messageFormats/pick.cpp
     testing/messageFormats/dataPacket.cpp
+    testing/messageFormats/failure.cpp
     testing/messageFormats/text.cpp
     testing/messageFormats/heartbeat.cpp
     testing/broadcasts/proxyOptions.cpp
@@ -385,14 +392,15 @@ target_include_directories(unitTests
 set(TEST_COMMUNICATION_SRC
     testing/communication/main.cpp
     testing/communication/remoteCommand.cpp
-    testing/communication/pubsub.cpp
-    testing/communication/authentication.cpp
-    testing/communication/requestRouter.cpp
-    testing/communication/xpubxsub.cpp
-    testing/communication/routerDealer.cpp
-    testing/communication/dataPacket.cpp
-    testing/communication/packetCache.cpp
-    testing/communication/incrementer.cpp)
+    #testing/communication/pubsub.cpp
+    #testing/communication/authentication.cpp
+    #testing/communication/requestRouter.cpp
+    #testing/communication/xpubxsub.cpp
+    #testing/communication/routerDealer.cpp
+    #testing/communication/dataPacket.cpp
+    #testing/communication/packetCache.cpp
+    #testing/communication/incrementer.cpp
+)
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
 set_target_properties(commTests PROPERTIES
                       CXX_STANDARD 20

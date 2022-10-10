@@ -19,6 +19,7 @@
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/messaging/ipcDirectory.hpp"
@@ -100,6 +101,15 @@ public:
         mCallback = callback;
         mHaveCallback = true;
     }
+    /// @brief Sets the message formats.
+    void setMessageFormats(const UMPS::MessageFormats::Messages &messageFormats)
+    {
+        if (messageFormats.empty())
+        {
+            throw std::invalid_argument("No message formats defined");
+        }
+        mMessageFormats = messageFormats;
+    }
     /// @brief Sets the socket options.
     void setSocketOptions(const UMPS::Messaging::SocketOptions &options)
     {
@@ -145,9 +155,11 @@ public:
         // Update the socket options
         setSocketOptions(options);
         // Set the callback
-        if (options.haveCallback())
+        if (options.haveCallback()){setCallback(options.getCallback());}
+        // And the message formats
+        if (options.haveMessageFormats())
         {
-            setCallback(options.getCallback());
+            setMessageFormats(options.getMessageFormats());
         }
         // Handle IPC
         auto address = mOptions.getAddress();
@@ -344,23 +356,52 @@ public:
     ///                   will return an empty message if there are no 
     ///                   messages.
     /// @result The received message.  This may be empty.
-    [[nodiscard]] zmq::multipart_t receive(
+    [[nodiscard]] zmq::multipart_t receiveZMQ(
         const zmq::recv_flags flags = zmq::recv_flags::none) const
     {
         // Receive all parts of the message
         zmq::multipart_t responseReceived;
         responseReceived.recv(*mSocket, static_cast<int> (flags));
         if (responseReceived.empty()){return responseReceived;} // Timeout
+        return responseReceived;
+    }
+    /// @brief Receives a message.
+    /// @param[in] flags  The receive flags.
+    /// @result The received message.
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
+        receive(const zmq::recv_flags flags = zmq::recv_flags::none) const
+    {
+        auto msg = receiveZMQ(flags);
+        if (msg.empty()){return nullptr;} // Timeout
 #ifndef NDEBUG
-        assert(responseReceived.size() == 2); 
+        assert(msg.size() == 2); 
 #else
-        if (responseReceived.size() != 2)
+        if (msg.size() != 2)
         {
             pImpl->mLogger->error("Only 2-part messages handled");
             throw std::runtime_error("Only 2-part messages handled");
         }
 #endif
-        return responseReceived;
+        // Unpack the response
+        std::string messageType = msg.at(0).to_string();
+        if (!mMessageFormats.contains(messageType))
+        {
+            throw std::runtime_error("Unhandled response type: " + messageType);
+        }
+        const auto payload = static_cast<char *> (msg.at(1).data());
+        auto responseLength = msg.at(1).size();
+        auto response = mMessageFormats.get(messageType);
+        try
+        {
+            response->fromMessage(payload, responseLength);
+        }
+        catch (const std::exception &e)
+        {
+            auto errorMsg = "Failed to unpack message of type: " + messageType;
+            mLogger->error(errorMsg);
+            throw;
+        }
+        return response;
     }
     /// @brief Sends a message header / contents message.
     void send(const std::string &header, const std::string &message)
@@ -425,6 +466,7 @@ public:
           (const std::string &messageType, const void *contents,
            const size_t length)
     > mCallback;
+    UMPS::MessageFormats::Messages mMessageFormats;
     UMPS::Messaging::SocketOptions mOptions;
     UMPS::Messaging::RouterDealer::RequestOptions mRequestOptions;
     UMPS::Messaging::RouterDealer::ReplyOptions mReplyOptions;
@@ -456,19 +498,16 @@ public:
     {
     }
     /// @brief Converts the socket options
-    [[nodiscard]]
-    UMPS::Messaging::SocketOptions
+    [[nodiscard]] UMPS::Messaging::SocketOptions
         convertSocketOptions(
            const UMPS::Messaging::RouterDealer::RequestOptions &options)
     {
-        // Convert
         UMPS::Messaging::SocketOptions socketOptions;
         socketOptions.setAddress(options.getAddress());
         socketOptions.setZAPOptions(options.getZAPOptions());
         socketOptions.setReceiveHighWaterMark(options.getHighWaterMark());
         socketOptions.setSendHighWaterMark(options.getHighWaterMark());
-        // Now set the socket options
-        setSocketOptions(socketOptions); 
+        return socketOptions;
     }
     /// @brief Connect
     void connect(const UMPS::Messaging::RouterDealer::RequestOptions &options)
@@ -508,20 +547,17 @@ public:
     {
     }
     /// @brief Converts the socket options
-    [[nodiscard]]
-    UMPS::Messaging::SocketOptions
+    [[nodiscard]] UMPS::Messaging::SocketOptions
         convertSocketOptions(
            const UMPS::Messaging::RouterDealer::ReplyOptions &options)
     {
-        // Convert
         UMPS::Messaging::SocketOptions socketOptions;
         socketOptions.setAddress(options.getAddress());
         socketOptions.setZAPOptions(options.getZAPOptions());
         socketOptions.setReceiveHighWaterMark(options.getHighWaterMark());
         socketOptions.setSendHighWaterMark(options.getHighWaterMark());
         socketOptions.setCallback(options.getCallback()); // Need this
-        // Now set the socket options
-        setSocketOptions(socketOptions);
+        return socketOptions;
     }
     /// @brief Connect
     void connect(const UMPS::Messaging::RouterDealer::ReplyOptions &options)

@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_COMMANDREQUEST_HPP
-#define UMPS_SERVICES_COMMAND_COMMANDREQUEST_HPP
+#ifndef UMPS_SERVICES_COMMAND_COMMAND_REQUEST_HPP
+#define UMPS_SERVICES_COMMAND_COMMAND_REQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command

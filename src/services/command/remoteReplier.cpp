@@ -3,6 +3,7 @@
 #include "umps/services/command/remoteReplier.hpp"
 #include "umps/services/command/remoteReplierOptions.hpp"
 #include "umps/services/command/registrationRequest.hpp"
+#include "umps/services/command/registrationResponse.hpp"
 #include "umps/services/command/moduleDetails.hpp"
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
@@ -11,6 +12,7 @@
 #include "umps/logging/log.hpp"
 //#include "private/messaging/replySocket.hpp"
 #include "private/messaging/requestReplySocket.hpp"
+#include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Services::Command;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
@@ -25,7 +27,13 @@ public:
                       std::shared_ptr<UMPS::Logging::ILog> logger) :
         ::RequestReplySocket(zmq::socket_type::dealer, context, logger)
     {
+        // Module details
         mModuleDetails.setName("asdf");
+        
+        std::unique_ptr<UMPS::MessageFormats::IMessage> registrationResponse
+            =  std::make_unique<RegistrationResponse> ();
+        mMessageFormats.add(registrationResponse);
+        
     }
     /// @brief This performs the polling loop that will:
     ///        1.  Wait for messages from the client.
@@ -104,8 +112,10 @@ public:
         } // End loop
         mLogger->debug("Reply poll loop finished");
     }
+    UMPS::MessageFormats::Messages mMessageFormats;
     RemoteReplierOptions mOptions;
     ModuleDetails mModuleDetails;
+    bool mRegistered{false};
 };
 
 /// C'tor
@@ -155,31 +165,36 @@ void RemoteReplier::initialize(const RemoteReplierOptions &options)
     socketOptions.setSendHighWaterMark(replyOptions.getHighWaterMark());
     socketOptions.setReceiveTimeOut(std::chrono::milliseconds {1000});//replyOptions.getTimeOut());
     //socketOptions.setSendTimeOut(replyOptions.getTimeOut());
+    socketOptions.setMessageFormats(pImpl->mMessageFormats);
     socketOptions.setCallback(replyOptions.getCallback());
     pImpl->connectOrBind(socketOptions, true);
     pImpl->mOptions = options;
+    pImpl->mLogger->debug("Module successfully connected!");
     // Attempt to register the module
+    pImpl->mLogger->debug("Registering module...");
     RegistrationRequest request;
     request.setModuleDetails(pImpl->mModuleDetails);
-
-try
-{
-   pImpl->send(request);
-   //std::chrono::milliseconds waitForever{-1};
-   auto msg = pImpl->receive();
-std::cout << "received from proxy: " << std::endl << msg << std::endl;
-}
-catch (const std::exception &e) 
-{
-   std::cerr << e.what() << std::endl;
-}
-
+    pImpl->send(request); // Send my details
+    auto replyMessage = pImpl->receive(); // Wait for a reply
+    if (replyMessage == nullptr)
+    {
+        throw std::runtime_error("Registration request timed-out");
+    }
+    auto response
+        = static_unique_pointer_cast<RegistrationResponse>
+          (std::move(replyMessage));
+    if (response->getReturnCode() != RegistrationReturnCode::Success)
+    {
+        throw std::runtime_error("Failed to register module");
+    }
+    pImpl->mRegistered = true;
+    pImpl->mLogger->debug("Module successfully registered!");
 }
 
 /// Initialized
 bool RemoteReplier::isInitialized() const noexcept
 {
-    return pImpl->isConnected();
+    return pImpl->isConnected() && pImpl->mRegistered;
 }
 
 /// Start

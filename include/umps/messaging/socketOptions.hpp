@@ -13,6 +13,7 @@ namespace UMPS
  namespace MessageFormats
  {
   class IMessage;
+  class Messages;
  }
 }
 namespace UMPS::Messaging
@@ -97,6 +98,22 @@ public:
     /// @result True indicates the callback was set.
     [[nodiscard]] bool haveCallback() const noexcept;
     /// @}
+
+    /// @name Message Formats
+    /// @{
+
+    /// @brief Defines the messages formats that will be converted from ZMQ
+    ///        messages to IMessages.  This is only necessary for sockets
+    ///        that intend to receive messages and are not using a callback
+    ///        function to process those messages.
+    /// @param[in] messageFormats  The message formats to unpack.
+    /// @throws std::invalid_argument if messageFormats is empty.
+    void setMessageFormats(const UMPS::MessageFormats::Messages &messageFormats);
+    /// @result The message formats that can be deserialized into a class.
+    /// @throws std::runtime_error if \c haveMessageFormats() is false.
+    [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const;
+    /// @result True indicates that message formats were set.
+    [[nodiscard]] bool haveMessageFormats() const noexcept;
 
 
     /// @name Time Out

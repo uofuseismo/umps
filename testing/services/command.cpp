@@ -15,6 +15,8 @@
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 #include "umps/services/command/moduleDetails.hpp"
+#include "umps/services/command/registrationRequest.hpp"
+#include "umps/services/command/registrationResponse.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
@@ -237,6 +239,39 @@ TEST(Command, TerminateResponse)
     EXPECT_EQ(rCopy.getReturnCode(), returnCode);
     EXPECT_EQ(rCopy.getMessageType(),
               "UMPS::Services::Command::TerminateResponse");
+}
+
+TEST(Command, RegistrationRequest)
+{
+    ModuleDetails details;
+    details.setName("TestModule");
+    details.setExecutableName("testBinary");
+    details.setMachine("host.name");
+    details.setProcessIdentifier(4832);
+    details.setParentProcessIdentifier(83823);
+
+    RegistrationRequest request;
+    EXPECT_NO_THROW(request.setModuleDetails(details));
+
+    RegistrationRequest rCopy;
+    EXPECT_NO_THROW(rCopy.fromMessage(request.toMessage()));
+    EXPECT_TRUE(rCopy.getModuleDetails() == details);
+    EXPECT_EQ(rCopy.getMessageType(),
+              "UMPS::Services::Command::RegistrationRequest");
+}
+
+TEST(Command, RegistrationResponse)
+{
+    RegistrationResponse response;
+    const RegistrationReturnCode
+        returnCode{RegistrationReturnCode::InvalidRequest};
+    response.setReturnCode(returnCode);
+
+    RegistrationResponse rCopy;
+    EXPECT_NO_THROW(rCopy.fromMessage(response.toMessage()));
+    EXPECT_EQ(rCopy.getReturnCode(), returnCode);
+    EXPECT_EQ(rCopy.getMessageType(),
+              "UMPS::Services::Command::RegistrationResponse");
 }
 
 TEST(Command, ModuleDetails)

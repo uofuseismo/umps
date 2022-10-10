@@ -4,6 +4,7 @@
 #include "umps/messaging/socketOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/message.hpp"
+#include "umps/messageFormats/messages.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Messaging;
@@ -31,6 +32,7 @@ resolveTimeOut(const std::chrono::milliseconds &timeOut)
 class SocketOptions::SocketOptionsImpl
 {
 public:
+    UMPS::MessageFormats::Messages mMessageFormats;
     UAuth::ZAPOptions mZAPOptions;
     std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
         (const std::string &, const void *, size_t)> mCallback;
@@ -246,3 +248,27 @@ bool SocketOptions::haveCallback() const noexcept
     return pImpl->mHaveCallback;
 }
 
+/// Message formats
+void SocketOptions::setMessageFormats(
+    const UMPS::MessageFormats::Messages &messageFormats)
+{
+    if (messageFormats.empty())
+    {
+        throw std::invalid_argument("No message formats in container");
+    }
+    pImpl->mMessageFormats = messageFormats;
+}
+
+UMPS::MessageFormats::Messages SocketOptions::getMessageFormats() const
+{
+    if (!haveMessageFormats())
+    {
+        throw std::runtime_error("No message formats set");
+    }
+    return pImpl->mMessageFormats;
+}
+
+bool SocketOptions::haveMessageFormats() const noexcept
+{
+    return !pImpl->mMessageFormats.empty();
+}

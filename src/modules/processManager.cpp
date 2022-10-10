@@ -1,4 +1,6 @@
 #include <iostream>
+#include <atomic>
+#include <csignal>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -9,6 +11,11 @@
 #include "umps/logging/stdout.hpp"
 
 using namespace UMPS::Modules;
+
+namespace
+{
+std::atomic_bool __interrupted{false};
+}
 
 class ProcessManager::ProcessManagerImpl
 {
@@ -105,17 +112,45 @@ public:
         }
         mStopCondition.notify_one();
     }
+    /// Handles sigterm and sigint
+    static void signalHandler(const int )
+    {
+        __interrupted = true;
+    } 
+    static void catchSignals()
+    {
+        struct sigaction action;
+        action.sa_handler = signalHandler;
+        action.sa_flags = 0;
+        sigemptyset(&action.sa_mask);
+        sigaction(SIGINT,  &action, NULL);
+        // Kubernetes wants this.  Don't mess with SIGKILL since that is
+        // Kubernetes's hammmer.  You basically have 30 seconds to shut
+        // down after SIGTERM or the hammer is coming down!
+        sigaction(SIGTERM, &action, NULL);
+    } 
     /// Place for the main thread to sleep until someone wakes it up.
     void handleMainThread()
     {
+        catchSignals();
         {
-            std::unique_lock<std::mutex> lock(mStopContext);
-            mStopCondition.wait(lock,
-                                [this]
-                                {
-                                    return mStopRequested;
-                                });
-            lock.unlock();
+            while (true)
+            {
+                if (__interrupted)
+                {
+                    mLogger->info("SIGINT/SIGTERM signal received!");
+                    mStopRequested = true;
+                    break;
+                }
+                std::unique_lock<std::mutex> lock(mStopContext);
+                mStopCondition.wait_for(lock,
+                                        std::chrono::milliseconds {100},
+                                        [this]
+                                        {
+                                              return mStopRequested;
+                                        });
+                lock.unlock();
+            }
         }
         if (mStopRequested)
         {

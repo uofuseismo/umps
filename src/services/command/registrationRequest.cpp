@@ -19,7 +19,7 @@ nlohmann::json toJSONObject(const RegistrationRequest &request)
     return obj;
 }
 
-RegistrationRequest objectToCommands(const nlohmann::json &obj)
+RegistrationRequest objectToRequest(const nlohmann::json &obj)
 {
     RegistrationRequest request;
     if (obj["MessageType"] != request.getMessageType())
@@ -37,12 +37,12 @@ std::string toCBORMessage(const RegistrationRequest &request)
     auto v = nlohmann::json::to_cbor(obj);
     std::string result(v.begin(), v.end());
     return result; 
-}   
+}
 
 RegistrationRequest fromCBORMessage(const uint8_t *message, const size_t length)
 {
     auto obj = nlohmann::json::from_cbor(message, message + length);
-    return objectToCommands(obj);
+    return objectToRequest(obj);
 }
 
 }

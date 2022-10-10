@@ -2,6 +2,7 @@
 #include <memory>
 #include <chrono>
 #include <thread>
+#include <csignal>
 #include <condition_variable>
 #include <mutex>
 #ifndef NDEBUG

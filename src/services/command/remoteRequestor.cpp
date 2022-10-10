@@ -209,7 +209,8 @@ std::unique_ptr<CommandResponse> RemoteRequestor::issueCommand(
     return result;
 }
 
-std::unique_ptr<TerminateResponse> RemoteRequestor::issueTerminateCommand() const
+std::unique_ptr<TerminateResponse>
+    RemoteRequestor::issueTerminateCommand() const
 {
     if (!isInitialized())
     {

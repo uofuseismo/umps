@@ -1,16 +1,10 @@
-#ifndef UMPS_SERVICES_COMMAND_COMMANDRESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_COMMANDRESPONSE_HPP
+#ifndef UMPS_SERVICES_COMMAND_COMMAND_RESPONSE_HPP
+#define UMPS_SERVICES_COMMAND_COMMAND_RESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
+#include "umps/services/command/enums.hpp"
 namespace UMPS::Services::Command
 {
-/// @brief The services return code accompanying the response.
-enum class CommandReturnCode
-{
-    Success = 0,         /*!< Indicates the command was successful. */
-    InvalidCommand = 1,  /*!< Indicates the command was invalid. */
-    ApplicationError = 2 /*!< The code is valid but the application threw an error. */
-};
 /// @class CommandResponse commandResponse.hpp "umps/services/command/commandResponse.hpp"
 /// @brief The response from a text-based command.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

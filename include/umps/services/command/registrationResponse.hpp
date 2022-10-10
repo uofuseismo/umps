@@ -1,68 +1,64 @@
-#ifndef UMPS_SERVICES_COMMAND_TERMINATERESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_TERMINATERESPONSE_HPP
+#ifndef UMPS_SERVICES_COMMAND_REGISTRATION_RESPONSE_HPP
+#define UMPS_SERVICES_COMMAND_REGISTRATION_RESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 #include "umps/services/command/enums.hpp"
 namespace UMPS::Services::Command
 {
-/// @class TerminateResponse terminateResponse.hpp "umps/services/command/quitResponse.hpp"
-/// @brief A request to terminate the application.
+/// @class RegistrationResponse registrationResponse.hpp "umps/services/command/registrationResponse.hpp"
+/// @brief The response to a module registration response.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class TerminateResponse : public UMPS::MessageFormats::IMessage
+/// @sa RegistrationResponse 
+class RegistrationResponse : public UMPS::MessageFormats::IMessage
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    TerminateResponse();
+    RegistrationResponse();
     /// @brief Copy constructor.
-    /// @param[in] message  The text request message class from which to
-    ///                     initialize this class.
-    TerminateResponse(const TerminateResponse &message);
+    /// @param[in] response  The response from which to initialize this class.
+    RegistrationResponse(const RegistrationResponse &response);
     /// @brief Move constructor.
-    /// @param[in,out] message  The text request message class from which to
-    ///                         initialize this class.  On exit, message's
-    ///                         behavior is undefined.
-    TerminateResponse(TerminateResponse &&message) noexcept;
+    /// @param[in,out] details  The response from which to initialize this
+    ///                         class.  On exit, details's behavior is
+    ///                         undefined.
+    RegistrationResponse(RegistrationResponse &&response) noexcept;
     /// @}
 
     /// @name Operators
     /// @{
 
     /// @brief Copy assignment.
-    /// @param[in] message  The message class to copy to this.
-    /// @result A deep copy of the message.
-    TerminateResponse& operator=(const TerminateResponse &message);
+    /// @param[in] response  The response to copy to this.
+    /// @result A deep copy of the response.
+    RegistrationResponse& operator=(const RegistrationResponse &response);
     /// @brief Move assignment.
-    /// @param[in,out] message  The response message class whose memory will
-    ///                         be moved to this.  On exit, messages's behavior
-    ///                         is undefined.
-    /// @result The memory from message moved to this.
-    TerminateResponse& operator=(TerminateResponse &&message) noexcept;
+    /// @param[in,out] response  The response whose memory will be moved to this.
+    ///                         On exit, response's behavior is undefined.
+    /// @result The memory from response moved to this.
+    RegistrationResponse& operator=(RegistrationResponse &&response) noexcept;
     /// @}
 
-    /// @name Required Parameters
+    /// @name Return Code
     /// @{
 
-    /// @brief Sets the return code.
+    /// @brief Sets the registration request return code.
     /// @param[in] code  The return code.
-    void setReturnCode(TerminateReturnCode code) noexcept;
-    /// @result The return code.
-    [[nodiscard]] TerminateReturnCode getReturnCode() const;
-    /// @result True indicates the return code is set.
+    void setReturnCode(RegistrationReturnCode code) noexcept;
+    /// @result The registration return code.
+    [[nodiscard]] RegistrationReturnCode getReturnCode() const;
+    /// @result True indicates the return code was set.
     [[nodiscard]] bool haveReturnCode() const noexcept;
     /// @}
-
 
     /// @name Message Abstract Base Class Properties
     /// @{
 
-    /// @brief Converts the text request class to a string message.
+    /// @brief Converts the response class to a string message.
     /// @result The class expressed as a string message.
     /// @throws std::runtime_error if the required information is not set. 
-    /// @note Though the container is a string the message need not be
-    ///       human readable.
     [[nodiscard]] std::string toMessage() const final;
     /// @brief Creates the class from a message.
     /// @param[in] message  The message.
@@ -75,7 +71,7 @@ public:
     /// @throws std::runtime_error if the message is invalid.
     /// @throws std::invalid_argument if data is NULL or length is 0. 
     void fromMessage(const char *data, size_t length) final;
-    /// @result A message type indicating this is a text request message.
+    /// @result A message type indicating this is a text response message.
     [[nodiscard]] std::string getMessageType() const noexcept final;
     /// @result The message version.
     [[nodiscard]] std::string getMessageVersion() const noexcept final;
@@ -88,14 +84,14 @@ public:
     /// @name Destructors
     /// @{
 
-    /// @brief Resets the class and releases all memory.
+    /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~TerminateResponse() override;
+    ~RegistrationResponse();
     /// @}
-public:
-    class TerminateResponseImpl;
-    std::unique_ptr<TerminateResponseImpl> pImpl;
+private:
+    class RegistrationResponseImpl;
+    std::unique_ptr<RegistrationResponseImpl> pImpl;
 };
 }
 #endif
