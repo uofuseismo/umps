@@ -174,10 +174,17 @@ std::unique_ptr<AvailableCommandsResponse> RemoteRequestor::getCommands() const
         throw std::runtime_error("Requestor not initialized");
     }
     std::unique_ptr<AvailableCommandsResponse> result{nullptr};
+    UMPS::MessageFormats::Failure failureMessage;
     AvailableCommandsRequest requestMessage;
     auto message = pImpl->mRequest->request(requestMessage);
     if (message != nullptr)
     {
+        if (message->getMessageType() == failureMessage.getMessageType())
+        {
+            failureMessage.fromMessage(message->toMessage());
+            throw std::runtime_error("Failed to get commands.  Failed with: "
+                                   + failureMessage.getDetails());
+        } 
         result = static_unique_pointer_cast<AvailableCommandsResponse>
                  (std::move(message));
     }
@@ -196,9 +203,16 @@ std::unique_ptr<CommandResponse> RemoteRequestor::issueCommand(
         throw std::runtime_error("Requestor not initialized");
     }   
     std::unique_ptr<CommandResponse> result{nullptr};
+    UMPS::MessageFormats::Failure failureMessage;
     auto message = pImpl->mRequest->request(request);
     if (message != nullptr)
     {
+        if (message->getMessageType() == failureMessage.getMessageType())
+        {
+            failureMessage.fromMessage(message->toMessage());
+            throw std::runtime_error("Failed to issue command.  Failed with: "
+                                   + failureMessage.getDetails());
+        }
         result = static_unique_pointer_cast<CommandResponse>
                  (std::move(message));
     }
@@ -217,10 +231,18 @@ std::unique_ptr<TerminateResponse>
         throw std::runtime_error("Requestor not initialized");
     }
     std::unique_ptr<TerminateResponse> result{nullptr};
+    UMPS::MessageFormats::Failure failureMessage;
     TerminateRequest requestMessage;
     auto message = pImpl->mRequest->request(requestMessage);
     if (message != nullptr)
     {
+        if (message->getMessageType() == failureMessage.getMessageType())
+        {
+            failureMessage.fromMessage(message->toMessage());
+            throw std::runtime_error(
+                "Failed to issue terminate command.  Failed with: "
+               + failureMessage.getDetails());
+        }
         result = static_unique_pointer_cast<TerminateResponse>
                  (std::move(message));
     }

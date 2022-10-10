@@ -2,6 +2,7 @@
 #include <string>
 #include <set>
 #include <map>
+#include <vector>
 #include <mutex>
 #include <thread>
 #include <chrono>
@@ -40,6 +41,22 @@ namespace UAuth = UMPS::Authentication;
 
 namespace
 {
+
+struct Comparator
+{
+    bool operator()(const ModuleDetails &lhs, const ModuleDetails &rhs) const
+    {
+        if (lhs.haveName() == rhs.haveName())
+        {
+            if (lhs.haveName())
+            {
+                return (lhs.getName() < rhs.getName());
+            }
+        }
+        return false;
+    }
+};
+
 class Monitor : public zmq::monitor_t
 {
 public:
@@ -100,7 +117,7 @@ public:
     }
     void on_event_accepted(const zmq_event_t &event, const char *addr) final
     {
-        std::cout << event.event << " " << event.value << " " << std::hex << event.value << std::endl;
+        //std::cout << event.event << " " << event.value << " " << std::hex << event.value << std::endl;
         mLogger->debug("Monitor: Event opened: " + std::string{addr});
     }
     void on_event_closed(const zmq_event_t &, const char *addr) final
@@ -432,47 +449,77 @@ public:
                 try
                 {
                     messagesReceived.recv(*mFrontend);
-std::cout << "frontend to backend propagating: " << messagesReceived.size() << std::endl << messagesReceived << std::endl;
                     // Get client address and message type
                     auto clientAddress = messagesReceived.at(0).to_string();
                     auto messageType = messagesReceived.at(2).to_string();
                     // Handle an available request message
                     if (messageType == availableModulesRequest.getMessageType())
                     {
+                        mLogger->debug("Handling available modules request...");
+                        const auto payload
+                            = static_cast<const char *>
+                              (messagesReceived.at(3).data());
                         availableModulesRequest.fromMessage(
-                            static_cast<const char *> (messagesReceived.at(3).data()),
-                            messagesReceived.at(3).size());
+                            payload, messagesReceived.at(3).size());
                         AvailableModulesResponse availableModulesResponse;
+
                         std::vector<ModuleDetails> moduleDetails;
-                        availableModulesResponse.setIdentifier(availableModulesRequest.getIdentifier());
-                        availableModulesResponse.setModules(moduleDetails);
+                        moduleDetails.reserve(mModules.size());
+                        for (const auto &module : mModules)
+                        {
+                            moduleDetails.emplace_back(module.first);
+                        }
+                        availableModulesResponse.setModules(
+                            std::move(moduleDetails));
+                        availableModulesResponse.setIdentifier(
+                            availableModulesRequest.getIdentifier());
 
                         zmq::multipart_t response;
                         response.addstr(clientAddress);
                         response.addstr("");
-                        response.addstr(availableModulesResponse.getMessageType());
+                        response.addstr(
+                            availableModulesResponse.getMessageType());
                         response.addstr(availableModulesResponse.toMessage());
                         response.send(*mFrontend);
                     }
                     else
                     {
                         // Which module do they want to talk to?
-                        availableModulesRequest.fromMessage(
-                            static_cast<const char *> (messagesReceived.at(3).data()),
-                            messagesReceived.at(3).size());
+                        mLogger->debug("Propagating message to backend...");
                         // Router-router combinations are tricky.  We need to
                         // appropriately handle the routing by hand.  Details
                         // are in https://zguide.zeromq.org/docs/chapter3/
-std::string workerAddress = mModules.begin()->second;
-                        zmq::multipart_t moduleRequest;
-                        moduleRequest.addstr(workerAddress);
-                        moduleRequest.addstr(""); // Empty frame
-                        moduleRequest.addstr(clientAddress);
-                        moduleRequest.addstr(""); // Empty frame 
-                        moduleRequest.addstr(messageType);
-                        moduleRequest.push_back(std::move(messagesReceived.at(3)));
+                        ModuleDetails searchForModule;
+                        searchForModule.setName("asdf"); 
+                        auto idx = mModules.find(searchForModule);
+                        if (idx != mModules.end())
+                        {
+                            auto workerAddress = idx->second; 
+std::cout << messagesReceived << std::endl;
+                            zmq::multipart_t moduleRequest;
+                            moduleRequest.addstr(workerAddress);
+                            moduleRequest.addstr(""); // Empty frame
+                            moduleRequest.addstr(clientAddress);
+                            moduleRequest.addstr(""); // Empty frame 
+                            moduleRequest.addstr(messageType);
+                            moduleRequest.push_back(
+                                std::move(messagesReceived.at(3)));
 std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
-                        moduleRequest.send(*mBackend);
+                            moduleRequest.send(*mBackend);
+                        }
+                        else
+                        {
+                            // Handle invalid request
+                            UMPS::MessageFormats::Failure failureMessage;
+                            failureMessage.setDetails(
+                                "Unknown module: " + searchForModule.getName());
+                            zmq::multipart_t failureResponse;
+                            failureResponse.addstr(clientAddress);
+                            failureResponse.addstr(
+                                failureMessage.getMessageType());
+                            failureResponse.addstr(failureMessage.toMessage());
+                            failureResponse.send(*mFrontend);
+                        }
                     }
                 }
                 catch (const zmq::error_t &e)
@@ -496,7 +543,6 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
                 {
                     zmq::multipart_t errorMessage;
                     errorMessage.addstr(clientAddress);
-                    errorMessage.addstr("");
                     errorMessage.addstr(failureMessage.getMessageType());
                     errorMessage.addstr(failureMessage.toMessage());
                     try
@@ -516,17 +562,10 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
             //----------------------------------------------------------------//
             if (items[1].revents & ZMQ_POLLIN)
             {
-//std::cout << "backend received" << std::endl;
                 try
                 {
                     bool returnToClient{true};
                     zmq::multipart_t messagesReceived(*mBackend);
-std::cout << messagesReceived << " " << messagesReceived.size() << std::endl;
-//const auto identity = reinterpret_cast<const char *> (messagesReceived.front().data());
-//std::string identity{reinterpret_cast<const char *> ( messagesReceived.front().data() ), messagesReceived.front().size()};
-//std::cout << "Return: " << messagesReceived.front().size() << " (" << identity << ")" << std::endl;
- //messagesReceived.front().str() << std::endl;
-//std::cout <<"Returned: " << messagesReceived << std::endl << std::endl;
                     // Coming from reply socket
                     if (messagesReceived.size() > 1)
                     {
@@ -540,17 +579,22 @@ std::cout << messagesReceived << " " << messagesReceived.size() << std::endl;
                                 RegistrationReturnCode::Success);
                             returnToClient = false; // Going back to backend
                             // Deserialize the request
-                            registrationRequest.fromMessage(
-                                messagesReceived.at(2).to_string());
                             auto workerAddress
                                 = messagesReceived.at(0).to_string();
-                            auto moduleIdentifier
-                                = messagesReceived.at(1).to_string();
+                            registrationRequest.fromMessage(
+                                messagesReceived.at(2).to_string());
+                            auto moduleDetails
+                                = registrationRequest.getModuleDetails();
                             // Attempt to register the module
-                            //auto moduleName = registrationRequest.getName();
-                            if (!mModules.contains(moduleIdentifier))
+                            if (!mModules.contains(moduleDetails))
                             {
-                                mModules.insert(std::pair {moduleIdentifier, workerAddress});
+                                mModules.insert(
+                                   std::pair {moduleDetails, workerAddress});
+                            }
+                            else
+                            {
+                                registrationResponse.setReturnCode(
+                                   RegistrationReturnCode::Exists);
                             }
                             // Create a reply and send it
                             zmq::multipart_t registrationReply;
@@ -563,19 +607,10 @@ std::cout << messagesReceived << " " << messagesReceived.size() << std::endl;
                             registrationReply.send(*mBackend);
                         }
                     }
+                    // Business as usual - propagate result to client
                     if (returnToClient)
                     {
                         messagesReceived.send(*mFrontend);
-/*
-                        zmq::multipart_t reply;
-                        auto clientAddress = messagesReceived[0].to_string();
-                        reply.addstr(clientAddress);
-                        reply.addstr(""); // Empty frame
-                        reply.addstr(messagesReceived.at(1).to_string());
-                        //reply.addstr("");
-                        //reply.addstr(messagesReceived.at(2).to_string());
-                        reply.send(*mFrontend);
-*/
                     }
                 }
                 catch (const zmq::error_t &e)
@@ -684,7 +719,7 @@ std::cout << messagesReceived << " " << messagesReceived.size() << std::endl;
     // Logger
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     // The registered modules
-    std::map<std::string, std::string> mModules;
+    std::map<ModuleDetails, std::string, Comparator> mModules;
     RemoteProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::string mFrontendAddress;
@@ -800,87 +835,5 @@ void RemoteProxy::start()
 {
     if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
     stop(); // Ensure proxy is stopped before starting
-    // Poll setup
-    constexpr size_t nPollItems = 2;
-    zmq::pollitem_t items[] = 
-    {
-        {pImpl->mFrontend->handle(), 0, ZMQ_POLLIN, 0}, 
-        {pImpl->mBackend->handle(),  0, ZMQ_POLLIN, 0}
-    };
-    //pImpl->setRunning(true);
-    //pImpl->mLogger->debug("Remote proxy thread beginning polling loop...");
-    pImpl->start();    
-/*
-    while (isRunning())
-    {
-        zmq::poll(&items[0], nPollItems, pImpl->mPollTimeOut); 
-        // This is a request message -> route it to the right place
-        if (items[0].revents & ZMQ_POLLIN)
-        {
-std::cout << "frontend received" << std::endl;
-*/
-/*
-            try
-            {
-                zmq::multipart_t messagesReceived(*pImpl->mFrontend);
-std::cout << "frontend received" << std::endl;
-                for (const auto &item : messagesReceived)
-                {
-                    std::cout << item << std::endl;
-                }
-                messagesReceived.send(*pImpl->mBackend);
-            }
-            catch (const zmq::error_t &e)
-            {
-                auto errorMsg = "Frontend to backend proxy error.  "
-                              + std::string("ZeroMQ failed with:\n")
-                              + std::string(e.what())
-                              + " Error Code = " + std::to_string(e.num());
-                pImpl->mLogger->error(errorMsg);
-            }
-            catch (std::exception &e) 
-            {
-                auto errorMsg = "Frontend to backend proxy std error:  "
-                              + std::string(e.what());
-                pImpl->mLogger->error(errorMsg);
-            }
-*/
-/*
-        }
-        // This is a response message -> send it back to the requestor
-        if (items[1].revents & ZMQ_POLLIN)
-        {
-std::cout << "backend received" << std::endl;
-*/
-/*
-            try
-            {
-                zmq::multipart_t messagesReceived(*pImpl->mBackend);
-std::cout << "backend received" << std::endl;
-                for (const auto &item : messagesReceived)
-                {
-                    std::cout << item << std::endl;
-                }
-                messagesReceived.send(*pImpl->mFrontend);
-            }
-            catch (const zmq::error_t &e) //std::exception &e) 
-            {
-                auto errorMsg = "Backend to frontend proxy error.  "
-                              + std::string("ZeroMQ failed with:\n")
-                              + std::string(e.what())
-                              + " Error Code = " + std::to_string(e.num());
-                pImpl->mLogger->error(errorMsg); 
-            }
-            catch (std::exception &e)
-            {
-                auto errorMsg = "Backend to frontend proxy std error:  "
-                              + std::string(e.what());
-                pImpl->mLogger->error(errorMsg);
-            }
-*/
-/*
-        }
-    } // Loop
-    pImpl->mLogger->debug("Remote request thread exited polling loop.");
-*/
+    pImpl->start();
 }

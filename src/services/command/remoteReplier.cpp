@@ -202,25 +202,6 @@ void RemoteReplier::start()
 {
     if (!isInitialized()){throw std::runtime_error("Replier not initialized");}
     pImpl->start();
-/*
-    // Send the module details -> this will register me
-    std::this_thread::sleep_for(std::chrono::milliseconds{100});
-    RegistrationRequest request;
-    request.setModuleDetails(pImpl->mModuleDetails);
-
-try
-{
-   pImpl->send(request);
-   //std::chrono::milliseconds waitForever{-1};
-   auto msg = pImpl->receive();
-std::cout << "received from proxy: " << std::endl << msg << std::endl;
-}
-catch (const std::exception &e)
-{
-   std::cerr << e.what() << std::endl;
-}
-*/
-
 }
 
 /// Stop

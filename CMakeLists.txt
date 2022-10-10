@@ -392,14 +392,14 @@ target_include_directories(unitTests
 set(TEST_COMMUNICATION_SRC
     testing/communication/main.cpp
     testing/communication/remoteCommand.cpp
-    #testing/communication/pubsub.cpp
-    #testing/communication/authentication.cpp
-    #testing/communication/requestRouter.cpp
-    #testing/communication/xpubxsub.cpp
-    #testing/communication/routerDealer.cpp
-    #testing/communication/dataPacket.cpp
-    #testing/communication/packetCache.cpp
-    #testing/communication/incrementer.cpp
+    testing/communication/pubsub.cpp
+    testing/communication/authentication.cpp
+    testing/communication/requestRouter.cpp
+    testing/communication/xpubxsub.cpp
+    testing/communication/routerDealer.cpp
+    testing/communication/dataPacket.cpp
+    testing/communication/packetCache.cpp
+    testing/communication/incrementer.cpp
 )
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
 set_target_properties(commTests PROPERTIES

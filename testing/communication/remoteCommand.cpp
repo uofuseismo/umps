@@ -126,6 +126,7 @@ void requestor()
     std::this_thread::sleep_for(std::chrono::milliseconds {20});
     requestor.initialize(options);
     auto modules = requestor.getAvailableModules();
+ for (const auto &m : modules->getModules()){std::cout << m << std::endl;}
 /*
     for (int i = 0; i < 1; ++i)
     {
