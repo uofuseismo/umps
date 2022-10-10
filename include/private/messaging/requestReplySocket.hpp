@@ -378,7 +378,7 @@ public:
 #else
         if (msg.size() != 2)
         {
-            pImpl->mLogger->error("Only 2-part messages handled");
+            mLogger->error("Only 2-part messages handled");
             throw std::runtime_error("Only 2-part messages handled");
         }
 #endif
