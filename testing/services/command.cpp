@@ -15,8 +15,8 @@
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/proxyServices/command/registrationRequest.hpp"
 #include "umps/proxyServices/command/registrationResponse.hpp"
-#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
-#include "umps/proxyServices/command/remoteProxyOptions.hpp"
+#include "umps/proxyServices/command/requestorOptions.hpp"
+#include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
@@ -71,7 +71,7 @@ bool operator==(const ModuleDetails &a,
     return true;
 }
 
-TEST(Command, RemoteProxyOptions)
+TEST(Command, ProxyOptions)
 {
     UMPS::Authentication::ZAPOptions zapOptions;
     zapOptions.setStrawhouseServer();
@@ -79,14 +79,14 @@ TEST(Command, RemoteProxyOptions)
     const std::string backend{"tcp://127.0.0.2:8080"};
     const int frontendHWM{100};
     const int backendHWM{200};
-    RemoteProxyOptions options;
+    ProxyOptions options;
     EXPECT_NO_THROW(options.setFrontendAddress(frontend));
     EXPECT_NO_THROW(options.setBackendAddress(backend));
     options.setFrontendHighWaterMark(frontendHWM);
     options.setBackendHighWaterMark(backendHWM);
     options.setZAPOptions(zapOptions);
 
-    RemoteProxyOptions cOptions(options);
+    ProxyOptions cOptions(options);
     EXPECT_EQ(cOptions.getFrontendAddress(), frontend);
     EXPECT_EQ(cOptions.getBackendAddress(), backend);
     EXPECT_EQ(cOptions.getFrontendHighWaterMark(), frontendHWM);
@@ -115,15 +115,15 @@ TEST(Command, LocalModuleDetails)
     EXPECT_EQ(dCopy.getIPCFileName(), ipcFile); 
 }
 
-TEST(Command, RemoteRequestorOptions)
+TEST(Command, RequestorOptions)
 {
     const std::string address = "tcp://127.0.0.1:8080";
     const std::chrono::milliseconds timeOut{234}; 
-    RemoteRequestorOptions options;
+    RequestorOptions options;
     EXPECT_NO_THROW(options.setAddress(address));
     options.setReceiveTimeOut(timeOut);
 
-    RemoteRequestorOptions copy(options);
+    RequestorOptions copy(options);
     auto rOptions = copy.getOptions();
     EXPECT_EQ(rOptions.getAddress(), address);
     EXPECT_EQ(rOptions.getTimeOut(), timeOut);

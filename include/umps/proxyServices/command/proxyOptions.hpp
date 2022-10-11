@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_OPTIONS_HPP
-#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_OPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_OPTIONS_HPP
 #include <memory>
 namespace UMPS
 {
@@ -10,21 +10,21 @@ namespace UMPS
 }
 namespace UMPS::ProxyServices::Command
 {
-/// @class RemoteProxyOptions "remoteProxyOptions.hpp" "umps/proxyServices/command/remoteProxyOptions.hpp"
+/// @class ProxyOptions "proxyOptions.hpp" "umps/proxyServices/command/proxyOptions.hpp"
 /// @brief Defines the options for the command proxy.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RemoteProxyOptions
+class ProxyOptions
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    RemoteProxyOptions();
+    ProxyOptions();
     /// @brief Copy constructor.
-    RemoteProxyOptions(const RemoteProxyOptions &options);
+    ProxyOptions(const ProxyOptions &options);
     /// @brief Move constructor.
-    RemoteProxyOptions(RemoteProxyOptions &&options) noexcept;
+    ProxyOptions(ProxyOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -33,12 +33,12 @@ public:
     /// @brief Copy assignment.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of the input options.
-    RemoteProxyOptions& operator=(const RemoteProxyOptions &options);
+    ProxyOptions& operator=(const ProxyOptions &options);
     /// @brief Move assignment.
     /// @param[in,out] options  The options class whose memory will be moved to
     ///                         this.  On exit, options's behavior is undefined.
     /// @result The memory from options moved to this.
-    RemoteProxyOptions& operator=(RemoteProxyOptions &&options) noexcept;
+    ProxyOptions& operator=(ProxyOptions &&options) noexcept;
     /// @}
 
     /// @name Router Options
@@ -105,11 +105,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RemoteProxyOptions();
+    ~ProxyOptions();
     /// @}
 private:
-    class RemoteProxyOptionsImpl;
-    std::unique_ptr<RemoteProxyOptionsImpl> pImpl;
+    class ProxyOptionsImpl;
+    std::unique_ptr<ProxyOptionsImpl> pImpl;
 };
 }
 #endif

@@ -3,12 +3,12 @@
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/proxyServices/command/availableModulesResponse.hpp"
-#include "umps/proxyServices/command/remoteProxy.hpp"
-#include "umps/proxyServices/command/remoteProxyOptions.hpp"
-#include "umps/proxyServices/command/remoteRequestor.hpp"
-#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
-#include "umps/proxyServices/command/remoteReplier.hpp"
-#include "umps/proxyServices/command/remoteReplierOptions.hpp"
+#include "umps/proxyServices/command/proxy.hpp"
+#include "umps/proxyServices/command/proxyOptions.hpp"
+#include "umps/proxyServices/command/requestor.hpp"
+#include "umps/proxyServices/command/requestorOptions.hpp"
+#include "umps/proxyServices/command/replier.hpp"
+#include "umps/proxyServices/command/replierOptions.hpp"
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/text.hpp"
@@ -78,10 +78,10 @@ void proxy()
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
 
-    RemoteProxyOptions options;
+    ProxyOptions options;
     options.setFrontendAddress(FRONTEND);
     options.setBackendAddress(BACKEND);
-    RemoteProxy proxy(loggerPtr);
+    Proxy proxy(loggerPtr);
     EXPECT_NO_THROW(proxy.initialize(options));
     EXPECT_NO_THROW(proxy.start());
     std::this_thread::sleep_for(std::chrono::seconds {3});
@@ -96,14 +96,14 @@ void replier()
          = std::make_shared<UMPS::Logging::StdOut> (logger);
 
     Response response;
-    RemoteReplierOptions options;
+    ReplierOptions options;
     options.setAddress(BACKEND);
     options.setCallback(std::bind(&Response::callback,
                                   &response,
                                   std::placeholders::_1,
                                   std::placeholders::_2,
                                   std::placeholders::_3));
-    RemoteReplier replier(loggerPtr);
+    Replier replier(loggerPtr);
     // Give proxy a chance to initialize
     std::this_thread::sleep_for(std::chrono::milliseconds {10});
     EXPECT_NO_THROW(replier.initialize(options));
@@ -120,8 +120,8 @@ void requestor()
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
          = std::make_shared<UMPS::Logging::StdOut> (logger);
 
-    RemoteRequestor requestor(loggerPtr);
-    RemoteRequestorOptions options;
+    Requestor requestor(loggerPtr);
+    RequestorOptions options;
     options.setAddress(FRONTEND);
     // Give proxy and respondor a chance to initialize
     std::this_thread::sleep_for(std::chrono::milliseconds {20});
@@ -136,7 +136,7 @@ void requestor()
 */
 }
 
-TEST(RemoteCommand, RemoteCommand)
+TEST(ProxyServicesCommand, Command)
 {
     auto proxyThread = std::thread(proxy); // Intermediary
     auto replierThread = std::thread(replier); // Setup person on end

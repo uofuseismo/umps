@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_HPP
-#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_PROXY_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_PROXY_HPP
 #include <memory>
 namespace UMPS
 {
@@ -24,30 +24,30 @@ namespace UMPS
  }
  namespace ProxyServices::Command
  {
-  class RemoteProxyOptions;
+  class ProxyOptions;
  }
 }
-/// @class RemoteProxy "remoteProxy.hpp" "umps/proxyServices/command/remoteProxy.hpp"
+/// @class Proxy "proxy.hpp" "umps/proxyServices/command/proxy.hpp"
 /// @brief This is the intermediary that allows communication between a client
 ///        and a backend service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 namespace UMPS::ProxyServices::Command
 {
-class RemoteProxy
+class Proxy
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    RemoteProxy();
+    Proxy();
     /// @brief Constructor with a given logger.
-    explicit RemoteProxy(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a logger and given authenticator.
-    RemoteProxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+    Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
                 std::shared_ptr<UMPS::Authentication::IAuthenticator> &authenticator);
     /// @brief Constructor with a given logger and frontend and backend authenticator.
-    RemoteProxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+    Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
                 std::shared_ptr<UMPS::Authentication::IAuthenticator> &frontendAuthenticator,
                 std::shared_ptr<UMPS::Authentication::IAuthenticator> &backendAuthenticator);
     /// @}
@@ -57,7 +57,7 @@ public:
 
     /// @brief Initializes the proxy.
     /// @throws std::invalid_argument if the frontend and backend address are not set.
-    void initialize(const RemoteProxyOptions &options);
+    void initialize(const ProxyOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The name of the proxy broadcast.
@@ -84,11 +84,11 @@ public:
     /// @{
 
     /// @brief Destructor.
-    ~RemoteProxy();
+    ~Proxy();
     /// @}
 private:
-    class RemoteProxyImpl;
-    std::unique_ptr<RemoteProxyImpl> pImpl;
+    class ProxyImpl;
+    std::unique_ptr<ProxyImpl> pImpl;
 };
 }
 #endif

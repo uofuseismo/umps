@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_OPTIONS_HPP
-#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_OPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REPLIER_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REPLIER_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 #include <functional>
@@ -25,27 +25,27 @@ namespace UMPS
 }
 namespace UMPS::ProxyServices::Command
 {
-/// @class RemoteReplierOptions "remoteReplierOptions.hpp" "umps/proxyServices/command/remoteReplierOptions.hpp"
+/// @class ReplierOptions "replierOptions.hpp" "umps/proxyServices/command/replierOptions.hpp"
 /// @brief Defines the options for the thread managing remote activity to
 ///        respond.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RemoteReplierOptions
+class ReplierOptions
 {
 public:
     /// @name Constructor
     /// @{
 
     /// @brief Constructor.
-    RemoteReplierOptions();
+    ReplierOptions();
     /// @brief Copy constructor.
     /// @param[in] options  The options class from which to initialize
     ///                     this class.
-    RemoteReplierOptions(const RemoteReplierOptions &options);
+    ReplierOptions(const ReplierOptions &options);
     /// @brief Move constructor.
     /// @param[in,out] options  The options class from which to initialize
     ///                         this class.  On exit, options's behavior
     ///                         is undefined.
-    RemoteReplierOptions(RemoteReplierOptions &&options) noexcept;
+    ReplierOptions(ReplierOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -54,12 +54,12 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of the options.
-    RemoteReplierOptions& operator=(const RemoteReplierOptions &options);
+    ReplierOptions& operator=(const ReplierOptions &options);
     /// @brief Move assignment operator.
     /// @param[in,out] options  The options class whose memory will be moved to
     ///                         this.  On exit, options's behavior is undefined.
     /// @result The memory from options moved to this.
-    RemoteReplierOptions& operator=(RemoteReplierOptions &&options) noexcept;
+    ReplierOptions& operator=(ReplierOptions &&options) noexcept;
     /// @}
 
     /// @name Address (Required)
@@ -131,11 +131,11 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RemoteReplierOptions();
+    ~ReplierOptions();
     /// @}
 private:
-    class RemoteReplierOptionsImpl;
-    std::unique_ptr<RemoteReplierOptionsImpl> pImpl;
+    class ReplierOptionsImpl;
+    std::unique_ptr<ReplierOptionsImpl> pImpl;
 };
 }
 #endif

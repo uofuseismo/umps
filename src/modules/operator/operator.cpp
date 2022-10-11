@@ -50,8 +50,8 @@
 #include "umps/proxyBroadcasts/heartbeat/publisherProcess.hpp"
 #include "umps/proxyServices/proxy.hpp"
 #include "umps/proxyServices/proxyOptions.hpp"
-#include "umps/proxyServices/command/remoteProxy.hpp"
-#include "umps/proxyServices/command/remoteProxyOptions.hpp"
+#include "umps/proxyServices/command/proxy.hpp"
+#include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/logging/stdout.hpp"
 #include "umps/logging/spdlog.hpp"
 

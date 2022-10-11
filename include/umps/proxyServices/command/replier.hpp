@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_HPP
-#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REPLIER_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REPLIER_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
@@ -19,28 +19,28 @@ namespace UMPS
  }
  namespace ProxyServices::Command
  {
-  class RemoteReplierOptions;
+  class ReplierOptions;
  }
 }
 namespace UMPS::ProxyServices::Command
 {
-/// @class Replier "replier.hpp" "umps/proxyServices/incrementer/replier.hpp"
-/// @brief A replier mechanism for the server in the incrementer.
+/// @class Replier "replier.hpp" "umps/proxyServices/command/replier.hpp"
+/// @brief A replier mechanism for the server in the remote command service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RemoteReplier
+class Replier
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    RemoteReplier();
+    Replier();
     /// @brief Constructs a reply socket with a given context.
-    explicit RemoteReplier(std::shared_ptr<UMPS::Messaging::Context> &context);
+    explicit Replier(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructs a reply socket with the given logger.
-    explicit RemoteReplier(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Replier(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructs a reply socket with a given logger and context.
-    RemoteReplier(std::shared_ptr<UMPS::Messaging::Context> &context,
+    Replier(std::shared_ptr<UMPS::Messaging::Context> &context,
                   std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
@@ -50,7 +50,7 @@ public:
     /// @brief Initializes the reply.
     /// @param[in] options  The reply options.
     /// @throws std::invalid_argument if the endpoint is not set.
-    void initialize(const RemoteReplierOptions &options);
+    void initialize(const ReplierOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The details for connecting to this socket.
@@ -79,16 +79,16 @@ public:
     /// @{
 
     /// @brief Destructor.
-    ~RemoteReplier();
+    ~Replier();
     /// @}
 
-    RemoteReplier(const RemoteReplier &) = delete;
-    RemoteReplier(RemoteReplier &&) noexcept = delete;
-    RemoteReplier& operator=(const RemoteReplier &) = delete;
-    RemoteReplier& operator=(RemoteReplier &&) noexcept = delete;
+    Replier(const Replier &) = delete;
+    Replier(Replier &&) noexcept = delete;
+    Replier& operator=(const Replier &) = delete;
+    Replier& operator=(Replier &&) noexcept = delete;
 private:
-    class RemoteReplierImpl;
-    std::unique_ptr<RemoteReplierImpl> pImpl;
+    class ReplierImpl;
+    std::unique_ptr<ReplierImpl> pImpl;
 };
 }
 #endif

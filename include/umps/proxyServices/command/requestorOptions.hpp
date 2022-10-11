@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_OPTIONS_HPP
-#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_OPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REQUESTOR_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REQUESTOR_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS::Messaging::RequestRouter
@@ -8,22 +8,22 @@ namespace UMPS::Messaging::RequestRouter
 }
 namespace UMPS::ProxyServices::Command
 {
-/// @class RemoteRequestorOptions "remoteRequestorOptions.hpp" "umps/proxyServices/command/remoteRequestorOptions.hpp"
+/// @class RequestorOptions "requestorOptions.hpp" "umps/proxyServices/command/requestorOptions.hpp"
 /// @brief This sets the parameters for the utility that will allow users to 
 ///        interact with remote modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RemoteRequestorOptions
+class RequestorOptions
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    RemoteRequestorOptions();
+    RequestorOptions();
     /// @brief Copy constructor.
-    RemoteRequestorOptions(const RemoteRequestorOptions &options);
+    RequestorOptions(const RequestorOptions &options);
     /// @brief Move constructor.
-    RemoteRequestorOptions(RemoteRequestorOptions &&options) noexcept;
+    RequestorOptions(RequestorOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -32,12 +32,12 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] options  The options class to copy to this.
     /// @result A deep copy of the input options. 
-    RemoteRequestorOptions& operator=(const RemoteRequestorOptions &options);
+    RequestorOptions& operator=(const RequestorOptions &options);
     /// @brief Move assignment operator.
     /// @param[in,out] options  The options class whose memory will be moved to
     ///                         this.  On exit, options's behavior is undefined.
     /// @result The memory from options moved to this.
-    RemoteRequestorOptions& operator=(RemoteRequestorOptions &&options) noexcept;
+    RequestorOptions& operator=(RequestorOptions &&options) noexcept;
     /// @}
 
     /// @name Required Parameters
@@ -76,11 +76,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RemoteRequestorOptions(); 
+    ~RequestorOptions(); 
     /// @} 
 private:
-    class RemoteRequestorOptionsImpl;
-    std::unique_ptr<RemoteRequestorOptionsImpl> pImpl;
+    class RequestorOptionsImpl;
+    std::unique_ptr<RequestorOptionsImpl> pImpl;
 };
 }
 #endif

@@ -3,7 +3,7 @@
 #include <string>
 #include <filesystem>
 #include "umps/services/command/localRequestorOptions.hpp"
-#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
+#include "umps/proxyServices/command/requestorOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;
@@ -33,7 +33,7 @@ public:
     std::filesystem::path mIPCDirectory
         = std::filesystem::path{std::string{std::getenv("HOME")}}
         / std::filesystem::path{".local/share/UMPS/ipc"};
-    UMPS::ProxyServices::Command::RemoteRequestorOptions mOptions;
+    UMPS::ProxyServices::Command::RequestorOptions mOptions;
 };
 
 /// C'tor
@@ -145,7 +145,7 @@ void LocalRequestorOptions::setReceiveTimeOut(
 } 
 
 /// Requestor options
-UMPS::ProxyServices::Command::RemoteRequestorOptions
+UMPS::ProxyServices::Command::RequestorOptions
     LocalRequestorOptions::getOptions() const
 {
     return pImpl->mOptions;

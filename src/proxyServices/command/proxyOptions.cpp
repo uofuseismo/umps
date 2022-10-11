@@ -1,11 +1,11 @@
-#include "umps/proxyServices/command/remoteProxyOptions.hpp"
+#include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::ProxyServices::Command;
 namespace UAuth = UMPS::Authentication;
 
-class RemoteProxyOptions::RemoteProxyOptionsImpl
+class ProxyOptions::ProxyOptionsImpl
 {
 public:
     UAuth::ZAPOptions mZAPOptions;
@@ -16,35 +16,35 @@ public:
 };
 
 /// C'tor
-RemoteProxyOptions::RemoteProxyOptions() :
-    pImpl(std::make_unique<RemoteProxyOptionsImpl> ())
+ProxyOptions::ProxyOptions() :
+    pImpl(std::make_unique<ProxyOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-RemoteProxyOptions::RemoteProxyOptions(const RemoteProxyOptions &options)
+ProxyOptions::ProxyOptions(const ProxyOptions &options)
 {
     *this = options;
 }
 
 /// Move c'tor
-RemoteProxyOptions::RemoteProxyOptions(RemoteProxyOptions &&options) noexcept
+ProxyOptions::ProxyOptions(ProxyOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Copy assignment
-RemoteProxyOptions&
-RemoteProxyOptions::operator=(const RemoteProxyOptions &options)
+ProxyOptions&
+ProxyOptions::operator=(const ProxyOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<RemoteProxyOptionsImpl> (*options.pImpl);
+    pImpl = std::make_unique<ProxyOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-RemoteProxyOptions&
-RemoteProxyOptions::operator=(RemoteProxyOptions &&options) noexcept
+ProxyOptions&
+ProxyOptions::operator=(ProxyOptions &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -52,16 +52,16 @@ RemoteProxyOptions::operator=(RemoteProxyOptions &&options) noexcept
 }
 
 /// Reset
-void RemoteProxyOptions::clear() noexcept
+void ProxyOptions::clear() noexcept
 {
-    pImpl = std::make_unique<RemoteProxyOptionsImpl> ();
+    pImpl = std::make_unique<ProxyOptionsImpl> ();
 }
 
 /// Destructor
-RemoteProxyOptions::~RemoteProxyOptions() = default;
+ProxyOptions::~ProxyOptions() = default;
 
 /// Frontend HWM
-void RemoteProxyOptions::setFrontendHighWaterMark(const int hwm)
+void ProxyOptions::setFrontendHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
@@ -70,13 +70,13 @@ void RemoteProxyOptions::setFrontendHighWaterMark(const int hwm)
     pImpl->mFrontendHighWaterMark = hwm;
 }
 
-int RemoteProxyOptions::getFrontendHighWaterMark() const noexcept
+int ProxyOptions::getFrontendHighWaterMark() const noexcept
 {
     return pImpl->mFrontendHighWaterMark;
 }
 
 /// Backend HWM
-void RemoteProxyOptions::setBackendHighWaterMark(const int hwm)
+void ProxyOptions::setBackendHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
@@ -85,19 +85,19 @@ void RemoteProxyOptions::setBackendHighWaterMark(const int hwm)
     pImpl->mBackendHighWaterMark = hwm;
 }
 
-int RemoteProxyOptions::getBackendHighWaterMark() const noexcept
+int ProxyOptions::getBackendHighWaterMark() const noexcept
 {
     return pImpl->mBackendHighWaterMark;
 }
 
 /// Frontend address
-void RemoteProxyOptions::setFrontendAddress(const std::string &address)
+void ProxyOptions::setFrontendAddress(const std::string &address)
 {
     if (isEmpty(address)){throw std::invalid_argument("Address is empty");}
     pImpl->mFrontendAddress = address;
 }
 
-std::string RemoteProxyOptions::getFrontendAddress() const
+std::string ProxyOptions::getFrontendAddress() const
 {
     if (!haveFrontendAddress())
     {
@@ -106,13 +106,13 @@ std::string RemoteProxyOptions::getFrontendAddress() const
     return pImpl->mFrontendAddress;
 }
 
-bool RemoteProxyOptions::haveFrontendAddress() const noexcept
+bool ProxyOptions::haveFrontendAddress() const noexcept
 {
     return !pImpl->mFrontendAddress.empty();
 }
 
 /// Backend address
-void RemoteProxyOptions::setBackendAddress(const std::string &address)
+void ProxyOptions::setBackendAddress(const std::string &address)
 {
     if (isEmpty(address)){throw std::invalid_argument("Address is empty");}
     if (pImpl->mFrontendAddress == address)
@@ -123,7 +123,7 @@ void RemoteProxyOptions::setBackendAddress(const std::string &address)
     pImpl->mBackendAddress = address;
 }
 
-std::string RemoteProxyOptions::getBackendAddress() const
+std::string ProxyOptions::getBackendAddress() const
 {
     if (!haveBackendAddress())
     {
@@ -132,18 +132,18 @@ std::string RemoteProxyOptions::getBackendAddress() const
     return pImpl->mBackendAddress;
 }
 
-bool RemoteProxyOptions::haveBackendAddress() const noexcept
+bool ProxyOptions::haveBackendAddress() const noexcept
 {
     return !pImpl->mBackendAddress.empty();
 }
 
 /// ZAP options
-void RemoteProxyOptions::setZAPOptions(const UAuth::ZAPOptions &options)
+void ProxyOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mZAPOptions = options;
 } 
 
-UAuth::ZAPOptions RemoteProxyOptions::getZAPOptions() const noexcept
+UAuth::ZAPOptions ProxyOptions::getZAPOptions() const noexcept
 {
     return pImpl->mZAPOptions;
 }

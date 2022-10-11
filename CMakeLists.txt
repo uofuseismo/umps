@@ -166,12 +166,12 @@ set(MODULES_LIBSRC
     src/proxyServices/command/availableModulesRequest.cpp
     src/proxyServices/command/availableModulesResponse.cpp
     src/proxyServices/command/moduleDetails.cpp
-    src/proxyServices/command/remoteProxy.cpp
-    src/proxyServices/command/remoteProxyOptions.cpp
-    src/proxyServices/command/remoteRequestor.cpp
-    src/proxyServices/command/remoteRequestorOptions.cpp
-    src/proxyServices/command/remoteReplier.cpp
-    src/proxyServices/command/remoteReplierOptions.cpp
+    src/proxyServices/command/proxy.cpp
+    src/proxyServices/command/proxyOptions.cpp
+    src/proxyServices/command/requestor.cpp
+    src/proxyServices/command/requestorOptions.cpp
+    src/proxyServices/command/replier.cpp
+    src/proxyServices/command/replierOptions.cpp
     src/proxyServices/incrementer/counter.cpp
     src/proxyServices/incrementer/incrementRequest.cpp
     src/proxyServices/incrementer/incrementResponse.cpp

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <thread>
-#include "umps/proxyServices/command/remoteReplier.hpp"
-#include "umps/proxyServices/command/remoteReplierOptions.hpp"
+#include "umps/proxyServices/command/replier.hpp"
+#include "umps/proxyServices/command/replierOptions.hpp"
 #include "umps/proxyServices/command/registrationRequest.hpp"
 #include "umps/proxyServices/command/registrationResponse.hpp"
 #include "umps/proxyServices/command/moduleDetails.hpp"
@@ -20,10 +20,10 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 
 /// This is a router-router pattern so we put a request (or dealer) socket on
 /// the backend.
-class RemoteReplier::RemoteReplierImpl : public ::RequestReplySocket
+class Replier::ReplierImpl : public ::RequestReplySocket
 {
 public:
-    RemoteReplierImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+    ReplierImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                       std::shared_ptr<UMPS::Logging::ILog> logger) :
         ::RequestReplySocket(zmq::socket_type::dealer, context, logger)
     {
@@ -113,41 +113,41 @@ public:
         mLogger->debug("Reply poll loop finished");
     }
     UMPS::MessageFormats::Messages mMessageFormats;
-    RemoteReplierOptions mOptions;
+    ReplierOptions mOptions;
     ModuleDetails mModuleDetails;
     bool mRegistered{false};
 };
 
 /// C'tor
-RemoteReplier::RemoteReplier() :
-    pImpl(std::make_unique<RemoteReplierImpl> (nullptr, nullptr))
+Replier::Replier() :
+    pImpl(std::make_unique<ReplierImpl> (nullptr, nullptr))
 {
 }
 
-RemoteReplier::RemoteReplier(
+Replier::Replier(
     std::shared_ptr<UMPS::Messaging::Context> &context) :
-    pImpl(std::make_unique<RemoteReplierImpl> (context, nullptr))
+    pImpl(std::make_unique<ReplierImpl> (context, nullptr))
 {
 }
 
-RemoteReplier::RemoteReplier(
+Replier::Replier(
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RemoteReplierImpl> (nullptr, logger))
+    pImpl(std::make_unique<ReplierImpl> (nullptr, logger))
 {
 }
 
-RemoteReplier::RemoteReplier(
+Replier::Replier(
     std::shared_ptr<UMPS::Messaging::Context> &context,
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RemoteReplierImpl> (context, logger))
+    pImpl(std::make_unique<ReplierImpl> (context, logger))
 {
 }
 
 /// Destructor
-RemoteReplier::~RemoteReplier() = default;
+Replier::~Replier() = default;
 
 /// Initialize
-void RemoteReplier::initialize(const RemoteReplierOptions &options)
+void Replier::initialize(const ReplierOptions &options)
 {
     if (!options.haveAddress())
     {
@@ -192,27 +192,27 @@ void RemoteReplier::initialize(const RemoteReplierOptions &options)
 }
 
 /// Initialized
-bool RemoteReplier::isInitialized() const noexcept
+bool Replier::isInitialized() const noexcept
 {
     return pImpl->isConnected() && pImpl->mRegistered;
 }
 
 /// Start
-void RemoteReplier::start()
+void Replier::start()
 {
     if (!isInitialized()){throw std::runtime_error("Replier not initialized");}
     pImpl->start();
 }
 
 /// Stop
-void RemoteReplier::stop()
+void Replier::stop()
 {
     pImpl->stop();
 }
 
 /// Connection information
 /*
-UCI::SocketDetails::Reply RemoteReplier::getSocketDetails() const
+UCI::SocketDetails::Reply Replier::getSocketDetails() const
 {
     //return pImpl->getSocketDetails();
 }

@@ -1,7 +1,7 @@
 #include <string>
 #include <filesystem>
-#include "umps/proxyServices/command/remoteRequestor.hpp"
-#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
+#include "umps/proxyServices/command/requestor.hpp"
+#include "umps/proxyServices/command/requestorOptions.hpp"
 #include "umps/proxyServices/command/availableModulesRequest.hpp"
 #include "umps/proxyServices/command/availableModulesResponse.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
@@ -22,11 +22,11 @@ using namespace UMPS::ProxyServices::Command;
 namespace UCommand = UMPS::Services::Command;
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 
-class RemoteRequestor::RemoteRequestorImpl
+class Requestor::RequestorImpl
 {
 public:
     /// @brief Constructor
-    RemoteRequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+    RequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                        std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         if (logger == nullptr)
@@ -75,44 +75,44 @@ public:
     std::unique_ptr<URequestRouter::Request> mRequest{nullptr};
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    RemoteRequestorOptions mRemoteRequestorOptions;
+    RequestorOptions mRequestorOptions;
     UMPS::Messaging::RequestRouter::RequestOptions mRequestOptions;
 };
 
 /// C'tor
-RemoteRequestor::RemoteRequestor() :
-    pImpl(std::make_unique<RemoteRequestorImpl> (nullptr, nullptr))
+Requestor::Requestor() :
+    pImpl(std::make_unique<RequestorImpl> (nullptr, nullptr))
 {
 }
 
-RemoteRequestor::RemoteRequestor(
+Requestor::Requestor(
     std::shared_ptr<UMPS::Messaging::Context> &context) :
-    pImpl(std::make_unique<RemoteRequestorImpl> (context, nullptr))
+    pImpl(std::make_unique<RequestorImpl> (context, nullptr))
 {
 }
 
-RemoteRequestor::RemoteRequestor(
+Requestor::Requestor(
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RemoteRequestorImpl> (nullptr, logger))
+    pImpl(std::make_unique<RequestorImpl> (nullptr, logger))
 {
 }
 
-RemoteRequestor::RemoteRequestor(
+Requestor::Requestor(
     std::shared_ptr<UMPS::Messaging::Context> &context,
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RemoteRequestorImpl> (context, logger))
+    pImpl(std::make_unique<RequestorImpl> (context, logger))
 {
 }
 
 /// Move c'tor
-RemoteRequestor::RemoteRequestor(RemoteRequestor &&requestor) noexcept
+Requestor::Requestor(Requestor &&requestor) noexcept
 {
     *this = std::move(requestor);
 }
 
 /// Move assignment
-RemoteRequestor& 
-RemoteRequestor::operator=(RemoteRequestor &&requestor) noexcept
+Requestor& 
+Requestor::operator=(Requestor &&requestor) noexcept
 {
     if (&requestor == this){return *this;}
     pImpl = std::move(requestor.pImpl);
@@ -120,10 +120,10 @@ RemoteRequestor::operator=(RemoteRequestor &&requestor) noexcept
 }
 
 /// Destructor
-RemoteRequestor::~RemoteRequestor() = default;
+Requestor::~Requestor() = default;
 
 /// Initialize
-void RemoteRequestor::initialize(const RemoteRequestorOptions &options)
+void Requestor::initialize(const RequestorOptions &options)
 {
     pImpl->disconnect();
     auto requestOptions = options.getOptions();
@@ -133,19 +133,19 @@ void RemoteRequestor::initialize(const RemoteRequestorOptions &options)
         requestOptions.addMessageFormat(messageFormat.second);
     }
     pImpl->mRequest->initialize(requestOptions);
-    pImpl->mRemoteRequestorOptions = options;
+    pImpl->mRequestorOptions = options;
     pImpl->mRequestOptions = requestOptions;
 }
 
 /// Initialized?
-bool RemoteRequestor::isInitialized() const noexcept
+bool Requestor::isInitialized() const noexcept
 {
     return pImpl->mRequest->isInitialized();
 }
 
 /// Available modules
 std::unique_ptr<AvailableModulesResponse>
-    RemoteRequestor::getAvailableModules() const
+    Requestor::getAvailableModules() const
 {
     if (!isInitialized())
     {   
@@ -168,7 +168,7 @@ std::unique_ptr<AvailableModulesResponse>
 
 /// Commands
 std::unique_ptr<UCommand::AvailableCommandsResponse>
-    RemoteRequestor::getCommands() const
+    Requestor::getCommands() const
 {
     if (!isInitialized())
     {
@@ -197,7 +197,7 @@ std::unique_ptr<UCommand::AvailableCommandsResponse>
 }
 
 std::unique_ptr<UCommand::CommandResponse>
-    RemoteRequestor::issueCommand(const UCommand::CommandRequest &request)
+    Requestor::issueCommand(const UCommand::CommandRequest &request)
 {
     if (!isInitialized())
     {   
@@ -225,7 +225,7 @@ std::unique_ptr<UCommand::CommandResponse>
 }
 
 std::unique_ptr<UCommand::TerminateResponse>
-    RemoteRequestor::issueTerminateCommand() const
+    Requestor::issueTerminateCommand() const
 {
     if (!isInitialized())
     {
@@ -254,7 +254,7 @@ std::unique_ptr<UCommand::TerminateResponse>
     return result;
 }
 
-void RemoteRequestor::disconnect()
+void Requestor::disconnect()
 {
     pImpl->disconnect();
 }

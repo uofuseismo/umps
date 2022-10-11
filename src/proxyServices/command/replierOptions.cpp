@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include "umps/proxyServices/command/remoteReplierOptions.hpp"
+#include "umps/proxyServices/command/replierOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 
@@ -9,10 +9,10 @@ using namespace UMPS::ProxyServices::Command;
 namespace UAuth = UMPS::Authentication;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 
-class RemoteReplierOptions::RemoteReplierOptionsImpl
+class ReplierOptions::ReplierOptionsImpl
 {
 public:
-    RemoteReplierOptionsImpl()
+    ReplierOptionsImpl()
     {
         std::ostringstream address;
         address << static_cast<void const *> (this);
@@ -23,36 +23,36 @@ public:
 };
 
 /// C'tor
-RemoteReplierOptions::RemoteReplierOptions() :
-    pImpl(std::make_unique<RemoteReplierOptionsImpl> ())
+ReplierOptions::ReplierOptions() :
+    pImpl(std::make_unique<ReplierOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-RemoteReplierOptions::RemoteReplierOptions(const RemoteReplierOptions &options)
+ReplierOptions::ReplierOptions(const ReplierOptions &options)
 {
     *this = options;
 }
 
 /// Move c'tor
-RemoteReplierOptions::RemoteReplierOptions(
-    RemoteReplierOptions &&options) noexcept
+ReplierOptions::ReplierOptions(
+    ReplierOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Copy assignment
-RemoteReplierOptions&
-RemoteReplierOptions::operator=(const RemoteReplierOptions &options)
+ReplierOptions&
+ReplierOptions::operator=(const ReplierOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<RemoteReplierOptionsImpl> (*options.pImpl);
+    pImpl = std::make_unique<ReplierOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-RemoteReplierOptions&
-RemoteReplierOptions::operator=(RemoteReplierOptions &&options) noexcept
+ReplierOptions&
+ReplierOptions::operator=(ReplierOptions &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -60,27 +60,27 @@ RemoteReplierOptions::operator=(RemoteReplierOptions &&options) noexcept
 }
 
 /// Reset class
-void RemoteReplierOptions::clear() noexcept
+void ReplierOptions::clear() noexcept
 {
-    pImpl = std::make_unique<RemoteReplierOptionsImpl> ();
+    pImpl = std::make_unique<ReplierOptionsImpl> ();
 }
 
 /// Destructor
-RemoteReplierOptions::~RemoteReplierOptions() = default;
+ReplierOptions::~ReplierOptions() = default;
 
 /// Set address
-void RemoteReplierOptions::setAddress(const std::string &address)
+void ReplierOptions::setAddress(const std::string &address)
 {
     pImpl->mOptions.setAddress(address);
 }
 
-bool RemoteReplierOptions::haveAddress() const noexcept
+bool ReplierOptions::haveAddress() const noexcept
 {
     return pImpl->mOptions.haveAddress();
 }
 
 /// Callback
-void RemoteReplierOptions::setCallback(
+void ReplierOptions::setCallback(
     const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
                         (const std::string &, const void *, size_t)>
                         &callback)
@@ -88,25 +88,25 @@ void RemoteReplierOptions::setCallback(
     pImpl->mOptions.setCallback(callback);
 }
 
-bool RemoteReplierOptions::haveCallback() const noexcept
+bool ReplierOptions::haveCallback() const noexcept
 {
     return pImpl->mOptions.haveCallback();
 }
 
 /// ZAP options
-void RemoteReplierOptions::setZAPOptions(const UAuth::ZAPOptions &options)
+void ReplierOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 {
     pImpl->mOptions.setZAPOptions(options);
 }
 
 /// HWM
-void RemoteReplierOptions::setHighWaterMark(const int hwm)
+void ReplierOptions::setHighWaterMark(const int hwm)
 {
     pImpl->mOptions.setHighWaterMark(hwm);
 }
 
 /// Options
-URouterDealer::ReplyOptions RemoteReplierOptions::getOptions() const
+URouterDealer::ReplyOptions ReplierOptions::getOptions() const
 {
     if (!haveAddress()){throw std::runtime_error("Address not set");}
     if (!haveCallback()){throw std::runtime_error("Callback not set");}

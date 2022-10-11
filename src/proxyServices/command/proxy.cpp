@@ -11,8 +11,8 @@
 #ifndef NDEBUG
 #include <cassert>
 #endif
-#include "umps/proxyServices/command/remoteProxy.hpp"
-#include "umps/proxyServices/command/remoteProxyOptions.hpp"
+#include "umps/proxyServices/command/proxy.hpp"
+#include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/proxyServices/command/availableModulesRequest.hpp"
 #include "umps/proxyServices/command/availableModulesResponse.hpp"
@@ -166,11 +166,11 @@ struct Module
 
 }
 
-class RemoteProxy::RemoteProxyImpl
+class Proxy::ProxyImpl
 {
 public:
     /// C'tor - symmetric authentication
-    RemoteProxyImpl(
+    ProxyImpl(
         const std::shared_ptr<UMPS::Messaging::Context> &context,
         const std::shared_ptr<UMPS::Logging::ILog> &logger,
         const std::shared_ptr<UAuth::IAuthenticator> &authenticator)
@@ -217,7 +217,7 @@ public:
         mBackendMonitor = std::make_unique<Monitor> (mBackend, mLogger);
     }
     /// C'tor for asymmetric authentication
-    RemoteProxyImpl(
+    ProxyImpl(
         const std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
         const std::shared_ptr<UMPS::Messaging::Context> &backendContext,
         const std::shared_ptr<UMPS::Logging::ILog> &logger,
@@ -302,7 +302,7 @@ public:
         mBackendMonitor = std::make_unique<Monitor> (mBackend, mLogger);
     }
     /// Destructor
-    ~RemoteProxyImpl()
+    ~ProxyImpl()
     {
         stop();
         mBackendMonitor->stop();
@@ -635,7 +635,7 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
     {
         stop(); 
         setRunning(true);
-        mProxyThread = std::thread(&RemoteProxyImpl::runPoller, this);
+        mProxyThread = std::thread(&ProxyImpl::runPoller, this);
     }
     /// Stops the proxy
     void stop()
@@ -720,7 +720,7 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     // The registered modules
     std::map<ModuleDetails, std::string, Comparator> mModules;
-    RemoteProxyOptions mOptions;
+    ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::string mFrontendAddress;
     std::string mBackendAddress;
@@ -736,26 +736,26 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
 };
 
 /// C'tor
-RemoteProxy::RemoteProxy() :
-    pImpl(std::make_unique<RemoteProxyImpl> (nullptr, nullptr, nullptr))
+Proxy::Proxy() :
+    pImpl(std::make_unique<ProxyImpl> (nullptr, nullptr, nullptr))
 {
 }
 
-RemoteProxy::RemoteProxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<RemoteProxyImpl> (nullptr, logger, nullptr))
+Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ProxyImpl> (nullptr, logger, nullptr))
 {
 }
 
-RemoteProxy::RemoteProxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
                          std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
-    pImpl(std::make_unique<RemoteProxyImpl> (nullptr, logger, authenticator))
+    pImpl(std::make_unique<ProxyImpl> (nullptr, logger, authenticator))
 {
 }
 
-RemoteProxy::RemoteProxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
+Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
                          std::shared_ptr<UAuth::IAuthenticator> &frontendAuthenticator,
                          std::shared_ptr<UAuth::IAuthenticator> &backendAuthenticator) :
-    pImpl(std::make_unique<RemoteProxyImpl> (nullptr,
+    pImpl(std::make_unique<ProxyImpl> (nullptr,
                                              nullptr,
                                              logger,
                                              frontendAuthenticator,
@@ -764,10 +764,10 @@ RemoteProxy::RemoteProxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
 }
 
 /// Destructor
-RemoteProxy::~RemoteProxy() = default;
+Proxy::~Proxy() = default;
 
 /// Initialize the proxy
-void RemoteProxy::initialize(const RemoteProxyOptions &options)
+void Proxy::initialize(const ProxyOptions &options)
 {
     if (!options.haveFrontendAddress())
     {
@@ -796,19 +796,19 @@ void RemoteProxy::initialize(const RemoteProxyOptions &options)
 }
 
 /// Initilalized?
-bool RemoteProxy::isInitialized() const noexcept
+bool Proxy::isInitialized() const noexcept
 {
     return pImpl->mInitialized;
 }
 
 /// Name
-std::string RemoteProxy::getName() const
+std::string Proxy::getName() const
 {
     return pImpl->mProxyName;
 }
 
 /// Connection details
-UCI::Details RemoteProxy::getConnectionDetails() const
+UCI::Details Proxy::getConnectionDetails() const
 {
     if (!isInitialized())
     {
@@ -819,19 +819,19 @@ UCI::Details RemoteProxy::getConnectionDetails() const
 }
 
 // Stops the proxy
-void RemoteProxy::stop()
+void Proxy::stop()
 {
     pImpl->setRunning(false);
 }
 
 /// Is the proxy running?
-bool RemoteProxy::isRunning() const noexcept
+bool Proxy::isRunning() const noexcept
 {
     return pImpl->isRunning();
 }
 
 /// Start the proxy
-void RemoteProxy::start()
+void Proxy::start()
 {
     if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
     stop(); // Ensure proxy is stopped before starting

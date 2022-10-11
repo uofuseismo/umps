@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_HPP
-#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REQUESTOR_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REQUESTOR_HPP
 #include <memory>
 namespace UMPS
 {
@@ -23,35 +23,35 @@ namespace UMPS
  namespace ProxyServices::Command
  {
   class AvailableModulesResponse;
-  class RemoteRequestorOptions;
+  class RequestorOptions;
  } 
 }
 namespace UMPS::ProxyServices::Command
 {
-/// @class RemoteRequestor "remoteRequestor.hpp" "umps/proxyServices/command/localRequestor.hpp"
+/// @class Requestor "requestor.hpp" "umps/proxyServices/command/requestor.hpp"
 /// @brief This class allows the user to interact with programs running remotely
 ///        i.e., - on a different machine.  Nominally, you will only want this
 ///        to be used by privileged users that you trust.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class RemoteRequestor
+class Requestor
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    RemoteRequestor();
+    Requestor();
     /// @brief Constructor with a given context.
-    explicit RemoteRequestor(std::shared_ptr<UMPS::Messaging::Context> &context);
+    explicit Requestor(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructor with a given logger.
-    explicit RemoteRequestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context and logger.
-    RemoteRequestor(std::shared_ptr<UMPS::Messaging::Context> &context,
+    Requestor(std::shared_ptr<UMPS::Messaging::Context> &context,
                    std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] requestor  The requestor from which to create this class.
     ///                           On exit, requestor's behavior is undefined.
-    RemoteRequestor(RemoteRequestor &&requestor) noexcept;
+    Requestor(Requestor &&requestor) noexcept;
     /// @}
 
     /// @name Operators
@@ -62,7 +62,7 @@ public:
     ///                           to this.  On exit, requestor's behavior
     ///                           is undefined.
     /// @result The memory from the requestor moved to this.
-    RemoteRequestor& operator=(RemoteRequestor &&requestor) noexcept;
+    Requestor& operator=(Requestor &&requestor) noexcept;
     /// @}
 
     /// @name Initialization
@@ -73,7 +73,7 @@ public:
     ///                     have the module name.
     /// @throws std::invalid_argument if the module name is not set.
     /// @throws std::runtime_error if the application cannot connect.
-    void initialize(const RemoteRequestorOptions &options);
+    void initialize(const RequestorOptions &options);
     /// @result True indicates the requestor is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}
@@ -109,14 +109,14 @@ public:
     /// @brief Disconnects from the service.
     void disconnect();
     /// @brief Destructor.
-    ~RemoteRequestor();
+    ~Requestor();
     /// @}
 
-    RemoteRequestor(const RemoteRequestor &) = delete;
-    RemoteRequestor& operator=(const RemoteRequestor &) = delete;
+    Requestor(const Requestor &) = delete;
+    Requestor& operator=(const Requestor &) = delete;
 private:
-    class RemoteRequestorImpl;
-    std::unique_ptr<RemoteRequestorImpl> pImpl;    
+    class RequestorImpl;
+    std::unique_ptr<RequestorImpl> pImpl;    
 };
 }
 #endif

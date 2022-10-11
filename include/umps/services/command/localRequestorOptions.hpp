@@ -4,7 +4,7 @@
 #include <chrono>
 namespace UMPS::ProxyServices::Command
 {
- class RemoteRequestorOptions;
+ class RequestorOptions;
 }
 namespace UMPS::Services::Command
 {
@@ -79,7 +79,7 @@ public:
     /// @}
 
     /// @result The request options.
-    [[nodiscard]] ProxyServices::Command::RemoteRequestorOptions getOptions() const;
+    [[nodiscard]] ProxyServices::Command::RequestorOptions getOptions() const;
 
     /// @name Destructors
     /// @{
