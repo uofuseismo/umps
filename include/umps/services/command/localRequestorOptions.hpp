@@ -1,8 +1,8 @@
-#ifndef UMPS_SERVICES_COMMAND_LOCALREQUESTOROPTIONS_HPP
-#define UMPS_SERVICES_COMMAND_LOCALREQUESTOROPTIONS_HPP
+#ifndef UMPS_SERVICES_COMMAND_LOCAL_REQUESTOR_OPTIONS_HPP
+#define UMPS_SERVICES_COMMAND_LOCAL_REQUESTOR_OPTIONS_HPP
 #include <memory>
 #include <chrono>
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
  class RemoteRequestorOptions;
 }
@@ -79,7 +79,7 @@ public:
     /// @}
 
     /// @result The request options.
-    [[nodiscard]] RemoteRequestorOptions getOptions() const;
+    [[nodiscard]] ProxyServices::Command::RemoteRequestorOptions getOptions() const;
 
     /// @name Destructors
     /// @{

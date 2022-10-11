@@ -1,10 +1,10 @@
-#ifndef UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
-#define UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_MODULE_DETAILS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_MODULE_DETAILS_HPP
 #include <memory>
 #include <ostream>
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
-/// @class ModuleDetails moduleDetails.hpp "umps/services/command/moduleDetails.hpp"
+/// @class ModuleDetails moduleDetails.hpp "umps/proxyServices/command/moduleDetails.hpp"
 /// @brief Defines the module properties.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class ModuleDetails

@@ -2,14 +2,14 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/command/availableModulesResponse.hpp"
-#include "umps/services/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/availableModulesResponse.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
 #include "private/services/moduleDetails.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Command::AvailableModulesResponse"
+#define MESSAGE_TYPE "UMPS::ProxyServices::Command::AvailableModulesResponse"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 namespace
 {

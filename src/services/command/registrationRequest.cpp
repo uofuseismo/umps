@@ -1,11 +1,11 @@
-#include "umps/services/command/registrationRequest.hpp"
-#include "umps/services/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/registrationRequest.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
 #include "private/services/moduleDetails.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Command::RegistrationRequest"
+#define MESSAGE_TYPE "UMPS::ProxyServices::Command::RegistrationRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 namespace
 {

@@ -1,11 +1,11 @@
-#include "umps/services/command/registrationResponse.hpp"
-#include "umps/services/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/registrationResponse.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
 #include <nlohmann/json.hpp>
 
-#define MESSAGE_TYPE "UMPS::Services::Command::RegistrationResponse"
+#define MESSAGE_TYPE "UMPS::ProxyServices::Command::RegistrationResponse"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 namespace
 {

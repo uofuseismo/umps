@@ -2,8 +2,8 @@
 #include <filesystem>
 #include "umps/services/command/localRequestor.hpp"
 #include "umps/services/command/localRequestorOptions.hpp"
-#include "umps/services/command/remoteRequestor.hpp"
-#include "umps/services/command/remoteRequestorOptions.hpp"
+#include "umps/proxyServices/command/remoteRequestor.hpp"
+#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
@@ -23,10 +23,12 @@ public:
     /// @brief Constructor
     LocalRequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                        std::shared_ptr<UMPS::Logging::ILog> logger) :
-        mRequestor(std::make_unique<RemoteRequestor> (context, logger))
+        mRequestor(std::make_unique<ProxyServices::Command::RemoteRequestor>
+                   (context, logger))
     {
     }
-    std::unique_ptr<RemoteRequestor> mRequestor{nullptr};
+    std::unique_ptr<UMPS::ProxyServices::Command::RemoteRequestor>
+        mRequestor{nullptr};
     LocalRequestorOptions mLocalRequestorOptions;
     std::filesystem::path mIPCFileName;
 };

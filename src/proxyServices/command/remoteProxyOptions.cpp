@@ -1,8 +1,8 @@
-#include "umps/services/command/remoteProxyOptions.hpp"
+#include "umps/proxyServices/command/remoteProxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 namespace UAuth = UMPS::Authentication;
 
 class RemoteProxyOptions::RemoteProxyOptionsImpl

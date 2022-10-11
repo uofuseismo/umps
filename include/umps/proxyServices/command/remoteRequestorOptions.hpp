@@ -1,16 +1,16 @@
-#ifndef UMPS_SERVICES_COMMAND_REMOTEREQUESTOROPTIONS_HPP
-#define UMPS_SERVICES_COMMAND_REMOTEREQUESTOROPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS::Messaging::RequestRouter
 {
  class RequestOptions;
 }
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
-/// @class RemoteRequestorOptions "localRequestorOptions.hpp" "umps/services/command/localRequestorOptions.hpp"
+/// @class RemoteRequestorOptions "remoteRequestorOptions.hpp" "umps/proxyServices/command/remoteRequestorOptions.hpp"
 /// @brief This sets the parameters for the utility that will allow users to 
-///        interact locally with a program.
+///        interact with remote modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class RemoteRequestorOptions
 {

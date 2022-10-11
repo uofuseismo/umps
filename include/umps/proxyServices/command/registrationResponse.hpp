@@ -1,11 +1,21 @@
-#ifndef UMPS_SERVICES_COMMAND_REGISTRATION_RESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_REGISTRATION_RESPONSE_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REGISTRATION_RESPONSE_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REGISTRATION_RESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-#include "umps/services/command/enums.hpp"
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
-/// @class RegistrationResponse registrationResponse.hpp "umps/services/command/registrationResponse.hpp"
+/// @brief The service's return code for a registration request.
+enum class RegistrationReturnCode
+{
+    Success = 0,        /*!< The registration request succeeded. */
+    InvalidRequest = 1, /*!< The registration rqeuest failed because the
+                             request was invalid. */
+    Exists = 2,         /*!< The registration request failed because the
+                             module already exists. */
+    ServerError = 3     /*!< The registration request failed because of a
+                             server-side error. */
+};
+/// @class RegistrationResponse registrationResponse.hpp "umps/proxyServices/command/registrationResponse.hpp"
 /// @brief The response to a module registration response.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 /// @sa RegistrationResponse 

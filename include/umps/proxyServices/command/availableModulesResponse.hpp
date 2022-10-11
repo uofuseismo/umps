@@ -1,15 +1,15 @@
-#ifndef UMPS_SERVICES_COMMAND_AVAILABLE_MODULES_RESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_AVAILABLE_MODULES_RESPONSE_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_AVAILABLE_MODULES_RESPONSE_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_AVAILABLE_MODULES_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
  class ModuleDetails;
 }
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
-/// @class AvailableModulesResponse "availableModulesResponse.hpp" "umps/messageFormats/availableModulesResponse.hpp"
+/// @class AvailableModulesResponse "availableModulesResponse.hpp" "umps/proxyServices/command//availableModulesResponse.hpp"
 /// @brief Returns the available modules that have been registered with the
 ///        remote module monitoring service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

@@ -2,10 +2,10 @@
 #include <algorithm>
 #include <string>
 #include <filesystem>
-#include "umps/services/command/remoteRequestorOptions.hpp"
+#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 class RemoteRequestorOptions::RemoteRequestorOptionsImpl
 {

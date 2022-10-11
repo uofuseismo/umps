@@ -1,11 +1,11 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include "umps/services/command/remoteReplierOptions.hpp"
+#include "umps/proxyServices/command/remoteReplierOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 namespace UAuth = UMPS::Authentication;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 

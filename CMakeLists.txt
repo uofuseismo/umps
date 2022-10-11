@@ -102,8 +102,6 @@ set(MODULES_LIBSRC
     #src/modules/module.cpp
     src/services/command/availableCommandsRequest.cpp
     src/services/command/availableCommandsResponse.cpp
-    src/services/command/availableModulesRequest.cpp
-    src/services/command/availableModulesResponse.cpp
     src/services/command/commandRequest.cpp
     src/services/command/commandResponse.cpp
     src/services/command/localModuleDetails.cpp
@@ -112,15 +110,8 @@ set(MODULES_LIBSRC
     src/services/command/localRequestorOptions.cpp
     src/services/command/localService.cpp
     src/services/command/localServiceOptions.cpp
-    src/services/command/moduleDetails.cpp
     src/services/command/registrationRequest.cpp
     src/services/command/registrationResponse.cpp
-    src/services/command/remoteProxy.cpp
-    src/services/command/remoteProxyOptions.cpp
-    src/services/command/remoteRequestor.cpp
-    src/services/command/remoteRequestorOptions.cpp
-    src/services/command/remoteReplier.cpp
-    src/services/command/remoteReplierOptions.cpp 
     src/services/command/terminateRequest.cpp
     src/services/command/terminateResponse.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
@@ -172,6 +163,15 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/pick/subscriberOptions.cpp
     src/proxyServices/proxy.cpp
     src/proxyServices/proxyOptions.cpp
+    src/proxyServices/command/availableModulesRequest.cpp
+    src/proxyServices/command/availableModulesResponse.cpp
+    src/proxyServices/command/moduleDetails.cpp
+    src/proxyServices/command/remoteProxy.cpp
+    src/proxyServices/command/remoteProxyOptions.cpp
+    src/proxyServices/command/remoteRequestor.cpp
+    src/proxyServices/command/remoteRequestorOptions.cpp
+    src/proxyServices/command/remoteReplier.cpp
+    src/proxyServices/command/remoteReplierOptions.cpp
     src/proxyServices/incrementer/counter.cpp
     src/proxyServices/incrementer/incrementRequest.cpp
     src/proxyServices/incrementer/incrementResponse.cpp
@@ -392,14 +392,14 @@ target_include_directories(unitTests
 set(TEST_COMMUNICATION_SRC
     testing/communication/main.cpp
     testing/communication/remoteCommand.cpp
-    testing/communication/pubsub.cpp
-    testing/communication/authentication.cpp
-    testing/communication/requestRouter.cpp
-    testing/communication/xpubxsub.cpp
-    testing/communication/routerDealer.cpp
-    testing/communication/dataPacket.cpp
-    testing/communication/packetCache.cpp
-    testing/communication/incrementer.cpp
+    #testing/communication/pubsub.cpp
+    #testing/communication/authentication.cpp
+    #testing/communication/requestRouter.cpp
+    #testing/communication/xpubxsub.cpp
+    #testing/communication/routerDealer.cpp
+    #testing/communication/dataPacket.cpp
+    #testing/communication/packetCache.cpp
+    #testing/communication/incrementer.cpp
 )
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
 set_target_properties(commTests PROPERTIES

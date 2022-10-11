@@ -11,13 +11,13 @@
 #ifndef NDEBUG
 #include <cassert>
 #endif
-#include "umps/services/command/availableModulesRequest.hpp"
-#include "umps/services/command/availableModulesResponse.hpp"
-#include "umps/services/command/remoteProxy.hpp"
-#include "umps/services/command/remoteProxyOptions.hpp"
-#include "umps/services/command/registrationRequest.hpp"
-#include "umps/services/command/registrationResponse.hpp"
-#include "umps/services/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/remoteProxy.hpp"
+#include "umps/proxyServices/command/remoteProxyOptions.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/availableModulesRequest.hpp"
+#include "umps/proxyServices/command/availableModulesResponse.hpp"
+#include "umps/proxyServices/command/registrationRequest.hpp"
+#include "umps/proxyServices/command/registrationResponse.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/authenticator.hpp"
 #include "umps/authentication/service.hpp"
@@ -35,7 +35,7 @@
 
 //#define SOCKET_MONITOR_DEALER_ADDRESS "inproc://monitor.dealer"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 

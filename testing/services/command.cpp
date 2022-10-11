@@ -3,20 +3,20 @@
 #include <chrono>
 #include "umps/services/command/localModuleDetails.hpp"
 #include "umps/services/command/localRequestorOptions.hpp"
-#include "umps/services/command/remoteRequestorOptions.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
-#include "umps/services/command/availableModulesRequest.hpp"
-#include "umps/services/command/availableModulesResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/localModuleTable.hpp"
-#include "umps/services/command/remoteProxyOptions.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
-#include "umps/services/command/moduleDetails.hpp"
-#include "umps/services/command/registrationRequest.hpp"
-#include "umps/services/command/registrationResponse.hpp"
+#include "umps/proxyServices/command/availableModulesRequest.hpp"
+#include "umps/proxyServices/command/availableModulesResponse.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/registrationRequest.hpp"
+#include "umps/proxyServices/command/registrationResponse.hpp"
+#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
+#include "umps/proxyServices/command/remoteProxyOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
@@ -25,6 +25,7 @@ namespace
 {
 
 using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 bool operator==(const LocalModuleDetails &a,
                 const LocalModuleDetails &b)
@@ -152,7 +153,7 @@ TEST(Command, LocalRequestorOptions)
 }
 
 
-TEST(Command, CommandsRequest)
+TEST(Command, AvailableCommandsRequest)
 {
     AvailableCommandsRequest request;
 
@@ -162,7 +163,7 @@ TEST(Command, CommandsRequest)
               "UMPS::Services::Command::AvailableCommandsRequest");
 }
 
-TEST(Command, CommandsResponse)
+TEST(Command, AvailableCommandsResponse)
 {
     AvailableCommandsResponse response;
     const std::string commands = R"(
@@ -257,7 +258,7 @@ TEST(Command, RegistrationRequest)
     EXPECT_NO_THROW(rCopy.fromMessage(request.toMessage()));
     EXPECT_TRUE(rCopy.getModuleDetails() == details);
     EXPECT_EQ(rCopy.getMessageType(),
-              "UMPS::Services::Command::RegistrationRequest");
+              "UMPS::ProxyServices::Command::RegistrationRequest");
 }
 
 TEST(Command, RegistrationResponse)
@@ -271,7 +272,7 @@ TEST(Command, RegistrationResponse)
     EXPECT_NO_THROW(rCopy.fromMessage(response.toMessage()));
     EXPECT_EQ(rCopy.getReturnCode(), returnCode);
     EXPECT_EQ(rCopy.getMessageType(),
-              "UMPS::Services::Command::RegistrationResponse");
+              "UMPS::ProxyServices::Command::RegistrationResponse");
 }
 
 TEST(Command, ModuleDetails)
@@ -307,7 +308,7 @@ TEST(Command, AvailableModulesRequest)
     EXPECT_NO_THROW(rCopy.fromMessage(request.toMessage()));
     EXPECT_EQ(rCopy.getIdentifier(), identifier);
     EXPECT_EQ(rCopy.getMessageType(),
-              "UMPS::Services::Command::AvailableModulesRequest");
+              "UMPS::ProxyServices::Command::AvailableModulesRequest");
 
     request.clear();
     EXPECT_EQ(request.getIdentifier(), 0); 
@@ -350,7 +351,7 @@ TEST(Command, AvailableModulesResponse)
     }
     response.clear();
     EXPECT_EQ(response.getMessageType(),
-              "UMPS::Services::Command::AvailableModulesResponse");
+              "UMPS::ProxyServices::Command::AvailableModulesResponse");
 }
 
 TEST(Command, LocalModuleTable)

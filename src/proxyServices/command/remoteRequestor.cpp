@@ -1,12 +1,11 @@
 #include <string>
 #include <filesystem>
-#include "umps/services/command/remoteRequestor.hpp"
-#include "umps/services/command/remoteRequestorOptions.hpp"
-#include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/proxyServices/command/remoteRequestor.hpp"
+#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
+#include "umps/proxyServices/command/availableModulesRequest.hpp"
+#include "umps/proxyServices/command/availableModulesResponse.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
-#include "umps/services/command/availableModulesRequest.hpp"
-#include "umps/services/command/availableModulesResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/terminateRequest.hpp"
@@ -19,7 +18,8 @@
 #include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
+namespace UCommand = UMPS::Services::Command;
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 
 class RemoteRequestor::RemoteRequestorImpl
@@ -50,14 +50,14 @@ public:
         // Make the message types
         std::unique_ptr<UMPS::MessageFormats::IMessage>
             availableCommandsResponse
-               = std::make_unique<AvailableCommandsResponse> ();
+               = std::make_unique<UCommand::AvailableCommandsResponse> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage>
             availableModulesResponse
-               = std::make_unique<AvailableModulesResponse> (); 
+               = std::make_unique<AvailableModulesResponse> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> commandsResponse
-            = std::make_unique<CommandResponse> ();
+            = std::make_unique<UCommand::CommandResponse> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> terminateResponse
-            = std::make_unique<TerminateResponse> ();
+            = std::make_unique<UCommand::TerminateResponse> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> failureResponse
             = std::make_unique<UMPS::MessageFormats::Failure> ();
         mMessageFormats.add(availableCommandsResponse);
@@ -167,15 +167,16 @@ std::unique_ptr<AvailableModulesResponse>
 }
 
 /// Commands
-std::unique_ptr<AvailableCommandsResponse> RemoteRequestor::getCommands() const
+std::unique_ptr<UCommand::AvailableCommandsResponse>
+    RemoteRequestor::getCommands() const
 {
     if (!isInitialized())
     {
         throw std::runtime_error("Requestor not initialized");
     }
-    std::unique_ptr<AvailableCommandsResponse> result{nullptr};
+    std::unique_ptr<UCommand::AvailableCommandsResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
-    AvailableCommandsRequest requestMessage;
+    UCommand::AvailableCommandsRequest requestMessage;
     auto message = pImpl->mRequest->request(requestMessage);
     if (message != nullptr)
     {
@@ -185,7 +186,7 @@ std::unique_ptr<AvailableCommandsResponse> RemoteRequestor::getCommands() const
             throw std::runtime_error("Failed to get commands.  Failed with: "
                                    + failureMessage.getDetails());
         } 
-        result = static_unique_pointer_cast<AvailableCommandsResponse>
+        result = static_unique_pointer_cast<UCommand::AvailableCommandsResponse>
                  (std::move(message));
     }
     else
@@ -195,14 +196,14 @@ std::unique_ptr<AvailableCommandsResponse> RemoteRequestor::getCommands() const
     return result;
 }
 
-std::unique_ptr<CommandResponse> RemoteRequestor::issueCommand(
-    const CommandRequest &request)
+std::unique_ptr<UCommand::CommandResponse>
+    RemoteRequestor::issueCommand(const UCommand::CommandRequest &request)
 {
     if (!isInitialized())
     {   
         throw std::runtime_error("Requestor not initialized");
     }   
-    std::unique_ptr<CommandResponse> result{nullptr};
+    std::unique_ptr<UCommand::CommandResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
     auto message = pImpl->mRequest->request(request);
     if (message != nullptr)
@@ -213,7 +214,7 @@ std::unique_ptr<CommandResponse> RemoteRequestor::issueCommand(
             throw std::runtime_error("Failed to issue command.  Failed with: "
                                    + failureMessage.getDetails());
         }
-        result = static_unique_pointer_cast<CommandResponse>
+        result = static_unique_pointer_cast<UCommand::CommandResponse>
                  (std::move(message));
     }
     else
@@ -223,16 +224,16 @@ std::unique_ptr<CommandResponse> RemoteRequestor::issueCommand(
     return result;
 }
 
-std::unique_ptr<TerminateResponse>
+std::unique_ptr<UCommand::TerminateResponse>
     RemoteRequestor::issueTerminateCommand() const
 {
     if (!isInitialized())
     {
         throw std::runtime_error("Requestor not initialized");
     }
-    std::unique_ptr<TerminateResponse> result{nullptr};
+    std::unique_ptr<UCommand::TerminateResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
-    TerminateRequest requestMessage;
+    UCommand::TerminateRequest requestMessage;
     auto message = pImpl->mRequest->request(requestMessage);
     if (message != nullptr)
     {
@@ -243,7 +244,7 @@ std::unique_ptr<TerminateResponse>
                 "Failed to issue terminate command.  Failed with: "
                + failureMessage.getDetails());
         }
-        result = static_unique_pointer_cast<TerminateResponse>
+        result = static_unique_pointer_cast<UCommand::TerminateResponse>
                  (std::move(message));
     }
     else

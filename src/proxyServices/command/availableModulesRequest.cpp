@@ -2,12 +2,12 @@
 #include <vector>
 #include <string>
 #include <nlohmann/json.hpp>
-#include "umps/services/command/availableModulesRequest.hpp"
+#include "umps/proxyServices/command/availableModulesRequest.hpp"
 
-#define MESSAGE_TYPE "UMPS::Services::Command::AvailableModulesRequest"
+#define MESSAGE_TYPE "UMPS::ProxyServices::Command::AvailableModulesRequest"
 #define MESSAGE_VERSION "1.0.0"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 namespace
 {

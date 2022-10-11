@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_REMOTEREPLIEROPTIONS_HPP
-#define UMPS_SERVICES_COMMAND_REMOTEREPLIEROPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 #include <functional>
@@ -18,10 +18,14 @@ namespace UMPS
  {
   class ZAPOptions;
  }
+ namespace ProxyServices::Command
+ {
+  class ModuleDetails;
+ }
 }
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
-/// @class RemoteReplierOptions "remoteReplierOptions.hpp" "umps/command/remoteReplierOptions.hpp"
+/// @class RemoteReplierOptions "remoteReplierOptions.hpp" "umps/proxyServices/command/remoteReplierOptions.hpp"
 /// @brief Defines the options for the thread managing remote activity to
 ///        respond.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -78,7 +82,23 @@ public:
                                          (const std::string &messageType, const void *data, size_t length)> &callback);
     /// @result True indicates the callback was set.
     [[nodiscard]] bool haveCallback() const noexcept;
-    /// }
+    /// @}
+
+    /// @name Module Details (Required)
+    /// @{
+
+    /// @brief Sets the module details.
+    /// @param[in] details  The module details.
+    /// @throws std::invalid_argument if details.haveName() is false.
+    void setModuleDetails(const ModuleDetails &details);
+    /// @result The module details.
+    /// @throws std::runtime_error if \c haveModuleDetails() is false.
+    [[nodiscard]] ModuleDetails getModuleDetails() const; 
+    // @result True indicates the module details were set.
+    [[nodiscard]] bool haveModuleDetails() const noexcept;
+
+    /// @brief If true then if the module is registered.
+    /// @}
 
     /// @name High Water Mark
     /// @{

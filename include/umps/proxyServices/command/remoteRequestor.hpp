@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_REMOTEREQUESTOR_HPP
-#define UMPS_SERVICES_COMMAND_REMOTEREQUESTOR_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REQUESTOR_HPP
 #include <memory>
 namespace UMPS
 {
@@ -13,19 +13,22 @@ namespace UMPS
   class ILog;
  }
  namespace Services::Command
-  {
-   class RemoteRequestorOptions;
-   class AvailableCommandsResponse;
-   class AvailableModulesResponse;
-   class CommandRequest;
-   class CommandResponse;
-   class TerminateRequest;
-   class TerminateResponse;
-  }
+ {
+  class AvailableCommandsResponse;
+  class CommandRequest;
+  class CommandResponse;
+  class TerminateRequest;
+  class TerminateResponse;
+ }
+ namespace ProxyServices::Command
+ {
+  class AvailableModulesResponse;
+  class RemoteRequestorOptions;
+ } 
 }
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
-/// @class RemoteRequestor "remoteRequestor.hpp" "umps/services/command/localRequestor.hpp"
+/// @class RemoteRequestor "remoteRequestor.hpp" "umps/proxyServices/command/localRequestor.hpp"
 /// @brief This class allows the user to interact with programs running remotely
 ///        i.e., - on a different machine.  Nominally, you will only want this
 ///        to be used by privileged users that you trust.
@@ -81,19 +84,23 @@ public:
     /// @brief Gets the available registered modules with which to communicate.
     /// @result A message with the available modules.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::unique_ptr<AvailableModulesResponse> getAvailableModules() const;
+    [[nodiscard]]
+    std::unique_ptr<AvailableModulesResponse> getAvailableModules() const;
     /// @brief Gets the commands for interacting with this program.
     /// @result A message summarizing the options for interacting with
     ///         this program.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::unique_ptr<AvailableCommandsResponse> getCommands() const;
+    [[nodiscard]]
+    std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse> getCommands() const;
     /// @brief Issues a command to the program.
     /// @param[in] request  The request to issue to the program.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::unique_ptr<CommandResponse> issueCommand(const CommandRequest &request);
+    [[nodiscard]]
+    std::unique_ptr<UMPS::Services::Command::CommandResponse> issueCommand(const UMPS::Services::Command::CommandRequest &request);
     /// @brief Issues a remote-termination command to the program.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] std::unique_ptr<TerminateResponse> issueTerminateCommand() const;
+    [[nodiscard]]
+    std::unique_ptr<UMPS::Services::Command::TerminateResponse> issueTerminateCommand() const;
     /// @}
      
     /// @name Destructors

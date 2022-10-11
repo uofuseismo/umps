@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_REMOTE_PROXY_HPP
-#define UMPS_SERVICES_COMMAND_REMOTE_PROXY_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_HPP
 #include <memory>
 namespace UMPS
 {
@@ -17,17 +17,21 @@ namespace UMPS
  }
  namespace Services
  {
-  namespace Command
-  {
-   class RemoteProxyOptions;
-  }
   namespace ConnectionInformation
   { 
    class Details;
   }
  }
+ namespace ProxyServices::Command
+ {
+  class RemoteProxyOptions;
+ }
 }
-namespace UMPS::Services::Command
+/// @class RemoteProxy "remoteProxy.hpp" "umps/proxyServices/command/remoteProxy.hpp"
+/// @brief This is the intermediary that allows communication between a client
+///        and a backend service.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+namespace UMPS::ProxyServices::Command
 {
 class RemoteProxy
 {

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <thread>
-#include "umps/services/command/remoteReplier.hpp"
-#include "umps/services/command/remoteReplierOptions.hpp"
-#include "umps/services/command/registrationRequest.hpp"
-#include "umps/services/command/registrationResponse.hpp"
-#include "umps/services/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/remoteReplier.hpp"
+#include "umps/proxyServices/command/remoteReplierOptions.hpp"
+#include "umps/proxyServices/command/registrationRequest.hpp"
+#include "umps/proxyServices/command/registrationResponse.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messaging/context.hpp"
@@ -14,7 +14,7 @@
 #include "private/messaging/requestReplySocket.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
 

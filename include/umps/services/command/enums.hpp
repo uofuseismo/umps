@@ -25,16 +25,5 @@ enum class CommandReturnCode
     InvalidCommand = 1,  /*!< Indicates the command was invalid. */
     ApplicationError = 2 /*!< The code is valid but the application threw an error. */
 };
-/// @brief The service's return code for a registration request.
-enum class RegistrationReturnCode
-{
-    Success = 0,        /*!< The registration request succeeded. */
-    InvalidRequest = 1, /*!< The registration rqeuest failed because the
-                             request was invalid. */
-    Exists = 2,         /*!< The registration request failed because the
-                             module already exists. */
-    ServerError = 3     /*!< The registration request failed because of a
-                             server-side error. */ 
-};
 }
 #endif

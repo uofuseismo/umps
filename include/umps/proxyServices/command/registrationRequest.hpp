@@ -1,14 +1,14 @@
-#ifndef UMPS_SERVICES_COMMAND_REGISTRATION_REQUEST_HPP
-#define UMPS_SERVICES_COMMAND_REGISTRATION_REQUEST_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REGISTRATION_REQUEST_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REGISTRATION_REQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
  class ModuleDetails;
 }
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
-/// @class RegistrationRequest registrationRequest.hpp "umps/services/command/registrationRequest.hpp"
+/// @class RegistrationRequest registrationRequest.hpp "umps/proxyServices/command/registrationRequest.hpp"
 /// @brief Allows servers to request becoming a registered modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class RegistrationRequest : public UMPS::MessageFormats::IMessage

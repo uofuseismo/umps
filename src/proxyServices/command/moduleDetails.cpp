@@ -4,10 +4,10 @@
 #include <errno.h>
 #include <boost/asio/ip/host_name.hpp>
 #include <nlohmann/json.hpp>
-#include "umps/services/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
 #include "private/isEmpty.hpp"
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 class ModuleDetails::ModuleDetailsImpl
 {
@@ -160,8 +160,8 @@ std::string ModuleDetails::getExecutableName() const noexcept
 
 /// Print out the module details
 std::ostream&
-UMPS::Services::Command::operator<<(std::ostream &os,
-                                    const ModuleDetails &details)
+UMPS::ProxyServices::Command::operator<<(std::ostream &os,
+                                         const ModuleDetails &details)
 {
     std::stringstream result;
     result << "Module Details:" << std::endl;

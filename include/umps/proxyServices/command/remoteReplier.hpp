@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_REMOTEREPLIER_HPP
-#define UMPS_SERVICES_COMMAND_REMOTEREPLIER_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_REPLIER_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
@@ -17,12 +17,12 @@ namespace UMPS
  {
   class Reply;
  }
- namespace Services::Command
+ namespace ProxyServices::Command
  {
   class RemoteReplierOptions;
  }
 }
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
 /// @class Replier "replier.hpp" "umps/proxyServices/incrementer/replier.hpp"
 /// @brief A replier mechanism for the server in the incrementer.

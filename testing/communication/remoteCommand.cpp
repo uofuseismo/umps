@@ -2,14 +2,14 @@
 #include <chrono>
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
-#include "umps/services/command/availableModulesResponse.hpp"
-#include "umps/services/command/remoteProxy.hpp"
-#include "umps/services/command/remoteProxyOptions.hpp"
-#include "umps/services/command/remoteRequestor.hpp"
-#include "umps/services/command/remoteRequestorOptions.hpp"
-#include "umps/services/command/remoteReplier.hpp"
-#include "umps/services/command/remoteReplierOptions.hpp"
-#include "umps/services/command/moduleDetails.hpp"
+#include "umps/proxyServices/command/availableModulesResponse.hpp"
+#include "umps/proxyServices/command/remoteProxy.hpp"
+#include "umps/proxyServices/command/remoteProxyOptions.hpp"
+#include "umps/proxyServices/command/remoteRequestor.hpp"
+#include "umps/proxyServices/command/remoteRequestorOptions.hpp"
+#include "umps/proxyServices/command/remoteReplier.hpp"
+#include "umps/proxyServices/command/remoteReplierOptions.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/text.hpp"
 #include "umps/logging/stdout.hpp"
@@ -22,7 +22,7 @@
 namespace
 {
 
-using namespace UMPS::Services::Command;
+using namespace UMPS::ProxyServices::Command;
 
 /*
 class ResponseMessage : public UMPS::MessageFormats::IMessage
@@ -55,11 +55,12 @@ public:
                  const void *data, size_t length)
     {
 std::cout << "in callback" << std::endl;
-        AvailableCommandsRequest availableCommandsRequest;
+        UMPS::Services::Command::AvailableCommandsRequest
+            availableCommandsRequest;
         //RegistrationResponse registrationResponse;
         if (messageType == availableCommandsRequest.getMessageType())
         {
-            AvailableCommandsResponse response;
+            UMPS::Services::Command::AvailableCommandsResponse response;
             response.setCommands("Test");
             return response.clone();
         }

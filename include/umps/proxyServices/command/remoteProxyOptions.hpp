@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_REMOTEPROXYOPTIONS_HPP
-#define UMPS_SERVICES_COMMAND_REMOTEPROXYOPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_PROXY_OPTIONS_HPP
 #include <memory>
 namespace UMPS
 {
@@ -8,8 +8,11 @@ namespace UMPS
   class ZAPOptions;
  }
 }
-namespace UMPS::Services::Command
+namespace UMPS::ProxyServices::Command
 {
+/// @class RemoteProxyOptions "remoteProxyOptions.hpp" "umps/proxyServices/command/remoteProxyOptions.hpp"
+/// @brief Defines the options for the command proxy.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class RemoteProxyOptions
 {
 public:
