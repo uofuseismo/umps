@@ -1,21 +1,25 @@
-#ifndef UMPS_SERVICES_COMMAND_LOCAL_MODULE_TABLE_HPP
-#define UMPS_SERVICES_COMMAND_LOCAL_MODULE_TABLE_HPP
+#ifndef UMPS_SERVICES_COMMAND_MODULE_TABLE_HPP
+#define UMPS_SERVICES_COMMAND_MODULE_TABLE_HPP
 #include <memory>
 #include <vector>
 namespace UMPS::Services::Command
 {
- class LocalModuleDetails;
+ class ModuleDetails;
 }
 namespace UMPS::Services::Command
 {
-class LocalModuleTable
+/// @class ModuleTable "moduleTable.hpp" "umps/services/command/moduleTable.hpp"
+/// @brief This is for interacting with the underlying SQLite3 database that
+///        keeps track of the locally running modules.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+class ModuleTable
 {
 public:
     /// @names Constructors
     /// @{
 
     /// @brief Constructor.
-    LocalModuleTable();
+    ModuleTable();
     /// @}
 
     /// @name Open Table
@@ -55,7 +59,7 @@ public:
     /// @param[in] details  The module to determine if in the table.
     /// @throws std::runtime_error if \c isOpen() is false.
     /// @throws std::invalid_argument if details.haveName() is false.
-    //[[nodiscard]] bool haveModule(const LocalModuleDetails &details) const;
+    //[[nodiscard]] bool haveModule(const ModuleDetails &details) const;
     /// @result True indicates the module exists.
     /// @param[in] moduleName  The name of module to determine if in the table. 
     /// @throws std::runtime_error if \c isOpen() is false.
@@ -69,29 +73,29 @@ public:
     /// @param[in] details  The module details.
     /// @throws std::invalid_argument if the module name is not set.
     /// @throws std::invalid_argument if \c haveModule() is true.
-    void addModule(const LocalModuleDetails &details);
+    void addModule(const ModuleDetails &details);
 
     /// @brief Update module.
     /// @param[in] details  The module details to update.
     /// @throws std::invalid_argument if the module name is not set.
     /// @note If the module does not exist then it will be added.
-    void updateModule(const LocalModuleDetails &details);
+    void updateModule(const ModuleDetails &details);
 
     /// @brief Deletes a module given its name.
     /// @param[in] details  The module details containing the module name.
     /// @throws std::invalid_argument if details.haveName() is false.
-    void deleteModule(const LocalModuleDetails &details);
+    void deleteModule(const ModuleDetails &details);
     /// @param[in] moduleName  The name of the module to delete.
     void deleteModule(const std::string &moduleName);
     /// @}
 
     /// @brief Queries all modules.
     /// @result All the local modules in the module table.
-    [[nodiscard]] std::vector<LocalModuleDetails> queryAllModules() const;
+    [[nodiscard]] std::vector<ModuleDetails> queryAllModules() const;
     /// @result Queries a module.
     /// @param[in] name  The name of the module to query.
     /// @throws std::runtime_error if \c haveModule() is false.
-    [[nodiscard]] LocalModuleDetails queryModule(const std::string &name) const;
+    [[nodiscard]] ModuleDetails queryModule(const std::string &name) const;
 
     /// @names Destructors
     /// @{
@@ -99,11 +103,11 @@ public:
     /// @brief Closes the local module table.
     void close() noexcept;
     /// @brief Destructor.
-    ~LocalModuleTable();
+    ~ModuleTable();
     /// @}
 private:
-    class LocalModuleTableImpl;
-    std::unique_ptr<LocalModuleTableImpl> pImpl;
+    class ModuleTableImpl;
+    std::unique_ptr<ModuleTableImpl> pImpl;
 };
 }
 #endif

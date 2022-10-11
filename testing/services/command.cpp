@@ -1,13 +1,13 @@
 #include <string>
 #include <filesystem>
 #include <chrono>
-#include "umps/services/command/localModuleDetails.hpp"
-#include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/services/command/moduleDetails.hpp"
+#include "umps/services/command/requestorOptions.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
-#include "umps/services/command/localModuleTable.hpp"
+#include "umps/services/command/moduleTable.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 #include "umps/proxyServices/command/availableModulesRequest.hpp"
@@ -27,8 +27,8 @@ namespace
 using namespace UMPS::Services::Command;
 using namespace UMPS::ProxyServices::Command;
 
-bool operator==(const LocalModuleDetails &a,
-                const LocalModuleDetails &b)
+bool operator==(const UMPS::Services::Command::ModuleDetails &a,
+                const UMPS::Services::Command::ModuleDetails &b)
 {
     if (a.haveName() == b.haveName())
     {
@@ -47,8 +47,8 @@ bool operator==(const LocalModuleDetails &a,
     return true;
 }
 
-bool operator==(const ModuleDetails &a,
-                const ModuleDetails &b)
+bool operator==(const UMPS::ProxyServices::Command::ModuleDetails &a,
+                const UMPS::ProxyServices::Command::ModuleDetails &b)
 {
     if (a.haveName() == b.haveName())
     {
@@ -93,9 +93,9 @@ TEST(Command, ProxyOptions)
     EXPECT_EQ(cOptions.getBackendHighWaterMark(), backendHWM);
 }
 
-TEST(Command, LocalModuleDetails)
+TEST(Command, ModuleDetails)
 {
-    LocalModuleDetails details;
+    UMPS::Services::Command::ModuleDetails details;
     const std::string moduleName{"testModule"};
     const std::string directory{"./a/b/c"};
     const std::string ipcFile{"./a/b/c/testModule.ipc"};
@@ -107,7 +107,7 @@ TEST(Command, LocalModuleDetails)
     details.setProcessIdentifier(processIdentifier);
     details.setApplicationStatus(applicationStatus);
 
-    LocalModuleDetails dCopy(details);
+    UMPS::Services::Command::ModuleDetails dCopy(details);
     EXPECT_EQ(dCopy.getName(), moduleName);
     EXPECT_EQ(dCopy.getIPCDirectory(), directory);
     EXPECT_EQ(dCopy.getProcessIdentifier(), processIdentifier);
@@ -115,33 +115,33 @@ TEST(Command, LocalModuleDetails)
     EXPECT_EQ(dCopy.getIPCFileName(), ipcFile); 
 }
 
-TEST(Command, RequestorOptions)
+TEST(ProxyCommand, RequestorOptions)
 {
     const std::string address = "tcp://127.0.0.1:8080";
     const std::chrono::milliseconds timeOut{234}; 
-    RequestorOptions options;
+    UMPS::ProxyServices::Command::RequestorOptions options;
     EXPECT_NO_THROW(options.setAddress(address));
     options.setReceiveTimeOut(timeOut);
 
-    RequestorOptions copy(options);
+    UMPS::ProxyServices::Command::RequestorOptions copy(options);
     auto rOptions = copy.getOptions();
     EXPECT_EQ(rOptions.getAddress(), address);
     EXPECT_EQ(rOptions.getTimeOut(), timeOut);
 }
 
-TEST(Command, LocalRequestorOptions)
+TEST(Command, RequestorOptions)
 {
     const std::string moduleName{"example"};
     const std::string directory{"./"};
     const std::string ipcFileName{"./example.ipc"};
     const std::string address = "ipc://./example.ipc";
     const std::chrono::milliseconds timeOut{234};
-    LocalRequestorOptions options;
+    UMPS::Services::Command::RequestorOptions options;
     EXPECT_NO_THROW(options.setModuleName(moduleName));
     EXPECT_NO_THROW(options.setIPCDirectory(directory));
     options.setReceiveTimeOut(timeOut);
 
-    LocalRequestorOptions copy(options);
+    UMPS::Services::Command::RequestorOptions copy(options);
     EXPECT_EQ(copy.getModuleName(), moduleName);
     EXPECT_EQ(copy.getIPCDirectory(), directory);
     EXPECT_EQ(copy.getIPCFileName(), ipcFileName);
@@ -244,7 +244,7 @@ TEST(Command, TerminateResponse)
 
 TEST(Command, RegistrationRequest)
 {
-    ModuleDetails details;
+    UMPS::ProxyServices::Command::ModuleDetails details;
     details.setName("TestModule");
     details.setExecutableName("testBinary");
     details.setMachine("host.name");
@@ -275,14 +275,14 @@ TEST(Command, RegistrationResponse)
               "UMPS::ProxyServices::Command::RegistrationResponse");
 }
 
-TEST(Command, ModuleDetails)
+TEST(ProxyCommand, ModuleDetails)
 {
     const std::string moduleName{"TestModule"};
     const std::string machine{"TestMachine"};
     const std::string executable{"TestApp"};
     int64_t pid{1234};
     int64_t ppid{12345};
-    ModuleDetails details;
+    UMPS::ProxyServices::Command::ModuleDetails details;
  
     EXPECT_NO_THROW(details.setName(moduleName));
     details.setExecutableName(executable);
@@ -290,7 +290,7 @@ TEST(Command, ModuleDetails)
     details.setProcessIdentifier(pid);
     details.setParentProcessIdentifier(ppid);
 
-    ModuleDetails dcopy(details);
+    UMPS::ProxyServices::Command::ModuleDetails dcopy(details);
     EXPECT_EQ(details.getExecutableName(), executable);
     EXPECT_EQ(details.getName(), moduleName);
     EXPECT_EQ(details.getMachine(), machine);
@@ -316,7 +316,7 @@ TEST(Command, AvailableModulesRequest)
 
 TEST(Command, AvailableModulesResponse)
 {
-    std::vector<ModuleDetails> details(2);
+    std::vector<UMPS::ProxyServices::Command::ModuleDetails> details(2);
     details[0].setName("mod1");
     details[0].setExecutableName("exec1");
     details[0].setMachine("test1.machine.com");
@@ -354,9 +354,9 @@ TEST(Command, AvailableModulesResponse)
               "UMPS::ProxyServices::Command::AvailableModulesResponse");
 }
 
-TEST(Command, LocalModuleTable)
+TEST(Command, ModuleTable)
 {
-    LocalModuleTable table;
+    ModuleTable table;
     std::string tableName{"localModuleTable.sqlite3"};
     bool createIfDoesNotExist = true;
     table.open(tableName, createIfDoesNotExist);
@@ -376,22 +376,22 @@ TEST(Command, LocalModuleTable)
     const int64_t processIdentifier3{processIdentifier1 + processIdentifier2};
     const ApplicationStatus applicationStatus3{ApplicationStatus::Unknown};
 
-    std::vector<LocalModuleDetails> allModulesRef;
-    LocalModuleDetails details1;
+    std::vector<UMPS::Services::Command::ModuleDetails> allModulesRef;
+    UMPS::Services::Command::ModuleDetails details1;
     details1.setName(moduleName1);
     details1.setIPCDirectory(ipcDirectory1);
     details1.setProcessIdentifier(processIdentifier1);
     details1.setApplicationStatus(applicationStatus1);
     allModulesRef.push_back(details1);
 
-    LocalModuleDetails details2;
+    UMPS::Services::Command::ModuleDetails details2;
     details2.setName(moduleName2);
     details2.setIPCDirectory(ipcDirectory2);
     details2.setProcessIdentifier(processIdentifier2);
     details2.setApplicationStatus(applicationStatus2);
     allModulesRef.push_back(details2);
 
-    LocalModuleDetails details3;
+    UMPS::Services::Command::ModuleDetails details3;
     details3.setName(moduleName3);
     details3.setIPCDirectory(ipcDirectory3);
     details3.setProcessIdentifier(processIdentifier3);

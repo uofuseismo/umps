@@ -26,8 +26,8 @@
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
-#include "umps/services/command/localService.hpp"
-#include "umps/services/command/localServiceOptions.hpp"
+#include "umps/services/command/service.hpp"
+#include "umps/services/command/serviceOptions.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 #include "umps/proxyServices/incrementer/options.hpp"
@@ -93,8 +93,8 @@ public:
         {
             throw std::invalid_argument("Incrementer service not initialized");
         }
-        mLocalCommand = std::make_unique<UCommand::LocalService> (mLogger);
-        UCommand::LocalServiceOptions localServiceOptions;
+        mLocalCommand = std::make_unique<UCommand::Service> (mLogger);
+        UCommand::ServiceOptions localServiceOptions;
         localServiceOptions.setModuleName(moduleName);
         localServiceOptions.setCallback(
             std::bind(&IncrementerProcess::commandCallback,
@@ -259,8 +259,7 @@ public:
     mutable std::mutex mMutex;
     std::thread mIncrementerThread;
     std::unique_ptr<UIncrementer::Service> mIncrementer{nullptr};
-    std::unique_ptr<UMPS::Services::Command::LocalService>
-         mLocalCommand{nullptr};
+    std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     bool mKeepRunning{true};
     bool mInitialized{false};

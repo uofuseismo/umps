@@ -33,8 +33,8 @@
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
-#include "umps/services/command/localService.hpp"
-#include "umps/services/command/localServiceOptions.hpp"
+#include "umps/services/command/service.hpp"
+#include "umps/services/command/serviceOptions.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 #include "umps/modules/operator/readZAPOptions.hpp"
@@ -244,8 +244,8 @@ public:
             mLogger = std::make_shared<UMPS::Logging::StdOut> ();
         }
         mLocalCommand
-            = std::make_unique<UMPS::Services::Command::LocalService> (mLogger);
-        UMPS::Services::Command::LocalServiceOptions localServiceOptions;
+            = std::make_unique<UMPS::Services::Command::Service> (mLogger);
+        UMPS::Services::Command::ServiceOptions localServiceOptions;
         localServiceOptions.setModuleName(moduleName);
         localServiceOptions.setCallback(
             std::bind(&BroadcastPackets::commandCallback,
@@ -467,8 +467,7 @@ public:
     std::unique_ptr<UMPS::ProxyBroadcasts::DataPacket::Publisher>
          mPacketPublisher{nullptr};
     std::unique_ptr<UMPS::Earthworm::WaveRing> mWaveRing{nullptr};
-    std::unique_ptr<UMPS::Services::Command::LocalService>
-         mLocalCommand{nullptr};
+    std::unique_ptr<UMPS::Services::Command::Service> mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::chrono::seconds mBroadcastInterval{1};
     bool mKeepRunning{true};

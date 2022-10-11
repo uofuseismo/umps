@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_LOCAL_REQUESTOR_HPP
-#define UMPS_SERVICES_COMMAND_LOCAL_REQUESTOR_HPP
+#ifndef UMPS_SERVICES_COMMAND_REQUESTOR_HPP
+#define UMPS_SERVICES_COMMAND_REQUESTOR_HPP
 #include <memory>
 namespace UMPS
 {
@@ -14,7 +14,7 @@ namespace UMPS
  }
  namespace Services::Command
   {
-   class LocalRequestorOptions;
+   class RequestorOptions;
    class AvailableCommandsResponse;
    class CommandRequest;
    class CommandResponse;
@@ -24,31 +24,31 @@ namespace UMPS
 }
 namespace UMPS::Services::Command
 {
-/// @class LocalRequestor "localRequestor.hpp" "umps/services/command/localRequestor.hpp"
+/// @class Requestor "localRequestor.hpp" "umps/services/command/localRequestor.hpp"
 /// @brief This class allows the user to interact with programs running locally
 ///        via inter-process communication.  Note, the program to which to
 ///        communicate must be running and have opened an IPC reply service
 ///        from which to receive requests.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class LocalRequestor
+class Requestor
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    LocalRequestor();
+    Requestor();
     /// @brief Constructor with a given context.
-    explicit LocalRequestor(std::shared_ptr<UMPS::Messaging::Context> &context);
+    explicit Requestor(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructor with a given logger.
-    explicit LocalRequestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Requestor(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a given context and logger.
-    LocalRequestor(std::shared_ptr<UMPS::Messaging::Context> &context,
+    Requestor(std::shared_ptr<UMPS::Messaging::Context> &context,
                    std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Move constructor.
     /// @param[in,out] requestor  The requestor from which to create this class.
     ///                           On exit, requestor's behavior is undefined.
-    LocalRequestor(LocalRequestor &&requestor) noexcept;
+    Requestor(Requestor &&requestor) noexcept;
     /// @}
 
     /// @name Operators
@@ -59,7 +59,7 @@ public:
     ///                           to this.  On exit, requestor's behavior
     ///                           is undefined.
     /// @result The memory from the requestor moved to this.
-    LocalRequestor& operator=(LocalRequestor &&requestor) noexcept;
+    Requestor& operator=(Requestor &&requestor) noexcept;
     /// @}
 
     /// @name Initialization
@@ -70,7 +70,7 @@ public:
     ///                     have the module name.
     /// @throws std::invalid_argument if the module name is not set.
     /// @throws std::runtime_error if the application cannot connect.
-    void initialize(const LocalRequestorOptions &options);
+    void initialize(const RequestorOptions &options);
     /// @result True indicates the requestor is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @}
@@ -98,14 +98,14 @@ public:
     /// @brief Disconnects from the service.
     void disconnect();
     /// @brief Destructor.
-    ~LocalRequestor();
+    ~Requestor();
     /// @}
 
-    LocalRequestor(const LocalRequestor &) = delete;
-    LocalRequestor& operator=(const LocalRequestor &) = delete;
+    Requestor(const Requestor &) = delete;
+    Requestor& operator=(const Requestor &) = delete;
 private:
-    class LocalRequestorImpl;
-    std::unique_ptr<LocalRequestorImpl> pImpl;    
+    class RequestorImpl;
+    std::unique_ptr<RequestorImpl> pImpl;    
 };
 }
 #endif

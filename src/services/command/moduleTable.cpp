@@ -4,17 +4,17 @@
 #include <filesystem>
 #include <cstdint>
 #include <sqlite3.h>
-#include "umps/services/command/localModuleTable.hpp"
-#include "umps/services/command/localModuleDetails.hpp"
+#include "umps/services/command/moduleTable.hpp"
+#include "umps/services/command/moduleDetails.hpp"
 
 using namespace UMPS::Services::Command;
 
 namespace
 {
 
-LocalModuleDetails rowToDetails(sqlite3_stmt *result)
+ModuleDetails rowToDetails(sqlite3_stmt *result)
 {
-    LocalModuleDetails details;
+    ModuleDetails details;
     std::string moduleName(reinterpret_cast<const char *>
                            (sqlite3_column_text(result, 0)));
     std::string ipcFile(reinterpret_cast<const char *>
@@ -50,7 +50,7 @@ std::pair<int, std::string> createTable(sqlite3 *db)
 }
 
 /// @result A command to add a row.
-std::string addLocalModule(const LocalModuleDetails &row)
+std::string addModule(const ModuleDetails &row)
 {
     std::string fields = "module, ipc_file, process_identifier, status";
     std::string values;
@@ -84,7 +84,7 @@ std::string addLocalModule(const LocalModuleDetails &row)
 }
 
 /// @result A command to update a row
-std::string updateLocalModule(const LocalModuleDetails &row)
+std::string updateModule(const ModuleDetails &row)
 {
     std::string sql = "UPDATE local_modules SET ";
     if (row.haveName())
@@ -113,9 +113,9 @@ std::string updateLocalModule(const LocalModuleDetails &row)
 }
 
 /// Add module
-void addModule(sqlite3 *db, const LocalModuleDetails &module)
+void addModule(sqlite3 *db, const ModuleDetails &module)
 {
-    auto sql = ::addLocalModule(module);
+    auto sql = ::addModule(module);
     char *errorMessage = nullptr;
     auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
     if (rc != SQLITE_OK)
@@ -129,9 +129,9 @@ void addModule(sqlite3 *db, const LocalModuleDetails &module)
 }
 
 /// Update module
-void updateModule(sqlite3 *db, const LocalModuleDetails &module)
+void updateModule(sqlite3 *db, const ModuleDetails &module)
 {
-    auto sql = ::updateLocalModule(module);
+    auto sql = ::updateModule(module);
     char *errorMessage = nullptr;
     auto rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &errorMessage);
     if (rc != SQLITE_OK)
@@ -176,7 +176,7 @@ bool haveModule(sqlite3 *db, const std::string &moduleName)
 }
 
 /// Query modules
-std::vector<LocalModuleDetails> queryAllModules(sqlite3 *db)
+std::vector<ModuleDetails> queryAllModules(sqlite3 *db)
 {
     std::string sql{"SELECT * FROM local_modules;"};
     sqlite3_stmt *result = nullptr;
@@ -187,7 +187,7 @@ std::vector<LocalModuleDetails> queryAllModules(sqlite3 *db)
                           + " statement.";
         throw std::runtime_error(error);
     }
-    std::vector<LocalModuleDetails> allDetails;
+    std::vector<ModuleDetails> allDetails;
     while (true)
     {
         auto step = sqlite3_step(result);
@@ -200,9 +200,9 @@ std::vector<LocalModuleDetails> queryAllModules(sqlite3 *db)
 }
 
 /// Query specific module
-LocalModuleDetails queryModule(sqlite3 *db, const std::string &moduleName)
+ModuleDetails queryModule(sqlite3 *db, const std::string &moduleName)
 {
-    LocalModuleDetails details;
+    ModuleDetails details;
     std::string sql{"SELECT * FROM local_modules WHERE module = ? LIMIT 1;"};
     sqlite3_stmt *result = nullptr;
     auto rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &result, NULL);
@@ -263,10 +263,10 @@ int deleteModule(sqlite3 *db, const std::string &moduleName)
 
 }
 
-class LocalModuleTable::LocalModuleTableImpl
+class ModuleTable::ModuleTableImpl
 {
 public:
-    ~LocalModuleTableImpl()
+    ~ModuleTableImpl()
     {
         closeTable();
     }
@@ -367,7 +367,7 @@ public:
         return ::haveModule(mTableHandle, details);
     }
     /// Add a module to the database
-    void addModule(const LocalModuleDetails &details)
+    void addModule(const ModuleDetails &details)
     {
         if (!details.haveName())
         {
@@ -382,7 +382,7 @@ public:
         ::addModule(mTableHandle, details);
     }
     /// Update a module
-    void updateModule(const LocalModuleDetails &details)
+    void updateModule(const ModuleDetails &details)
     {
         if (!details.haveName())
         {
@@ -415,7 +415,7 @@ public:
         ::deleteModule(mTableHandle, moduleName);
     }
     /// Query all modules
-    std::vector<LocalModuleDetails> queryAllModules() const
+    std::vector<ModuleDetails> queryAllModules() const
     {
         if (!haveTable())
         {
@@ -425,7 +425,7 @@ public:
         return ::queryAllModules(mTableHandle);
     }
     /// Query a specific momdule
-    LocalModuleDetails queryModule(const std::string &moduleName) const
+    ModuleDetails queryModule(const std::string &moduleName) const
     {
         if (!haveTable())
         {
@@ -453,16 +453,16 @@ public:
 };
 
 /// C'tor
-LocalModuleTable::LocalModuleTable() :
-    pImpl(std::make_unique<LocalModuleTableImpl> ())
+ModuleTable::ModuleTable() :
+    pImpl(std::make_unique<ModuleTableImpl> ())
 {
 }
 
 /// Destructor
-LocalModuleTable::~LocalModuleTable() = default;
+ModuleTable::~ModuleTable() = default;
 
 /// Open file
-void LocalModuleTable::open(const std::string &fileName,
+void ModuleTable::open(const std::string &fileName,
                             const bool createIfDoesNotExist)
 {
     if (!createIfDoesNotExist)
@@ -480,13 +480,13 @@ void LocalModuleTable::open(const std::string &fileName,
     }
 }
 
-void LocalModuleTable::open(const bool createIfDoesNotExist)
+void ModuleTable::open(const bool createIfDoesNotExist)
 {
     auto fileName = pImpl->mTableFile.string();
     open(fileName, createIfDoesNotExist);
 }
 
-void LocalModuleTable::openReadOnly(const std::string &fileName)
+void ModuleTable::openReadOnly(const std::string &fileName)
 {
     if (!std::filesystem::exists(fileName))
     {
@@ -500,21 +500,21 @@ void LocalModuleTable::openReadOnly(const std::string &fileName)
     }
 }
 
-void LocalModuleTable::openReadOnly()
+void ModuleTable::openReadOnly()
 {
     auto fileName = pImpl->mTableFile.string();
     openReadOnly(fileName);
 }
 
 /// Open?
-bool LocalModuleTable::isOpen() const noexcept
+bool ModuleTable::isOpen() const noexcept
 {
     return pImpl->haveTable();
 }
 
 /// Module exists?
 /*
-bool LocalModuleTable::haveModule(const LocalModuleDetails &details) const
+bool ModuleTable::haveModule(const ModuleDetails &details) const
 {
     if (!details.haveName())
     {
@@ -524,14 +524,14 @@ bool LocalModuleTable::haveModule(const LocalModuleDetails &details) const
 }
 */
 /// Module exists? 
-bool LocalModuleTable::haveModule(const std::string &moduleName) const
+bool ModuleTable::haveModule(const std::string &moduleName) const
 {
     if (!isOpen()){return false;}
     return pImpl->haveModule(moduleName); 
 }
 
 /// Add module
-void LocalModuleTable::addModule(const LocalModuleDetails &details)
+void ModuleTable::addModule(const ModuleDetails &details)
 {
     if (!isOpen()){throw std::runtime_error("Table not open");}
     if (!details.haveName())
@@ -546,7 +546,7 @@ void LocalModuleTable::addModule(const LocalModuleDetails &details)
 }
 
 /// Update module
-void LocalModuleTable::updateModule(const LocalModuleDetails &details)
+void ModuleTable::updateModule(const ModuleDetails &details)
 {
     if (!isOpen()){throw std::runtime_error("Table not open");}
     if (!details.haveName())
@@ -557,7 +557,7 @@ void LocalModuleTable::updateModule(const LocalModuleDetails &details)
 }
 
 /// Delete module
-void LocalModuleTable::deleteModule(const LocalModuleDetails &details)
+void ModuleTable::deleteModule(const ModuleDetails &details)
 {
     if (!details.haveName())
     {
@@ -566,7 +566,7 @@ void LocalModuleTable::deleteModule(const LocalModuleDetails &details)
     deleteModule(details.getName());
 }
 
-void LocalModuleTable::deleteModule(const std::string &moduleName)
+void ModuleTable::deleteModule(const std::string &moduleName)
 {
     if (!haveModule(moduleName))
     {
@@ -576,27 +576,27 @@ void LocalModuleTable::deleteModule(const std::string &moduleName)
 }
 
 /// Query all modules
-std::vector<LocalModuleDetails> LocalModuleTable::queryAllModules() const
+std::vector<ModuleDetails> ModuleTable::queryAllModules() const
 {
     if (!isOpen()){throw std::runtime_error("Table not open");}
     return pImpl->queryAllModules();
 }
 
 /// Query a module
-LocalModuleDetails LocalModuleTable::queryModule(const std::string &name) const
+ModuleDetails ModuleTable::queryModule(const std::string &name) const
 {
     if (!isOpen()){throw std::runtime_error("Table not open");}
     return pImpl->queryModule(name);
 }
 
 /// Closes the table
-void LocalModuleTable::close() noexcept
+void ModuleTable::close() noexcept
 {
     pImpl->closeTable();
 }
 
 /// Read-only?
-bool LocalModuleTable::isReadOnly() const
+bool ModuleTable::isReadOnly() const
 {
     if (!isOpen()){throw std::runtime_error("Table not open");}
     return pImpl->isReadOnly();

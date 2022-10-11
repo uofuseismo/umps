@@ -30,8 +30,8 @@
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
-#include "umps/services/command/localService.hpp"
-#include "umps/services/command/localServiceOptions.hpp"
+#include "umps/services/command/service.hpp"
+#include "umps/services/command/serviceOptions.hpp"
 #include "umps/services/connectionInformation/serviceOptions.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -342,7 +342,7 @@ public:
         }
     } 
     mutable std::mutex mMutex;
-    std::unique_ptr<UMPS::Services::Command::LocalService>
+    std::unique_ptr<UMPS::Services::Command::Service>
          mLocalCommand{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     bool mKeepRunning{true};

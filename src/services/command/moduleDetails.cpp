@@ -4,15 +4,15 @@
 #include <errno.h>
 #include <boost/config.hpp>
 #include <boost/interprocess/detail/os_thread_functions.hpp>
-#include "umps/services/command/localModuleDetails.hpp"
+#include "umps/services/command/moduleDetails.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;
 
-class LocalModuleDetails::LocalModuleDetailsImpl
+class ModuleDetails::ModuleDetailsImpl
 {
 public:
-    LocalModuleDetailsImpl()
+    ModuleDetailsImpl()
     {   
         try
         {
@@ -27,7 +27,7 @@ public:
     {
         mIPCFileName = mIPCDirectory / std::filesystem::path {mName + ".ipc"};
     } 
-    LocalModuleDetailsImpl& operator=(const LocalModuleDetailsImpl &) = default;
+    ModuleDetailsImpl& operator=(const ModuleDetailsImpl &) = default;
     std::string mName;
     std::filesystem::path mIPCFileName;
     std::filesystem::path mIPCDirectory
@@ -38,35 +38,35 @@ public:
 };
 
 /// C'tor
-LocalModuleDetails::LocalModuleDetails() :
-    pImpl(std::make_unique<LocalModuleDetailsImpl> ())
+ModuleDetails::ModuleDetails() :
+    pImpl(std::make_unique<ModuleDetailsImpl> ())
 {
 }
 
 /// Copy c'tor
-LocalModuleDetails::LocalModuleDetails(const LocalModuleDetails &details)
+ModuleDetails::ModuleDetails(const ModuleDetails &details)
 {
     *this = details;
 }
 
 /// Move c'tor
-LocalModuleDetails::LocalModuleDetails(LocalModuleDetails &&details) noexcept
+ModuleDetails::ModuleDetails(ModuleDetails &&details) noexcept
 {
     *this = std::move(details);
 }
 
 /// Copy assignment
-LocalModuleDetails&
-LocalModuleDetails::operator=(const LocalModuleDetails &details)
+ModuleDetails&
+ModuleDetails::operator=(const ModuleDetails &details)
 {
     if (&details == this){return *this;}
-    pImpl = std::make_unique<LocalModuleDetailsImpl> (*details.pImpl);
+    pImpl = std::make_unique<ModuleDetailsImpl> (*details.pImpl);
     return *this;
 }
 
 /// Move assignment
-LocalModuleDetails&
-LocalModuleDetails::operator=(LocalModuleDetails &&details) noexcept
+ModuleDetails&
+ModuleDetails::operator=(ModuleDetails &&details) noexcept
 {
     if (&details == this){return *this;}
     pImpl = std::move(details.pImpl);
@@ -74,59 +74,59 @@ LocalModuleDetails::operator=(LocalModuleDetails &&details) noexcept
 }
 
 /// Reset class
-void LocalModuleDetails::clear() noexcept
+void ModuleDetails::clear() noexcept
 {
-    pImpl = std::make_unique<LocalModuleDetailsImpl> ();
+    pImpl = std::make_unique<ModuleDetailsImpl> ();
 }
 
 /// Destructor
-LocalModuleDetails::~LocalModuleDetails() = default;
+ModuleDetails::~ModuleDetails() = default;
 
 /// Module name
-void LocalModuleDetails::setName(const std::string &name)
+void ModuleDetails::setName(const std::string &name)
 {
     if (isEmpty(name)){throw std::invalid_argument("Name is empty");}
     pImpl->mName = name;
     pImpl->createIPCFileName();
 }
 
-std::string LocalModuleDetails::getName() const
+std::string ModuleDetails::getName() const
 {
     if (!haveName()){throw std::runtime_error("Module name not set");}
     return pImpl->mName;
 }
 
-bool LocalModuleDetails::haveName() const noexcept
+bool ModuleDetails::haveName() const noexcept
 {
     return !pImpl->mName.empty();
 }
 
 /// Process ID
-void LocalModuleDetails::setProcessIdentifier(
+void ModuleDetails::setProcessIdentifier(
     const int64_t identifier) noexcept
 {
     pImpl->mProcessIdentifier = identifier;
 }
 
-int64_t LocalModuleDetails::getProcessIdentifier() const noexcept
+int64_t ModuleDetails::getProcessIdentifier() const noexcept
 {
     return pImpl->mProcessIdentifier;
 }
 
 /// App status
-void LocalModuleDetails::setApplicationStatus(
+void ModuleDetails::setApplicationStatus(
     const ApplicationStatus status) noexcept
 {
     pImpl->mApplicationStatus = status;
 }
 
-ApplicationStatus LocalModuleDetails::getApplicationStatus() const noexcept
+ApplicationStatus ModuleDetails::getApplicationStatus() const noexcept
 {
     return pImpl->mApplicationStatus;
 }
 
 /// IPC directory
-void LocalModuleDetails::setIPCDirectory(const std::string &directory)
+void ModuleDetails::setIPCDirectory(const std::string &directory)
 {
     pImpl->mIPCDirectory = directory;
     if (isEmpty(directory)){pImpl->mIPCDirectory = "./";}
@@ -134,13 +134,13 @@ void LocalModuleDetails::setIPCDirectory(const std::string &directory)
     if (haveName()){pImpl->createIPCFileName();}
 }
 
-std::string LocalModuleDetails::getIPCDirectory() const noexcept
+std::string ModuleDetails::getIPCDirectory() const noexcept
 {
     return pImpl->mIPCDirectory;
 }
 
 /// The IPC fil ename
-std::string LocalModuleDetails::getIPCFileName() const
+std::string ModuleDetails::getIPCFileName() const
 {
     if (!haveName()){throw std::runtime_error("Module name not set");}
     return pImpl->mIPCFileName;

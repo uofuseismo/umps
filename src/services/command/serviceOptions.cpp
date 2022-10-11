@@ -1,17 +1,17 @@
 #include <filesystem>
-#include "umps/services/command/localServiceOptions.hpp"
+#include "umps/services/command/serviceOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;
 
-class LocalServiceOptions::LocalServiceOptionsImpl
+class ServiceOptions::ServiceOptionsImpl
 {
 public:
     std::string mModuleName;
     std::filesystem::path mIPCDirectory
         = std::filesystem::path{std::string{std::getenv("HOME")}}
         / std::filesystem::path{".local/share/UMPS/ipc"};
-    std::filesystem::path mLocalModuleTable
+    std::filesystem::path mModuleTable
         = std::filesystem::path{ std::string(std::getenv("HOME")) }
         / std::filesystem::path{".local/share/UMPS/tables/localModuleTable.sqlite3"};
     std::function<
@@ -23,35 +23,35 @@ public:
 };
 
 /// C'tor
-LocalServiceOptions::LocalServiceOptions() :
-    pImpl(std::make_unique<LocalServiceOptionsImpl> ())
+ServiceOptions::ServiceOptions() :
+    pImpl(std::make_unique<ServiceOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-LocalServiceOptions::LocalServiceOptions(const LocalServiceOptions &options)
+ServiceOptions::ServiceOptions(const ServiceOptions &options)
 {
     *this = options;
 }
 
 /// Move c'tor
-LocalServiceOptions::LocalServiceOptions(LocalServiceOptions &&options) noexcept
+ServiceOptions::ServiceOptions(ServiceOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Copy assignment
-LocalServiceOptions&
-LocalServiceOptions::operator=(const LocalServiceOptions &options)
+ServiceOptions&
+ServiceOptions::operator=(const ServiceOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<LocalServiceOptionsImpl> (*options.pImpl);
+    pImpl = std::make_unique<ServiceOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-LocalServiceOptions&
-LocalServiceOptions::operator=(LocalServiceOptions &&options) noexcept
+ServiceOptions&
+ServiceOptions::operator=(ServiceOptions &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -59,7 +59,7 @@ LocalServiceOptions::operator=(LocalServiceOptions &&options) noexcept
 }
 
 /// Module name
-void LocalServiceOptions::setModuleName(const std::string &moduleName)
+void ServiceOptions::setModuleName(const std::string &moduleName)
 {
     if (::isEmpty(moduleName))
     {
@@ -68,18 +68,18 @@ void LocalServiceOptions::setModuleName(const std::string &moduleName)
     pImpl->mModuleName = moduleName;
 }
 
-std::string LocalServiceOptions::getModuleName() const
+std::string ServiceOptions::getModuleName() const
 {
     if (!haveModuleName()){throw std::runtime_error("Module name not set");}
     return pImpl->mModuleName;
 }
 
-bool LocalServiceOptions::haveModuleName() const noexcept
+bool ServiceOptions::haveModuleName() const noexcept
 {
     return !pImpl->mModuleName.empty();
 }
 
-std::string LocalServiceOptions::getAddress() const
+std::string ServiceOptions::getAddress() const
 {
     if (!haveModuleName())
     {
@@ -92,7 +92,7 @@ std::string LocalServiceOptions::getAddress() const
 }
 
 /// Sets the callback
-void LocalServiceOptions::setCallback(
+void ServiceOptions::setCallback(
     const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
                         (const std::string &, const void *, size_t)>
                         &callback)
@@ -103,7 +103,7 @@ void LocalServiceOptions::setCallback(
 
 std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
                         (const std::string &, const void *, size_t)>
-    LocalServiceOptions::getCallback() const
+    ServiceOptions::getCallback() const
 {
     if (!haveCallback())
     {
@@ -112,30 +112,30 @@ std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
     return pImpl->mCallback;
 }
 
-bool LocalServiceOptions::haveCallback() const noexcept
+bool ServiceOptions::haveCallback() const noexcept
 {
     return pImpl->mHaveCallback;
 }
 
 /// IPC directory
-void LocalServiceOptions::setIPCDirectory(const std::string &directory)
+void ServiceOptions::setIPCDirectory(const std::string &directory)
 {
     pImpl->mIPCDirectory = directory;
     if (isEmpty(directory)){pImpl->mIPCDirectory = "./";}
     if (directory == "."){pImpl->mIPCDirectory = "./";}
 }
 
-std::string LocalServiceOptions::getIPCDirectory() const noexcept
+std::string ServiceOptions::getIPCDirectory() const noexcept
 {
     return pImpl->mIPCDirectory;
 }
 
 /// Module table file
-void LocalServiceOptions::setLocalModuleTable(const std::string &fileName)
+void ServiceOptions::setModuleTable(const std::string &fileName)
 {
     if (std::filesystem::exists(fileName))
     {
-        pImpl->mLocalModuleTable = fileName;
+        pImpl->mModuleTable = fileName;
         return;
     }
     // Ensure directory exists
@@ -143,7 +143,7 @@ void LocalServiceOptions::setLocalModuleTable(const std::string &fileName)
     auto parentPath = path.parent_path();
     if (parentPath.empty())
     {
-        pImpl->mLocalModuleTable = "./" + fileName;
+        pImpl->mModuleTable = "./" + fileName;
         return;
     }
     if (!std::filesystem::create_directories(parentPath))
@@ -152,16 +152,16 @@ void LocalServiceOptions::setLocalModuleTable(const std::string &fileName)
     }
 }
 
-std::string LocalServiceOptions::getLocalModuleTable() const noexcept
+std::string ServiceOptions::getModuleTable() const noexcept
 {
-    return pImpl->mLocalModuleTable;
+    return pImpl->mModuleTable;
 }
 
 /// Reset class
-void LocalServiceOptions::clear() noexcept
+void ServiceOptions::clear() noexcept
 {
-    pImpl = std::make_unique<LocalServiceOptionsImpl> ();
+    pImpl = std::make_unique<ServiceOptionsImpl> ();
 }
 
 /// Destructor
-LocalServiceOptions::~LocalServiceOptions() = default;
+ServiceOptions::~ServiceOptions() = default;

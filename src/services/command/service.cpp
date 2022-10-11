@@ -6,10 +6,10 @@
 #ifndef NDEBUG
 #include <cassert>
 #endif
-#include "umps/services/command/localService.hpp"
-#include "umps/services/command/localServiceOptions.hpp"
-#include "umps/services/command/localModuleTable.hpp"
-#include "umps/services/command/localModuleDetails.hpp"
+#include "umps/services/command/service.hpp"
+#include "umps/services/command/serviceOptions.hpp"
+#include "umps/services/command/moduleTable.hpp"
+#include "umps/services/command/moduleDetails.hpp"
 #include "umps/services/connectionInformation/details.hpp"
 #include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -23,11 +23,11 @@ namespace UAuth = UMPS::Authentication;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 
-class LocalService::LocalServiceImpl
+class Service::ServiceImpl
 {
 public:
     /// C'tor
-    LocalServiceImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+    ServiceImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                      std::shared_ptr<UMPS::Logging::ILog> logger)
     {
         // Make the logger
@@ -45,8 +45,8 @@ public:
     void openModuleTable(const std::string &fileName,
                          const bool createIfDoesNotExist = true)
     {
-        if (mLocalModuleTable.isOpen()){mLocalModuleTable.close();}
-        mLocalModuleTable.open(fileName, createIfDoesNotExist);
+        if (mModuleTable.isOpen()){mModuleTable.close();}
+        mModuleTable.open(fileName, createIfDoesNotExist);
         mTableFile = fileName;
     } 
     void openModuleTable(const bool createIfDoesNotExist = true)
@@ -55,14 +55,14 @@ public:
         openModuleTable(fileName, createIfDoesNotExist);
     }
     /// Destructor
-    ~LocalServiceImpl()
+    ~ServiceImpl()
     {
         stop();
-        if (mLocalModuleTable.haveModule(mLocalModuleDetails.getName()))
+        if (mModuleTable.haveModule(mModuleDetails.getName()))
         {
-            mLocalModuleTable.deleteModule(mLocalModuleDetails.getName());
+            mModuleTable.deleteModule(mModuleDetails.getName());
         }
-        mLocalModuleTable.close();
+        mModuleTable.close();
     }
     /// Starts the proxy 
     void start()
@@ -72,12 +72,12 @@ public:
         assert(mRouter->isInitialized());
 #endif
         // Module exists - check if it is dead
-        if (mLocalModuleTable.haveModule(mLocalModuleDetails.getName()))
+        if (mModuleTable.haveModule(mModuleDetails.getName()))
         {
-            mLogger->debug("Module: " + mLocalModuleDetails.getName()
+            mLogger->debug("Module: " + mModuleDetails.getName()
                          + " exists.  Checking if dead...");
             auto existingModuleDetails
-                = mLocalModuleTable.queryModule(mLocalModuleDetails.getName());
+                = mModuleTable.queryModule(mModuleDetails.getName());
             auto pid
                 = static_cast<pid_t>
                   (existingModuleDetails.getProcessIdentifier());
@@ -89,12 +89,12 @@ public:
             }
             else // Module is dead - overwrite it's details
             {
-                mLocalModuleTable.updateModule(mLocalModuleDetails);
+                mModuleTable.updateModule(mModuleDetails);
             }
         }
         else // New module
         {
-            mLocalModuleTable.addModule(mLocalModuleDetails);
+            mModuleTable.addModule(mModuleDetails);
         }
         // Okay - start it
         mProxyThread = std::thread(&URequestRouter::Router::start,
@@ -111,8 +111,8 @@ public:
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Messaging::RequestRouter::Router> mRouter{nullptr};
     UMPS::Messaging::RequestRouter::RouterOptions mRouterOptions; 
-    LocalModuleTable mLocalModuleTable;
-    LocalModuleDetails mLocalModuleDetails;
+    ModuleTable mModuleTable;
+    ModuleDetails mModuleDetails;
     UCI::Details mConnectionDetails;
     std::thread mProxyThread;
     const std::string mName{"LocalCommand"};
@@ -123,29 +123,29 @@ public:
 };
 
 /// C'tor
-LocalService::LocalService() :
-    pImpl(std::make_unique<LocalServiceImpl> (nullptr, nullptr))
+Service::Service() :
+    pImpl(std::make_unique<ServiceImpl> (nullptr, nullptr))
 {
 }
 
-[[maybe_unused]] LocalService::LocalService(std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<LocalServiceImpl> (nullptr, logger))
+[[maybe_unused]] Service::Service(std::shared_ptr<UMPS::Logging::ILog> &logger) :
+    pImpl(std::make_unique<ServiceImpl> (nullptr, logger))
 {
 }
 
-LocalService::LocalService(std::shared_ptr<UMPS::Messaging::Context> &context) :
-    pImpl(std::make_unique<LocalServiceImpl> (context, nullptr))
+Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context) :
+    pImpl(std::make_unique<ServiceImpl> (context, nullptr))
 {
 }
 
-LocalService::LocalService(std::shared_ptr<UMPS::Messaging::Context> &context,
+Service::Service(std::shared_ptr<UMPS::Messaging::Context> &context,
                            std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<LocalServiceImpl> (context, logger))
+    pImpl(std::make_unique<ServiceImpl> (context, logger))
 {
 }
 
 /// Initilialize
-void LocalService::initialize(const LocalServiceOptions &options)
+void Service::initialize(const ServiceOptions &options)
 {
     if (!options.haveCallback())
     {
@@ -158,7 +158,7 @@ void LocalService::initialize(const LocalServiceOptions &options)
     stop(); // Ensure the service is stopped
     // Initialize the local process table
     constexpr bool createModuleTableIfDoesNotExist = true;
-    auto moduleTableFile = options.getLocalModuleTable();
+    auto moduleTableFile = options.getModuleTable();
     pImpl->openModuleTable(moduleTableFile, createModuleTableIfDoesNotExist);
     // Initialize the socket
     auto address = options.getAddress();
@@ -177,56 +177,56 @@ void LocalService::initialize(const LocalServiceOptions &options)
     pImpl->mConnectionDetails.setSecurityLevel(
         socketDetails.getSecurityLevel());
     // Local module details
-    LocalModuleDetails moduleDetails;
+    ModuleDetails moduleDetails;
     moduleDetails.setName(options.getModuleName());
     //moduleDetails.setProcessIdentifier() // Rely on default
     moduleDetails.setIPCDirectory(options.getIPCDirectory());
     moduleDetails.setApplicationStatus(ApplicationStatus::Running);
-    pImpl->mLocalModuleDetails = moduleDetails;
+    pImpl->mModuleDetails = moduleDetails;
     // Done
     pImpl->mInitialized = true;
 }
 
 /// Initialized?
-bool LocalService::isInitialized() const noexcept
+bool Service::isInitialized() const noexcept
 {
     return pImpl->mInitialized;
 }
 
 /// Is the service running?
-bool LocalService::isRunning() const noexcept
+bool Service::isRunning() const noexcept
 {
     return pImpl->mRouter->isRunning();
 }
 
 /// Service name
-std::string LocalService::getName() const
+std::string Service::getName() const
 {
     return pImpl->mName;
 }
 
 /// Connection details
-UCI::Details LocalService::getConnectionDetails() const
+UCI::Details Service::getConnectionDetails() const
 {
     if (!isInitialized()){throw std::runtime_error("Service not initialized");}
     return pImpl->mConnectionDetails;
 }
 
 /// Gets the request address
-std::string LocalService::getRequestAddress() const
+std::string Service::getRequestAddress() const
 {
     if (!isRunning()){throw std::runtime_error("Service is not running");}
     return pImpl->mConnectionDetails.getRouterSocketDetails().getAddress();
 }
 
 /// Stop the service
-void LocalService::stop()
+void Service::stop()
 {
     pImpl->stop();
 }
 
 /// Runs the service
-void LocalService::start()
+void Service::start()
 {
     if (!isInitialized())
     {
@@ -237,4 +237,4 @@ void LocalService::start()
 }
 
 /// Destructor
-LocalService::~LocalService() = default;
+Service::~Service() = default;

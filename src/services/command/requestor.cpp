@@ -1,7 +1,7 @@
 #include <string>
 #include <filesystem>
-#include "umps/services/command/localRequestor.hpp"
-#include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/services/command/requestor.hpp"
+#include "umps/services/command/requestorOptions.hpp"
 #include "umps/proxyServices/command/requestor.hpp"
 #include "umps/proxyServices/command/requestorOptions.hpp"
 #include "umps/services/command/availableCommandsRequest.hpp"
@@ -17,11 +17,11 @@
 
 using namespace UMPS::Services::Command;
 
-class LocalRequestor::LocalRequestorImpl
+class Requestor::RequestorImpl
 {
 public:
     /// @brief Constructor
-    LocalRequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
+    RequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
                        std::shared_ptr<UMPS::Logging::ILog> logger) :
         mRequestor(std::make_unique<ProxyServices::Command::Requestor>
                    (context, logger))
@@ -29,43 +29,43 @@ public:
     }
     std::unique_ptr<UMPS::ProxyServices::Command::Requestor>
         mRequestor{nullptr};
-    LocalRequestorOptions mLocalRequestorOptions;
+    RequestorOptions mRequestorOptions;
     std::filesystem::path mIPCFileName;
 };
 
 /// C'tor
-LocalRequestor::LocalRequestor() :
-    pImpl(std::make_unique<LocalRequestorImpl> (nullptr, nullptr))
+Requestor::Requestor() :
+    pImpl(std::make_unique<RequestorImpl> (nullptr, nullptr))
 {
 }
 
-LocalRequestor::LocalRequestor(
+Requestor::Requestor(
     std::shared_ptr<UMPS::Messaging::Context> &context) :
-    pImpl(std::make_unique<LocalRequestorImpl> (context, nullptr))
+    pImpl(std::make_unique<RequestorImpl> (context, nullptr))
 {
 }
 
-LocalRequestor::LocalRequestor(
+Requestor::Requestor(
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<LocalRequestorImpl> (nullptr, logger))
+    pImpl(std::make_unique<RequestorImpl> (nullptr, logger))
 {
 }
 
-LocalRequestor::LocalRequestor(
+Requestor::Requestor(
     std::shared_ptr<UMPS::Messaging::Context> &context,
     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<LocalRequestorImpl> (context, logger))
+    pImpl(std::make_unique<RequestorImpl> (context, logger))
 {
 }
 
 /// Move c'tor
-LocalRequestor::LocalRequestor(LocalRequestor &&requestor) noexcept
+Requestor::Requestor(Requestor &&requestor) noexcept
 {
     *this = std::move(requestor);
 }
 
 /// Move assignment
-LocalRequestor& LocalRequestor::operator=(LocalRequestor &&requestor) noexcept
+Requestor& Requestor::operator=(Requestor &&requestor) noexcept
 {
     if (&requestor == this){return *this;}
     pImpl = std::move(requestor.pImpl);
@@ -73,10 +73,10 @@ LocalRequestor& LocalRequestor::operator=(LocalRequestor &&requestor) noexcept
 }
 
 /// Destructor
-LocalRequestor::~LocalRequestor() = default;
+Requestor::~Requestor() = default;
 
 /// Initialize
-void LocalRequestor::initialize(const LocalRequestorOptions &options)
+void Requestor::initialize(const RequestorOptions &options)
 {
     if (!options.haveModuleName())
     {
@@ -90,7 +90,7 @@ void LocalRequestor::initialize(const LocalRequestorOptions &options)
     }
     auto requestOptions = options.getOptions();
     pImpl->mRequestor->initialize(requestOptions);
-    pImpl->mLocalRequestorOptions = options;
+    pImpl->mRequestorOptions = options;
 }
 
 /*
@@ -105,14 +105,14 @@ void LocalRequestor::initialize(const LocalRequestorOptions &options)
 */
 
 /// Initialized?
-bool LocalRequestor::isInitialized() const noexcept
+bool Requestor::isInitialized() const noexcept
 {
     return pImpl->mRequestor->isInitialized();
     //return pImpl->mRequest->isInitialized();
 }
 
 /// Commands
-std::unique_ptr<AvailableCommandsResponse> LocalRequestor::getCommands() const
+std::unique_ptr<AvailableCommandsResponse> Requestor::getCommands() const
 {
     if (!isInitialized())
     {
@@ -121,7 +121,7 @@ std::unique_ptr<AvailableCommandsResponse> LocalRequestor::getCommands() const
     return pImpl->mRequestor->getCommands();
 }
 
-std::unique_ptr<CommandResponse> LocalRequestor::issueCommand(
+std::unique_ptr<CommandResponse> Requestor::issueCommand(
     const CommandRequest &request)
 {
     if (!isInitialized())
@@ -131,7 +131,7 @@ std::unique_ptr<CommandResponse> LocalRequestor::issueCommand(
     return pImpl->mRequestor->issueCommand(request);
 }
 
-std::unique_ptr<TerminateResponse> LocalRequestor::issueTerminateCommand() const
+std::unique_ptr<TerminateResponse> Requestor::issueTerminateCommand() const
 {
     if (!isInitialized())
     {
@@ -140,7 +140,7 @@ std::unique_ptr<TerminateResponse> LocalRequestor::issueTerminateCommand() const
     return pImpl->mRequestor->issueTerminateCommand();
 }
 
-void LocalRequestor::disconnect()
+void Requestor::disconnect()
 {
     pImpl->mRequestor->disconnect();
 }

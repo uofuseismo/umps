@@ -104,12 +104,12 @@ set(MODULES_LIBSRC
     src/services/command/availableCommandsResponse.cpp
     src/services/command/commandRequest.cpp
     src/services/command/commandResponse.cpp
-    src/services/command/localModuleDetails.cpp
-    src/services/command/localModuleTable.cpp
-    src/services/command/localRequestor.cpp
-    src/services/command/localRequestorOptions.cpp
-    src/services/command/localService.cpp
-    src/services/command/localServiceOptions.cpp
+    src/services/command/moduleDetails.cpp
+    src/services/command/moduleTable.cpp
+    src/services/command/requestor.cpp
+    src/services/command/requestorOptions.cpp
+    src/services/command/service.cpp
+    src/services/command/serviceOptions.cpp
     src/services/command/registrationRequest.cpp
     src/services/command/registrationResponse.cpp
     src/services/command/terminateRequest.cpp

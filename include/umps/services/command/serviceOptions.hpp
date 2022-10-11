@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_LOCALSERVICEOPTIONS_HPP
-#define UMPS_SERVICES_COMMAND_LOCALSERVICEOPTIONS_HPP
+#ifndef UMPS_SERVICES_COMMAND_SERVICE_OPTIONS_HPP
+#define UMPS_SERVICES_COMMAND_SERVICE_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 #include <functional>
@@ -13,26 +13,26 @@ namespace UMPS
 }
 namespace UMPS::Services::Command
 {
-/// @class LocalServiceOptions "localServiceOptions.hpp" "umps/services/command/localServiceOptions.hpp"
+/// @class ServiceOptions "serviceOptions.hpp" "umps/services/command/serviceOptions.hpp"
 /// @brief This class allows a background application to interact with a user.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class LocalServiceOptions
+class ServiceOptions
 {
 public:
     /// @name Constructors
     /// @{
  
     /// @brief Constructor.
-    LocalServiceOptions();
+    ServiceOptions();
     /// @brief Copy constructor.
     /// @param[in] options  The options class from which to initialize
     ///                     this class.
-    LocalServiceOptions(const LocalServiceOptions &options);
+    ServiceOptions(const ServiceOptions &options);
     /// @brief Move constructor.
     /// @param[in,out] options  The options class from which to initialize this
     ///                         class.  On exit, options's behavior is
     ///                         undefined.
-    LocalServiceOptions(LocalServiceOptions &&options) noexcept;
+    ServiceOptions(ServiceOptions &&options) noexcept;
     /// @}
 
     /// @name Operators
@@ -41,12 +41,12 @@ public:
     /// @brief Copy assignment.
     /// @param[in] options  The options to copy to this.
     /// @result A deep copy of the input options.
-    LocalServiceOptions& operator=(const LocalServiceOptions &options);
+    ServiceOptions& operator=(const ServiceOptions &options);
     /// @brief Move assignment.
     /// @param[in] options  The options class whose memory will be moved
     ///                     to this.  On exit, options's behavior is undefined.
     /// @result The memory from the options moved to this.
-    LocalServiceOptions& operator=(LocalServiceOptions &&options) noexcept;
+    ServiceOptions& operator=(ServiceOptions &&options) noexcept;
     /// @}
 
     /// @name Module Name (Required)
@@ -123,9 +123,9 @@ public:
     ///                      table.
     /// @throws std::runtime_error if the directory to contain the file cannot
     ///         be made.
-    void setLocalModuleTable(const std::string &fileName);
+    void setModuleTable(const std::string &fileName);
     /// @result The sqlite3 file that contains the local_modules table.
-    [[nodiscard]] std::string getLocalModuleTable() const noexcept;
+    [[nodiscard]] std::string getModuleTable() const noexcept;
     /// @}
 
     /// @name Destructors
@@ -134,11 +134,11 @@ public:
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor
-    ~LocalServiceOptions();
+    ~ServiceOptions();
     /// @} 
 private:
-    class LocalServiceOptionsImpl;
-    std::unique_ptr<LocalServiceOptionsImpl> pImpl;
+    class ServiceOptionsImpl;
+    std::unique_ptr<ServiceOptionsImpl> pImpl;
 };
 }
 #endif

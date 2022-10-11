@@ -1,27 +1,27 @@
-#ifndef UMPS_SERVICES_COMMAND_LOCAL_MODULE_DETAILS_HPP
-#define UMPS_SERVICES_COMMAND_LOCAL_MODULE_DETAILS_HPP
+#ifndef UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
+#define UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
 #include <memory>
 #include "umps/services/command/enums.hpp"
 namespace UMPS::Services::Command
 {
-/// @class LocalModuleDetails "localModuleDetails.hpp "umps/services/moduleRegistry/localModuleDetails.hpp"
+/// @class ModuleDetails "moduleDetails.hpp "umps/services/moduleRegistry/moduleDetails.hpp"
 /// @brief Defines the locally running module properties.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class LocalModuleDetails
+class ModuleDetails
 {
 public:
     /// @name Constructors
     /// @{
 
     /// @brief Constructor.
-    LocalModuleDetails();
+    ModuleDetails();
     /// @brief Copy constructor.
     /// @param[in] details  The details from which to initialize this class.
-    LocalModuleDetails(const LocalModuleDetails &details);
+    ModuleDetails(const ModuleDetails &details);
     /// @brief Move constructor.
     /// @param[in,out] details  The details from which to initialize this class.
     ///                         On exit, details's behavior is undefined.
-    LocalModuleDetails(LocalModuleDetails &&details) noexcept;
+    ModuleDetails(ModuleDetails &&details) noexcept;
     /// @}
 
     /// @name Required Properties
@@ -70,12 +70,12 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] details  The details to copy to this.
     /// @result A deep copy of the input details.
-    LocalModuleDetails& operator=(const LocalModuleDetails &details);
+    ModuleDetails& operator=(const ModuleDetails &details);
     /// @brief Move assignment operator.
     /// @param[in,out] details  The details whose memory will be moved to this.
     ///                         On exit, details's behavior is undefined.
     /// @result The memory from details moved to this.
-    LocalModuleDetails& operator=(LocalModuleDetails &&details) noexcept;
+    ModuleDetails& operator=(ModuleDetails &&details) noexcept;
     /// @}
 
     /// @name Destructors
@@ -84,11 +84,11 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~LocalModuleDetails();
+    ~ModuleDetails();
     /// @}
 private:
-    class LocalModuleDetailsImpl;
-    std::unique_ptr<LocalModuleDetailsImpl> pImpl;
+    class ModuleDetailsImpl;
+    std::unique_ptr<ModuleDetailsImpl> pImpl;
 };
 }
 #endif

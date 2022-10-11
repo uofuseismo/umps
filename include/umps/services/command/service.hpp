@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_COMMAND_LOCALSERVICE_HPP
-#define UMPS_SERVICES_COMMAND_LOCALSERVICE_HPP
+#ifndef UMPS_SERVICES_COMMAND_SERVICE_HPP
+#define UMPS_SERVICES_COMMAND_SERVICE_HPP
 #include <memory>
 #include "umps/services/service.hpp"
 namespace UMPS
@@ -21,33 +21,33 @@ namespace UMPS
   }
   namespace Command
   {
-   class LocalServiceOptions;
+   class ServiceOptions;
   }
  }
 }
 namespace UMPS::Services::Command
 {
-/// @class LocalService "localService.hpp" "umps/services/command/localService.hpp"
+/// @class Service "service.hpp" "umps/services/command/service.hpp"
 /// @brief This class allows a background application to interact with a user.
 /// @detail This class will write the IPC file details for this module to the
 ///         local modules table.  A user's application can query this table
 ///         for the IPC file then directly make requests to the application
 ///         via the underlying request-router.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class LocalService : public UMPS::Services::IService
+class Service : public UMPS::Services::IService
 {
 public:
     /// @name Constructors
     /// @{
  
     /// @brief Constructor.
-    LocalService();
+    Service();
     /// @brief Constructor with a logger.
-    explicit LocalService(std::shared_ptr<UMPS::Logging::ILog> &logger);
+    explicit Service(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @brief Constructor with a context.
-    explicit LocalService(std::shared_ptr<UMPS::Messaging::Context> &context);
+    explicit Service(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructor with a context and logger
-    LocalService(std::shared_ptr<UMPS::Messaging::Context> &context,
+    Service(std::shared_ptr<UMPS::Messaging::Context> &context,
                  std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
@@ -55,7 +55,7 @@ public:
     /// @{
 
     /// @brief Sets the local service options.
-    void initialize(const LocalServiceOptions &options);
+    void initialize(const ServiceOptions &options);
     /// @}
 
     /// @result True indicates that the service is initialized.
@@ -80,16 +80,16 @@ public:
     /// @name Destructors
     /// @{
 
-    ~LocalService() override;
+    ~Service() override;
     /// @}
 
-    LocalService(const LocalService &) = delete;
-    LocalService(LocalService &&) noexcept = delete;
-    LocalService& operator=(const LocalService &) = delete;
-    LocalService& operator=(LocalService &&) noexcept = delete;
+    Service(const Service &) = delete;
+    Service(Service &&) noexcept = delete;
+    Service& operator=(const Service &) = delete;
+    Service& operator=(Service &&) noexcept = delete;
 private:
-    class LocalServiceImpl;
-    std::unique_ptr<LocalServiceImpl> pImpl; 
+    class ServiceImpl;
+    std::unique_ptr<ServiceImpl> pImpl; 
 };
 }
 #endif

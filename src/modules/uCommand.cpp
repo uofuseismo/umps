@@ -8,10 +8,10 @@
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
-#include "umps/services/command/localModuleTable.hpp"
-#include "umps/services/command/localModuleDetails.hpp"
-#include "umps/services/command/localRequestor.hpp"
-#include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/services/command/moduleTable.hpp"
+#include "umps/services/command/moduleDetails.hpp"
+#include "umps/services/command/requestor.hpp"
+#include "umps/services/command/requestorOptions.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 
 
@@ -20,9 +20,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
     std::shared_ptr<UMPS::Logging::ILog> logger
         = std::make_shared<UMPS::Logging::StdOut> ();
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
-    std::unique_ptr<UMPS::Services::Command::LocalRequestor> requestor{nullptr};
-    UMPS::Services::Command::LocalModuleTable moduleTable;
-    std::vector<UMPS::Services::Command::LocalModuleDetails> allModules;
+    std::unique_ptr<UMPS::Services::Command::Requestor> requestor{nullptr};
+    UMPS::Services::Command::ModuleTable moduleTable;
+    std::vector<UMPS::Services::Command::ModuleDetails> allModules;
     try
     {
         moduleTable.openReadOnly();
@@ -78,10 +78,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 continue;
             } 
             // Now connect
-            UMPS::Services::Command::LocalRequestorOptions requestorOptions;
+            UMPS::Services::Command::RequestorOptions requestorOptions;
             requestorOptions.setModuleName(moduleName);
             requestor
-                = std::make_unique<UMPS::Services::Command::LocalRequestor>
+                = std::make_unique<UMPS::Services::Command::Requestor>
                   (context, logger);
             bool maintainConnection = true;
             try

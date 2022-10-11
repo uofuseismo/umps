@@ -2,13 +2,13 @@
 #include <algorithm>
 #include <string>
 #include <filesystem>
-#include "umps/services/command/localRequestorOptions.hpp"
+#include "umps/services/command/requestorOptions.hpp"
 #include "umps/proxyServices/command/requestorOptions.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::Services::Command;
 
-class LocalRequestorOptions::LocalRequestorOptionsImpl
+class RequestorOptions::RequestorOptionsImpl
 {
 public:
     [[nodiscard]] std::string getIPCFileName() const
@@ -37,37 +37,37 @@ public:
 };
 
 /// C'tor
-LocalRequestorOptions::LocalRequestorOptions() :
-    pImpl(std::make_unique<LocalRequestorOptionsImpl> ())
+RequestorOptions::RequestorOptions() :
+    pImpl(std::make_unique<RequestorOptionsImpl> ())
 {
 }
 
 /// Copy c'tor
-LocalRequestorOptions::LocalRequestorOptions(
-    const LocalRequestorOptions &options)
+RequestorOptions::RequestorOptions(
+    const RequestorOptions &options)
 {
     *this = options;
 }
 
 /// Copy m'tor
-LocalRequestorOptions::LocalRequestorOptions(
-    LocalRequestorOptions &&options) noexcept
+RequestorOptions::RequestorOptions(
+    RequestorOptions &&options) noexcept
 {
     *this = std::move(options);
 }
 
 /// Copy assignment
-LocalRequestorOptions&
-LocalRequestorOptions::operator=(const LocalRequestorOptions &options)
+RequestorOptions&
+RequestorOptions::operator=(const RequestorOptions &options)
 {
     if (&options == this){return *this;}
-    pImpl = std::make_unique<LocalRequestorOptionsImpl> (*options.pImpl);
+    pImpl = std::make_unique<RequestorOptionsImpl> (*options.pImpl);
     return *this;
 }
 
 /// Move assignment
-LocalRequestorOptions&
-LocalRequestorOptions::operator=(LocalRequestorOptions &&options) noexcept
+RequestorOptions&
+RequestorOptions::operator=(RequestorOptions &&options) noexcept
 {
     if (&options == this){return *this;}
     pImpl = std::move(options.pImpl);
@@ -75,16 +75,16 @@ LocalRequestorOptions::operator=(LocalRequestorOptions &&options) noexcept
 }
 
 /// Destructor
-LocalRequestorOptions::~LocalRequestorOptions() = default;
+RequestorOptions::~RequestorOptions() = default;
 
 /// Reset
-void LocalRequestorOptions::clear() noexcept
+void RequestorOptions::clear() noexcept
 {
-    pImpl = std::make_unique<LocalRequestorOptionsImpl> ();
+    pImpl = std::make_unique<RequestorOptionsImpl> ();
 } 
 
 /// Module name
-void LocalRequestorOptions::setModuleName(const std::string &name)
+void RequestorOptions::setModuleName(const std::string &name)
 {
     if (isEmpty(name)){throw std::invalid_argument("Module name is empty");}
     pImpl->mModuleName = name;
@@ -93,19 +93,19 @@ void LocalRequestorOptions::setModuleName(const std::string &name)
     pImpl->updateAddress();
 }
 
-std::string LocalRequestorOptions::getModuleName() const
+std::string RequestorOptions::getModuleName() const
 {
     if (!haveModuleName()){throw std::runtime_error("Module name not set");}
     return pImpl->mModuleName;
 }
 
-bool LocalRequestorOptions::haveModuleName() const noexcept
+bool RequestorOptions::haveModuleName() const noexcept
 {
     return !pImpl->mModuleName.empty();
 }
 
 /// IPC directory
-void LocalRequestorOptions::setIPCDirectory(const std::string &directory)
+void RequestorOptions::setIPCDirectory(const std::string &directory)
 {
     if (directory.empty())
     {
@@ -123,12 +123,12 @@ void LocalRequestorOptions::setIPCDirectory(const std::string &directory)
     pImpl->updateAddress();
 }
 
-std::string LocalRequestorOptions::getIPCDirectory() const noexcept
+std::string RequestorOptions::getIPCDirectory() const noexcept
 {
     return pImpl->mIPCDirectory;
 }
 
-std::string LocalRequestorOptions::getIPCFileName() const
+std::string RequestorOptions::getIPCFileName() const
 {
     return pImpl->getIPCFileName();
     //auto moduleName = getModuleName(); // Throws
@@ -138,7 +138,7 @@ std::string LocalRequestorOptions::getIPCFileName() const
 }
 
 /// Time-out
-void LocalRequestorOptions::setReceiveTimeOut(
+void RequestorOptions::setReceiveTimeOut(
     const std::chrono::milliseconds &timeOut)
 {
     pImpl->mOptions.setReceiveTimeOut(timeOut);
@@ -146,7 +146,7 @@ void LocalRequestorOptions::setReceiveTimeOut(
 
 /// Requestor options
 UMPS::ProxyServices::Command::RequestorOptions
-    LocalRequestorOptions::getOptions() const
+    RequestorOptions::getOptions() const
 {
     return pImpl->mOptions;
 }
