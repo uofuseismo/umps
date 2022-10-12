@@ -1,5 +1,6 @@
 #ifndef PRIVATE_MESSAGING_REQUEST_REPLY_SOCKET_HPP
 #define PRIVATE_MESSAGING_REQUEST_REPLY_SOCKET_HPP
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -16,6 +17,7 @@
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/messaging/socketOptions.hpp"
+#include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messageFormats/message.hpp"
@@ -88,7 +90,8 @@ public:
         if (mConnected)
         {
             mSocket->disconnect(mAddress);
-            ::removeIPCFile(mAddress, &*mLogger);
+            // Stable end points should be creating IPC file
+            if (!mConnect){::removeIPCFile(mAddress, &*mLogger);}
             mAddress.clear();
             mConnected = false;
         }
@@ -169,12 +172,14 @@ public:
         {
             mLogger->debug("Attempting to connect to: " + address);
             mSocket->connect(address);
+            mConnect = true;
             mLogger->debug("Connected to: " + address);
         }
         else
         {
             mLogger->debug("Attempting to bind to: " + address);
-            mSocket->connect(address);
+            mSocket->bind(address);
+            mConnect = false;
             mLogger->debug("Bound to: " + address);
         }
         // Resolve end point
@@ -408,7 +413,7 @@ public:
     {
         if (!isConnected())
         {
-            throw std::runtime_error("Reply not connected");
+            throw std::runtime_error("Socket not connected");
         }
         zmq::const_buffer headerBuffer{header.data(), header.size()};
         mSocket->send(headerBuffer, zmq::send_flags::sndmore);
@@ -416,9 +421,9 @@ public:
                                         message.size()};
         if (mLogger->getLevel() >= UMPS::Logging::Level::Debug)
         {
-            mLogger->debug("Reply sending message: " + header);
+            mLogger->debug("Socket sending message: " + header);
         }
-        mSocket->send(messageBuffer);
+        mSocket->send(messageBuffer, zmq::send_flags::none);
     }
     /// @brief Sends an IMessage.
     void send(const UMPS::MessageFormats::IMessage &message)
@@ -435,6 +440,13 @@ public:
         }
         // Send the message
         send(messageType, messageContents);
+    }
+    /// @brief Maeks a request.
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
+        request(const UMPS::MessageFormats::IMessage &request)
+    {
+        send(request); // Send
+        return receive(zmq::recv_flags::none); // Now return the reply
     }
     /// @brief Stops the service.
     void stop()
@@ -481,6 +493,7 @@ public:
     zmq::socket_type mSocketType;
     std::chrono::milliseconds mPollTimeOut{10};
     bool mConnected{false};
+    bool mConnect{true};
     bool mRunning{false};
     bool mHaveCallback{false};
 };
@@ -503,10 +516,30 @@ public:
            const UMPS::Messaging::RouterDealer::RequestOptions &options)
     {
         UMPS::Messaging::SocketOptions socketOptions;
-        socketOptions.setAddress(options.getAddress());
+        socketOptions.setAddress(options.getAddress()); // Throws
         socketOptions.setZAPOptions(options.getZAPOptions());
-        socketOptions.setReceiveHighWaterMark(options.getHighWaterMark());
-        socketOptions.setSendHighWaterMark(options.getHighWaterMark());
+        socketOptions.setMessageFormats(options.getMessageFormats());
+        auto receiveHighWaterMark = options.getHighWaterMark();
+        socketOptions.setReceiveHighWaterMark(receiveHighWaterMark);
+        // Use default of 0 which is infinite
+        //socketOptions.setSendHighWaterMark(sendHighWaterMark);
+        return socketOptions;
+    }
+    /// @brief Converts the socket options
+    [[nodiscard]] UMPS::Messaging::SocketOptions
+        convertSocketOptions(
+           const UMPS::Messaging::RequestRouter::RequestOptions &options)
+    {
+        UMPS::Messaging::SocketOptions socketOptions;
+        socketOptions.setAddress(options.getAddress()); // Throws
+        socketOptions.setZAPOptions(options.getZAPOptions());
+        socketOptions.setMessageFormats(options.getMessageFormats());
+        auto receiveHighWaterMark = options.getHighWaterMark();
+        socketOptions.setReceiveHighWaterMark(receiveHighWaterMark);
+        // Use default of 0 which is infinite
+        //socketOptions.setSendHighWaterMark(sendHighWaterMark);
+        socketOptions.setReceiveTimeOut(options.getTimeOut());
+        socketOptions.setSendTimeOut(options.getTimeOut());
         return socketOptions;
     }
     /// @brief Connect
@@ -515,6 +548,16 @@ public:
         auto socketOptions = convertSocketOptions(options); // Throws
         constexpr bool lConnect{true};
         connectOrBind(socketOptions, lConnect); 
+    }
+    /// @brief Connect
+    void connect(const UMPS::Messaging::SocketOptions &socketOptions)
+    {
+        if (!socketOptions.haveAddress())
+        {
+            throw std::invalid_argument("Address not set");
+        }
+        constexpr bool lConnect{true};
+        connectOrBind(socketOptions, lConnect);
     }
     /// @brief Bind
     void bind(const UMPS::Messaging::RouterDealer::RequestOptions &options)
@@ -555,7 +598,8 @@ public:
         socketOptions.setAddress(options.getAddress());
         socketOptions.setZAPOptions(options.getZAPOptions());
         socketOptions.setReceiveHighWaterMark(options.getHighWaterMark());
-        socketOptions.setSendHighWaterMark(options.getHighWaterMark());
+        auto sendHighWaterMark = options.getHighWaterMark();
+        socketOptions.setSendHighWaterMark(sendHighWaterMark);
         socketOptions.setCallback(options.getCallback()); // Need this
         return socketOptions;
     }

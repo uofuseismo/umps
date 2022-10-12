@@ -1,8 +1,11 @@
+#include <iostream>
+#include <thread>
 #include <string>
 #include <sstream>
 #include <unistd.h>
 #include <errno.h>
 #include <boost/asio/ip/host_name.hpp>
+#include <boost/interprocess/detail/os_thread_functions.hpp>
 #include <nlohmann/json.hpp>
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "private/isEmpty.hpp"

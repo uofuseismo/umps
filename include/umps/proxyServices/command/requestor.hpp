@@ -91,16 +91,20 @@ public:
     ///         this program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]]
-    std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse> getCommands() const;
+    std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse>
+        getCommands(const std::string &moduleName) const;
     /// @brief Issues a command to the program.
     /// @param[in] request  The request to issue to the program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]]
-    std::unique_ptr<UMPS::Services::Command::CommandResponse> issueCommand(const UMPS::Services::Command::CommandRequest &request);
+    std::unique_ptr<UMPS::Services::Command::CommandResponse>
+        issueCommand(const std::string &moduleName,
+                     const UMPS::Services::Command::CommandRequest &request);
     /// @brief Issues a remote-termination command to the program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]]
-    std::unique_ptr<UMPS::Services::Command::TerminateResponse> issueTerminateCommand() const;
+    std::unique_ptr<UMPS::Services::Command::TerminateResponse>
+        issueTerminateCommand(const std::string &moduleName) const;
     /// @}
      
     /// @name Destructors

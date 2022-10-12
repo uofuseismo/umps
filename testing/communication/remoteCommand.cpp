@@ -88,15 +88,18 @@ void proxy()
     proxy.stop();
 }
 
-void replier()
+void replier(int id)
 {
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::Debug);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
          = std::make_shared<UMPS::Logging::StdOut> (logger);
-
+    ModuleDetails details;
+    details.setName("test_module_" + std::to_string(id));
+ 
     Response response;
     ReplierOptions options;
+    options.setModuleDetails(details);
     options.setAddress(BACKEND);
     options.setCallback(std::bind(&Response::callback,
                                   &response,
@@ -127,21 +130,26 @@ void requestor()
     std::this_thread::sleep_for(std::chrono::milliseconds {20});
     requestor.initialize(options);
     auto modules = requestor.getAvailableModules();
- for (const auto &m : modules->getModules()){std::cout << m << std::endl;}
-/*
-    for (int i = 0; i < 1; ++i)
+
+    for (const auto &m : modules->getModules())
     {
-        requestor.getCommands();
+    try
+    {
+        auto commands = requestor.getCommands(m.getName());
     }
-*/
+    catch (const std::exception &e)
+    {
+     std::cerr << e.what() << std::endl;
+    }
+    }
 }
 
 TEST(ProxyServicesCommand, Command)
 {
     auto proxyThread = std::thread(proxy); // Intermediary
-    auto replierThread = std::thread(replier); // Setup person on end
-//auto rep2 = std::thread(replier);
-//auto rep3 = std::thread(replier);
+    auto replierThread1 = std::thread(replier, 1);
+//    auto replierThread2 = std::thread(replier, 2);
+//auto rep3 = std::thread(replier, 3);
     auto requestorThread = std::thread(requestor); // Ask last
 //    auto r2 = std::thread(requestor);
      
@@ -149,7 +157,8 @@ TEST(ProxyServicesCommand, Command)
 //r2.join();
 //rep2.join();
 //rep3.join();
-    replierThread.join();
+    replierThread1.join();
+//    replierThread2.join();
     proxyThread.join();
 }
 

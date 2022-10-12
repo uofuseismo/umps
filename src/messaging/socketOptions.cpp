@@ -169,7 +169,7 @@ void SocketOptions::setReceiveHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
-        throw std::invalid_argument("High water mark must be positive");
+        throw std::invalid_argument("Receive high water mark must be positive");
     }
     pImpl->mReceiveHighWaterMark = hwm;
 }
@@ -183,7 +183,7 @@ void SocketOptions::setSendHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
-        throw std::invalid_argument("High water mark must be positive");
+        throw std::invalid_argument("Send high water mark must be positive");
     }
     pImpl->mSendHighWaterMark = hwm;
 }

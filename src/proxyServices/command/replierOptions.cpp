@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include "umps/proxyServices/command/replierOptions.hpp"
+#include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 
@@ -20,6 +21,8 @@ public:
         mOptions.setRoutingIdentifier(routingIdentifier);
     }
     URouterDealer::ReplyOptions mOptions;
+    ModuleDetails mDetails;
+    bool mHaveDetails{false};
 };
 
 /// C'tor
@@ -67,6 +70,31 @@ void ReplierOptions::clear() noexcept
 
 /// Destructor
 ReplierOptions::~ReplierOptions() = default;
+
+/// Module details
+void ReplierOptions::setModuleDetails(const ModuleDetails &details)
+{
+    if (!details.haveName())
+    {
+        throw std::invalid_argument("Module details name not set");
+    }
+    pImpl->mDetails = details;
+    pImpl->mHaveDetails = true;
+}
+
+ModuleDetails ReplierOptions::getModuleDetails() const
+{
+    if (!haveModuleDetails())
+    {
+        throw std::runtime_error("Module details not set");
+    }
+    return pImpl->mDetails;
+}
+
+bool ReplierOptions::haveModuleDetails() const noexcept
+{
+    return pImpl->mHaveDetails;
+}
 
 /// Set address
 void ReplierOptions::setAddress(const std::string &address)

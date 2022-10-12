@@ -30,42 +30,7 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 class Proxy::ProxyImpl
 {
 public:
-    /// Constructors
-    ProxyImpl() = delete;
-    /*
-    ProxyImpl(std::shared_ptr<zmq::context_t> context,
-              std::shared_ptr<UMPS::Logging::ILog> logger,
-              std::shared_ptr<UAuth::IAuthenticator> authenticator, int)
-    {
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        if (authenticator == nullptr)
-        {
-            mAuthenticator = std::make_shared<UAuth::Grasslands> (mLogger);
-        }
-        else
-        {
-            mAuthenticator = authenticator;
-        }
-        mProxy = std::make_unique<URouterDealer::Proxy> (mContext, mLogger);
-        mAuthenticatorService = std::make_unique<UAuth::Service>
-                                (mContext, mLogger, mAuthenticator);
-    }
-    */
+    /// C'tor
     ProxyImpl(std::shared_ptr<UMPS::Messaging::Context> context,
               std::shared_ptr<UMPS::Logging::ILog> logger,
               std::shared_ptr<UAuth::IAuthenticator> authenticator)
@@ -138,7 +103,7 @@ public:
     std::thread mProxyThread;
     std::thread mAuthenticatorThread;
     std::string mName;
-    bool mInitialized = false;
+    bool mInitialized{false};
 };
 
 /// C'tor

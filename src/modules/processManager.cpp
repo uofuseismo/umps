@@ -134,7 +134,7 @@ public:
     {
         catchSignals();
         {
-            while (true)
+            while (!mStopRequested)
             {
                 if (__interrupted)
                 {

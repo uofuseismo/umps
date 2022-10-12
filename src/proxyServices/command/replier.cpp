@@ -27,9 +27,6 @@ public:
                       std::shared_ptr<UMPS::Logging::ILog> logger) :
         ::RequestReplySocket(zmq::socket_type::dealer, context, logger)
     {
-        // Module details
-        mModuleDetails.setName("asdf");
-        
         std::unique_ptr<UMPS::MessageFormats::IMessage> registrationResponse
             =  std::make_unique<RegistrationResponse> ();
         mMessageFormats.add(registrationResponse);
@@ -60,23 +57,29 @@ public:
             {
                 // Get the next message
                 zmq::multipart_t messagesReceived(*mSocket);
-                if (messagesReceived.empty()){continue;} // Deal with empty message
+                // Deal with empty message
+                if (messagesReceived.empty()){continue;}
                 if (logLevel >= UMPS::Logging::Level::Debug)
                 {
                     mLogger->debug("Reply received message!");
                 }
-                if (messagesReceived.size() != 5)
+                // To be consistent with ZeroMQ manual I'm expecting:
+                // 1. Client identity
+                // 2. Empty
+                // 3. Message [Header + Body so actually 2 things]
+                if (messagesReceived.size() != 4)
                 {
-                    mLogger->error("Only 5-part messages handled");
+                    mLogger->error("Only 4-part messages handled");
 #ifndef NDEBUG
-                    assert(messagesReceived.size() == 5);
+                    assert(messagesReceived.size() == 4);
 #endif
                     continue;
                 }
-                std::string messageType = messagesReceived.at(3).to_string();
+                auto returnAddress = messagesReceived.at(0).to_string(); 
+                auto messageType = messagesReceived.at(2).to_string();
                 auto messageContents = reinterpret_cast<const void *>
-                                       (messagesReceived.at(4).data());
-                auto messageSize = messagesReceived.at(4).size();
+                                       (messagesReceived.at(3).data());
+                auto messageSize = messagesReceived.at(3).size();
                 std::string responseMessageType;
                 std::string responseMessage;
                 try
@@ -88,9 +91,12 @@ public:
                     {
                         try
                         {
-                            responseMessageType = response->getMessageType();
-                            responseMessage = response->toMessage();
-                            send(responseMessageType, responseMessage);
+                            zmq::multipart_t reply;
+                            reply.addstr(returnAddress);
+                            reply.addstr("");
+                            reply.addstr(response->getMessageType());
+                            reply.addstr(response->toMessage());
+                            reply.send(*mSocket);
                         }
                         catch (const std::exception &e)
                         {
@@ -149,6 +155,10 @@ Replier::~Replier() = default;
 /// Initialize
 void Replier::initialize(const ReplierOptions &options)
 {
+    if (!options.haveModuleDetails())
+    {
+        throw std::invalid_argument("Module details not set");
+    }
     if (!options.haveAddress())
     {
         throw std::invalid_argument("Address not set");
@@ -158,12 +168,16 @@ void Replier::initialize(const ReplierOptions &options)
         throw std::invalid_argument("Callback not set");
     }
     auto replyOptions = options.getOptions();
+    auto moduleDetails = options.getModuleDetails();
     UMPS::Messaging::SocketOptions socketOptions;
     socketOptions.setAddress(replyOptions.getAddress());
     socketOptions.setZAPOptions(replyOptions.getZAPOptions());
     socketOptions.setReceiveHighWaterMark(replyOptions.getHighWaterMark());
-    socketOptions.setSendHighWaterMark(replyOptions.getHighWaterMark());
-    socketOptions.setReceiveTimeOut(std::chrono::milliseconds {1000});//replyOptions.getTimeOut());
+    socketOptions.setSendHighWaterMark(0); // Cache all responses
+    // Polling loop so return immediately
+    socketOptions.setReceiveTimeOut(std::chrono::milliseconds {0});
+    // Send immediately
+    socketOptions.setSendTimeOut(std::chrono::milliseconds {0}); 
     //socketOptions.setSendTimeOut(replyOptions.getTimeOut());
     socketOptions.setMessageFormats(pImpl->mMessageFormats);
     socketOptions.setCallback(replyOptions.getCallback());
@@ -173,9 +187,14 @@ void Replier::initialize(const ReplierOptions &options)
     // Attempt to register the module
     pImpl->mLogger->debug("Registering module...");
     RegistrationRequest request;
-    request.setModuleDetails(pImpl->mModuleDetails);
+    request.setModuleDetails(moduleDetails);
     pImpl->send(request); // Send my details
+    // Wait (up to 5 seconds) for a registration response
+    auto receiveTimeOut = socketOptions.getReceiveTimeOut();
+    pImpl->mSocket->set(zmq::sockopt::rcvtimeo, 5000);
     auto replyMessage = pImpl->receive(); // Wait for a reply
+    pImpl->mSocket->set(zmq::sockopt::rcvtimeo,
+                        static_cast<int> (receiveTimeOut.count()));
     if (replyMessage == nullptr)
     {
         throw std::runtime_error("Registration request timed-out");
@@ -187,6 +206,7 @@ void Replier::initialize(const ReplierOptions &options)
     {
         throw std::runtime_error("Failed to register module");
     }
+    pImpl->mModuleDetails = moduleDetails;
     pImpl->mRegistered = true;
     pImpl->mLogger->debug("Module successfully registered!");
 }

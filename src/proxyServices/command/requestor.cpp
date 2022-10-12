@@ -16,37 +16,21 @@
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/logging/stdout.hpp"
+#include "private/messaging/requestReplySocket.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyServices::Command;
 namespace UCommand = UMPS::Services::Command;
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 
-class Requestor::RequestorImpl
+class Requestor::RequestorImpl : public ::RequestSocket 
 {
 public:
     /// @brief Constructor
     RequestorImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                       std::shared_ptr<UMPS::Logging::ILog> logger)
+                  std::shared_ptr<UMPS::Logging::ILog> logger) :
+         ::RequestSocket(context, logger)
     {
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
-        }
-        else
-        {
-            mLogger = logger; 
-        }
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<UMPS::Messaging::Context> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        mRequest
-            = std::make_unique<URequestRouter::Request> (mContext, mLogger);
         // Make the message types
         std::unique_ptr<UMPS::MessageFormats::IMessage>
             availableCommandsResponse
@@ -66,15 +50,39 @@ public:
         mMessageFormats.add(terminateResponse);
         mMessageFormats.add(failureResponse);
     }
+    /// @brief Sends a message to the router.  But we need to actually tell
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
+        requestFromModule(const std::string &moduleName,
+                          const UMPS::MessageFormats::IMessage &message)
+    {
+        if (moduleName.empty())
+        {
+            throw std::invalid_argument("Module name is empty");
+        }
+        auto messageType = message.getMessageType(); // Throw early
+        auto messageContents = message.toMessage(); // Throw early
+        // We'll use two frames.  The first is, as per usual, the message type,
+        // then who I want to talk to.  Basically, I don't want the proxy doing
+        // unnecessary (de)serializing of messages to figure this out.
+        zmq::const_buffer headerBuffer1{messageType.data(), messageType.size()};
+        zmq::const_buffer headerBuffer2{moduleName.data(), moduleName.size()};
+        mSocket->send(headerBuffer1, zmq::send_flags::sndmore);
+        mSocket->send(headerBuffer2, zmq::send_flags::sndmore);
+        // Now send the contents
+        zmq::const_buffer messageBuffer{messageContents.data(),
+                                        messageContents.size()};
+        mSocket->send(messageBuffer, zmq::send_flags::none);
+        // Finally, wait for the response
+        return receive(zmq::recv_flags::none); // Now return the reply
+    }
+/*
     /// @brief Disconnect
     void disconnect()
     {
         mRequest->disconnect();
     }
+*/
     UMPS::MessageFormats::Messages mMessageFormats;
-    std::unique_ptr<URequestRouter::Request> mRequest{nullptr};
-    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
-    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     RequestorOptions mRequestorOptions;
     UMPS::Messaging::RequestRouter::RequestOptions mRequestOptions;
 };
@@ -132,7 +140,8 @@ void Requestor::initialize(const RequestorOptions &options)
     {
         requestOptions.addMessageFormat(messageFormat.second);
     }
-    pImpl->mRequest->initialize(requestOptions);
+    auto socketOptions = pImpl->convertSocketOptions(requestOptions);
+    pImpl->connect(socketOptions);
     pImpl->mRequestorOptions = options;
     pImpl->mRequestOptions = requestOptions;
 }
@@ -140,7 +149,7 @@ void Requestor::initialize(const RequestorOptions &options)
 /// Initialized?
 bool Requestor::isInitialized() const noexcept
 {
-    return pImpl->mRequest->isInitialized();
+    return pImpl->isConnected();
 }
 
 /// Available modules
@@ -153,7 +162,7 @@ std::unique_ptr<AvailableModulesResponse>
     }
     std::unique_ptr<AvailableModulesResponse> result{nullptr};
     AvailableModulesRequest requestMessage;
-    auto message = pImpl->mRequest->request(requestMessage);
+    auto message = pImpl->request(requestMessage);
     if (message != nullptr)
     {
         result = static_unique_pointer_cast<AvailableModulesResponse>
@@ -168,7 +177,7 @@ std::unique_ptr<AvailableModulesResponse>
 
 /// Commands
 std::unique_ptr<UCommand::AvailableCommandsResponse>
-    Requestor::getCommands() const
+    Requestor::getCommands(const std::string &moduleName) const
 {
     if (!isInitialized())
     {
@@ -177,7 +186,7 @@ std::unique_ptr<UCommand::AvailableCommandsResponse>
     std::unique_ptr<UCommand::AvailableCommandsResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
     UCommand::AvailableCommandsRequest requestMessage;
-    auto message = pImpl->mRequest->request(requestMessage);
+    auto message = pImpl->requestFromModule(moduleName, requestMessage);
     if (message != nullptr)
     {
         if (message->getMessageType() == failureMessage.getMessageType())
@@ -197,7 +206,8 @@ std::unique_ptr<UCommand::AvailableCommandsResponse>
 }
 
 std::unique_ptr<UCommand::CommandResponse>
-    Requestor::issueCommand(const UCommand::CommandRequest &request)
+    Requestor::issueCommand(const std::string &moduleName,
+                            const UCommand::CommandRequest &request)
 {
     if (!isInitialized())
     {   
@@ -205,7 +215,7 @@ std::unique_ptr<UCommand::CommandResponse>
     }   
     std::unique_ptr<UCommand::CommandResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
-    auto message = pImpl->mRequest->request(request);
+    auto message = pImpl->requestFromModule(moduleName, request);
     if (message != nullptr)
     {
         if (message->getMessageType() == failureMessage.getMessageType())
@@ -225,7 +235,7 @@ std::unique_ptr<UCommand::CommandResponse>
 }
 
 std::unique_ptr<UCommand::TerminateResponse>
-    Requestor::issueTerminateCommand() const
+    Requestor::issueTerminateCommand(const std::string &moduleName) const
 {
     if (!isInitialized())
     {
@@ -234,7 +244,7 @@ std::unique_ptr<UCommand::TerminateResponse>
     std::unique_ptr<UCommand::TerminateResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
     UCommand::TerminateRequest requestMessage;
-    auto message = pImpl->mRequest->request(requestMessage);
+    auto message = pImpl->requestFromModule(moduleName, requestMessage);
     if (message != nullptr)
     {
         if (message->getMessageType() == failureMessage.getMessageType())

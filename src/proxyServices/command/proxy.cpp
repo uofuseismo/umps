@@ -42,6 +42,188 @@ namespace UAuth = UMPS::Authentication;
 namespace
 {
 
+/*
+std::vector<std::chrono::milliseconds> pingInterval
+{
+    10000,  // 10s
+    30000,  // 30s
+    600000, // 60s
+};
+*/
+
+class Module
+{
+public:
+    Module() = default;
+    Module(const ModuleDetails &details, const std::string &address)
+    {
+        if (!details.haveName())
+        {
+            throw std::invalid_argument("Module name not set");
+        }
+        if (address.empty())
+        {
+            throw std::invalid_argument("Address is empty");
+        }
+        mDetails = details;
+        mAddress = address;
+        // Just registered so there's a semblance of life
+        updateLastResponseToNow();
+    }
+    /// @brief Updates the timing.
+    void updateLastResponseToNow()
+    {
+        auto now = std::chrono::high_resolution_clock::now();
+        mLastResponse
+            = std::chrono::duration_cast<std::chrono::milliseconds> (
+                 now.time_since_epoch());
+    }
+    // Module details.
+    ModuleDetails mDetails;
+    // Address of module.
+    std::string mAddress;
+    // Last time module responded.
+    std::chrono::milliseconds mLastResponse{0};
+};
+
+struct CompareModules
+{
+    bool operator()(const std::string &lhs, const std::string &rhs) const
+    {
+        return lhs < rhs;
+    }
+    bool operator()(const ::Module &lhs, const ::Module &rhs) const
+    {
+        std::string lString;
+        if (lhs.mDetails.haveName()){lString = lhs.mDetails.getName();}
+        std::string rString;
+        if (rhs.mDetails.haveName()){rString = rhs.mDetails.getName();}
+        return lString < rString;
+    }
+    bool operator()(const ::Module &lhs, const std::string &rString) const
+    {
+        std::string lString;
+        if (lhs.mDetails.haveName()){lString = lhs.mDetails.getName();}
+        return lString < rString;
+    }
+    bool operator()(const std::string &lString, const ::Module &rhs) const
+    {
+        std::string rString;
+        if (rhs.mDetails.haveName()){rString = rhs.mDetails.getName();}
+        return lString < rString;
+    }
+};
+
+class Modules
+{
+public:
+    [[nodiscard]] size_t size() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mModules.size();
+    }
+    [[nodiscard]] bool empty() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mModules.empty();
+    }
+    [[nodiscard]] std::string getAddress(const std::string &moduleName) const
+    {
+        std::scoped_lock lock(mMutex);
+        for (const auto &m : mModules)
+        {
+            if (m.mDetails.haveName())
+            {
+                if (moduleName == m.mDetails.getName()){return m.mAddress;}
+            }
+        }
+        throw "";
+    }
+    [[nodiscard]] bool contains(const std::string &moduleName) const
+    {
+        std::scoped_lock lock(mMutex);
+        for (const auto &m : mModules)
+        {
+            if (m.mDetails.haveName())
+            {
+                if (moduleName == m.mDetails.getName()){return true;}
+            }
+            else
+            {
+                if (moduleName.empty()){return true;}
+            }
+        }
+        return false;
+    }
+    [[nodiscard]] bool contains(const ModuleDetails &details) const
+    {
+        return contains(details.getName());
+    }
+    [[nodiscard]] bool contains(const ::Module &module) const
+    {
+        std::string moduleName;
+        return mModules.contains(module);
+    }
+    void insert(Module &&module)
+    {
+        if (!module.mDetails.haveName())
+        {
+            throw std::invalid_argument("Module name not set");
+        }
+        std::scoped_lock lock(mMutex);
+        mModules.insert(std::move(module));
+    }
+    void insert(const Module &module)
+    {
+        if (!module.mDetails.haveName())
+        {
+            throw std::invalid_argument("Module name not set");
+        }
+        std::scoped_lock lock(mMutex);
+        mModules.insert(module);
+    }
+    void erase(const Module &module)
+    {
+        if (!module.mDetails.haveName())
+        {
+            throw std::invalid_argument("Module name not set");
+        }
+        if (!contains(module)){return;} // Nothing to do, doesn't exist
+        std::scoped_lock lock(mMutex);
+        mModules.erase(module);
+    }
+    void update(const Module &module)
+    {
+        if (!module.mDetails.haveName())
+        {
+            throw std::invalid_argument("Module name not set");
+        }
+        if (!contains(module))
+        {
+            insert(module);
+        }
+        else
+        {
+            erase(module);
+            std::scoped_lock lock(mMutex);
+            mModules.insert(module);
+        }
+    }
+    [[nodiscard]] std::vector<ModuleDetails> toVector() const noexcept
+    {
+        std::vector<ModuleDetails> result;
+        result.reserve(mModules.size());
+        for (const auto &m : mModules)
+        {
+            result.push_back(m.mDetails);
+        }
+        return result;
+    }
+    mutable std::mutex mMutex;
+    std::set<::Module, CompareModules> mModules;//, CompareModules> mModules;
+};
+
+/*
 struct Comparator
 {
     bool operator()(const ModuleDetails &lhs, const ModuleDetails &rhs) const
@@ -55,121 +237,26 @@ struct Comparator
         }
         return false;
     }
-};
-
-class Monitor : public zmq::monitor_t
-{
-public:
-    /// Remove default c'tor
-    Monitor() = delete;
-    /// Constructor
-    Monitor(std::shared_ptr<zmq::socket_t> &backend,
-            std::shared_ptr<UMPS::Logging::ILog> &logger) :
-        mBackend(backend),
-        mLogger(logger)
+    bool operator()(const Module &lhs, const Module &rhs) const
     {
-        createInprocAddress();
-    }
-    /// Destructor
-    ~Monitor() override
-    {
-        stop();
-    }
-    /// Stop the monitor
-    void stop()
-    {
-        setRunning(false);
-        if (mMonitorThread.joinable()){mMonitorThread.join();}
-    }
-    /// Start the monitor
-    void start()
-    {
-        stop();
-        mLogger->debug("Starting thread to monitor: " + getMonitorAddress());
-        setRunning(true);
-        mMonitorThread = std::thread([this]()
+        if (lhs.mDetails.haveName() == rhs.mDetails.haveName())
+        {
+            if (lhs.mDetails.haveName())
             {
-                const std::chrono::microseconds timeOut{100};
-                init(*this->mBackend, this->mMonitorAddress,
-                     ZMQ_EVENT_ACCEPTED |
-                     ZMQ_EVENT_CLOSED |
-                     ZMQ_EVENT_DISCONNECTED);
-                while (this->keepRunning())
-                {
-                    check_event(timeOut.count());
-                }
-                mLogger->debug("Monitor thread exited loop");
-            });
-    } 
-    [[nodiscard]] bool keepRunning() const noexcept
-    {
-        std::scoped_lock lock(mMutex);
-        return mKeepRunning;
+                return (lhs.mDetails.getName() < rhs.mDetails.getName());
+            }
+        }
+        return false;
     }
-    void setRunning(const bool run)
-    {
-        std::scoped_lock lock(mMutex);
-        mKeepRunning = run;
-    }
-    void on_monitor_started() override
-    {
-        mLogger->debug("Monitor thread started");
-    }
-    void on_event_accepted(const zmq_event_t &event, const char *addr) final
-    {
-        //std::cout << event.event << " " << event.value << " " << std::hex << event.value << std::endl;
-        mLogger->debug("Monitor: Event opened: " + std::string{addr});
-    }
-    void on_event_closed(const zmq_event_t &, const char *addr) final
-    {
-        mLogger->debug("Monitor: Event closed: " + std::string{addr});
-    }
-    void on_event_disconnected(const zmq_event_t &, const char *addr) final
-    {
-        mLogger->debug("Monitor: Event disconnected: " + std::string{addr});
-    }
-    /// @result The inproc address to talk to the background thread
-    [[nodiscard]] std::string getMonitorAddress() const noexcept
-    {
-        return mMonitorAddress;
-    }
-    /// Create the inproc addresses
-    void createInprocAddress()
-    {
-        // This is very unlikely to generate a collision.
-        // Effectively the OS would have to overwrite this class's
-        // location in memory.
-        std::ostringstream address;
-        address << static_cast<void const *> (this);
-        auto nowMuSec
-            = std::chrono::duration_cast<std::chrono::microseconds>
-              (std::chrono::system_clock::now().time_since_epoch()).count();
-        mMonitorAddress = "inproc://"
-                        + std::to_string(nowMuSec)
-                        + "_monitor_dealer";
-    }
-///private:
-    mutable std::mutex mMutex; 
-    std::set<std::string> mAddresses;
-    std::shared_ptr<zmq::socket_t> mBackend{nullptr};
-    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::string mMonitorAddress;
-    std::thread mMonitorThread;
-    bool mKeepRunning{true};
 };
-
-struct Module
-{
-    std::string mRoutingIdentifier;
-    ModuleDetails moduleDetails;
-};
+*/
 
 }
 
 class Proxy::ProxyImpl
 {
 public:
-    /// C'tor - symmetric authentication
+    /// @brief C'tor - symmetric authentication
     ProxyImpl(
         const std::shared_ptr<UMPS::Messaging::Context> &context,
         const std::shared_ptr<UMPS::Logging::ILog> &logger,
@@ -213,10 +300,8 @@ public:
         mAuthenticatorService
             = std::make_unique<UAuth::Service>
               (mContext, mLogger, mAuthenticator);
-        // I only care about connections on the dealer
-        mBackendMonitor = std::make_unique<Monitor> (mBackend, mLogger);
     }
-    /// C'tor for asymmetric authentication
+    /// @brief C'tor for asymmetric authentication
     ProxyImpl(
         const std::shared_ptr<UMPS::Messaging::Context> &frontendContext,
         const std::shared_ptr<UMPS::Messaging::Context> &backendContext,
@@ -298,16 +383,13 @@ public:
               (mBackendContext,
                mLogger,
                mBackendAuthenticator);
-        // I only care about connections on the dealer
-        mBackendMonitor = std::make_unique<Monitor> (mBackend, mLogger);
     }
-    /// Destructor
+    /// @brief Destructor
     ~ProxyImpl()
     {
         stop();
-        mBackendMonitor->stop();
     }
-    /// Bind the frontend
+    /// @brief Bind the frontend
     void bindFrontend()
     {
         mFrontendAddress = mOptions.getFrontendAddress();
@@ -346,7 +428,7 @@ public:
             }
         }
     }
-    /// Bind the backend
+    /// @brief Bind the backend.
     void bindBackend()
     {
         mBackendAddress = mOptions.getBackendAddress();
@@ -385,7 +467,7 @@ public:
             }
         }
     }
-    /// Disconnect frontend
+    /// @brief Disconnect frontend.
     void disconnectFrontend()
     {
         if (mHaveFrontend)
@@ -397,7 +479,7 @@ public:
             mHaveFrontend = false;
         }
     }
-    /// Disconnect backend
+    /// @brief Disconnect backend.
     void disconnectBackend()
     {
         if (mHaveBackend)
@@ -409,19 +491,11 @@ public:
             mHaveBackend = false;
         }
     }
-    /// Starts the monitor
-    void startMonitor()
-    {
-        mLogger->debug("Remote request proxy starting backend monitor...");
-        mBackendMonitor->start();
-        mLogger->debug("Remote request proxy monitor started");
-    }
-    /// Stops the mointor
-    void stopMonitor()
-    {
-        mBackendMonitor->stop();
-    }
-    /// Starts the poller
+    /// @brief This thread periodically loops through the connected modules
+    ///        and see who appears to be alive.
+
+    /// @brief This is the main function that is the connects the clients
+    ///        connected to the frontend and modules connected to the backend.
     void runPoller()
     {
         // Poll setup
@@ -463,14 +537,8 @@ public:
                             payload, messagesReceived.at(3).size());
                         AvailableModulesResponse availableModulesResponse;
 
-                        std::vector<ModuleDetails> moduleDetails;
-                        moduleDetails.reserve(mModules.size());
-                        for (const auto &module : mModules)
-                        {
-                            moduleDetails.emplace_back(module.first);
-                        }
                         availableModulesResponse.setModules(
-                            std::move(moduleDetails));
+                            mModules.toVector());
                         availableModulesResponse.setIdentifier(
                             availableModulesRequest.getIdentifier());
 
@@ -484,35 +552,42 @@ public:
                     }
                     else
                     {
+                        if (messagesReceived.size() != 5)
+                        {
+                            throw std::runtime_error(
+                            "Expecting request message of length 5.  Received: "
+                          + std::to_string(messagesReceived.size()));
+                        }
                         // Which module do they want to talk to?
                         mLogger->debug("Propagating message to backend...");
+                        auto moduleName = messagesReceived.at(3).to_string();
                         // Router-router combinations are tricky.  We need to
                         // appropriately handle the routing by hand.  Details
                         // are in https://zguide.zeromq.org/docs/chapter3/
-                        ModuleDetails searchForModule;
-                        searchForModule.setName("asdf"); 
-                        auto idx = mModules.find(searchForModule);
-                        if (idx != mModules.end())
+                        auto workerAddress = mModules.getAddress(moduleName);
+                        if (!workerAddress.empty())
                         {
-                            auto workerAddress = idx->second; 
-std::cout << messagesReceived << std::endl;
                             zmq::multipart_t moduleRequest;
                             moduleRequest.addstr(workerAddress);
-                            moduleRequest.addstr(""); // Empty frame
+                            // Ignore this so result shows up on backend
+                            // as expected:
+                            // Frame 1: Client
+                            // Frame 2: Empty
+                            // Frame 3: Message
+                            //moduleRequest.addstr("");
                             moduleRequest.addstr(clientAddress);
-                            moduleRequest.addstr(""); // Empty frame 
+                            moduleRequest.addstr("");
                             moduleRequest.addstr(messageType);
                             moduleRequest.push_back(
-                                std::move(messagesReceived.at(3)));
-std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
+                                std::move(messagesReceived.at(4)));
                             moduleRequest.send(*mBackend);
                         }
                         else
                         {
                             // Handle invalid request
                             UMPS::MessageFormats::Failure failureMessage;
-                            failureMessage.setDetails(
-                                "Unknown module: " + searchForModule.getName());
+                            failureMessage.setDetails("Unknown module: "
+                                                    + moduleName);
                             zmq::multipart_t failureResponse;
                             failureResponse.addstr(clientAddress);
                             failureResponse.addstr(
@@ -589,7 +664,7 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
                             if (!mModules.contains(moduleDetails))
                             {
                                 mModules.insert(
-                                   std::pair {moduleDetails, workerAddress});
+                                   ::Module(moduleDetails, workerAddress));
                             }
                             else
                             {
@@ -610,6 +685,12 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
                     // Business as usual - propagate result to client
                     if (returnToClient)
                     {
+                        // Purge the the first address (that's the server's).
+                        // Format is:
+                        // 1. Client Address
+                        // 2. Empty
+                        // 3. Message [Header + Body so this is actually len 4]
+                        messagesReceived.popstr();
                         messagesReceived.send(*mFrontend);
                     }
                 }
@@ -630,20 +711,20 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
             } 
         }
     }
-    /// Starts the proxy
+    /// @brief Starts the proxy.
     void start()
     {
         stop(); 
         setRunning(true);
         mProxyThread = std::thread(&ProxyImpl::runPoller, this);
     }
-    /// Stops the proxy
+    /// @brief Stops the proxy.
     void stop()
     {
         setRunning(false);
         if (mProxyThread.joinable()){mProxyThread.join();}
     }
-    /// Update connection details
+    /// @brief Update connection details.
     void updateConnectionDetails()
     {
         UCI::SocketDetails::Proxy socketDetails;
@@ -678,13 +759,13 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
         mConnectionDetails.setConnectionType(UCI::ConnectionType::Service);
         mConnectionDetails.setSecurityLevel(securityLevel);
     }
-    /// Note whether the proxy was started / stopped
+    /// @brief Note whether the proxy was started / stopped.
     void setRunning(const bool running)
     {
         std::scoped_lock lock(mMutex);
         mRunning = running;
     }
-    /// True indicates the proxy is running or not
+    /// @brief True indicates the proxy is running or not.
     bool isRunning() const
     {
         std::scoped_lock lock(mMutex);
@@ -702,8 +783,6 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
     std::unique_ptr<zmq::socket_t> mFrontend{nullptr};
     // The backend dealer socket
     std::shared_ptr<zmq::socket_t> mBackend{nullptr};
-    // Monitor's the backend cocnnections
-    std::unique_ptr<Monitor> mBackendMonitor{nullptr};
     // Authentication service for symmetric authentication
     std::unique_ptr<UAuth::Service> mAuthenticatorService{nullptr};
     // Authentication service for router for assymetric authentication
@@ -719,7 +798,7 @@ std::cout << "Propagating: " << moduleRequest << std::endl << std::endl;
     // Logger
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     // The registered modules
-    std::map<ModuleDetails, std::string, Comparator> mModules;
+    ::Modules mModules;
     ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::string mFrontendAddress;
@@ -781,7 +860,6 @@ void Proxy::initialize(const ProxyOptions &options)
     pImpl->mOptions = options;
     pImpl->mInitialized = false;
     // Disconnect from old connections
-    pImpl->stopMonitor();
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
     // Connect
@@ -790,7 +868,6 @@ void Proxy::initialize(const ProxyOptions &options)
     // Resolve the socket details
     pImpl->updateConnectionDetails();
     // Ready to rock
-    pImpl->startMonitor();
     pImpl->mInitialized = true;
     pImpl->mLogger->debug("Remote request proxy initialized!");
 }
