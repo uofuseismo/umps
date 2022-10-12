@@ -127,7 +127,10 @@ public:
         std::scoped_lock lock(mMutex);
         return mModules.empty();
     }
-    [[nodiscard]] std::string getAddress(const std::string &moduleName) const
+    /// @result The backend's address corresponding to this module.
+    /// @note If the address is empty then it was not found.
+    [[nodiscard]]
+    std::string getAddress(const std::string &moduleName) const noexcept
     {
         std::scoped_lock lock(mMutex);
         for (const auto &m : mModules)
@@ -137,7 +140,7 @@ public:
                 if (moduleName == m.mDetails.getName()){return m.mAddress;}
             }
         }
-        throw "";
+        return "";
     }
     [[nodiscard]] bool contains(const std::string &moduleName) const
     {
@@ -524,7 +527,7 @@ public:
                 {
                     messagesReceived.recv(*mFrontend);
                     // Get client address and message type
-                    auto clientAddress = messagesReceived.at(0).to_string();
+                    clientAddress = messagesReceived.at(0).to_string();
                     auto messageType = messagesReceived.at(2).to_string();
                     // Handle an available request message
                     if (messageType == availableModulesRequest.getMessageType())
@@ -585,15 +588,9 @@ public:
                         else
                         {
                             // Handle invalid request
-                            UMPS::MessageFormats::Failure failureMessage;
                             failureMessage.setDetails("Unknown module: "
                                                     + moduleName);
-                            zmq::multipart_t failureResponse;
-                            failureResponse.addstr(clientAddress);
-                            failureResponse.addstr(
-                                failureMessage.getMessageType());
-                            failureResponse.addstr(failureMessage.toMessage());
-                            failureResponse.send(*mFrontend);
+                            lSendError = true;
                         }
                     }
                 }
@@ -604,6 +601,7 @@ public:
                                   + std::string(e.what())
                                   + " Error Code = " + std::to_string(e.num());
                     mLogger->error(errorMsg);
+                    failureMessage.setDetails("ZeroMQ proxy error");
                     lSendError = true;
                 }
                 catch (const std::exception &e) 
@@ -611,6 +609,7 @@ public:
                     auto errorMsg = "Frontend to backend proxy std error:  "
                                   + std::string(e.what());
                     mLogger->error(errorMsg);
+                    failureMessage.setDetails("Internal proxy error");
                     lSendError = true;
                 }
                 // Send an error message to the client if possible
@@ -618,6 +617,7 @@ public:
                 {
                     zmq::multipart_t errorMessage;
                     errorMessage.addstr(clientAddress);
+                    errorMessage.addstr("");
                     errorMessage.addstr(failureMessage.getMessageType());
                     errorMessage.addstr(failureMessage.toMessage());
                     try

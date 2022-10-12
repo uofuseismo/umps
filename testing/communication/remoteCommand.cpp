@@ -45,23 +45,23 @@ public:
 class Response
 {
 public:
-    Response()
+    explicit Response(const int id) :
+        mIdentifier(id)
     {
         mModuleDetails.setName(MODULE_NAME);
         mModuleDetails.setExecutableName("testApplication");
+        
     }
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
                  const void *data, size_t length)
     {
-std::cout << "in callback" << std::endl;
         UMPS::Services::Command::AvailableCommandsRequest
             availableCommandsRequest;
-        //RegistrationResponse registrationResponse;
         if (messageType == availableCommandsRequest.getMessageType())
         {
             UMPS::Services::Command::AvailableCommandsResponse response;
-            response.setCommands("Test");
+            response.setCommands("test_module_" + std::to_string(mIdentifier));
             return response.clone();
         }
         auto text = std::make_unique<UMPS::MessageFormats::Text> ();
@@ -69,12 +69,13 @@ std::cout << "in callback" << std::endl;
         return text;
     }
     ModuleDetails mModuleDetails;
+    int mIdentifier{0};
 };
 
 void proxy()
 {
     UMPS::Logging::StdOut logger;
-    logger.setLevel(UMPS::Logging::Level::Debug);
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
 
@@ -91,13 +92,13 @@ void proxy()
 void replier(int id)
 {
     UMPS::Logging::StdOut logger;
-    logger.setLevel(UMPS::Logging::Level::Debug);
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
          = std::make_shared<UMPS::Logging::StdOut> (logger);
     ModuleDetails details;
     details.setName("test_module_" + std::to_string(id));
  
-    Response response;
+    Response response(id);
     ReplierOptions options;
     options.setModuleDetails(details);
     options.setAddress(BACKEND);
@@ -130,17 +131,14 @@ void requestor()
     std::this_thread::sleep_for(std::chrono::milliseconds {20});
     requestor.initialize(options);
     auto modules = requestor.getAvailableModules();
-
+    // Send an invalid request
+    EXPECT_THROW(auto temp = requestor.getCommands("bogus"), std::exception);
+    // Now get the modules
     for (const auto &m : modules->getModules())
     {
-    try
-    {
         auto commands = requestor.getCommands(m.getName());
-    }
-    catch (const std::exception &e)
-    {
-     std::cerr << e.what() << std::endl;
-    }
+        auto command = commands->getCommands();
+        EXPECT_EQ(m.getName(), command);
     }
 }
 
@@ -148,17 +146,16 @@ TEST(ProxyServicesCommand, Command)
 {
     auto proxyThread = std::thread(proxy); // Intermediary
     auto replierThread1 = std::thread(replier, 1);
-//    auto replierThread2 = std::thread(replier, 2);
-//auto rep3 = std::thread(replier, 3);
-    auto requestorThread = std::thread(requestor); // Ask last
-//    auto r2 = std::thread(requestor);
+    auto replierThread2 = std::thread(replier, 2);
+    auto replierThread3 = std::thread(replier, 3);
+    auto requestorThread1 = std::thread(requestor); // Ask last
+    auto requestorThread2 = std::thread(requestor);
      
-    requestorThread.join();
-//r2.join();
-//rep2.join();
-//rep3.join();
+    requestorThread1.join();
+    requestorThread2.join();
     replierThread1.join();
-//    replierThread2.join();
+    replierThread2.join();
+    replierThread3.join();
     proxyThread.join();
 }
 
