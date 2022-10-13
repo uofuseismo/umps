@@ -245,6 +245,7 @@ TEST(Command, TerminateResponse)
 TEST(Command, RegistrationRequest)
 {
     UMPS::ProxyServices::Command::ModuleDetails details;
+    RegistrationType registrationType{RegistrationType::Deregister};
     details.setName("TestModule");
     details.setExecutableName("testBinary");
     details.setMachine("host.name");
@@ -253,10 +254,12 @@ TEST(Command, RegistrationRequest)
 
     RegistrationRequest request;
     EXPECT_NO_THROW(request.setModuleDetails(details));
+    request.setRegistrationType(RegistrationType::Deregister);
 
     RegistrationRequest rCopy;
     EXPECT_NO_THROW(rCopy.fromMessage(request.toMessage()));
     EXPECT_TRUE(rCopy.getModuleDetails() == details);
+    EXPECT_EQ(rCopy.getRegistrationType(), registrationType);
     EXPECT_EQ(rCopy.getMessageType(),
               "UMPS::ProxyServices::Command::RegistrationRequest");
 }

@@ -14,6 +14,10 @@
 #include "private/messaging/requestReplySocket.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
+// Wait up to this many milliseconds for registration/deregistration prcoess
+// to complete
+#define REGISTRATION_TIME 5000
+
 using namespace UMPS::ProxyServices::Command;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -150,7 +154,10 @@ Replier::Replier(
 }
 
 /// Destructor
-Replier::~Replier() = default;
+Replier::~Replier()
+{
+    stop();
+}
 
 /// Initialize
 void Replier::initialize(const ReplierOptions &options)
@@ -188,10 +195,11 @@ void Replier::initialize(const ReplierOptions &options)
     pImpl->mLogger->debug("Registering module...");
     RegistrationRequest request;
     request.setModuleDetails(moduleDetails);
-    pImpl->send(request); // Send my details
-    // Wait (up to 5 seconds) for a registration response
+    request.setRegistrationType(RegistrationType::Register);
+    pImpl->send(request); // Send my request
+    // Wait (up to 5 seconds) for a registration response.
     auto receiveTimeOut = socketOptions.getReceiveTimeOut();
-    pImpl->mSocket->set(zmq::sockopt::rcvtimeo, 5000);
+    pImpl->mSocket->set(zmq::sockopt::rcvtimeo, REGISTRATION_TIME);
     auto replyMessage = pImpl->receive(); // Wait for a reply
     pImpl->mSocket->set(zmq::sockopt::rcvtimeo,
                         static_cast<int> (receiveTimeOut.count()));
@@ -227,7 +235,45 @@ void Replier::start()
 /// Stop
 void Replier::stop()
 {
+    // Make sure the poller is stopped so we don't pick up the unsubscribe
+    // message.
     pImpl->stop();
+    std::this_thread::sleep_for(std::chrono::milliseconds {100});
+    // Deregister the module
+    if (pImpl->isConnected() && pImpl->mModuleDetails.haveName())
+    {
+        pImpl->mLogger->debug("Deregistering module...");
+        // Create deregistration request
+        RegistrationRequest request;
+        request.setModuleDetails(pImpl->mModuleDetails);
+        request.setRegistrationType(RegistrationType::Deregister);
+        pImpl->send(request); // Send my reuest
+        // Override my timeout
+        auto receiveTimeOut = pImpl->mSocket->get(zmq::sockopt::rcvtimeo);
+        pImpl->mSocket->set(zmq::sockopt::rcvtimeo, REGISTRATION_TIME);
+        // There's a chance some old un-processed message is laying around.
+        // In this case just send the deregistration message.  It's likely
+        // we succeeded but we just read the wrong message.
+        try
+        {
+            auto replyMessage = pImpl->receive(); // Wait for a reply
+            if (replyMessage == nullptr)
+            {
+                pImpl->mLogger->warn("Deregistration request timed-out");
+            }
+            else
+            {
+                pImpl->mLogger->debug("Module deregistered!");
+            }
+        }
+        catch (const std::exception &e)
+        {
+            pImpl->mLogger->error("Failed read deregister response. Failed with"
+                                + std::string {e.what()});
+        }
+        pImpl->mSocket->set(zmq::sockopt::rcvtimeo, receiveTimeOut);
+        pImpl->mModuleDetails.clear(); // Done
+    }
 }
 
 /// Connection information

@@ -2,6 +2,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include <set>
 #include <thread>
 #include <mutex>
 #ifndef NDEBUG
@@ -23,6 +24,7 @@
 #include "umps/authentication/service.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/authentication/certificate/keys.hpp"
+#include "umps/messageFormats/failure.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
@@ -104,6 +106,7 @@ struct Modules
     std::map<std::string, std::unique_ptr<UMPS::ProxyServices::Proxy>>
         mProxyServices;
     std::unique_ptr<UCI::Service> mConnectionInformation;
+    std::unique_ptr<UMPS::ProxyServices::Command::Proxy> mModuleRegistry;
 };
 
 ProgramOptions parseIniFile(const std::string &iniFile);
@@ -143,26 +146,6 @@ void printService(const UMPS::ProxyServices::Proxy &proxy)
     }
 }
 
-/*
-void printBroadcast(const UMPS::Broadcasts::IBroadcast &broadcast)
-{
-    try
-    {
-        auto details = broadcast.getConnectionDetails();
-        auto socketInfo = details.getProxySocketDetails();
-        std::cout << "Broadcast: " << broadcast.getName()
-                  << " frontend available at: "
-                  << socketInfo.getFrontendAddress()
-                  << " and backend available at: "
-                  << socketInfo.getBackendAddress() << std::endl;
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-    } 
-}
-*/
-
 void printBroadcast(const UMPS::ProxyBroadcasts::Proxy &proxy)
 {
     try 
@@ -179,68 +162,6 @@ void printBroadcast(const UMPS::ProxyBroadcasts::Proxy &proxy)
     {   
         std::cerr << e.what() << std::endl;
     }   
-}
-
-std::string makeNextAvailableAddress(
-    const std::string &proposedAddress,
-    std::vector<std::pair<int, bool>> &availablePorts,
-    const std::string &rootAddress,
-    const std::set<std::string> &usedAddresses,
-    const std::string &connectionType = "tcp://")
-{
-    if (!proposedAddress.empty())
-    {
-        if (!usedAddresses.contains(proposedAddress))
-        {
-            return proposedAddress;
-        }
-    }
-    std::string address;
-    for (auto &availablePort : availablePorts)
-    {
-        auto port = availablePort.first;
-        auto isAvailable = availablePort.second;
-        if (isAvailable)
-        {
-            address = connectionType + rootAddress
-                    + ":" + std::to_string(port);
-            if (usedAddresses.contains(address))
-            {
-                continue;
-            }
-            //usedAddresses->insert(address); 
-            availablePort = std::pair(port, false);
-            break;
-        }
-    }
-    if (address.empty())
-    {
-        throw std::runtime_error("All ports are exhausted");
-    }
-    return address;
-}
-
-std::set<std::string>
-makePropertyList(const boost::property_tree::ptree &propertyTree,
-                 const std::string &propertyName = "Counters")
-{
-    std::set<std::string> result;
-    for (const auto &p : propertyTree)
-    {
-        if (p.first.find(propertyName) != std::string::npos)
-        {
-            auto item = p.first;
-            if (result.contains(item))
-            {
-                std::cerr << "Warning!  " << propertyName << ": " << item
-                              << " already exists; skipping..."
-                              << std::endl;
-                break;
-            }
-            result.insert(item);
-        }
-    }
-    return result;
 }
 
 /*
@@ -314,7 +235,6 @@ public:
     {
         return keepRunning();
     }
-    /// Callback for local interaction
     // Callback for local interaction
     std::unique_ptr<UMPS::MessageFormats::IMessage>
         commandCallback(const std::string &messageType,
@@ -340,6 +260,9 @@ public:
             }
             return response.clone();
         }
+        UMPS::MessageFormats::Failure failureResponse;
+        failureResponse.setDetails("Unhandled message type: " + messageType);
+        return failureResponse.clone();
     } 
     mutable std::mutex mMutex;
     std::unique_ptr<UMPS::Services::Command::Service>
@@ -355,7 +278,6 @@ public:
 int main(int argc, char *argv[])
 {
     // Get the ini file from the command line
-    bool runInteractive{true};
     std::string iniFile;
     try
     {
@@ -428,11 +350,11 @@ int main(int argc, char *argv[])
 
         auto readOnly
             = std::make_shared<UAuth::SQLite3Authenticator>
-                       (authenticationLoggerPtr, UAuth::UserPrivileges::ReadOnly);
+                     (authenticationLoggerPtr, UAuth::UserPrivileges::ReadOnly);
         readOnly->openUsersTable(options.mUserTable, false);
         auto readWrite
             = std::make_shared<UAuth::SQLite3Authenticator>
-                       (authenticationLoggerPtr, UAuth::UserPrivileges::ReadWrite);
+                    (authenticationLoggerPtr, UAuth::UserPrivileges::ReadWrite);
         readWrite->openUsersTable(options.mUserTable, false);
         readOnlyAuthenticator = readOnly;
         readWriteAuthenticator = readWrite;  
@@ -442,9 +364,15 @@ int main(int argc, char *argv[])
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
                                           + "connectionInformation.log";
     UMPS::Logging::SpdLog connectionInformationLogger;
+    // Enforce at least info-level logging.  
+    auto connectionInformationVerbosity = options.mVerbosity;
+    if (connectionInformationVerbosity < UMPS::Logging::Level::INFO)
+    {
+        connectionInformationVerbosity = UMPS::Logging::Level::INFO;
+    }
     connectionInformationLogger.initialize("ConnectionInformation",
                                            connectionInformationLogFileName,
-                                           UMPS::Logging::Level::INFO, //options.mVerbosity
+                                           connectionInformationVerbosity,
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
         = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
@@ -496,7 +424,7 @@ int main(int argc, char *argv[])
             = std::make_shared<UMPS::Logging::SpdLog> (logger);
         auto proxyBroadcast
             = std::make_unique<UMPS::ProxyBroadcasts::Proxy>
-              (loggerPtr, readWriteAuthenticator, readOnlyAuthenticator); //authenticator);
+              (loggerPtr, readWriteAuthenticator, readOnlyAuthenticator);
         proxyBroadcast->initialize(proxyOptions); 
         auto broadcastKey = "ProxyBroadcasts::" + moduleName;
         modules.mProxyBroadcasts.insert(std::pair(broadcastKey,
@@ -676,19 +604,22 @@ int main(int argc, char *argv[])
     std::cout << "Stopping the proxy broadcasts..." << std::endl;
     for (auto &broadcast : modules.mProxyBroadcasts)
     {
-        modules.mConnectionInformation->removeConnection(broadcast.second->getName());
+        modules.mConnectionInformation->removeConnection(
+            broadcast.second->getName());
         broadcast.second->stop();
     } 
     std::cout << "Stopping the proxy services..." << std::endl;
     for (auto &service : modules.mProxyServices)
     {
-        modules.mConnectionInformation->removeConnection(service.second->getName());
+        modules.mConnectionInformation->removeConnection(
+            service.second->getName());
         service.second->stop();
     }
     std::cout << "Stopping the services..." << std::endl;
     for (auto &service : modules.mServices)
     {
-        modules.mConnectionInformation->removeConnection(service.second->getName());
+        modules.mConnectionInformation->removeConnection(
+            service.second->getName());
         service.second->stop();
     }
     //if (modules.mDataPacketBroadcast){modules.mDataPacketBroadcast->stop();}
@@ -742,10 +673,216 @@ std::string parseCommandLineOptions(int argc, char *argv[])
     return iniFile;
 }
 
+/// @brief Utility to make the next available tcp address given a list of
+///        available ports.
+/// @param[in] proposedAddress     The proposed address to assign.
+/// @param[in,out] availablePorts  The available ports for TCP connections.
+/// @param[in] rootAddress         The root address for tcp connections e.g.,
+///                                127.0.0.1
+/// @param[in] usedAddresses       A list of addresses already in use.
+/// @param[in] connectionType      The connection type - e.g., tcp://, ipc://,
+///                                or inproc://
+/// @result The next available address.
+std::string makeNextAvailableAddress(
+    const std::string &proposedAddress,
+    std::vector<std::pair<int, bool>> *availablePorts,
+    const std::string &rootAddress,
+    const std::set<std::string> &usedAddresses,
+    const std::string &connectionType = "tcp://")
+{
+    // If the proposed address isn't in use then we're done
+    if (!proposedAddress.empty())
+    {
+        if (!usedAddresses.contains(proposedAddress))
+        {
+            return proposedAddress;
+        }
+    }
+    // For TCP connections we append port numbers.  We simply need to check
+    // these ports are still available.
+    std::string address;
+    if (connectionType.find("tcp://") == 0)
+    {
+        for (auto &availablePort : *availablePorts)
+        {
+            auto port = availablePort.first;
+            auto isAvailable = availablePort.second;
+            if (isAvailable)
+            {
+                address = connectionType + rootAddress
+                        + ":" + std::to_string(port);
+                if (usedAddresses.contains(address))
+                {
+                    continue;
+                }
+                //usedAddresses->insert(address); 
+                availablePort = std::pair(port, false);
+                break;
+            }
+        }
+        if (address.empty())
+        {
+            throw std::runtime_error("All ports are exhausted");
+        }
+    }
+    else
+    {
+        address = connectionType + rootAddress;
+        if (usedAddresses.contains(address))
+        {
+            throw std::runtime_error("Proposed address already exists");
+        }
+    }
+    return address;
+}
+
+/// @brief Convenience function to add a proxy broadcast to the program options.
+/// @param[in,out] options        The options with available ports and
+///                               addresses.  This will be updated with a
+///                               set of proxy broadcast options for this
+///                               broadcast.
+/// @param[in,out] usedAddresses  A list of used addresses.  This will be
+///                               updated with a new frontend and backend
+///                               address.
+/// @param[in] iniFile         The iniitializion file to parse.
+/// @param[in] proxyBroadcast  The name of the proxy broadcast.
+/// @param[in] connectionType  The connection type - e.g., "tcp://"
+void addProxyBroadcast(ProgramOptions *options,
+                       std::set<std::string> *usedAddresses,
+                       const std::string &iniFile,
+                       const std::string &proxyBroadcast,
+                       const std::string &connectionType)
+{
+    UMPS::ProxyBroadcasts::ProxyOptions proxyOptions;
+    proxyOptions.parseInitializationFile(iniFile, proxyBroadcast);
+    proxyOptions.setZAPOptions(options->mZAPOptions);
+    // Frontend address
+    std::string address;
+    if (proxyOptions.getProxyOptions().haveFrontendAddress())
+    {
+        address = proxyOptions.getProxyOptions().getFrontendAddress();
+    }
+    auto newAddress = makeNextAvailableAddress(address,
+                                               &options->mAvailablePorts,
+                                               options->mAddress,
+                                               *usedAddresses,
+                                               connectionType);
+    if (newAddress != address)
+    {
+        proxyOptions.setFrontendAddress(newAddress);
+    }
+    usedAddresses->insert(newAddress);
+    // Backend address 
+    if (proxyOptions.getProxyOptions().haveBackendAddress())
+    {
+        address = proxyOptions.getProxyOptions().getBackendAddress();
+    }
+    newAddress = makeNextAvailableAddress(address,
+                                          &options->mAvailablePorts,
+                                          options->mAddress,
+                                          *usedAddresses,
+                                          connectionType);
+    if (newAddress != address)
+    {
+        proxyOptions.setBackendAddress(newAddress);
+    }
+    options->mProxyBroadcastOptions.push_back(proxyOptions);
+    usedAddresses->insert(newAddress);
+}
+
+/// @brief Convenience function to add a proxy service to the program options.
+/// @param[in,out] options        The options with available ports and
+///                               addresses.  This will be updated with a
+///                               set of proxy service options for this
+///                               service.
+/// @param[in,out] usedAddresses  A list of used addresses.  This will be
+///                               updated with a new frontend and backend
+///                               address.
+/// @param[in] iniFile         The iniitializion file to parse.
+/// @param[in] proxyService    The name of the proxy service.
+/// @param[in] connectionType  The connection type - e.g., "tcp://"
+void addProxyService(ProgramOptions *options,
+                     std::set<std::string> *usedAddresses,
+                     const std::string &iniFile,
+                     const std::string &proxyService,
+                     const std::string &connectionType)
+{
+    UMPS::ProxyServices::ProxyOptions proxyOptions;
+    proxyOptions.parseInitializationFile(iniFile, proxyService);
+    proxyOptions.setZAPOptions(options->mZAPOptions);
+    // Frontend address
+    std::string address;
+    if (proxyOptions.getProxyOptions().haveFrontendAddress())
+    {
+        address = proxyOptions.getProxyOptions().getFrontendAddress();
+    }
+    auto newAddress = makeNextAvailableAddress(address,
+                                               &options->mAvailablePorts,
+                                               options->mAddress,
+                                               *usedAddresses,
+                                               connectionType);
+    if (newAddress != address)
+    {
+        proxyOptions.setFrontendAddress(newAddress);
+    }
+    usedAddresses->insert(newAddress);
+    // Backend address 
+    if (proxyOptions.getProxyOptions().haveBackendAddress())
+    {
+        address = proxyOptions.getProxyOptions().getBackendAddress();
+    }
+    newAddress = makeNextAvailableAddress(address,
+                                          &options->mAvailablePorts,
+                                          options->mAddress,
+                                          *usedAddresses,
+                                          connectionType);
+    if (newAddress != address)
+    {
+        proxyOptions.setBackendAddress(newAddress);
+    }
+    options->mProxyServiceOptions.push_back(proxyOptions);
+    usedAddresses->insert(newAddress);
+}
+
+/// @brief Creates a list of properties corresponding to the property name.
+/// @param[in] propertyTree   The property tree.
+/// @param[in] propertyName   The property name to search for subentities,
+///                           e.g., ProxyBroadcasts.
+/// @result A set of properties with the property name contained.  For example,
+///         [ProxyBroadcasts:Heartbeat]
+///         [ProxyBroadcasts:Data]
+///         would return {ProxyBroadcasts:Heartbeat, ProxyBroadcasts:Data}
+std::set<std::string>
+makePropertyList(const boost::property_tree::ptree &propertyTree,
+                 const std::string &propertyName)
+{
+    std::set<std::string> result;
+    for (const auto &p : propertyTree)
+    {
+        if (p.first.find(propertyName) != std::string::npos)
+        {
+            auto item = p.first;
+            if (result.contains(item))
+            {
+                std::cerr << "Warning!  " << propertyName << ": " << item
+                              << " already exists; skipping..."
+                              << std::endl;
+                break;
+            }
+            result.insert(item);
+        }
+    }
+    return result;
+}
+
 ///--------------------------------------------------------------------------///
-/// Parse the ini file
+///                          Parse the ini file                              ///
+///--------------------------------------------------------------------------///
 ProgramOptions parseIniFile(const std::string &iniFile)
 {
+    std::set<std::string> requiredProxyServices{ "ModuleRegistry" };
+    std::set<std::string> requiredProxyBroadcasts{ "Heartbeat" };
+    std::set<std::string> requiredservices{ "uOperator" };
     const std::string connectionType = "tcp://";
     ProgramOptions options;
     if (!std::filesystem::exists(iniFile))
@@ -776,11 +913,11 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                                             8000);
     auto portEnd   = propertyTree.get<int> ("uOperator.openPortBlockEnd",
                                             8899);
-    if (portStart < 4)
+    if (portStart < 6)
     {
         throw std::runtime_error("uOperator.openPortBlockStart = "
                                + std::to_string(portStart)
-                               + " must be at least 4");
+                               + " must be at least 6");
     }
     if (portEnd < portStart)
     {
@@ -842,6 +979,31 @@ ProgramOptions parseIniFile(const std::string &iniFile)
                  + ":" + std::to_string(options.mAvailablePorts.at(0).first);
     options.mConnectionInformationOptions.setClientAccessAddress(address);
     options.mAvailablePorts.at(0).second = false;
+    // Next, search for any essential broadcasts or services.  These addresses
+    // need to be claimed first.  Additionally, the user may want them
+    // associated with specific addresses so we allow that to happen here.
+    auto proxyBroadcasts = makePropertyList(propertyTree, "ProxyBroadcasts"); 
+    auto proxyServices = makePropertyList(propertyTree, "ProxyServices");
+    for (const auto &proxyBroadcast : proxyBroadcasts)
+    {
+        auto broadcastName = proxyBroadcast;
+        boost::algorithm::replace_all(broadcastName, "ProxyBroadcasts:", "");
+        if (requiredProxyBroadcasts.contains(broadcastName))
+        {
+            addProxyBroadcast(&options, &usedAddresses,
+                              iniFile, proxyBroadcast, connectionType);
+        }
+    }
+    for (const auto &proxyService : proxyServices)
+    {
+        auto serviceName = proxyService;
+        boost::algorithm::replace_all(serviceName, "ProxyServices:", "");
+        if (requiredProxyServices.contains(serviceName))
+        {
+            addProxyService(&options, &usedAddresses,
+                            iniFile, proxyService, connectionType);
+        }
+    }
     // Next, the module registry
 /*
     address = connectionType + options.mAddress
@@ -850,88 +1012,27 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     options.mModuleRegistryOptions.setClientAccessAddress(address);
     options.mAvailablePorts.at(1).second = false;
 */
-    // Now the heartbeat broadcast
-
-    //logger->debug("Creating heartbeat process...");
-    // Parse the proxyBroadcasts
-    auto proxyBroadcasts = makePropertyList(propertyTree, "ProxyBroadcasts");
+    // Now get the remaining proxy broadcasts.
     for (const auto &proxyBroadcast : proxyBroadcasts)
     {
-        UMPS::ProxyBroadcasts::ProxyOptions proxyOptions;
-        proxyOptions.parseInitializationFile(iniFile, proxyBroadcast);
-        proxyOptions.setZAPOptions(options.mZAPOptions);
-        // Frontend address
-        std::string address;
-        if (proxyOptions.getProxyOptions().haveFrontendAddress())
-        {   
-            address = proxyOptions.getProxyOptions().getFrontendAddress();
-        }
-        auto newAddress = makeNextAvailableAddress(address,
-                                                   options.mAvailablePorts,
-                                                   options.mAddress,
-                                                   usedAddresses,
-                                                   connectionType);
-        if (newAddress != address)
-        {   
-            proxyOptions.setFrontendAddress(newAddress);
-        }
-        usedAddresses.insert(newAddress);
-        // Backend address 
-        if (proxyOptions.getProxyOptions().haveBackendAddress())
+        auto broadcastName = proxyBroadcast;
+        boost::algorithm::replace_all(broadcastName, "ProxyBroadcasts:", ""); 
+        if (!requiredProxyBroadcasts.contains(broadcastName))
         {
-            address = proxyOptions.getProxyOptions().getBackendAddress();
+            addProxyBroadcast(&options, &usedAddresses,
+                              iniFile, proxyBroadcast, connectionType);
         }
-        newAddress = makeNextAvailableAddress(address,
-                                              options.mAvailablePorts,
-                                              options.mAddress,
-                                              usedAddresses,
-                                              connectionType);
-        if (newAddress != address)
-        {
-            proxyOptions.setBackendAddress(newAddress);
-        }
-        options.mProxyBroadcastOptions.push_back(proxyOptions);
-        usedAddresses.insert(newAddress);
     }
-    // Parse the proxyServices
-    auto proxyServices = makePropertyList(propertyTree, "ProxyServices");
+    // And the remaining proxy services.
     for (const auto &proxyService : proxyServices)
-    {   
-        UMPS::ProxyServices::ProxyOptions proxyOptions;
-        proxyOptions.parseInitializationFile(iniFile, proxyService);
-        proxyOptions.setZAPOptions(options.mZAPOptions);
-        // Frontend address
-        std::string address;
-        if (proxyOptions.getProxyOptions().haveFrontendAddress())
+    {
+        auto serviceName = proxyService;
+        boost::algorithm::replace_all(serviceName, "ProxyServices:", ""); 
+        if (!requiredProxyServices.contains(serviceName))
         {
-            address = proxyOptions.getProxyOptions().getFrontendAddress();
+            addProxyService(&options, &usedAddresses,
+                            iniFile, proxyService, connectionType);
         }
-        auto newAddress = makeNextAvailableAddress(address,
-                                                   options.mAvailablePorts,
-                                                   options.mAddress,
-                                                   usedAddresses,
-                                                   connectionType);
-        if (newAddress != address)
-        {
-            proxyOptions.setFrontendAddress(newAddress);
-        }
-        usedAddresses.insert(newAddress);
-        // Backend address 
-        if (proxyOptions.getProxyOptions().haveBackendAddress())
-        {
-            address = proxyOptions.getProxyOptions().getBackendAddress();
-        }
-        newAddress = makeNextAvailableAddress(address,
-                                              options.mAvailablePorts,
-                                              options.mAddress,
-                                              usedAddresses,
-                                              connectionType);
-        if (newAddress != address)
-        {
-            proxyOptions.setBackendAddress(newAddress);
-        }
-        options.mProxyServiceOptions.push_back(proxyOptions);
-        usedAddresses.insert(newAddress);
     }
     return options;
 }

@@ -648,11 +648,11 @@ public:
                         // This is a registration request
                         if (messageType == registrationRequest.getMessageType())
                         {
+                            returnToClient = false; // Going back to backend
                             // Initialize the response
                             RegistrationResponse registrationResponse;
                             registrationResponse.setReturnCode(
                                 RegistrationReturnCode::Success);
-                            returnToClient = false; // Going back to backend
                             // Deserialize the request
                             auto workerAddress
                                 = messagesReceived.at(0).to_string();
@@ -660,16 +660,28 @@ public:
                                 messagesReceived.at(2).to_string());
                             auto moduleDetails
                                 = registrationRequest.getModuleDetails();
+std::cout << mModules.size() << std::endl;
                             // Attempt to register the module
-                            if (!mModules.contains(moduleDetails))
+                            if (registrationRequest.getRegistrationType() ==
+                                RegistrationType::Register)
                             {
-                                mModules.insert(
-                                   ::Module(moduleDetails, workerAddress));
+std::cout << "register" << std::endl;
+                                if (!mModules.contains(moduleDetails))
+                                {
+                                    mModules.insert(
+                                       ::Module{moduleDetails, workerAddress});
+                                }
+                                else
+                                {
+                                    registrationResponse.setReturnCode(
+                                       RegistrationReturnCode::Exists);
+                                }
                             }
                             else
                             {
-                                registrationResponse.setReturnCode(
-                                   RegistrationReturnCode::Exists);
+std::cout << "erase" << std::endl;
+                                mModules.erase(
+                                   ::Module{moduleDetails, workerAddress});
                             }
                             // Create a reply and send it
                             zmq::multipart_t registrationReply;
@@ -679,6 +691,7 @@ public:
                                 registrationResponse.getMessageType());
                             registrationReply.addstr(
                                 registrationResponse.toMessage());
+std::cout << registrationReply << std::endl;
                             registrationReply.send(*mBackend);
                         }
                     }

@@ -93,8 +93,8 @@ public:
             // Stable end points should be creating IPC file
             if (!mConnect){::removeIPCFile(mAddress, &*mLogger);}
             mAddress.clear();
-            mConnected = false;
         }
+        mConnected = false;
     }
     /// @brief Sets the callback function.
     void setCallback(

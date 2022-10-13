@@ -15,6 +15,7 @@ nlohmann::json toJSONObject(const RegistrationRequest &request)
     nlohmann::json obj;
     obj["MessageType"] = request.getMessageType();
     obj["MessageVersion"] = request.getMessageVersion();
+    obj["RegistrationType"] = static_cast<int> (request.getRegistrationType());
     obj["ModuleDetails"] = pack(request.getModuleDetails());
     return obj;
 }
@@ -26,6 +27,8 @@ RegistrationRequest objectToRequest(const nlohmann::json &obj)
     {
         throw std::invalid_argument("Message has invalid message type");
     }
+    request.setRegistrationType(
+        static_cast<RegistrationType> (obj["RegistrationType"].get<int> ()));
     request.setModuleDetails(unpack(obj["ModuleDetails"]));
     return request;
 }
@@ -51,6 +54,7 @@ class RegistrationRequest::RegistrationRequestImpl
 {
 public:
     ModuleDetails mModuleDetails;
+    RegistrationType mRegistrationType{RegistrationType::Register};
     bool mHaveModuleDetails{false};
 };
 
@@ -124,7 +128,19 @@ bool RegistrationRequest::haveModuleDetails() const noexcept
     return pImpl->mHaveModuleDetails;
 }
 
-///  Convert message
+/// Set registration type
+void RegistrationRequest::setRegistrationType(
+    const RegistrationType registrationType) noexcept
+{
+    pImpl->mRegistrationType = registrationType;
+}
+
+RegistrationType RegistrationRequest::getRegistrationType() const noexcept
+{
+    return pImpl->mRegistrationType;
+}
+
+/// Convert message
 std::string RegistrationRequest::toMessage() const
 {
     return toCBORMessage(*this);

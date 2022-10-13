@@ -110,8 +110,6 @@ set(MODULES_LIBSRC
     src/services/command/requestorOptions.cpp
     src/services/command/service.cpp
     src/services/command/serviceOptions.cpp
-    src/services/command/registrationRequest.cpp
-    src/services/command/registrationResponse.cpp
     src/services/command/terminateRequest.cpp
     src/services/command/terminateResponse.cpp
     #src/services/connectionInformation/availableBroadcastsRequest.cpp
@@ -168,6 +166,8 @@ set(MODULES_LIBSRC
     src/proxyServices/command/moduleDetails.cpp
     src/proxyServices/command/proxy.cpp
     src/proxyServices/command/proxyOptions.cpp
+    src/proxyServices/command/registrationRequest.cpp
+    src/proxyServices/command/registrationResponse.cpp
     src/proxyServices/command/requestor.cpp
     src/proxyServices/command/requestorOptions.cpp
     src/proxyServices/command/replier.cpp

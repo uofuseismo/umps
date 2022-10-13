@@ -8,6 +8,16 @@ namespace UMPS::ProxyServices::Command
 }
 namespace UMPS::ProxyServices::Command
 {
+/// @brief Defines the registration action.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT
+///            license.
+enum class RegistrationType : int 
+{
+    Register = 0,  /*!< Registers the module.  If the module already
+                        exists then this will result in an error. */
+    Deregister = 1 /*!< Deregisters the module.  Typically done when
+                        the module is terminated remotely. */
+};  
 /// @class RegistrationRequest registrationRequest.hpp "umps/proxyServices/command/registrationRequest.hpp"
 /// @brief Allows servers to request becoming a registered modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -53,6 +63,12 @@ public:
     /// @result True indicates the module details were set.
     [[nodiscard]] bool haveModuleDetails() const noexcept;
     /// @}
+
+    /// @brief Sets the registration request to a register or deregister action.
+    /// @param[in] registrationType  The registration type/
+    void setRegistrationType(RegistrationType registrationType) noexcept;
+    /// @result The registration type.
+    [[nodiscard]] RegistrationType getRegistrationType() const noexcept;
 
     /// @name Message Abstract Base Class Properties
     /// @{
