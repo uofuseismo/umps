@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 #include <string>
 #include <set>
 #include <map>
@@ -16,6 +17,8 @@
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/proxyServices/command/availableModulesRequest.hpp"
 #include "umps/proxyServices/command/availableModulesResponse.hpp"
+#include "umps/proxyServices/command/pingRequest.hpp"
+#include "umps/proxyServices/command/pingResponse.hpp"
 #include "umps/proxyServices/command/registrationRequest.hpp"
 #include "umps/proxyServices/command/registrationResponse.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -70,8 +73,10 @@ public:
         // Just registered so there's a semblance of life
         updateLastResponseToNow();
     }
-    /// @brief Updates the timing.
-    void updateLastResponseToNow()
+    /// @brief Updates the timing.  
+    /// @note The const is just to make the std::set happy.  This won't
+    ///       change the order.
+    void updateLastResponseToNow() const 
     {
         auto now = std::chrono::high_resolution_clock::now();
         mLastResponse
@@ -83,7 +88,7 @@ public:
     // Address of module.
     std::string mAddress;
     // Last time module responded.
-    std::chrono::milliseconds mLastResponse{0};
+    mutable std::chrono::milliseconds mLastResponse{0};
 };
 
 struct CompareModules
@@ -212,9 +217,21 @@ public:
             mModules.insert(module);
         }
     }
+    void updateLastResponseToNow(const ::Module &module)
+    {
+        if (!module.mDetails.haveName()){return;}
+        auto moduleName = module.mDetails.getName();
+        std::scoped_lock lock(mMutex);
+        auto m = mModules.find(module);
+        if (m != mModules.end())
+        {
+            m->updateLastResponseToNow();
+        }
+    }
     [[nodiscard]] std::vector<ModuleDetails> toVector() const noexcept
     {
         std::vector<ModuleDetails> result;
+        std::scoped_lock lock(mMutex);
         result.reserve(mModules.size());
         for (const auto &m : mModules)
         {
@@ -223,36 +240,8 @@ public:
         return result;
     }
     mutable std::mutex mMutex;
-    std::set<::Module, CompareModules> mModules;//, CompareModules> mModules;
+    std::set<::Module, CompareModules> mModules;
 };
-
-/*
-struct Comparator
-{
-    bool operator()(const ModuleDetails &lhs, const ModuleDetails &rhs) const
-    {
-        if (lhs.haveName() == rhs.haveName())
-        {
-            if (lhs.haveName())
-            {
-                return (lhs.getName() < rhs.getName());
-            }
-        }
-        return false;
-    }
-    bool operator()(const Module &lhs, const Module &rhs) const
-    {
-        if (lhs.mDetails.haveName() == rhs.mDetails.haveName())
-        {
-            if (lhs.mDetails.haveName())
-            {
-                return (lhs.mDetails.getName() < rhs.mDetails.getName());
-            }
-        }
-        return false;
-    }
-};
-*/
 
 }
 
@@ -496,7 +485,14 @@ public:
     }
     /// @brief This thread periodically loops through the connected modules
     ///        and see who appears to be alive.
-
+    void runModulePinger()
+    {
+        while (isRunning())
+        {
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds {100});
+        }
+    }
     /// @brief This is the main function that is the connects the clients
     ///        connected to the frontend and modules connected to the backend.
     void runPoller()
@@ -642,7 +638,7 @@ public:
                     bool returnToClient{true};
                     zmq::multipart_t messagesReceived(*mBackend);
                     // Coming from reply socket
-                    if (messagesReceived.size() > 1)
+                    if (!messagesReceived.empty())
                     {
                         auto messageType = messagesReceived.at(1).to_string();
                         // This is a registration request
@@ -660,12 +656,10 @@ public:
                                 messagesReceived.at(2).to_string());
                             auto moduleDetails
                                 = registrationRequest.getModuleDetails();
-std::cout << mModules.size() << std::endl;
                             // Attempt to register the module
                             if (registrationRequest.getRegistrationType() ==
                                 RegistrationType::Register)
                             {
-std::cout << "register" << std::endl;
                                 if (!mModules.contains(moduleDetails))
                                 {
                                     mModules.insert(
@@ -679,7 +673,6 @@ std::cout << "register" << std::endl;
                             }
                             else
                             {
-std::cout << "erase" << std::endl;
                                 mModules.erase(
                                    ::Module{moduleDetails, workerAddress});
                             }
@@ -691,21 +684,20 @@ std::cout << "erase" << std::endl;
                                 registrationResponse.getMessageType());
                             registrationReply.addstr(
                                 registrationResponse.toMessage());
-std::cout << registrationReply << std::endl;
                             registrationReply.send(*mBackend);
+                        } // End check on commuication with backend
+                        // Business as usual - propagate result to client
+                        if (returnToClient)
+                        {
+                            // Purge the the first address (that's the server's).
+                            // Format is:
+                            // 1. Client Address
+                            // 2. Empty
+                            // 3. Message [Header+Body; this is actually len 4]
+                            messagesReceived.popstr();
+                            messagesReceived.send(*mFrontend);
                         }
-                    }
-                    // Business as usual - propagate result to client
-                    if (returnToClient)
-                    {
-                        // Purge the the first address (that's the server's).
-                        // Format is:
-                        // 1. Client Address
-                        // 2. Empty
-                        // 3. Message [Header + Body so this is actually len 4]
-                        messagesReceived.popstr();
-                        messagesReceived.send(*mFrontend);
-                    }
+                    } // End check on non-empty message received
                 }
                 catch (const zmq::error_t &e)
                 {
@@ -730,12 +722,14 @@ std::cout << registrationReply << std::endl;
         stop(); 
         setRunning(true);
         mProxyThread = std::thread(&ProxyImpl::runPoller, this);
+        mModuleStatusThread = std::thread(&ProxyImpl::runModulePinger, this);
     }
     /// @brief Stops the proxy.
     void stop()
     {
         setRunning(false);
         if (mProxyThread.joinable()){mProxyThread.join();}
+        if (mModuleStatusThread.joinable()){mModuleStatusThread.join();}
     }
     /// @brief Update connection details.
     void updateConnectionDetails()
@@ -810,6 +804,15 @@ std::cout << registrationReply << std::endl;
     std::shared_ptr<UAuth::IAuthenticator> mBackendAuthenticator{nullptr};
     // Logger
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    // Intervals to check
+    // First:  Sometimes things are missed.
+    // Second: Warning; something appears wrong.
+    // Third:  Dead; evict this module.
+    // 1 + 4 + 5 = 10 seconds for module to respond. 
+    std::array<std::chrono::seconds, 3>
+        mModulePollIntervals{std::chrono::seconds{1},
+                             std::chrono::seconds{4},
+                             std::chrono::seconds{5}};
     // The registered modules
     ::Modules mModules;
     ProxyOptions mOptions;
@@ -819,6 +822,7 @@ std::cout << registrationReply << std::endl;
     std::string mMonitorAddress;
     const std::string mProxyName{"RemoteCommandProxy"};
     std::thread mProxyThread;
+    std::thread mModuleStatusThread;
     std::chrono::milliseconds mPollTimeOut{10};
     bool mHaveBackend{false};
     bool mHaveFrontend{false};

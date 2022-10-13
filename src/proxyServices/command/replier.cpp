@@ -55,7 +55,9 @@ public:
             {
                  {{mSocket->handle(), 0, ZMQ_POLLIN, 0}} 
             };
-            zmq::poll(pollItems.data(), pollItems.size(), mPollTimeOut);
+            zmq::poll(pollItems.data(),
+                      pollItems.size(),
+                      std::chrono::milliseconds {10});
             // Got something
             if (pollItems[0].revents & ZMQ_POLLIN)
             {
@@ -88,9 +90,18 @@ public:
                 std::string responseMessage;
                 try
                 {
-                    auto response = mCallback(messageType,
-                                              messageContents,
-                                              messageSize);
+                    std::unique_ptr<UMPS::MessageFormats::IMessage> response;
+                    // Handle ping request
+                    if (messageType == "")
+                    {
+ 
+                    }
+                    else
+                    {
+                        response = mCallback(messageType,
+                                             messageContents,
+                                             messageSize);
+                    }
                     if (response != nullptr)
                     {
                         try
