@@ -19,11 +19,11 @@ public:
     PingRequest();
     /// @brief Copy constructor.
     /// @param[in] request  The request from which to initialize this class.
-    PingRequest(const RegistrationRequest &request);
+    PingRequest(const PingRequest &request);
     /// @brief Move constructor.
     /// @param[in,out] details  The request from which to initialize this class.
     ///                         On exit, details's behavior is undefined.
-    PingRequest(RegistrationRequest &&request) noexcept;
+    PingRequest(PingRequest &&request) noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -60,7 +60,7 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RegistrationRequest();
+    ~PingRequest();
     /// @}
 private:
     class PingRequestImpl;

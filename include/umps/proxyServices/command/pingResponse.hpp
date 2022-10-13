@@ -19,11 +19,11 @@ public:
     PingResponse();
     /// @brief Copy constructor.
     /// @param[in] response  The response from which to initialize this class.
-    PingResponse(const RegistrationResponse &response);
+    PingResponse(const PingResponse &response);
     /// @brief Move constructor.
     /// @param[in,out] details  The response from which to initialize this class.
     ///                         On exit, details's behavior is undefined.
-    PingResponse(RegistrationResponse &&response) noexcept;
+    PingResponse(PingResponse &&response) noexcept;
     /// @}
 
     /// @name Message Abstract Base Class Properties
@@ -60,7 +60,7 @@ public:
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor.
-    ~RegistrationResponse();
+    ~PingResponse();
     /// @}
 private:
     class PingResponseImpl;
