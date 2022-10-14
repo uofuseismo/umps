@@ -13,10 +13,17 @@ namespace UMPS::ProxyServices::Command
 ///            license.
 enum class RegistrationType : int 
 {
-    Register = 0,  /*!< Registers the module.  If the module already
-                        exists then this will result in an error. */
-    Deregister = 1 /*!< Deregisters the module.  Typically done when
-                        the module is terminated remotely. */
+    Register = 0,       /*!< Registers the module.  If the module already
+                             exists then this will result in an error. */
+    Deregister = 1      /*!< Deregisters the module.  Typically done when
+                             the module is terminated remotely. */
+//    RegisterWorker = 2, /*!< Registers a worker in a module.  For example, a
+//                             detector may have 4 instances running.  In this
+//                             case duplicate modules with the same name can
+//                             exist.  To communicate the user will need to
+//                             be call ModuleName_Instance.  */
+//    Alternate idea: Kubernetes should launch app with instance ID.  This
+//                    should then be appended to the module details.
 };  
 /// @class RegistrationRequest registrationRequest.hpp "umps/proxyServices/command/registrationRequest.hpp"
 /// @brief Allows servers to request becoming a registered modules.

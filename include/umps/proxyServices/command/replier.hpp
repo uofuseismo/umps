@@ -15,7 +15,7 @@ namespace UMPS
  }
  namespace Services::ConnectionInformation::SocketDetails
  {
-  class Reply;
+  class Request;
  }
  namespace ProxyServices::Command
  {
@@ -53,9 +53,11 @@ public:
     void initialize(const ReplierOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result The details for connecting to this socket.
+    /// @result The details for binding to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Reply getSocketDetails() const;
+    /// @note This is a router-router pattern which means the frontend and
+    ///       backend are both request sockets.
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Request getSocketDetails() const;
     /// @}
 
     /// @name Step 2: Start the Replier Service

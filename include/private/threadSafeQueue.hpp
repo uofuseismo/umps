@@ -1,5 +1,5 @@
-#ifndef PRIVATE_THREADSAFEQUEUE_HPP
-#define PRIVATE_THREADSAFEQUEUE_HPP
+#ifndef PRIVATE_THREAD_SAFE_QUEUE_HPP
+#define PRIVATE_THREAD_SAFE_QUEUE_HPP
 #include <queue>
 #include <memory>
 #include <mutex>

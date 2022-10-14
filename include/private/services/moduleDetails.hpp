@@ -10,6 +10,7 @@ namespace
     nlohmann::json obj;
     obj["ModuleName"] = details.getName(); // Throws
     obj["Executable"] = details.getExecutableName();
+    obj["Instance"] = static_cast<uint16_t> (details.getInstance());
     obj["ProcessIdentifier"] = details.getProcessIdentifier();
     obj["ParentProcessIdentifier"] = details.getParentProcessIdentifier();
     obj["Machine"] = details.getMachine();
@@ -21,6 +22,7 @@ namespace
     UMPS::ProxyServices::Command::ModuleDetails details;
     details.setName(obj["ModuleName"].get<std::string> ());
     details.setExecutableName(obj["Executable"].get<std::string> ());
+    details.setInstance(obj["Instance"].get<uint16_t> ());
     details.setProcessIdentifier(obj["ProcessIdentifier"].get<int64_t> ());
     details.setParentProcessIdentifier(obj["ParentProcessIdentifier"].get<int64_t> ());
     details.setMachine(obj["Machine"].get<std::string> ());

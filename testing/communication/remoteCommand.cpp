@@ -146,16 +146,16 @@ TEST(ProxyServicesCommand, Command)
 {
     auto proxyThread = std::thread(proxy); // Intermediary
     auto replierThread1 = std::thread(replier, 1);
-    auto replierThread2 = std::thread(replier, 2);
-    auto replierThread3 = std::thread(replier, 3);
+//    auto replierThread2 = std::thread(replier, 2);
+//    auto replierThread3 = std::thread(replier, 3);
     auto requestorThread1 = std::thread(requestor); // Ask last
-    auto requestorThread2 = std::thread(requestor);
+//    auto requestorThread2 = std::thread(requestor);
      
     requestorThread1.join();
-    requestorThread2.join();
+//    requestorThread2.join();
     replierThread1.join();
-    replierThread2.join();
-    replierThread3.join();
+//    replierThread2.join();
+//    replierThread3.join();
     proxyThread.join();
 }
 

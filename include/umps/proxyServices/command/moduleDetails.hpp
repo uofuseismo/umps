@@ -49,6 +49,18 @@ public:
     /// @note This can be blank.
     [[nodiscard]] std::string getExecutableName() const noexcept;
 
+    /// @brief Sets the instance of the module.  For example,
+    ///        you may have two identical detectors running which are
+    ///        the backend for a scalable service; the dealer distributes
+    ///        work to these in a round-robin fashion.  To disambiguate
+    ///        these modules we use the instance.
+    /// @param[in] instance  The instance of the module.
+    void setInstance(uint16_t instance) noexcept;
+    /// @param[in] instance   The instance of the module.
+
+    /// @result The instance of the module.  By default this is 0.
+    [[nodiscard]] uint16_t getInstance() const noexcept;
+
     /// @brief Sets the machine on which the module is running.
     /// @param[in] machine  The machine name.
     void setMachine(const std::string &machine) noexcept;

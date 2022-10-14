@@ -52,6 +52,7 @@ public:
     std::string mMachine;
     int64_t mProcessIdentifier{0};
     int64_t mParentProcessIdentifier{0};
+    uint16_t mInstance{0};
 };
 
 /// C'tor
@@ -113,6 +114,17 @@ std::string ModuleDetails::getName() const
 bool ModuleDetails::haveName() const noexcept
 {
     return !pImpl->mName.empty();
+}
+
+/// Instance
+void ModuleDetails::setInstance(const uint16_t instance) noexcept
+{
+    pImpl->mInstance = instance;
+}
+
+uint16_t ModuleDetails::getInstance() const noexcept
+{
+    return pImpl->mInstance;
 }
 
 /// Machine

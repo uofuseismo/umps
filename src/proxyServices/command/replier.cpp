@@ -13,6 +13,7 @@
 //#include "private/messaging/replySocket.hpp"
 #include "private/messaging/requestReplySocket.hpp"
 #include "private/staticUniquePointerCast.hpp"
+#include "private/services/ping.hpp"
 
 // Wait up to this many milliseconds for registration/deregistration prcoess
 // to complete
@@ -46,6 +47,8 @@ public:
         {
             throw std::runtime_error("Callback not set for poll");
         }
+        PingRequest pingRequest;
+        PingResponse pingResponse;
         mLogger->debug("Reply starting poll loop...");
         auto logLevel = mLogger->getLevel();
         while (isRunning())
@@ -65,6 +68,7 @@ public:
                 zmq::multipart_t messagesReceived(*mSocket);
                 // Deal with empty message
                 if (messagesReceived.empty()){continue;}
+std::cout << "got:" << messagesReceived << std::endl;
                 if (logLevel >= UMPS::Logging::Level::Debug)
                 {
                     mLogger->debug("Reply received message!");
@@ -92,9 +96,13 @@ public:
                 {
                     std::unique_ptr<UMPS::MessageFormats::IMessage> response;
                     // Handle ping request
-                    if (messageType == "")
+                    if (messageType == pingRequest.getMessageType())
                     {
- 
+                        pingRequest.fromMessage(
+                            reinterpret_cast<const char *> (messageContents),
+                            messageSize);
+                        pingResponse.setTime(pingRequest.getTime());
+                        response = pingResponse.clone();
                     }
                     else
                     {
@@ -111,6 +119,7 @@ public:
                             reply.addstr("");
                             reply.addstr(response->getMessageType());
                             reply.addstr(response->toMessage());
+std::cout << "reply with: " << reply << std::endl;
                             reply.send(*mSocket);
                         }
                         catch (const std::exception &e)
@@ -288,9 +297,7 @@ void Replier::stop()
 }
 
 /// Connection information
-/*
-UCI::SocketDetails::Reply Replier::getSocketDetails() const
+UCI::SocketDetails::Request Replier::getSocketDetails() const
 {
-    //return pImpl->getSocketDetails();
+    return pImpl->mRequestSocketDetails;
 }
-*/

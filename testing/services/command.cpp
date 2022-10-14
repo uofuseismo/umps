@@ -61,6 +61,7 @@ bool operator==(const UMPS::ProxyServices::Command::ModuleDetails &a,
     {
         return false;
     }
+    if (a.getInstance() != b.getInstance()){return false;}
     if (a.getExecutableName() != b.getExecutableName()){return false;}
     if (a.getMachine() != b.getMachine()){return false;}
     if (a.getProcessIdentifier() != b.getProcessIdentifier()){return false;}
@@ -248,6 +249,7 @@ TEST(Command, RegistrationRequest)
     RegistrationType registrationType{RegistrationType::Deregister};
     details.setName("TestModule");
     details.setExecutableName("testBinary");
+    details.setInstance(4);
     details.setMachine("host.name");
     details.setProcessIdentifier(4832);
     details.setParentProcessIdentifier(83823);
@@ -283,17 +285,20 @@ TEST(ProxyCommand, ModuleDetails)
     const std::string moduleName{"TestModule"};
     const std::string machine{"TestMachine"};
     const std::string executable{"TestApp"};
+    const uint16_t instance{30};
     int64_t pid{1234};
     int64_t ppid{12345};
     UMPS::ProxyServices::Command::ModuleDetails details;
  
     EXPECT_NO_THROW(details.setName(moduleName));
+    details.setInstance(instance);
     details.setExecutableName(executable);
     details.setMachine(machine);
     details.setProcessIdentifier(pid);
     details.setParentProcessIdentifier(ppid);
 
     UMPS::ProxyServices::Command::ModuleDetails dcopy(details);
+    EXPECT_EQ(details.getInstance(), instance);
     EXPECT_EQ(details.getExecutableName(), executable);
     EXPECT_EQ(details.getName(), moduleName);
     EXPECT_EQ(details.getMachine(), machine);
