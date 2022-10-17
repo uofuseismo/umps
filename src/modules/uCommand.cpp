@@ -125,7 +125,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                     maintainConnection = false;
                     auto response = requestor->issueTerminateCommand();
                     if (response->getReturnCode() !=
-                        UMPS::Services::Command::TerminateReturnCode::Success)
+                        UMPS::Services::Command::TerminateResponse::ReturnCode::Success)
                     {
                         std::cerr << "Error terminating: " << moduleName
                                   << std::endl;

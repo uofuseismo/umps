@@ -17,8 +17,6 @@
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/proxyServices/command/availableModulesRequest.hpp"
 #include "umps/proxyServices/command/availableModulesResponse.hpp"
-#include "umps/proxyServices/command/pingRequest.hpp"
-#include "umps/proxyServices/command/pingResponse.hpp"
 #include "umps/proxyServices/command/registrationRequest.hpp"
 #include "umps/proxyServices/command/registrationResponse.hpp"
 #include "umps/authentication/zapOptions.hpp"
@@ -35,8 +33,8 @@
 #include "umps/messageFormats/failure.hpp"
 #include "umps/logging/stdout.hpp"
 #include "private/messaging/ipcDirectory.hpp"
-
-//#define SOCKET_MONITOR_DEALER_ADDRESS "inproc://monitor.dealer"
+#include "private/services/ping.hpp"
+#include "private/threadSafeQueue.hpp"
 
 using namespace UMPS::ProxyServices::Command;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -45,92 +43,79 @@ namespace UAuth = UMPS::Authentication;
 namespace
 {
 
-/*
-std::vector<std::chrono::milliseconds> pingInterval
-{
-    10000,  // 10s
-    30000,  // 30s
-    600000, // 60s
-};
-*/
-
 class Module
 {
 public:
     Module() = default;
-    Module(const ModuleDetails &details, const std::string &address)
+    Module(const ModuleDetails &details,
+           const std::vector<std::chrono::milliseconds> &pingIntervals) :
+        mPingIntervals(pingIntervals)
     {
         if (!details.haveName())
         {
             throw std::invalid_argument("Module name not set");
         }
-        if (address.empty())
-        {
-            throw std::invalid_argument("Address is empty");
-        }
         mDetails = details;
-        mAddress = address;
+        mJustPinged.resize(pingIntervals.size(), false);
         // Just registered so there's a semblance of life
         updateLastResponseToNow();
     }
     /// @brief Updates the timing.  
-    /// @note The const is just to make the std::set happy.  This won't
-    ///       change the order.
-    void updateLastResponseToNow() const 
+    void updateLastResponseToNow()
     {
         auto now = std::chrono::high_resolution_clock::now();
         mLastResponse
             = std::chrono::duration_cast<std::chrono::milliseconds> (
                  now.time_since_epoch());
+        std::fill(mJustPinged.begin(), mJustPinged.end(), false);
     }
     // Module details.
     ModuleDetails mDetails;
-    // Address of module.
-    std::string mAddress;
     // Last time module responded.
-    mutable std::chrono::milliseconds mLastResponse{0};
+    std::chrono::milliseconds mLastResponse{0};
+    // Last time I pinged the module
+    std::chrono::milliseconds mLastPing{0};
+    // The ping intervals
+    std::vector<std::chrono::milliseconds> mPingIntervals;
+    // True indicates the module was just pinged
+    std::vector<bool> mJustPinged;
 };
 
-struct CompareModules
-{
-    bool operator()(const std::string &lhs, const std::string &rhs) const
-    {
-        return lhs < rhs;
-    }
-    bool operator()(const ::Module &lhs, const ::Module &rhs) const
-    {
-        std::string lString;
-        if (lhs.mDetails.haveName()){lString = lhs.mDetails.getName();}
-        std::string rString;
-        if (rhs.mDetails.haveName()){rString = rhs.mDetails.getName();}
-        return lString < rString;
-    }
-    bool operator()(const ::Module &lhs, const std::string &rString) const
-    {
-        std::string lString;
-        if (lhs.mDetails.haveName()){lString = lhs.mDetails.getName();}
-        return lString < rString;
-    }
-    bool operator()(const std::string &lString, const ::Module &rhs) const
-    {
-        std::string rString;
-        if (rhs.mDetails.haveName()){rString = rhs.mDetails.getName();}
-        return lString < rString;
-    }
-};
-
-class Modules
+/// @brief Thread-safe map between addresses and modules.
+///        Technically, both the worker address and module are unique but
+///        it proves to be slightly simpler to make the worker address the
+///        key in the map.
+class ModulesMap
 {
 public:
-    [[nodiscard]] size_t size() const noexcept
+    /// @brief Utility to verify that input worker address and module
+    ///        details are valid.
+    void checkAndThrow(const std::pair<std::string, ::Module> &item)
     {
+        if (!item.second.mDetails.haveName())
+        {
+            throw std::invalid_argument("Module name not set");
+        }
+        if (contains(item.first))
+        {
+            throw std::invalid_argument("Worker already exists");
+        }
+        if (contains(item.second))
+        {
+            throw std::invalid_argument("Module already exists");
+        }
+   }
+    void insert(std::pair<std::string, ::Module> &&item)
+    {
+        checkAndThrow(item);
         std::scoped_lock lock(mMutex);
-        return mModules.size();
+        mModules.insert(std::move(item));
     }
-    [[nodiscard]] bool empty() const noexcept
+    void insert(const std::pair<std::string, ::Module> &item)
     {
+        checkAndThrow(item);
         std::scoped_lock lock(mMutex);
-        return mModules.empty();
+        mModules.insert(item);
     }
     /// @result The backend's address corresponding to this module.
     /// @note If the address is empty then it was not found.
@@ -140,94 +125,71 @@ public:
         std::scoped_lock lock(mMutex);
         for (const auto &m : mModules)
         {
-            if (m.mDetails.haveName())
+            if (m.second.mDetails.haveName())
             {
-                if (moduleName == m.mDetails.getName()){return m.mAddress;}
+                if (moduleName == m.second.mDetails.getName()){return m.first;}
             }
         }
         return "";
     }
-    [[nodiscard]] bool contains(const std::string &moduleName) const
+    /// @result True indicates the module is in the map.
+    [[nodiscard]] bool contains(const ::Module &module) const noexcept
     {
+         return contains(module.mDetails);
+    }
+    /// @result True indicates the module is in the map.
+    [[nodiscard]] bool contains(const ModuleDetails &details) const noexcept
+    {
+        std::string moduleName{""};
+        if (details.haveName())
+        {
+            moduleName = details.getName();
+        }
+        auto instance = details.getInstance();
         std::scoped_lock lock(mMutex);
         for (const auto &m : mModules)
         {
-            if (m.mDetails.haveName())
+            auto instanceCompare = m.second.mDetails.getInstance();
+            if (instance == instanceCompare)
             {
-                if (moduleName == m.mDetails.getName()){return true;}
-            }
-            else
-            {
-                if (moduleName.empty()){return true;}
+                std::string moduleNameCompare{""};
+                if (m.second.mDetails.haveName())
+                {
+                    moduleNameCompare = m.second.mDetails.getName(); 
+                }
+                if (moduleName == moduleNameCompare)
+                {
+                    return true;
+                }
             }
         }
         return false;
     }
-    [[nodiscard]] bool contains(const ModuleDetails &details) const
+    /// @brief Updates the last ping time for the module at this address.
+    void updateLastResponseToNow(const std::string &address)
     {
-        return contains(details.getName());
-    }
-    [[nodiscard]] bool contains(const ::Module &module) const
-    {
-        std::string moduleName;
-        return mModules.contains(module);
-    }
-    void insert(Module &&module)
-    {
-        if (!module.mDetails.haveName())
-        {
-            throw std::invalid_argument("Module name not set");
-        }
         std::scoped_lock lock(mMutex);
-        mModules.insert(std::move(module));
-    }
-    void insert(const Module &module)
+        auto idx = mModules.find(address);
+        if (idx != mModules.end()){idx->second.updateLastResponseToNow();}
+    } 
+    /// @result True indicates the worker address is in the map.
+    [[nodiscard]] bool contains(const std::string &workerAddress) const noexcept
     {
-        if (!module.mDetails.haveName())
-        {
-            throw std::invalid_argument("Module name not set");
-        }
         std::scoped_lock lock(mMutex);
-        mModules.insert(module);
+        return mModules.contains(workerAddress);
     }
-    void erase(const Module &module)
+    /// @brief Removes a module corresponding to the ZMQ address.
+    void erase(const std::string &workerAddress)
     {
-        if (!module.mDetails.haveName())
+        if (workerAddress.empty())
         {
-            throw std::invalid_argument("Module name not set");
+            throw std::invalid_argument("Worker address is empty");
         }
-        if (!contains(module)){return;} // Nothing to do, doesn't exist
+        if (!contains(workerAddress)){return;} // Nothing to do, doesn't exist
         std::scoped_lock lock(mMutex);
-        mModules.erase(module);
+        mModules.erase(workerAddress);
     }
-    void update(const Module &module)
-    {
-        if (!module.mDetails.haveName())
-        {
-            throw std::invalid_argument("Module name not set");
-        }
-        if (!contains(module))
-        {
-            insert(module);
-        }
-        else
-        {
-            erase(module);
-            std::scoped_lock lock(mMutex);
-            mModules.insert(module);
-        }
-    }
-    void updateLastResponseToNow(const ::Module &module)
-    {
-        if (!module.mDetails.haveName()){return;}
-        auto moduleName = module.mDetails.getName();
-        std::scoped_lock lock(mMutex);
-        auto m = mModules.find(module);
-        if (m != mModules.end())
-        {
-            m->updateLastResponseToNow();
-        }
-    }
+    /// @result A list of modules.
     [[nodiscard]] std::vector<ModuleDetails> toVector() const noexcept
     {
         std::vector<ModuleDetails> result;
@@ -235,16 +197,19 @@ public:
         result.reserve(mModules.size());
         for (const auto &m : mModules)
         {
-            result.push_back(m.mDetails);
+            result.push_back(m.second.mDetails);
         }
         return result;
     }
     mutable std::mutex mMutex;
-    std::set<::Module, CompareModules> mModules;
+    std::map<std::string, ::Module> mModules;
 };
 
 }
 
+///--------------------------------------------------------------------------///
+///                                 Implementation                           ///
+///--------------------------------------------------------------------------///
 class Proxy::ProxyImpl
 {
 public:
@@ -487,9 +452,61 @@ public:
     ///        and see who appears to be alive.
     void runModulePinger()
     {
+        std::pair<std::string, PingResponse> pingResponses;
+        std::queue<std::string> killQueue;
         while (isRunning())
         {
-            
+            // Process responses in my queue
+            bool moreWork{true};
+            while (moreWork)
+            {
+                auto workItem = mPingResponses.try_pop();
+                if (workItem != nullptr)
+                {
+                    // Find this item
+                    auto workerAddress = workItem->first;
+                    // Update the ping request time
+                    mModulesMap.updateLastResponseToNow(workerAddress);
+                }
+                else
+                {
+                    moreWork = false;
+                }
+            }
+            // If I haven't heard from you in awhile then you get a ping
+            ::PingRequest pingRequest;
+            auto now = pingRequest.getTime();
+            for (auto &m : mModulesMap.mModules)
+            {
+                auto dt = now - m.second.mLastResponse;
+                // Expired - remove it from the module list
+                if (dt > mModuleTimeOutInterval)
+                {
+                   killQueue.push(m.first);
+                   mLogger->warn("No response from: "
+                               + m.second.mDetails.getName()
+                               + ".  Removing it from list.");
+                }
+                else
+                {
+                    for (size_t i = 0; i < m.second.mPingIntervals.size(); ++i)
+                    {
+                        if (dt > m.second.mPingIntervals[i] &&
+                            !m.second.mJustPinged[i])
+                        {
+                            m.second.mJustPinged[i] = true;
+                            mPingRequests.push(std::pair {m.first, pingRequest});
+                        }
+                    }
+                }
+            }
+            // Evict modules
+            while (!killQueue.empty())
+            {
+                mModulesMap.erase(killQueue.front());
+                killQueue.pop();
+            }
+            // My life is hard.  Time for a nap.
             std::this_thread::sleep_for(std::chrono::milliseconds {100});
         }
     }
@@ -506,6 +523,8 @@ public:
         };
         // Run
         UMPS::MessageFormats::Failure failureMessage;
+        ::PingResponse pingResponse;
+        ::PingRequest pingRequest;
         AvailableModulesRequest availableModulesRequest;
         RegistrationRequest registrationRequest;
         while (isRunning())
@@ -537,7 +556,7 @@ public:
                         AvailableModulesResponse availableModulesResponse;
 
                         availableModulesResponse.setModules(
-                            mModules.toVector());
+                            mModulesMap.toVector());
                         availableModulesResponse.setIdentifier(
                             availableModulesRequest.getIdentifier());
 
@@ -563,7 +582,7 @@ public:
                         // Router-router combinations are tricky.  We need to
                         // appropriately handle the routing by hand.  Details
                         // are in https://zguide.zeromq.org/docs/chapter3/
-                        auto workerAddress = mModules.getAddress(moduleName);
+                        auto workerAddress = mModulesMap.getAddress(moduleName);
                         if (!workerAddress.empty())
                         {
                             zmq::multipart_t moduleRequest;
@@ -635,16 +654,15 @@ public:
             {
                 try
                 {
-                    bool returnToClient{true};
                     zmq::multipart_t messagesReceived(*mBackend);
-                    // Coming from reply socket
-                    if (!messagesReceived.empty())
+                    // Special messages coming from the reply socket.  These
+                    // are registration and ping messages.
+                    if (messagesReceived.size() == 3)
                     {
                         auto messageType = messagesReceived.at(1).to_string();
                         // This is a registration request
                         if (messageType == registrationRequest.getMessageType())
                         {
-                            returnToClient = false; // Going back to backend
                             // Initialize the response
                             RegistrationResponse registrationResponse;
                             registrationResponse.setReturnCode(
@@ -652,29 +670,38 @@ public:
                             // Deserialize the request
                             auto workerAddress
                                 = messagesReceived.at(0).to_string();
+                            const auto payload
+                                = static_cast<const char *>
+                                  (messagesReceived.at(2).data());
                             registrationRequest.fromMessage(
-                                messagesReceived.at(2).to_string());
+                                payload, messagesReceived.at(2).size());
                             auto moduleDetails
                                 = registrationRequest.getModuleDetails();
                             // Attempt to register the module
                             if (registrationRequest.getRegistrationType() ==
                                 RegistrationType::Register)
                             {
-                                if (!mModules.contains(moduleDetails))
+                                if (!mModulesMap.contains(moduleDetails))
                                 {
-                                    mModules.insert(
-                                       ::Module{moduleDetails, workerAddress});
-                                }
+                                    mLogger->debug("Registering: "
+                                                 + workerAddress);
+                                    mModulesMap.insert(
+                                        std::pair{workerAddress,
+                                            ::Module(moduleDetails,
+                                                 mOptions.getPingIntervals())});
+                                } 
                                 else
                                 {
                                     registrationResponse.setReturnCode(
                                        RegistrationReturnCode::Exists);
                                 }
                             }
-                            else
+                            else // De-register
                             {
-                                mModules.erase(
-                                   ::Module{moduleDetails, workerAddress});
+                                // Whether it exists or not this is a success
+                                mLogger->debug("Deregistering: "
+                                             + workerAddress);
+                                mModulesMap.erase(workerAddress);
                             }
                             // Create a reply and send it
                             zmq::multipart_t registrationReply;
@@ -686,18 +713,51 @@ public:
                                 registrationResponse.toMessage());
                             registrationReply.send(*mBackend);
                         } // End check on commuication with backend
-                        // Business as usual - propagate result to client
-                        if (returnToClient)
+                        else if (messageType == pingResponse.getMessageType())
                         {
-                            // Purge the the first address (that's the server's).
-                            // Format is:
-                            // 1. Client Address
-                            // 2. Empty
-                            // 3. Message [Header+Body; this is actually len 4]
-                            messagesReceived.popstr();
-                            messagesReceived.send(*mFrontend);
+                            // Purely for internal consumption
+                            auto workerAddress
+                                = messagesReceived.at(0).to_string();
+                            const auto payload
+                                = static_cast<const char *>
+                                  (messagesReceived.at(2).data());
+                            try
+                            {
+                                pingResponse.fromMessage(payload,
+                                     messagesReceived.at(2).size());
+                            }
+                            catch (const std::exception &e)
+                            {
+                                mLogger->error("Failed to deserialize ping");
+                            }
+                            mPingResponses.push(std::pair{workerAddress, pingResponse});
                         }
+                        // Ignore these
+                        else if (messageType == pingRequest.getMessageType())
+                        {
+                        }
+                        else
+                        {
+                            mLogger->error("Unhandled message type: "
+                                         + messageType);
+                        }
+                    }
+                    // Business as usual - propagate these back
+                    else if (messagesReceived.size() == 5)
+                    {
+                        // Purge the the first address (that's the server's).
+                        // Format is:
+                        // 1. Client Address
+                        // 2. Empty
+                        // 3. Message [Header+Body; this is actually len 4]
+                        messagesReceived.popstr();
+                        messagesReceived.send(*mFrontend);
                     } // End check on non-empty message received
+                    else
+                    {
+                        mLogger->error("Unhandled message size: "
+                                     + std::to_string(messagesReceived.size()));
+                    }
                 }
                 catch (const zmq::error_t &e)
                 {
@@ -713,9 +773,29 @@ public:
                                   + std::string(e.what());
                     mLogger->error(errorMsg);
                 }
-            } 
-        }
-    }
+            } // End check on backend poller
+            // Send ping requests and 
+            bool sendPingRequests{true};
+            while (sendPingRequests)
+            {
+                auto workItem = mPingRequests.try_pop();
+                if (workItem != nullptr)
+                {
+                    zmq::multipart_t pingMessage;
+                    pingMessage.addstr(workItem->first);
+                    pingMessage.addstr(workItem->first); // Reply to me
+                    pingMessage.addstr("");
+                    pingMessage.addstr(workItem->second.getMessageType());
+                    pingMessage.addstr(workItem->second.toMessage());
+                    pingMessage.send(*mBackend);
+                }
+                else
+                {
+                    sendPingRequests = false;
+                }
+           }
+        } // while isRunning()
+    } // End function
     /// @brief Starts the proxy.
     void start()
     {
@@ -804,17 +884,15 @@ public:
     std::shared_ptr<UAuth::IAuthenticator> mBackendAuthenticator{nullptr};
     // Logger
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    // Intervals to check
-    // First:  Sometimes things are missed.
-    // Second: Warning; something appears wrong.
-    // Third:  Dead; evict this module.
-    // 1 + 4 + 5 = 10 seconds for module to respond. 
-    std::array<std::chrono::seconds, 3>
-        mModulePollIntervals{std::chrono::seconds{1},
-                             std::chrono::seconds{4},
-                             std::chrono::seconds{5}};
+    // If module is dead after this interval then it is purged from the list
+    // Additionally, a terminate message is sent.
+    std::chrono::milliseconds mModuleTimeOutInterval;
     // The registered modules
-    ::Modules mModules;
+    ::ModulesMap mModulesMap;
+    // Queue: ping responses (from proxy thread for module status thread)
+    ::ThreadSafeQueue<std::pair<std::string, PingResponse>> mPingResponses;
+    // Queue: ping requests (from module status thread to proxy thread to send)
+    ::ThreadSafeQueue<std::pair<std::string, PingRequest>> mPingRequests;
     ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::string mFrontendAddress;
@@ -823,6 +901,8 @@ public:
     const std::string mProxyName{"RemoteCommandProxy"};
     std::thread mProxyThread;
     std::thread mModuleStatusThread;
+    std::vector<std::chrono::milliseconds>
+        mPingIntervals{std::chrono::milliseconds {10000}};
     std::chrono::milliseconds mPollTimeOut{10};
     bool mHaveBackend{false};
     bool mHaveFrontend{false};
@@ -875,6 +955,9 @@ void Proxy::initialize(const ProxyOptions &options)
     }
     // Copy options
     pImpl->mOptions = options;
+    pImpl->mPingIntervals = options.getPingIntervals();
+    pImpl->mModuleTimeOutInterval = pImpl->mPingIntervals.back()
+                                  + std::chrono::milliseconds{100};
     pImpl->mInitialized = false;
     // Disconnect from old connections
     pImpl->disconnectFrontend();

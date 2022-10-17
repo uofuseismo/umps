@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXY_SERVICES_COMMAND_REMOTE_OPTIONS_HPP
-#define UMPS_PROXY_SERVICES_COMMAND_REMOTE_OPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_COMMAND_PROXY_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_COMMAND_PROXY_OPTIONS_HPP
 #include <memory>
 namespace UMPS
 {
@@ -97,6 +97,24 @@ public:
     /// @result The ZAP options.  By default this will configure sockets with
     ///         the grasslands (no security) pattern.
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+    /// @}
+
+    /// @name Ping Intervals
+    /// @{
+
+    /// @brief The proxy pings connected modules periodically to verify that
+    ///        they are still running.  If pingIntervals is, say,
+    ///        {10s, 30s, 60s}, then the proxy will ping every module every
+    ///        10 seconds.  If there is no response then a request will be sent
+    ///        after 30s.  And if there's no response to that ping, then a
+    ///        third ping request will be sent after 1 minute.  If there is
+    ///        no response, then a terminate request will be sent to the 
+    ///        module.
+    /// @throws std::invalid_argument if pingIntervals is empty or any value
+    ///         is less than or equal to 0.
+    void setPingIntervals(const std::vector<std::chrono::milliseconds> &pingIntervals);
+    /// @result The ping intervals.
+    [[nodiscard]] std::vector<std::chrono::milliseconds> getPingIntervals() const noexcept;
     /// @}
 
     /// @name Destructors

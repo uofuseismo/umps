@@ -76,6 +76,19 @@ TEST(Command, ProxyOptions)
 {
     UMPS::Authentication::ZAPOptions zapOptions;
     zapOptions.setStrawhouseServer();
+    std::vector<std::chrono::milliseconds> pingIntervals
+    {
+        std::chrono::milliseconds {20},
+        std::chrono::milliseconds {15},
+        std::chrono::milliseconds {35}
+    };
+    std::vector<std::chrono::milliseconds> pingIntervalsSorted
+    {
+        std::chrono::milliseconds {15},
+        std::chrono::milliseconds {20},
+        std::chrono::milliseconds {35}
+    };  
+
     const std::string frontend{"tcp://127.0.0.1:8080"};
     const std::string backend{"tcp://127.0.0.2:8080"};
     const int frontendHWM{100};
@@ -83,6 +96,7 @@ TEST(Command, ProxyOptions)
     ProxyOptions options;
     EXPECT_NO_THROW(options.setFrontendAddress(frontend));
     EXPECT_NO_THROW(options.setBackendAddress(backend));
+    EXPECT_NO_THROW(options.setPingIntervals(pingIntervals));
     options.setFrontendHighWaterMark(frontendHWM);
     options.setBackendHighWaterMark(backendHWM);
     options.setZAPOptions(zapOptions);
@@ -92,6 +106,7 @@ TEST(Command, ProxyOptions)
     EXPECT_EQ(cOptions.getBackendAddress(), backend);
     EXPECT_EQ(cOptions.getFrontendHighWaterMark(), frontendHWM);
     EXPECT_EQ(cOptions.getBackendHighWaterMark(), backendHWM);
+    EXPECT_EQ(cOptions.getPingIntervals(), pingIntervalsSorted);
 }
 
 TEST(Command, ModuleDetails)
@@ -233,7 +248,7 @@ TEST(Command, TerminateRequest)
 TEST(Command, TerminateResponse)
 {
     TerminateResponse response;
-    const auto returnCode = TerminateReturnCode::ApplicationError;
+    const auto returnCode = TerminateResponse::ReturnCode::ApplicationError;
     response.setReturnCode(returnCode);
 
     TerminateResponse rCopy;

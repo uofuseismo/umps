@@ -335,6 +335,7 @@ if (WRAP_PYTHON)
                python/proxyBroadcasts/dataPacketSubscriber.cpp
                python/proxyBroadcasts/dataPacketSubscriberOptions.cpp
                python/proxyBroadcasts/heartbeat.cpp
+               python/services/command.cpp
                python/messaging/publisherSubscriber/publisher.cpp
                python/messaging/publisherSubscriber/subscriberOptions.cpp
                python/messaging/publisherSubscriber/subscriber.cpp)

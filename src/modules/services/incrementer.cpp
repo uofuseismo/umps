@@ -204,7 +204,7 @@ public:
                 mLogger->error("Failed to unpack terminate request");
             }
             issueStopCommand();
-            response.setReturnCode(USC::TerminateReturnCode::Success);
+            response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
             return response.clone();
         }
         else if (messageType == commandRequest.getMessageType())

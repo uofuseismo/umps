@@ -57,7 +57,7 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UModules = UMPS::Modules;
 namespace UHeartbeat = UMPS::ProxyBroadcasts::Heartbeat;
 
-std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[]);
+std::string parseCommandLineOptions(int argc, char *argv[]);
 
 namespace
 {
@@ -411,7 +411,7 @@ public:
                 mLogger->error("Failed to unpack terminate request");
             }
             issueStopCommand(); 
-            response.setReturnCode(USC::TerminateReturnCode::Success);
+            response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
             return response.clone();
         }
         else if (messageType == commandRequest.getMessageType())
@@ -477,13 +477,10 @@ public:
 int main(int argc, char *argv[])
 {
     // Get the ini file from the command line
-    bool runInteractive{false};
     std::string iniFile;
     try 
     {
-        auto commandLineOptions = parseCommandLineOptions(argc, argv);
-        iniFile = commandLineOptions.first;
-        runInteractive = commandLineOptions.second;
+        iniFile = parseCommandLineOptions(argc, argv);
         if (iniFile.empty()){return EXIT_SUCCESS;}
     }
     catch (const std::exception &e)
@@ -615,10 +612,9 @@ int main(int argc, char *argv[])
 ///                            Utility Functions                             ///
 ///--------------------------------------------------------------------------///
 /// Read the program options from the command line
-std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[])
+std::string parseCommandLineOptions(int argc, char *argv[])
 {
     std::string iniFile;
-    bool runInteractive = true;
     boost::program_options::options_description desc("Allowed options");
     desc.add_options()
         ("help", "Produce help message")
@@ -636,7 +632,7 @@ std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[])
                   << "on an Earthworm wave ring to UMPS."
                   << std::endl << std::endl;
         std::cout << desc << std::endl;
-        return std::pair{iniFile, runInteractive};
+        return iniFile;
     }
     if (vm.count("ini"))
     {
@@ -651,6 +647,5 @@ std::pair<std::string, bool> parseCommandLineOptions(int argc, char *argv[])
     {
         throw std::runtime_error("Initialization file was not set");
     }
-    if (vm.count("background")){runInteractive = false;}
-    return std::pair{iniFile, runInteractive};
+    return iniFile;
 }

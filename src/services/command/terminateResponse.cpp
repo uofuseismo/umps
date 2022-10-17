@@ -29,7 +29,8 @@ TerminateResponse objectToTerminates(const nlohmann::json &obj)
     {
         throw std::invalid_argument("Message has invalid message type");
     }
-    response.setReturnCode(static_cast<TerminateReturnCode> (obj["ReturnCode"]));
+    response.setReturnCode(
+        static_cast<TerminateResponse::ReturnCode> (obj["ReturnCode"]));
     return response;
 }
 
@@ -54,7 +55,7 @@ class TerminateResponse::TerminateResponseImpl
 {
 public:
     std::string mResponse;
-    TerminateReturnCode mReturnCode;
+    TerminateResponse::ReturnCode mReturnCode;
     bool mHaveResponse{false};
     bool mHaveReturnCode{false};
 };
@@ -138,13 +139,14 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 }
 
 /// Return code 
-void TerminateResponse::setReturnCode(const TerminateReturnCode code) noexcept
+void TerminateResponse::setReturnCode(
+    const TerminateResponse::ReturnCode code) noexcept
 {
     pImpl->mReturnCode = code;
     pImpl->mHaveReturnCode = true;
 }
 
-TerminateReturnCode TerminateResponse::getReturnCode() const
+TerminateResponse::ReturnCode TerminateResponse::getReturnCode() const
 {
     if (!haveReturnCode()){throw std::runtime_error("Return code not set");}
     return pImpl->mReturnCode;

@@ -1,3 +1,5 @@
+#include <vector>
+#include <chrono>
 #include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
@@ -8,6 +10,12 @@ namespace UAuth = UMPS::Authentication;
 class ProxyOptions::ProxyOptionsImpl
 {
 public:
+    std::vector<std::chrono::milliseconds> mPingIntervals
+    {
+        std::chrono::milliseconds  {15000}, // 15s
+        std::chrono::milliseconds  {30000}, // 30s
+        std::chrono::milliseconds  {60000}  // 60s
+    };
     UAuth::ZAPOptions mZAPOptions;
     std::string mFrontendAddress;
     std::string mBackendAddress;
@@ -148,3 +156,28 @@ UAuth::ZAPOptions ProxyOptions::getZAPOptions() const noexcept
     return pImpl->mZAPOptions;
 }
 
+/// Ping interval
+void ProxyOptions::setPingIntervals(
+    const std::vector<std::chrono::milliseconds> &pingIntervals)
+{
+    if (pingIntervals.empty())
+    {
+        throw std::invalid_argument("Ping intervals empty");
+    }
+    constexpr std::chrono::milliseconds zero{0};
+    for (const auto &p : pingIntervals)
+    {
+        if (p <= zero)
+        {
+            throw std::invalid_argument("All intervals must be positive");
+        }
+    }
+    pImpl->mPingIntervals = pingIntervals;
+    std::sort(pImpl->mPingIntervals.begin(), pImpl->mPingIntervals.end());
+}
+
+std::vector<std::chrono::milliseconds>
+    ProxyOptions::getPingIntervals() const noexcept
+{
+    return pImpl->mPingIntervals;
+}

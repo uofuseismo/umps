@@ -1,15 +1,31 @@
-#ifndef UMPS_SERVICES_COMMAND_TERMINATERESPONSE_HPP
-#define UMPS_SERVICES_COMMAND_TERMINATERESPONSE_HPP
+#ifndef UMPS_SERVICES_COMMAND_TERMINATE_RESPONSE_HPP
+#define UMPS_SERVICES_COMMAND_TERMINATE_RESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-#include "umps/services/command/enums.hpp"
 namespace UMPS::Services::Command
 {
+/// @brief The service's return code for a terminate request.
+//enum class TerminateReturnCode
+//{
+//    Success = 0,         /*!< Indicates the command was successful. */
+//    InvalidCommand = 1,  /*!< The command is invalid. */
+//    ApplicationError = 2 /*!< The terminate request is valid but the
+//                              application could not process the request. */
+//};
 /// @class TerminateResponse terminateResponse.hpp "umps/services/command/quitResponse.hpp"
 /// @brief A request to terminate the application.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class TerminateResponse : public UMPS::MessageFormats::IMessage
 {
+public:
+    /// @brief The service's return code for a terminate request.
+    enum class ReturnCode
+    {
+        Success = 0,         /*!< Indicates the command was successful. */
+        InvalidCommand = 1,  /*!< The command is invalid. */
+        ApplicationError = 2 /*!< The terminate request is valid but the
+                                  application could not process the request. */
+    };
 public:
     /// @name Constructors
     /// @{
@@ -47,9 +63,9 @@ public:
 
     /// @brief Sets the return code.
     /// @param[in] code  The return code.
-    void setReturnCode(TerminateReturnCode code) noexcept;
+    void setReturnCode(TerminateResponse::ReturnCode code) noexcept;
     /// @result The return code.
-    [[nodiscard]] TerminateReturnCode getReturnCode() const;
+    [[nodiscard]] TerminateResponse::ReturnCode getReturnCode() const;
     /// @result True indicates the return code is set.
     [[nodiscard]] bool haveReturnCode() const noexcept;
     /// @}

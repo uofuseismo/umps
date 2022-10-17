@@ -10,14 +10,6 @@ enum class ApplicationStatus : int
     NotRunning = 1,  /*!< This indicates the application is not running. */
     Unknown = 2      /*!< This indicates the application's status is unknown. */
 };
-/// @brief The service's return code for a terminate request.
-enum class TerminateReturnCode
-{
-    Success = 0,         /*!< Indicates the command was successful. */
-    InvalidCommand = 1,  /*!< The command is invalid. */
-    ApplicationError = 2 /*!< The terminate request is valid but the
-                              application could not process the request. */
-};
 /// @brief The service's return code for a command request.
 enum class CommandReturnCode
 {

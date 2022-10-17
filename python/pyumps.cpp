@@ -4,6 +4,7 @@
 //#include "messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "initialize.hpp"
 #include "proxyBroadcasts.hpp"
+#include "services.hpp"
 #include "umps/authentication/enums.hpp"
 #include "umps/version.hpp"
 #include <pybind11/pybind11.h>
@@ -29,7 +30,7 @@ PYBIND11_MODULE(pyumps, m)
     messageFormatsModule.attr("__doc__") = "An assortment of message formats in UMPS.";
     PUMPS::MessageFormats::initializeIMessage(messageFormatsModule);
     PUMPS::MessageFormats::initializeMessages(messageFormatsModule);
-    PUMPS::MessageFormats::initializePick(messageFormatsModule);
+    //PUMPS::MessageFormats::initializePick(messageFormatsModule);
     PUMPS::MessageFormats::initializeDataPacket(messageFormatsModule);
 
     // Messaging
@@ -41,6 +42,11 @@ PYBIND11_MODULE(pyumps, m)
     authenticationModule.attr("__doc__") = "ZeroMQ Authentication Protocol patterns used in UMPS.";
     PUMPS::Authentication::initializeZAPOptions(authenticationModule);
     PUMPS::Authentication::initializeKeys(authenticationModule);
+
+    // Manage specific services
+    pybind11::module servicesModule = m.def_submodule("Services");
+    servicesModule.attr("__doc__") = "An assortment of services.";
+    PUMPS::Services::initializeCommand(servicesModule);
 
     // Message-specific broadcasts
     pybind11::module broadcastsModule = m.def_submodule("ProxyBroadcasts");

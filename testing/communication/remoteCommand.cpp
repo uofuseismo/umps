@@ -9,6 +9,10 @@
 #include "umps/proxyServices/command/requestorOptions.hpp"
 #include "umps/proxyServices/command/replier.hpp"
 #include "umps/proxyServices/command/replierOptions.hpp"
+#include "umps/services/command/terminateRequest.hpp"
+#include "umps/services/command/terminateResponse.hpp"
+#include "umps/modules/process.hpp"
+#include "umps/modules/processManager.hpp"
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/text.hpp"
@@ -42,15 +46,50 @@ public:
 };
 */
 
-class Response
+class ResponderProcess : public UMPS::Modules::IProcess
 {
 public:
-    explicit Response(const int id) :
+    explicit ResponderProcess(std::shared_ptr<UMPS::Logging::ILog> logger,
+                              const int id) :
+        IProcess(),
+        mLogger(logger),
         mIdentifier(id)
     {
-        mModuleDetails.setName(MODULE_NAME);
-        mModuleDetails.setExecutableName("testApplication");
-        
+        ModuleDetails details;
+        mName = "test_module_" + std::to_string(id);
+        details.setName(mName);
+        mReplier = std::make_shared<Replier> (mLogger);
+
+        ReplierOptions options;
+        mOptions.setModuleDetails(details);
+        mOptions.setAddress(BACKEND);
+        mOptions.setCallback(std::bind(&ResponderProcess::callback,
+                                       this,
+                                       std::placeholders::_1,
+                                       std::placeholders::_2,
+                                       std::placeholders::_3));
+        setStopCallback(mStopCallback); 
+    }
+    ~ResponderProcess(){stop();}
+    [[nodiscard]] std::string getName() const noexcept override
+    {
+        return mName;
+    }
+    void start() override
+    {
+        mReplier->initialize(mOptions);
+        if (mReplier){mReplier->start();}
+    }
+    void stop() override
+    {
+        if (mReplier && isRunning())
+        {
+            mReplier->stop();
+        }
+    }
+    [[nodiscard]] bool isRunning() const noexcept override
+    {
+        return mReplier->isRunning();
     }
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
         callback(const std::string &messageType,
@@ -58,18 +97,34 @@ public:
     {
         UMPS::Services::Command::AvailableCommandsRequest
             availableCommandsRequest;
+        UMPS::Services::Command::TerminateRequest terminateRequest;
         if (messageType == availableCommandsRequest.getMessageType())
         {
             UMPS::Services::Command::AvailableCommandsResponse response;
             response.setCommands("test_module_" + std::to_string(mIdentifier));
             return response.clone();
         }
-        auto text = std::make_unique<UMPS::MessageFormats::Text> ();
+        else if (messageType == terminateRequest.getMessageType())
+        {
+            issueStopCommand();
+            UMPS::Services::Command::TerminateResponse terminateResponse;
+            terminateResponse.setReturnCode(
+               UMPS::Services::Command::TerminateResponse::ReturnCode::Success);
+            return terminateResponse.clone();
+        }
+        auto text = std::make_unique<UMPS::MessageFormats::Text> (); 
         text->setContents("Test result"); 
         return text;
     }
-    ModuleDetails mModuleDetails;
+    std::function<void ()> mStopCallback
+    {
+         [this] { stop(); }
+    };
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
+    std::shared_ptr<Replier> mReplier{nullptr};
     int mIdentifier{0};
+    ReplierOptions mOptions;
+    std::string mName;
 };
 
 void proxy()
@@ -78,19 +133,36 @@ void proxy()
     logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
+    const std::vector<std::chrono::milliseconds> pingIntervals
+    {
+        std::chrono::milliseconds {1000},
+        std::chrono::milliseconds {2000}
+    };
 
     ProxyOptions options;
     options.setFrontendAddress(FRONTEND);
     options.setBackendAddress(BACKEND);
+    options.setPingIntervals(pingIntervals);
     Proxy proxy(loggerPtr);
     EXPECT_NO_THROW(proxy.initialize(options));
     EXPECT_NO_THROW(proxy.start());
-    std::this_thread::sleep_for(std::chrono::seconds {3});
+    std::this_thread::sleep_for(std::chrono::seconds {5});
     proxy.stop();
 }
 
 void replier(int id)
 {
+    UMPS::Logging::StdOut logger;
+    logger.setLevel(UMPS::Logging::Level::Debug);
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr
+         = std::make_shared<UMPS::Logging::StdOut> (logger);
+    std::unique_ptr<UMPS::Modules::IProcess> responder
+         = std::make_unique<ResponderProcess> (loggerPtr, id);
+    UMPS::Modules::ProcessManager processManager(loggerPtr);
+    responder->start();
+    std::this_thread::sleep_for(std::chrono::seconds {3}); 
+    responder->stop();
+/*
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
@@ -115,6 +187,7 @@ void replier(int id)
 
     std::this_thread::sleep_for(std::chrono::seconds {2}); 
     replier.stop();
+*/
 }
 
 void requestor()
@@ -136,7 +209,9 @@ void requestor()
     // Now get the modules
     for (const auto &m : modules->getModules())
     {
+        // Request commands for this module
         auto commands = requestor.getCommands(m.getName());
+        // Ensure these commands make sense
         auto command = commands->getCommands();
         EXPECT_EQ(m.getName(), command);
     }
@@ -148,6 +223,9 @@ TEST(ProxyServicesCommand, Command)
     auto replierThread1 = std::thread(replier, 1);
 //    auto replierThread2 = std::thread(replier, 2);
 //    auto replierThread3 = std::thread(replier, 3);
+
+    // Let workers get ready
+    std::this_thread::sleep_for(std::chrono::milliseconds {500});
     auto requestorThread1 = std::thread(requestor); // Ask last
 //    auto requestorThread2 = std::thread(requestor);
      

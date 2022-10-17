@@ -7,6 +7,7 @@
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
+#include "umps/messageFormats/failure.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/log.hpp"
@@ -68,10 +69,9 @@ public:
                 zmq::multipart_t messagesReceived(*mSocket);
                 // Deal with empty message
                 if (messagesReceived.empty()){continue;}
-std::cout << "got:" << messagesReceived << std::endl;
                 if (logLevel >= UMPS::Logging::Level::Debug)
                 {
-                    mLogger->debug("Reply received message!");
+                    mLogger->debug("Replier received message!");
                 }
                 // To be consistent with ZeroMQ manual I'm expecting:
                 // 1. Client identity
@@ -92,23 +92,47 @@ std::cout << "got:" << messagesReceived << std::endl;
                 auto messageSize = messagesReceived.at(3).size();
                 std::string responseMessageType;
                 std::string responseMessage;
-                try
+                // Handle ping request
+                if (messageType == pingRequest.getMessageType())
                 {
-                    std::unique_ptr<UMPS::MessageFormats::IMessage> response;
-                    // Handle ping request
-                    if (messageType == pingRequest.getMessageType())
+                    pingRequest.fromMessage(
+                       reinterpret_cast<const char *> (messageContents),
+                          messageSize);
+                    pingResponse.setTime(pingRequest.getTime());
+                    auto response = pingResponse.clone();
+                    try
                     {
-                        pingRequest.fromMessage(
-                            reinterpret_cast<const char *> (messageContents),
-                            messageSize);
-                        pingResponse.setTime(pingRequest.getTime());
-                        response = pingResponse.clone();
+                        zmq::multipart_t reply;
+                        reply.addstr(response->getMessageType());
+                        reply.addstr(response->toMessage());
+                        reply.send(*mSocket);
                     }
-                    else
+                    catch (const std::exception &e) 
+                    {
+                        mLogger->error(
+                            "Failed to send ping reply. Failed with: "
+                           + std::string{e.what()});
+                    }
+                }
+                else
+                {
+                    std::unique_ptr<UMPS::MessageFormats::IMessage>
+                        response{nullptr};
+                    try
                     {
                         response = mCallback(messageType,
                                              messageContents,
                                              messageSize);
+                    }
+                    catch (const std::exception &e) 
+                    {
+                        mLogger->error("Error in callback/serialization: "
+                                     + std::string{e.what()});
+                        // The user's callbacks should not fail.  But, just
+                        // in case, send something back.
+                        UMPS::MessageFormats::Failure failureMessage;
+                        failureMessage.setDetails("Error in callback");
+                        response = failureMessage.clone();
                     }
                     if (response != nullptr)
                     {
@@ -119,24 +143,19 @@ std::cout << "got:" << messagesReceived << std::endl;
                             reply.addstr("");
                             reply.addstr(response->getMessageType());
                             reply.addstr(response->toMessage());
-std::cout << "reply with: " << reply << std::endl;
                             reply.send(*mSocket);
                         }
                         catch (const std::exception &e)
                         {
-                            mLogger->error("Failed to send reply. Failed with: "
-                                         + std::string{e.what()});
+                            mLogger->error(
+                               "Failed to send reply. Failed with: "
+                              + std::string{e.what()});
                         }
                     }
                     else
                     {
                         mLogger->error("Response is NULL check calllback");
                     }
-                }
-                catch (const std::exception &e)
-                {
-                    mLogger->error("Error in callback/serialization: "
-                                 + std::string{e.what()});
                 }
             }  // End check on poll
         } // End loop
@@ -201,6 +220,7 @@ void Replier::initialize(const ReplierOptions &options)
     socketOptions.setZAPOptions(replyOptions.getZAPOptions());
     socketOptions.setReceiveHighWaterMark(replyOptions.getHighWaterMark());
     socketOptions.setSendHighWaterMark(0); // Cache all responses
+    //socketOptions.setLingerPeriod(std::chrono::milliseconds {10});
     // Polling loop so return immediately
     socketOptions.setReceiveTimeOut(std::chrono::milliseconds {0});
     // Send immediately
@@ -276,8 +296,25 @@ void Replier::stop()
         // we succeeded but we just read the wrong message.
         try
         {
-            auto replyMessage = pImpl->receive(); // Wait for a reply
-            if (replyMessage == nullptr)
+            RegistrationResponse registrationResponse;
+            bool gotDeregistrationResponse{false};
+            while (true)
+            {
+                auto msg = pImpl->receiveZMQ();
+                if (msg.empty()){break;}
+                for (const auto &m : msg)
+                {
+                    std::string contents{
+                       reinterpret_cast<const char *> (m.data()), m.size()};
+                    if (contents == registrationResponse.getMessageType())
+                    {
+                        gotDeregistrationResponse = true;
+                        break;
+                    }
+                }
+                if (gotDeregistrationResponse){break;}
+            }
+            if (!gotDeregistrationResponse)
             {
                 pImpl->mLogger->warn("Deregistration request timed-out");
             }
@@ -300,4 +337,10 @@ void Replier::stop()
 UCI::SocketDetails::Request Replier::getSocketDetails() const
 {
     return pImpl->mRequestSocketDetails;
+}
+
+/// Running?
+bool Replier::isRunning() const noexcept
+{
+    return pImpl->isRunning();
 }

@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYSERVICES_PROXY_HPP
-#define UMPS_PROXYSERVICES_PROXY_HPP
+#ifndef UMPS_PROXY_SERVICES_PROXY_HPP
+#define UMPS_PROXY_SERVICES_PROXY_HPP
 #include <memory>
 #include "umps/proxyServices/proxy.hpp"
 namespace UMPS
