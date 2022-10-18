@@ -11,8 +11,6 @@
 #include "umps/proxyServices/command/replierOptions.hpp"
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/command/terminateResponse.hpp"
-#include "umps/modules/process.hpp"
-#include "umps/modules/processManager.hpp"
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/text.hpp"
@@ -46,12 +44,11 @@ public:
 };
 */
 
-class ResponderProcess : public UMPS::Modules::IProcess
+class ResponderProcess
 {
 public:
     explicit ResponderProcess(std::shared_ptr<UMPS::Logging::ILog> logger,
                               const int id) :
-        IProcess(),
         mLogger(logger),
         mIdentifier(id)
     {
@@ -68,26 +65,26 @@ public:
                                        std::placeholders::_1,
                                        std::placeholders::_2,
                                        std::placeholders::_3));
-        setStopCallback(mStopCallback); 
+        //setStopCallback(mStopCallback); 
     }
     ~ResponderProcess(){stop();}
-    [[nodiscard]] std::string getName() const noexcept override
+    [[nodiscard]] std::string getName() const noexcept //override
     {
         return mName;
     }
-    void start() override
+    void start()
     {
         mReplier->initialize(mOptions);
         if (mReplier){mReplier->start();}
     }
-    void stop() override
+    void stop()
     {
         if (mReplier && isRunning())
         {
             mReplier->stop();
         }
     }
-    [[nodiscard]] bool isRunning() const noexcept override
+    [[nodiscard]] bool isRunning() const noexcept
     {
         return mReplier->isRunning();
     }
@@ -102,11 +99,13 @@ public:
         {
             UMPS::Services::Command::AvailableCommandsResponse response;
             response.setCommands("test_module_" + std::to_string(mIdentifier));
+            // Allows a timeout to happen
+            //std::this_thread::sleep_for(std::chrono::milliseconds {200});
             return response.clone();
         }
         else if (messageType == terminateRequest.getMessageType())
         {
-            issueStopCommand();
+            issueStopNotification();
             UMPS::Services::Command::TerminateResponse terminateResponse;
             terminateResponse.setReturnCode(
                UMPS::Services::Command::TerminateResponse::ReturnCode::Success);
@@ -116,15 +115,55 @@ public:
         text->setContents("Test result"); 
         return text;
     }
-    std::function<void ()> mStopCallback
+    /// Have this thread tell the main thread to stop the proxy.
+    void issueStopNotification()
     {
-         [this] { stop(); }
-    };
+        mLogger->debug("Issuing stop notification...");
+        {
+            std::lock_guard<std::mutex> lock(mStopContext);
+            mStopRequested = true;
+        }
+        mStopCondition.notify_one();
+    }
+    /// Have the main thread either react to a stop notification or,
+    /// if none happens, shut down the module after a certain amount
+    /// of time
+    void handleMainThread(const std::chrono::milliseconds &maxTime)
+    {
+        auto t0 = std::chrono::high_resolution_clock::now();
+        while (!mStopRequested)
+        {
+            std::unique_lock<std::mutex> lock(mStopContext);
+            mStopCondition.wait_for(lock,
+                                    std::chrono::milliseconds {100},
+                                    [this]
+                                    {
+                                          return mStopRequested;
+                                    });
+            lock.unlock();
+            auto now = std::chrono::high_resolution_clock::now();
+            if (now - t0 > maxTime){break;}
+        }
+        if (mStopRequested)
+        {
+            mLogger->debug("Stop request received.  Terminating...");
+        }
+        else
+        {
+            mLogger->debug("Main thread time limit hit.  Terminating...");
+        }
+        stop();
+    }
+///private:
+    mutable std::mutex mStopContext;
+    std::function<void ()> mStopCallback{[this]{issueStopNotification();}};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::shared_ptr<Replier> mReplier{nullptr};
-    int mIdentifier{0};
+    std::condition_variable mStopCondition;
     ReplierOptions mOptions;
     std::string mName;
+    int mIdentifier{0};
+    bool mStopRequested{false};
 };
 
 void proxy()
@@ -135,8 +174,8 @@ void proxy()
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     const std::vector<std::chrono::milliseconds> pingIntervals
     {
-        std::chrono::milliseconds {1000},
-        std::chrono::milliseconds {2000}
+        std::chrono::milliseconds {10},
+        std::chrono::milliseconds {20}
     };
 
     ProxyOptions options;
@@ -146,22 +185,20 @@ void proxy()
     Proxy proxy(loggerPtr);
     EXPECT_NO_THROW(proxy.initialize(options));
     EXPECT_NO_THROW(proxy.start());
-    std::this_thread::sleep_for(std::chrono::seconds {5});
+    std::this_thread::sleep_for(std::chrono::seconds {2});
     proxy.stop();
 }
 
 void replier(int id)
 {
     UMPS::Logging::StdOut logger;
-    logger.setLevel(UMPS::Logging::Level::Debug);
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
          = std::make_shared<UMPS::Logging::StdOut> (logger);
-    std::unique_ptr<UMPS::Modules::IProcess> responder
-         = std::make_unique<ResponderProcess> (loggerPtr, id);
-    UMPS::Modules::ProcessManager processManager(loggerPtr);
+    //std::unique_ptr<UMPS::Modules::IProcess> responder
+    auto responder = std::make_unique<ResponderProcess> (loggerPtr, id);
     responder->start();
-    std::this_thread::sleep_for(std::chrono::seconds {3}); 
-    responder->stop();
+    responder->handleMainThread(std::chrono::seconds {3});
 /*
     UMPS::Logging::StdOut logger;
     logger.setLevel(UMPS::Logging::Level::Info);

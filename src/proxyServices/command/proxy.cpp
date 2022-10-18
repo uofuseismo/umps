@@ -34,6 +34,7 @@
 #include "umps/logging/stdout.hpp"
 #include "private/messaging/ipcDirectory.hpp"
 #include "private/services/ping.hpp"
+#include "private/services/terminate.hpp"
 #include "private/threadSafeQueue.hpp"
 
 using namespace UMPS::ProxyServices::Command;
@@ -116,6 +117,11 @@ public:
         checkAndThrow(item);
         std::scoped_lock lock(mMutex);
         mModules.insert(item);
+    }
+    [[nodiscard]] bool empty() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mModules.empty();
     }
     /// @result The backend's address corresponding to this module.
     /// @note If the address is empty then it was not found.
@@ -482,25 +488,30 @@ public:
                 // Expired - remove it from the module list
                 if (dt > mModuleTimeOutInterval)
                 {
-                   killQueue.push(m.first);
-                   mLogger->warn("No response from: "
-                               + m.second.mDetails.getName()
-                               + ".  Removing it from list.");
+                    ::TerminateRequest terminateRequest;
+                    mTerminateRequests.push(std::pair{m.first,
+                                                      terminateRequest});
+                    killQueue.push(m.first);
+                    mLogger->warn("No response from: "
+                                + m.second.mDetails.getName()
+                                + ".  Removing it from list.");
                 }
-                else
+                else // Time for a ping?
                 {
+                    // Hunt for first available ping time
                     for (size_t i = 0; i < m.second.mPingIntervals.size(); ++i)
                     {
                         if (dt > m.second.mPingIntervals[i] &&
                             !m.second.mJustPinged[i])
                         {
                             m.second.mJustPinged[i] = true;
-                            mPingRequests.push(std::pair {m.first, pingRequest});
+                            mPingRequests.push(std::pair{m.first, pingRequest});
+                            break;
                         }
                     }
                 }
             }
-            // Evict modules
+            // Evict terminated modules
             while (!killQueue.empty())
             {
                 mModulesMap.erase(killQueue.front());
@@ -523,10 +534,7 @@ public:
         };
         // Run
         UMPS::MessageFormats::Failure failureMessage;
-        ::PingResponse pingResponse;
-        ::PingRequest pingRequest;
         AvailableModulesRequest availableModulesRequest;
-        RegistrationRequest registrationRequest;
         while (isRunning())
         {
             zmq::poll(&items[0], nPollItems, mPollTimeOut); 
@@ -621,7 +629,7 @@ public:
                 }
                 catch (const std::exception &e) 
                 {
-                    auto errorMsg = "Frontend to backend proxy std error:  "
+                    auto errorMsg = "Frontend to backend proxy std error: "
                                   + std::string(e.what());
                     mLogger->error(errorMsg);
                     failureMessage.setDetails("Internal proxy error");
@@ -654,110 +662,7 @@ public:
             {
                 try
                 {
-                    zmq::multipart_t messagesReceived(*mBackend);
-                    // Special messages coming from the reply socket.  These
-                    // are registration and ping messages.
-                    if (messagesReceived.size() == 3)
-                    {
-                        auto messageType = messagesReceived.at(1).to_string();
-                        // This is a registration request
-                        if (messageType == registrationRequest.getMessageType())
-                        {
-                            // Initialize the response
-                            RegistrationResponse registrationResponse;
-                            registrationResponse.setReturnCode(
-                                RegistrationReturnCode::Success);
-                            // Deserialize the request
-                            auto workerAddress
-                                = messagesReceived.at(0).to_string();
-                            const auto payload
-                                = static_cast<const char *>
-                                  (messagesReceived.at(2).data());
-                            registrationRequest.fromMessage(
-                                payload, messagesReceived.at(2).size());
-                            auto moduleDetails
-                                = registrationRequest.getModuleDetails();
-                            // Attempt to register the module
-                            if (registrationRequest.getRegistrationType() ==
-                                RegistrationType::Register)
-                            {
-                                if (!mModulesMap.contains(moduleDetails))
-                                {
-                                    mLogger->debug("Registering: "
-                                                 + workerAddress);
-                                    mModulesMap.insert(
-                                        std::pair{workerAddress,
-                                            ::Module(moduleDetails,
-                                                 mOptions.getPingIntervals())});
-                                } 
-                                else
-                                {
-                                    registrationResponse.setReturnCode(
-                                       RegistrationReturnCode::Exists);
-                                }
-                            }
-                            else // De-register
-                            {
-                                // Whether it exists or not this is a success
-                                mLogger->debug("Deregistering: "
-                                             + workerAddress);
-                                mModulesMap.erase(workerAddress);
-                            }
-                            // Create a reply and send it
-                            zmq::multipart_t registrationReply;
-                            registrationReply.addstr(workerAddress);
-                            //registrationReply.addstr(""); // Empty frame
-                            registrationReply.addstr(
-                                registrationResponse.getMessageType());
-                            registrationReply.addstr(
-                                registrationResponse.toMessage());
-                            registrationReply.send(*mBackend);
-                        } // End check on commuication with backend
-                        else if (messageType == pingResponse.getMessageType())
-                        {
-                            // Purely for internal consumption
-                            auto workerAddress
-                                = messagesReceived.at(0).to_string();
-                            const auto payload
-                                = static_cast<const char *>
-                                  (messagesReceived.at(2).data());
-                            try
-                            {
-                                pingResponse.fromMessage(payload,
-                                     messagesReceived.at(2).size());
-                            }
-                            catch (const std::exception &e)
-                            {
-                                mLogger->error("Failed to deserialize ping");
-                            }
-                            mPingResponses.push(std::pair{workerAddress, pingResponse});
-                        }
-                        // Ignore these
-                        else if (messageType == pingRequest.getMessageType())
-                        {
-                        }
-                        else
-                        {
-                            mLogger->error("Unhandled message type: "
-                                         + messageType);
-                        }
-                    }
-                    // Business as usual - propagate these back
-                    else if (messagesReceived.size() == 5)
-                    {
-                        // Purge the the first address (that's the server's).
-                        // Format is:
-                        // 1. Client Address
-                        // 2. Empty
-                        // 3. Message [Header+Body; this is actually len 4]
-                        messagesReceived.popstr();
-                        messagesReceived.send(*mFrontend);
-                    } // End check on non-empty message received
-                    else
-                    {
-                        mLogger->error("Unhandled message size: "
-                                     + std::to_string(messagesReceived.size()));
-                    }
+                    __handleMessagesFromBackend();
                 }
                 catch (const zmq::error_t &e)
                 {
@@ -769,33 +674,265 @@ public:
                 }
                 catch (const std::exception &e)
                 {
-                    auto errorMsg = "Backend to frontend proxy std error:  "
+                    auto errorMsg = "Backend to frontend proxy std error: "
                                   + std::string(e.what());
                     mLogger->error(errorMsg);
                 }
             } // End check on backend poller
-            // Send ping requests and 
+            //----------------------------------------------------------------//
+            //                      Send Ping Requests                        //
+            //----------------------------------------------------------------//
             bool sendPingRequests{true};
             while (sendPingRequests)
             {
                 auto workItem = mPingRequests.try_pop();
                 if (workItem != nullptr)
                 {
-                    zmq::multipart_t pingMessage;
-                    pingMessage.addstr(workItem->first);
-                    pingMessage.addstr(workItem->first); // Reply to me
-                    pingMessage.addstr("");
-                    pingMessage.addstr(workItem->second.getMessageType());
-                    pingMessage.addstr(workItem->second.toMessage());
-                    pingMessage.send(*mBackend);
+                    __sendPingRequestToServer(workItem->first,
+                                              workItem->second);
                 }
                 else
                 {
                     sendPingRequests = false;
                 }
-           }
+            }
+            //----------------------------------------------------------------//
+            //                        Send Terminate Requests                 //
+            //----------------------------------------------------------------//
+            bool sendTerminateRequests{true};
+            while (sendTerminateRequests)
+            {
+                auto workItem = mTerminateRequests.try_pop();
+                if (workItem != nullptr)
+                {
+                    __sendTerminateRequestToServer(workItem->first,
+                                                   workItem->second);
+                }
+                else
+                {
+                    sendTerminateRequests = false;
+                }
+            }
         } // while isRunning()
+        // Give other threads a chance to quit
+        std::this_thread::sleep_for(std::chrono::milliseconds {250});
+        // Send terminate commands
+        if (!mModulesMap.empty())
+        {
+            ::TerminateRequest privateTerminateRequest;
+            mLogger->debug("Evicting modules...");
+            for (const auto &m : mModulesMap.mModules)
+            {
+                __sendTerminateRequestToServer(m.first,
+                                               privateTerminateRequest);
+            }
+            // Wait for other threads to process
+            std::this_thread::sleep_for(std::chrono::milliseconds {250});
+            bool waitForMoreResponses{true};
+            while (waitForMoreResponses)
+            {
+                zmq::poll(&items[0], nPollItems, mPollTimeOut);
+                if (items[1].revents & ZMQ_POLLIN)
+                {
+                    try
+                    {
+                        __handleMessagesFromBackend();
+                    }
+                    catch (const zmq::error_t &e)
+                    {
+                        auto errorMsg = "Backend cleanup error.  "
+                                      + std::string("ZeroMQ failed with:\n")
+                                      + std::string(e.what())
+                                      + " Error Code = " + std::to_string(e.num());
+                        mLogger->error(errorMsg);
+                    }
+                    catch (const std::exception &e)
+                    {
+                        auto errorMsg = "Backend cleanup std error: "
+                                      + std::string(e.what());
+                        mLogger->error(errorMsg);
+                    }
+                    waitForMoreResponses = true;
+                }
+                else
+                {
+                    waitForMoreResponses = false;
+                }
+            }
+        }
+        // Warn about maybe who didn't deregister
+        for (const auto &m : mModulesMap.mModules)
+        {
+            mLogger->warn(m.second.mDetails.getName()
+                        + " may still be running"); 
+        }
     } // End function
+    /// @brief Sends a ping message to the backend.
+    void __sendPingRequestToServer(const std::string &address,
+                                   const ::PingRequest &request)
+    {
+        zmq::multipart_t pingMessage;
+        pingMessage.addstr(address);
+        pingMessage.addstr(address); // Reply to me
+        pingMessage.addstr("");
+        pingMessage.addstr(request.getMessageType());
+        pingMessage.addstr(request.toMessage());
+        try
+        {
+            pingMessage.send(*mBackend);
+        }
+        catch (...)
+        {
+            mLogger->error("Failed to send ping to: " + address);
+        }
+    }
+    /// @brief Sends a terminate message to the backend.
+    void __sendTerminateRequestToServer(const std::string &address,
+                                        const ::TerminateRequest &request)
+    {
+        zmq::multipart_t terminateMessage;
+        terminateMessage.addstr(address);
+        terminateMessage.addstr(address); // Reply to me
+        terminateMessage.addstr("");
+        terminateMessage.addstr(request.getMessageType());
+        terminateMessage.addstr(request.toMessage());
+        try
+        {
+            terminateMessage.send(*mBackend);
+        }
+        catch (...)
+        {
+            mLogger->error("Failed to send terminate to: " + address);
+        }
+    }
+    /// @brief Private function to handle a ping response.
+    void __handlePingResponse(const zmq::multipart_t &messagesReceived)
+    {
+        ::PingResponse pingResponse;
+        // Purely for internal consumption
+        auto workerAddress = messagesReceived.at(0).to_string();
+        const auto payload = static_cast<const char *>
+                             (messagesReceived.at(2).data());
+        try
+        {
+            pingResponse.fromMessage(payload,
+                                     messagesReceived.at(2).size());
+        }
+        catch (const std::exception &e)
+        {
+            mLogger->error("Failed to deserialize ping from " + workerAddress);
+            return;
+        }
+        mPingResponses.push(std::pair{workerAddress, pingResponse});
+    }
+    /// @brief Private function to handle a terminate request.
+    void __handleTerminateResponse(const zmq::multipart_t &messagesReceived)
+    {
+        // If not already deleted then do it now
+        auto workerAddress = messagesReceived.at(0).to_string();
+        mModulesMap.erase(workerAddress);
+    }
+    /// @brief Private function to handle a (de)registration response
+    void __handleRegistrationRequest(const zmq::multipart_t &messagesReceived)
+    {
+        if (messagesReceived.size() != 3){return;} // Wrong size
+        // Initialize the response
+        RegistrationRequest registrationRequest;
+        RegistrationResponse registrationResponse;
+        registrationResponse.setReturnCode(RegistrationReturnCode::Success);
+        // Deserialize the request
+        auto workerAddress = messagesReceived.at(0).to_string();
+        const auto payload = static_cast<const char *>
+                             (messagesReceived.at(2).data());
+        registrationRequest.fromMessage(payload, messagesReceived.at(2).size());
+        auto moduleDetails = registrationRequest.getModuleDetails();
+        // Attempt to register the module
+        if (registrationRequest.getRegistrationType() ==
+            RegistrationType::Register)
+        {
+            if (!mModulesMap.contains(moduleDetails))
+            {
+                mLogger->debug("Registering: "
+                             + workerAddress);
+                mModulesMap.insert(std::pair{workerAddress,
+                                             ::Module(moduleDetails,
+                                             mOptions.getPingIntervals())});
+            } 
+            else
+            {
+                registrationResponse.setReturnCode(
+                    RegistrationReturnCode::Exists);
+            }
+        }
+        else // De-register
+        {
+            // Whether it exists or not this is a success
+            mLogger->debug("Deregistering: " + workerAddress);
+            mModulesMap.erase(workerAddress);
+        }
+        // Create a reply and send it
+        zmq::multipart_t registrationReply;
+        registrationReply.addstr(workerAddress);
+        registrationReply.addstr(registrationResponse.getMessageType());
+        registrationReply.addstr(registrationResponse.toMessage());
+        registrationReply.send(*mBackend);
+    }
+    /// @brief Handles the reading/processing of messages from the backend.
+    void __handleMessagesFromBackend()
+    {
+        zmq::multipart_t messagesReceived(*mBackend);
+        if (messagesReceived.empty()){return;} // Message somehow empty 
+        if (messagesReceived.size() == 3)
+        {
+            RegistrationRequest registrationRequest;
+            ::PingResponse pingResponse;
+            ::TerminateResponse terminateResponse;
+            ::PingRequest pingRequest;
+            ::TerminateRequest terminateRequest;
+            auto messageType = messagesReceived.at(1).to_string();
+            if (messageType == registrationRequest.getMessageType())
+            {
+                __handleRegistrationRequest(messagesReceived);
+            }
+            else if (messageType == pingResponse.getMessageType())
+            {
+                __handlePingResponse(messagesReceived);
+            }
+            else if (messageType == terminateResponse.getMessageType())
+            {
+                __handleTerminateResponse(messagesReceived);
+            }
+            // Ignore these
+            else if (messageType == pingRequest.getMessageType())
+            {
+            }
+            // Ignore these
+            else if (messageType == terminateRequest.getMessageType())
+            {
+            }
+            else
+            {
+                mLogger->error("Unhandled message type: " + messageType);
+            }
+        }
+        // Business as usual - propagate these back
+        else if (messagesReceived.size() == 5)
+        {
+            // Purge the the first address (that's the server's).
+            // Format is:
+            // 1. Client Address
+            // 2. Empty
+            // 3. Message [Header+Body; this is actually len 4]
+            messagesReceived.popstr();
+            messagesReceived.send(*mFrontend);
+        } // End check on non-empty message received
+        else
+        {
+            mLogger->error("Unhandled message size: "
+                         + std::to_string(messagesReceived.size()));
+        }
+    }
+
     /// @brief Starts the proxy.
     void start()
     {
@@ -890,9 +1027,13 @@ public:
     // The registered modules
     ::ModulesMap mModulesMap;
     // Queue: ping responses (from proxy thread for module status thread)
-    ::ThreadSafeQueue<std::pair<std::string, PingResponse>> mPingResponses;
+    ::ThreadSafeQueue<std::pair<std::string, ::PingResponse>> mPingResponses;
     // Queue: ping requests (from module status thread to proxy thread to send)
-    ::ThreadSafeQueue<std::pair<std::string, PingRequest>> mPingRequests;
+    ::ThreadSafeQueue<std::pair<std::string, ::PingRequest>> mPingRequests;
+    // Queue: terminate requests (from module status thread to proxy
+    //        thread to send)
+    ::ThreadSafeQueue<std::pair<std::string, ::TerminateRequest>>
+        mTerminateRequests;
     ProxyOptions mOptions;
     UCI::Details mConnectionDetails;
     std::string mFrontendAddress;

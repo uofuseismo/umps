@@ -9,12 +9,14 @@
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messageFormats/failure.hpp"
 #include "umps/messaging/context.hpp"
+#include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/log.hpp"
 //#include "private/messaging/replySocket.hpp"
 #include "private/messaging/requestReplySocket.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include "private/services/ping.hpp"
+#include "private/services/terminate.hpp"
 
 // Wait up to this many milliseconds for registration/deregistration prcoess
 // to complete
@@ -48,8 +50,13 @@ public:
         {
             throw std::runtime_error("Callback not set for poll");
         }
-        PingRequest pingRequest;
-        PingResponse pingResponse;
+        ::PingRequest privatePingRequest;
+        ::PingResponse privatePingResponse;
+        ::TerminateRequest privateTerminateRequest;
+        ::TerminateResponse privateTerminateResponse;
+        UMPS::Services::Command::TerminateRequest terminateRequest;
+        auto terminateRequestMessageType = terminateRequest.getMessageType();
+        auto terminateRequestContents = terminateRequest.toMessage();
         mLogger->debug("Reply starting poll loop...");
         auto logLevel = mLogger->getLevel();
         while (isRunning())
@@ -57,7 +64,7 @@ public:
             // Poll
             std::array<zmq::pollitem_t, 1> pollItems
             {
-                 {{mSocket->handle(), 0, ZMQ_POLLIN, 0}} 
+                 {{mSocket->handle(), 0, ZMQ_POLLIN, 0}}
             };
             zmq::poll(pollItems.data(),
                       pollItems.size(),
@@ -93,13 +100,13 @@ public:
                 std::string responseMessageType;
                 std::string responseMessage;
                 // Handle ping request
-                if (messageType == pingRequest.getMessageType())
+                if (messageType == privatePingRequest.getMessageType())
                 {
-                    pingRequest.fromMessage(
+                    privatePingRequest.fromMessage(
                        reinterpret_cast<const char *> (messageContents),
                           messageSize);
-                    pingResponse.setTime(pingRequest.getTime());
-                    auto response = pingResponse.clone();
+                    privatePingResponse.setTime(privatePingRequest.getTime());
+                    auto response = privatePingResponse.clone();
                     try
                     {
                         zmq::multipart_t reply;
@@ -108,6 +115,48 @@ public:
                         reply.send(*mSocket);
                     }
                     catch (const std::exception &e) 
+                    {
+                        mLogger->error(
+                            "Failed to send ping reply. Failed with: "
+                           + std::string{e.what()});
+                    }
+                }
+                else if (messageType ==
+                         privateTerminateRequest.getMessageType())
+                {
+                    mLogger->info("Terminate request received from proxy.");
+                    privateTerminateRequest.fromMessage(
+                       reinterpret_cast<const char *> (messageContents),
+                          messageSize);
+                    // Submit a terminate request to the callback.
+                    // If I can't process the command then it's own my problem.
+                    // I just want to let the proxy know that I received the
+                    // message and attempted to process it.
+                    try
+                    {
+                        auto response = mCallback(terminateRequestMessageType,
+                                               terminateRequestContents.data(),
+                                               terminateRequestContents.size());
+                        if (response == nullptr)
+                        {
+                            mLogger->error("Callback didnt process terminate");
+                        }                                       
+                    }
+                    catch (const std::exception &e)
+                    {
+                        mLogger->error("Callback threw on terminate: "
+                                     + std::string{e.what()});
+                    }
+                    // Send custom terminate response back
+                    try
+                    {
+                        auto response = privateTerminateResponse.clone();
+                        zmq::multipart_t reply;
+                        reply.addstr(response->getMessageType());
+                        reply.addstr(response->toMessage());
+                        reply.send(*mSocket);
+                    }
+                    catch (const std::exception &e)
                     {
                         mLogger->error(
                             "Failed to send ping reply. Failed with: "
