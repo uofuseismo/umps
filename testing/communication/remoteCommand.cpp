@@ -1,4 +1,5 @@
 #include <thread>
+#include <mutex>
 #include <chrono>
 #include "umps/services/command/availableCommandsRequest.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
