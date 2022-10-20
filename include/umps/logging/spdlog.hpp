@@ -42,7 +42,7 @@ public:
     /// @throws std::invalid_argument if the root
     void initialize(const std::string &loggerName,
                     const std::string &fileName,
-                    Level level = Level::INFO,
+                    Level level = Level::Info,
                     int hour = 0, int minute = 0);
 
     /// @result Gets the logging level.

@@ -103,8 +103,8 @@ public:
     std::string mAlgorithm = "unspecified";
     double mTime = 0;
     uint64_t mIdentifier = 0;
-    Pick::Polarity mPolarity = Pick::Polarity::UNKNOWN;
-    Pick::ReviewStatus mReviewStatus = Pick::ReviewStatus::AUTOMATIC;
+    Pick::Polarity mPolarity = Pick::Polarity::Unknown;
+    Pick::ReviewStatus mReviewStatus = Pick::ReviewStatus::Automatic;
     bool mHaveTime = false;
     bool mHaveIdentifier = false;
 };
@@ -149,18 +149,7 @@ Pick::~Pick() = default;
 /// Reset the class 
 void Pick::clear() noexcept
 {
-    pImpl->mNetwork.clear();
-    pImpl->mStation.clear();
-    pImpl->mChannel.clear();
-    pImpl->mLocationCode.clear();
-    pImpl->mPhaseHint.clear();
-    pImpl->mAlgorithm = "unspecified";
-    pImpl->mTime = 0;
-    pImpl->mIdentifier = 0;
-    pImpl->mPolarity = Pick::Polarity::UNKNOWN;
-    pImpl->mReviewStatus = Pick::ReviewStatus::AUTOMATIC;
-    pImpl->mHaveTime = false;
-    pImpl->mHaveIdentifier = false;
+    pImpl = std::make_unique<PickImpl> ();
 }
 
 /// Network

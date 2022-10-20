@@ -13,7 +13,7 @@
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
-#include "umps/messageFormats/pick.hpp"
+#include "umps/messageFormats/text.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -26,17 +26,6 @@ namespace UAuth = UMPS::Authentication;
 const std::string frontendAddress = "tcp://127.0.0.1:5555";
 // Faces external network (pub)
 const std::string backendAddress = "tcp://127.0.0.1:5556";
-
-const std::string network = "UU";
-const std::string station = "NOQ";
-const std::string channel = "EHZ";
-const std::string locationCode = "01";
-const std::string phaseHint = "P";
-const std::string algorithm = "superPicker";
-const std::string newAlgorithm = algorithm + "_extra";
-const double time = 5600;
-const uint64_t idBase = 100;
-const UMPS::MessageFormats::Pick::Polarity polarity = UMPS::MessageFormats::Pick::Polarity::DOWN;
 const int nMessages = 5;
 const int nThreads = 2;
 
@@ -48,27 +37,17 @@ public:
         process(const std::string &messageType,
                 const void *messageContents, const size_t length)
     {   
-        UMPS::MessageFormats::Pick request;
+        UMPS::MessageFormats::Text request;
         auto response
-            = std::make_unique<UMPS::MessageFormats::Pick> ();
+            = std::make_unique<UMPS::MessageFormats::Text> ();
         //std::cout << "Checking: " << messageType << " " << request.getMessageType() << std::endl;
         if (messageType == request.getMessageType())
         {
             request.fromMessage(
                 reinterpret_cast<const char *> (messageContents), length);
-            response->setIdentifier(request.getIdentifier());
-            //std::cout << "Unpacking: " << request.getIdentifier() << std::endl;
-            response->setNetwork(request.getNetwork());
-            response->setStation(request.getStation());
-            response->setChannel(request.getChannel());
-            response->setLocationCode(request.getLocationCode());
-            response->setPhaseHint(request.getPhaseHint());
-            response->setTime(request.getTime());
-            response->setPolarity(request.getPolarity());
-            response->setAlgorithm(newAlgorithm); // Change the algorithm
+            response->setContents(request.getContents() + " handled");
             nResponses = nResponses + 1;
         }
-if (response == nullptr){std::cerr << "fuck" << std::endl;}
         return response;
     }   
     int getNumberOfResponses() const
@@ -109,15 +88,15 @@ void proxy()
 void client(int id) 
 {
     UMPS::Logging::StdOut logger;
-    UMPS::MessageFormats::Pick pick;
-    logger.setLevel(UMPS::Logging::Level::INFO);
+    UMPS::MessageFormats::Text text;
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StdOut> (logger);
     RequestOptions options;
     options.setAddress(frontendAddress); 
-    auto pickType = pick.createInstance();
+    auto messageType = text.createInstance();
     UMPS::MessageFormats::Messages messageFormats;
-    messageFormats.add(pickType);
+    messageFormats.add(messageType);
 
     options.setMessageFormats(messageFormats);
     Request client;
@@ -125,33 +104,17 @@ void client(int id)
     EXPECT_TRUE(client.isInitialized());
     // Deal with the slow joiner problem
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    // Define message to send
-    pick.setTime(time);
-    pick.setNetwork(network);
-    pick.setStation(station);
-    pick.setChannel(channel);
-    pick.setLocationCode(locationCode);
-    pick.setPhaseHint(phaseHint);
-    pick.setPolarity(polarity);
-    pick.setAlgorithm(algorithm);
-
     for (int i = 0; i < nMessages; ++i)
-    {   
-        pick.setIdentifier(idBase + i); 
-        auto message = client.request(pick);
+    {
+        // Define message to send
+        auto messageContents = std::to_string(i) + " ";
+        auto responseMessageContents = messageContents + " handled";
+        text.setContents(messageContents);
+        auto message = client.request(text);
         auto response
-            = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+            = static_unique_pointer_cast<UMPS::MessageFormats::Text>
               (std::move(message));
-        EXPECT_EQ(pick.getNetwork(),      response->getNetwork());
-        EXPECT_EQ(pick.getStation(),      response->getStation());
-        EXPECT_EQ(pick.getChannel(),      response->getChannel());
-        EXPECT_EQ(pick.getLocationCode(), response->getLocationCode());
-        EXPECT_EQ(pick.getPhaseHint(),    response->getPhaseHint());
-        EXPECT_EQ(pick.getPolarity(),     response->getPolarity());
-        EXPECT_EQ(newAlgorithm,           response->getAlgorithm());
-        EXPECT_NEAR(std::abs(pick.getTime() - response->getTime()), 0, 1.e-14);
-        EXPECT_EQ(pick.getIdentifier(),   response->getIdentifier());
-
+        EXPECT_EQ(response->getContents(), responseMessageContents);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }   
 }

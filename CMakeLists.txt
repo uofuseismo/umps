@@ -367,7 +367,7 @@ set(TEST_SRC
     testing/broadcasts/proxyOptions.cpp
     testing/broadcasts/dataPacket.cpp
     testing/broadcasts/heartbeat.cpp
-    testing/broadcasts/pick.cpp
+    #testing/broadcasts/pick.cpp
     testing/services/proxyOptions.cpp
     testing/services/packetCache.cpp
     testing/services/incrementer.cpp

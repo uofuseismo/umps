@@ -23,8 +23,8 @@ TEST(PickTest, Pick)
     const std::string phaseHint = "P";
     const std::string algorithm = "autoPicker";
     const double time = 500;
-    auto polarity = Pick::Polarity::UP;
-    auto reviewStatus = Pick::ReviewStatus::MANUAL;
+    auto polarity = Pick::Polarity::Up;
+    auto reviewStatus = Pick::ReviewStatus::Manual;
 
     pick.setIdentifier(pickID);
     pick.setTime(time);
@@ -54,8 +54,8 @@ TEST(PickTest, Pick)
     auto messageJSON = pickCopy.toJSON(4);
 
     pick.clear();
-    EXPECT_EQ(pick.getPolarity(), Pick::Polarity::UNKNOWN);
-    EXPECT_EQ(pick.getReviewStatus(), Pick::ReviewStatus::AUTOMATIC);
+    EXPECT_EQ(pick.getPolarity(), Pick::Polarity::Unknown);
+    EXPECT_EQ(pick.getReviewStatus(), Pick::ReviewStatus::Automatic);
     EXPECT_TRUE(pick.getPhaseHint().empty());
     EXPECT_EQ(pick.getAlgorithm(), "unspecified");
 
