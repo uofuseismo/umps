@@ -6,6 +6,7 @@
 #include "proxyBroadcasts.hpp"
 #include "services.hpp"
 #include "log.hpp"
+#include "messaging.hpp"
 #include "umps/authentication/enums.hpp"
 #include "umps/version.hpp"
 #include <pybind11/pybind11.h>
@@ -38,8 +39,9 @@ PYBIND11_MODULE(pyumps, m)
     PUMPS::MessageFormats::initializeDataPacket(messageFormatsModule);
 
     // Messaging
-    pybind11::module messagingModule = m.def_submodule("Messaging");
-    messagingModule.attr("__doc__") = "Message passing patterns used in UMPS.";
+    //pybind11::module messagingModule = m.def_submodule("Messaging");
+    //messagingModule.attr("__doc__") = "Message passing patterns used in UMPS.";
+    PUMPS::Messaging::initializeMessaging(m);
 
     // Authentication
     pybind11::module authenticationModule = m.def_submodule("Authentication");
@@ -59,8 +61,10 @@ PYBIND11_MODULE(pyumps, m)
     PUMPS::ProxyBroadcasts::initializeDataPacketSubscriberOptions(broadcastsModule);
     PUMPS::ProxyBroadcasts::initializeHeartbeat(broadcastsModule);
     
+/*
     pybind11::module pubsubModule = messagingModule.def_submodule("PublisherSubscriber");
     //PUMPS::Messaging::XPublisherXSubscriber::initializePublisherOptions(messagingModule);
     PUMPS::Messaging::PublisherSubscriber::initializeSubscriberOptions(pubsubModule);
     PUMPS::Messaging::PublisherSubscriber::initializeSubscriber(pubsubModule);
+*/
 }

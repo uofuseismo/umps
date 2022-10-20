@@ -80,7 +80,7 @@ void PUMPS::Logging::initializeLogging(pybind11::module &m)
         .value("Debug",
                UMPS::Logging::Level::Debug,
                "Everything is logged.");
-    // Terminate request
+    // Stanard out logger
     pybind11::class_<::StdOut> stdOut(lm, "StandardOut");
     stdOut.def(pybind11::init<> ());
     stdOut.def(pybind11::init<UMPS::Logging::Level> ());
