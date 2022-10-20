@@ -5,6 +5,7 @@
 #include "initialize.hpp"
 #include "proxyBroadcasts.hpp"
 #include "services.hpp"
+#include "log.hpp"
 #include "umps/authentication/enums.hpp"
 #include "umps/version.hpp"
 #include <pybind11/pybind11.h>
@@ -25,6 +26,9 @@ PYBIND11_MODULE(pyumps, m)
         .value("Stonehouse",  UMPS::Authentication::SecurityLevel::Stonehouse,
                "A key exchange will be performed and IP addresses may be validated.");
 
+    // Logging
+    PUMPS::Logging::initializeLogging(m);
+ 
     // Message formats
     pybind11::module messageFormatsModule = m.def_submodule("MessageFormats");
     messageFormatsModule.attr("__doc__") = "An assortment of message formats in UMPS.";

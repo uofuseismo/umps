@@ -20,16 +20,16 @@ public:
     //{   
     //}
     //std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mSink;
-    Level mLevel = Level::INFO;
+    Level mLevel = Level::Info;
     std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mStdOutSink;// = std::make_shared<spdlog::sinks::stdout_sink_mt>();
     std::shared_ptr<spdlog::logger> mLogger = nullptr;
 };
 
 /// C'tor
-StdOut::StdOut() :
+StdOut::StdOut(const Level level) :
     pImpl(std::make_unique<StdOutImpl> ())
 {
-    spdlog::set_level(spdlog::level::info);
+    setLevel(level);
 }
 
 /// Copy c'tor
@@ -69,27 +69,22 @@ void StdOut::setLevel(const Level level) noexcept
     pImpl->mLevel = level;
     if (level == Level::Error)
     {
-        //spdlog::set_level(spdlog::level::err);
         pImpl->mLogger->set_level(spdlog::level::err);
     }
     else if (level == Level::Warn)
     {
-        //spdlog::set_level(spdlog::level::debug);
         pImpl->mLogger->set_level(spdlog::level::warn);
     }
     else if (level == Level::Info)
     {
-        //spdlog::set_level(spdlog::level::info);
         pImpl->mLogger->set_level(spdlog::level::info);
     }
     else if (level == Level::Debug)
     {
-        //spdlog::set_level(spdlog::level::debug);
         pImpl->mLogger->set_level(spdlog::level::debug);
     }
     else
     {
-        //spdlog::set_level(spdlog::level::off);
         pImpl->mLogger->set_level(spdlog::level::off);
     }
 }

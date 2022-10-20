@@ -13,7 +13,7 @@ class StdOut : public ILog
 {
 public:
     /// @brief Constructor.
-    StdOut();
+    explicit StdOut(Logging::Level level = Logging::Level::Info);
     /// @brief Copy constructor.
     StdOut(const StdOut &logger);
     /// @brief Move constructor.
