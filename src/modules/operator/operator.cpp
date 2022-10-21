@@ -601,10 +601,6 @@ int main(int argc, char *argv[])
                 if (moduleRegistry->isRunning())
                 {
                     printService(*moduleRegistry);
-                    if (!modules.mProxyServices.empty())
-                    {
-                        std::cout << std::endl;
-                    }
                 }
                 for (const auto &service : modules.mProxyServices)
                 {
