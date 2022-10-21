@@ -117,6 +117,13 @@ public:
     [[nodiscard]] std::vector<std::chrono::milliseconds> getPingIntervals() const noexcept;
     /// @}
 
+    /// @brief Loads proxy options from an initialization file.
+    /// @param[in] iniFile  The name of the initialization file.
+    /// @param[in] section  The section of the ini file from which to
+    ///                     read variables.
+    void parseInitializationFile(const std::string &iniFile,
+                                 const std::string &section);
+
     /// @name Destructors
     /// @{
 

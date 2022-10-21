@@ -1039,7 +1039,7 @@ public:
     std::string mFrontendAddress;
     std::string mBackendAddress;
     std::string mMonitorAddress;
-    const std::string mProxyName{"RemoteCommandProxy"};
+    const std::string mProxyName{"ModuleRegistry"};
     std::thread mProxyThread;
     std::thread mModuleStatusThread;
     std::vector<std::chrono::milliseconds>

@@ -1,5 +1,8 @@
 #include <vector>
 #include <chrono>
+#include <filesystem>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 #include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "private/isEmpty.hpp"
@@ -172,12 +175,88 @@ void ProxyOptions::setPingIntervals(
             throw std::invalid_argument("All intervals must be positive");
         }
     }
-    pImpl->mPingIntervals = pingIntervals;
-    std::sort(pImpl->mPingIntervals.begin(), pImpl->mPingIntervals.end());
+    auto work = pingIntervals;
+    std::sort(work.begin(), work.end());
+    work.erase(std::unique(work.begin(), work.end()), work.end());
+    pImpl->mPingIntervals = work;
 }
 
 std::vector<std::chrono::milliseconds>
     ProxyOptions::getPingIntervals() const noexcept
 {
     return pImpl->mPingIntervals;
+}
+
+/// Read the proxy optoins from an ini file
+void ProxyOptions::parseInitializationFile(const std::string &iniFile,
+                                           const std::string &section)
+{
+    if (!std::filesystem::exists(iniFile))
+    {
+        throw std::invalid_argument("Initialization file: "
+                                  + iniFile + " does not exist");
+    }
+    ProxyOptions options;
+    boost::property_tree::ptree propertyTree;
+    boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
+
+    // Set frontend/backend address
+    auto frontendAddress
+        = propertyTree.get<std::string> (section + ".frontendAddress",
+                                         "");
+    if (!frontendAddress.empty())
+    {
+        options.setFrontendAddress(frontendAddress);
+    }
+
+    auto backendAddress
+        = propertyTree.get<std::string> (section + ".backendAddress",
+                                         "");
+    if (!backendAddress.empty())
+    {
+        options.setBackendAddress(backendAddress);
+    }
+    // High-water marks
+    auto frontendHighWaterMark
+       = propertyTree.get<int> (section + ".frontendHighWaterMark",
+                                options.getFrontendHighWaterMark());
+    if (frontendHighWaterMark >= 0)
+    {
+        options.setFrontendHighWaterMark(frontendHighWaterMark);
+    }
+
+    auto backendHighWaterMark
+       = propertyTree.get<int> (section + ".backendHighWaterMark",
+                                options.getBackendHighWaterMark());
+    if (backendHighWaterMark >= 0)
+    {
+        options.setBackendHighWaterMark(backendHighWaterMark);
+    }
+
+    // Ping intervals:
+    // ModuleRegistry.pingInterval_1 = 
+    // ModuleRegistry.pingInterval_2 = 
+    // .
+    // .
+    // .  
+    auto defaultNaN = std::numeric_limits<int>::lowest();
+    std::vector<std::chrono::milliseconds> pingIntervals;
+    for (int i = 1; i < 32768; ++i)
+    {
+        auto pingIntervalName = section + ".pingInterval_" + std::to_string(i);
+        auto pingInterval = propertyTree.get<int> (pingIntervalName,
+                                                   defaultNaN);
+        if (pingInterval <= 0)
+        {
+            if (pingInterval > defaultNaN)
+            {
+                throw std::invalid_argument("Ping interval must be postiive");
+            }
+            break;
+        }
+        pingIntervals.push_back(std::chrono::milliseconds {pingInterval}); 
+    }
+    if (!pingIntervals.empty()){options.setPingIntervals(pingIntervals);}
+    // Got everything and didn't throw -> copy to this
+    *this = std::move(options);
 }
