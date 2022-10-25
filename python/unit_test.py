@@ -26,6 +26,7 @@ def test_messages_pick():
     assert pick.algorithm == "test_algorithm", "algorithm failed"
 """
 
+"""
 def test_messages_data_packet():
     packet = umpspy.MessageFormats.DataPacket()
     network = "WY"
@@ -56,6 +57,7 @@ def test_messages_data_packet():
     assert len(x) == len(x_back), 'inconsistent sizes'
     for i in range(len(x)):
         assert abs(x_back[i] - x[i]) < 1.e-14, 'x[%d] is wrong'%i
+"""
 
 #def test_messaging_pubsub_subscriber():
 #    subscriber = umpspy.Messaging.PublisherSubscriber.Subscriber()
@@ -67,6 +69,7 @@ def test_messages_data_packet():
 #    #print(type(pick))
 
 if __name__ == "__main__":
-    test_messages_pick()
-    test_messages_data_packet()
+    a = 1
+    #test_messages_pick()
+    #test_messages_data_packet()
     #test_messaging_pubsub_subscriber()
