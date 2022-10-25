@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-import pyumps
+import umpspy
 import numpy as np
 
 """
 def test_messages_pick():
-    pick = pyumps.MessageFormats.Pick()
+    pick = umpspy.MessageFormats.Pick()
     pick.network = "UU"
     pick.station = "ICU"
     pick.channel = "EHZ"
     pick.time = 1034
     pick.location_code = "01"
     pick.identifier = 101
-    pick.polarity = pyumps.MessageFormats.Polarity.up
+    pick.polarity = umpspy.MessageFormats.Polarity.up
     pick.phase_hint = "P"
     pick.algorithm = "test_algorithm"
 
@@ -21,13 +21,13 @@ def test_messages_pick():
     assert pick.location_code == "01", "location failed"
     assert abs(pick.time - 1034) < 1.e-14, 'time failed'
     assert pick.identifier == 101, "id failed"
-    assert pick.polarity == pyumps.MessageFormats.Polarity.up, "polarity failed"
+    assert pick.polarity == umpspy.MessageFormats.Polarity.up, "polarity failed"
     assert pick.phase_hint == "P", "phase hint failed"
     assert pick.algorithm == "test_algorithm", "algorithm failed"
 """
 
 def test_messages_data_packet():
-    packet = pyumps.MessageFormats.DataPacket()
+    packet = umpspy.MessageFormats.DataPacket()
     network = "WY"
     station = "YFT"
     channel = "EHZ"
@@ -58,10 +58,10 @@ def test_messages_data_packet():
         assert abs(x_back[i] - x[i]) < 1.e-14, 'x[%d] is wrong'%i
 
 #def test_messaging_pubsub_subscriber():
-#    subscriber = pyumps.Messaging.PublisherSubscriber.Subscriber()
-#    pick = pyumps.MessageFormats.Pick()
+#    subscriber = umpspy.Messaging.PublisherSubscriber.Subscriber()
+#    pick = umpspy.MessageFormats.Pick()
 #    subscriber.add_subscription(pick)
-#    #a = pyumps.MessageFormats.pick_base_class()
+#    #a = umpspy.MessageFormats.pick_base_class()
 #    #print(type(pick))
 #    #print(type(subscriber))
 #    #print(type(pick))

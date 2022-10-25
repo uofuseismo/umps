@@ -9,13 +9,15 @@
 #include "messaging.hpp"
 #include "umps/authentication/enums.hpp"
 #include "umps/version.hpp"
+#include "python/authentication.hpp"
 #include <pybind11/pybind11.h>
 
-PYBIND11_MODULE(pyumps, m)
+PYBIND11_MODULE(umpspy, m)
 {
     m.attr("__version__") = UMPS_VERSION;
-    m.attr("__name__") = "pyumps";
+    m.attr("__name__") = "umpspy";
     m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismograph Stations Message Passing System (UMPS).";
+/*
     // Enums
     pybind11::enum_<UMPS::Authentication::SecurityLevel> (m, "SecurityLevel")
         .value("Grasslands", UMPS::Authentication::SecurityLevel::Grasslands,
@@ -26,6 +28,7 @@ PYBIND11_MODULE(pyumps, m)
                "A user name and password must be provided and IP addresses may be validated.")
         .value("Stonehouse",  UMPS::Authentication::SecurityLevel::Stonehouse,
                "A key exchange will be performed and IP addresses may be validated.");
+*/
 
     // Logging
     PUMPS::Logging::initializeLogging(m);
@@ -44,11 +47,13 @@ PYBIND11_MODULE(pyumps, m)
     PUMPS::Messaging::initializeMessaging(m);
 
     // Authentication
+    UMPS::Python::Authentication::initialize(m);
+/*
     pybind11::module authenticationModule = m.def_submodule("Authentication");
     authenticationModule.attr("__doc__") = "ZeroMQ Authentication Protocol patterns used in UMPS.";
     PUMPS::Authentication::initializeZAPOptions(authenticationModule);
     PUMPS::Authentication::initializeKeys(authenticationModule);
-
+*/
     // Manage specific services
     pybind11::module servicesModule = m.def_submodule("Services");
     servicesModule.attr("__doc__") = "An assortment of services.";

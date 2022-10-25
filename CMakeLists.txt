@@ -324,14 +324,11 @@ endif()
 if (WRAP_PYTHON)
    message("Will build Python bindings")
    find_package(pybind11 REQUIRED)
-   add_library(pyumps MODULE
-               python/pyumps.cpp
+   add_library(umps_python
+               python/authentication/authentication.cpp
                python/messageFormats/message.cpp
                python/messageFormats/messages.cpp
                python/messageFormats/dataPacket.cpp
-               #python/messageFormats/pick.cpp
-               python/authentication/keys.cpp
-               python/authentication/zapOptions.cpp
                python/logging/log.cpp
                python/proxyBroadcasts/dataPacketSubscriber.cpp
                python/proxyBroadcasts/dataPacketSubscriberOptions.cpp
@@ -341,15 +338,27 @@ if (WRAP_PYTHON)
                python/messaging/publisherSubscriber/publisher.cpp
                python/messaging/publisherSubscriber/subscriberOptions.cpp
                python/messaging/publisherSubscriber/subscriber.cpp)
-   target_link_libraries(pyumps PRIVATE pybind11::module umps)
-   target_include_directories(pyumps
+   set_target_properties(umps_python PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO)
+   target_include_directories(umps_python
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/python/include>
                                       $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
-   set_target_properties(pyumps PROPERTIES
+   target_link_libraries(umps_python
+                         PRIVATE pybind11::pybind11 pybind11::lto umps)
+
+   add_library(umpspy MODULE python/umpspy.cpp)
+   set_target_properties(umpspy PROPERTIES
                          PREFIX ""
                          CXX_STANDARD 20
-                         CXX_STANDARD_REQUIRED YES
-                         CXX_EXTENSIONS NO)
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO) 
+   target_include_directories(umpspy
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/python/include>
+                                      $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+   target_link_libraries(umpspy
+                         PRIVATE pybind11::module pybind11::lto umps umps_python)
 endif()
 
 ##########################################################################################
@@ -444,7 +453,7 @@ write_basic_package_version_file(
     #"${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 #)
 if (WRAP_PYTHON)
-   install(TARGETS umps pyumps
+   install(TARGETS umps umpspy umps_python
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -120,10 +120,6 @@ bool ZAPOptions::isAuthenticationServer() const noexcept
 {
     return pImpl->isAuthenticationServer();
 }
-/*
-
-    void setWoodhouseClient(const UserNameAndPassword &credentials);
-*/
 
 void ZAPOptions::setStonehouseClient(const Keys &serverKeysIn,
                                      const Keys &clientKeysIn)
@@ -132,11 +128,6 @@ void ZAPOptions::setStonehouseClient(const Keys &serverKeysIn,
     auto clientKeys = clientKeysIn.getNativeClass();
     pImpl->setStonehouseClient(serverKeys, clientKeys);
 }
-
-/*
-    void setStonehouseServer(const Keys &serverKeys);
-
-*/
 
 void PUMPS::Authentication::initializeZAPOptions(pybind11::module &m)
 {

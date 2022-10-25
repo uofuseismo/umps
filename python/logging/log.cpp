@@ -2,11 +2,13 @@
 #include <umps/logging/stdout.hpp>
 #include <umps/logging/spdlog.hpp>
 #include <pybind11/pybind11.h>
+#include "python/logging.hpp"
 #include "log.hpp"
 
 namespace
 {
 
+/*
 class StdOut
 {
 public:
@@ -51,6 +53,7 @@ public:
     }
     UMPS::Logging::StdOut mLogger;
 };
+*/
 
 /*
 class SpdLog
@@ -60,6 +63,78 @@ public:
 }; 
 */
 
+}
+
+using namespace UMPS::Python::Messaging;
+
+/// C'tor
+StandardOut::StandardOut(const UMPS::Logging::Level level) :
+    mLogger(level)
+{
+}
+
+/// Copy c'tor
+StandardOut::StandardOut(const StandardOut &logger)
+{
+    *this = logger;
+}
+
+/// Move c'tor
+StandardOut::StandardOut(StandardOut &&logger) noexcept
+{
+    *this = std::move(logger);
+}
+
+/// Destructor
+StandardOut::~StandardOut() = default;
+
+/// Copy assignment
+StandardOut& StandardOut::operator=(const StandardOut &) = default;
+
+/// Move assignment
+StandardOut& StandardOut::operator=(StandardOut &&) noexcept = default;
+
+/// Set level
+void StandardOut::setLevel(const UMPS::Logging::Level level) noexcept
+{
+    mLogger.setLevel(level);
+}
+
+UMPS::Logging::Level StandardOut::getLevel() const noexcept
+{
+    return mLogger.getLevel();
+}
+
+/// Error
+void StandardOut::error(const std::string &message)
+{
+    mLogger.error(message);
+}
+
+/// Warn
+void StandardOut::warn(const std::string &message)
+{
+    mLogger.warn(message);
+}
+
+/// Info
+void StandardOut::info(const std::string &message)
+{
+    mLogger.info(message);
+}
+
+/// Debug
+void StandardOut::debug(const std::string &message)
+{
+    mLogger.debug(message);
+}
+
+/// Make instance
+std::shared_ptr<UMPS::Logging::ILog> StandardOut::getInstance()
+{
+    std::shared_ptr<UMPS::Logging::ILog> result
+       =  std::make_shared<UMPS::Logging::StdOut> (mLogger);
+    return result;
 }
 
 void PUMPS::Logging::initializeLogging(pybind11::module &m)
@@ -81,7 +156,8 @@ void PUMPS::Logging::initializeLogging(pybind11::module &m)
                UMPS::Logging::Level::Debug,
                "Everything is logged.");
     // Stanard out logger
-    pybind11::class_<::StdOut> stdOut(lm, "StandardOut");
+    pybind11::class_<UMPS::Python::Messaging::StandardOut>
+         stdOut(lm, "StandardOut");
     stdOut.def(pybind11::init<> ());
     stdOut.def(pybind11::init<UMPS::Logging::Level> ());
     stdOut.doc() = R""""(
@@ -94,19 +170,19 @@ Properties :
 
 )"""";
     stdOut.def_property("level",
-                        &StdOut::getLevel,
-                        &StdOut::setLevel);
+                        &StandardOut::getLevel,
+                        &StandardOut::setLevel);
     stdOut.def("error",
-               &StdOut::error,
+               &StandardOut::error,
                "Issues an error message.");
     stdOut.def("warn",
-               &StdOut::warn,
+               &StandardOut::warn,
                "Issues a warning message.");
     stdOut.def("info",
-               &StdOut::info,
+               &StandardOut::info,
                "Issues an info message.");
     stdOut.def("debug",
-               &StdOut::debug,
+               &StandardOut::debug,
                "Issues a debug message.");
     //------------------------------------------------------------------------//
 }
