@@ -25,5 +25,6 @@ public:
 private:
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
 };
+void initialize(pybind11::module &m);
 }
 #endif

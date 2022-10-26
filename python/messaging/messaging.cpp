@@ -1,24 +1,8 @@
 #include <umps/messaging/context.hpp>
 #include "python/messaging.hpp"
-#include "messaging.hpp"
 
 namespace
 {
-
-/*
-class Context
-{
-public:
-    explicit Context(const int nInputThreads = 1) :
-        mContext(nInputThreads)
-    {
-    }
-    ~Context() = default;
-    Context& operator=(const Context &) = delete;
-    Context& operator=(Context &&) noexcept = delete;
-    UMPS::Messaging::Context mContext;
-};
-*/
 
 }
 
@@ -40,7 +24,10 @@ std::shared_ptr<UMPS::Messaging::Context> Context::getSharedPointer() const
     return mContext;
 }
 
-void PUMPS::Messaging::initializeMessaging(pybind11::module &m)
+///--------------------------------------------------------------------------///
+///                            Initialization                                ///
+///--------------------------------------------------------------------------///
+void UMPS::Python::Messaging::initialize(pybind11::module &m)
 {
     pybind11::module messagingModule = m.def_submodule("Messaging");
     messagingModule.attr("__doc__") = "Message passing patterns used in UMPS.";

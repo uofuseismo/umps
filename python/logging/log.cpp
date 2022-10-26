@@ -5,68 +5,11 @@
 #include "python/logging.hpp"
 #include "log.hpp"
 
-namespace
-{
+using namespace UMPS::Python::Logging;
 
-/*
-class StdOut
-{
-public:
-    StdOut(const UMPS::Logging::Level level = UMPS::Logging::Level::Info) :
-        mLogger(level) //std::make_shared<UMPS::Logging::StdOut> (level))
-    {
-    }
-    StdOut(const StdOut &logger) = default;
-    StdOut(StdOut &&logger) noexcept = default;
-    StdOut& operator=(const StdOut &logger) = default;
-    StdOut& operator=(StdOut &&logger) noexcept = default;
-    ~StdOut() = default;
-    void setLevel(const UMPS::Logging::Level level) noexcept
-    {
-        mLogger.setLevel(level);
-    }
-    UMPS::Logging::Level getLevel() const noexcept
-    {
-        return mLogger.getLevel();
-    }
-    void error(const std::string &message)
-    {
-        mLogger.error(message);
-    }
-    void warn(const std::string &message)
-    {
-        mLogger.warn(message);
-    }
-    void info(const std::string &message)
-    {
-        mLogger.info(message);
-    }
-    void debug(const std::string &message)
-    {
-        mLogger.debug(message);
-    }
-    [[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getInstance()
-    {
-        std::shared_ptr<UMPS::Logging::ILog> result 
-           =  std::make_shared<UMPS::Logging::StdOut> (mLogger);
-        return result;
-    }
-    UMPS::Logging::StdOut mLogger;
-};
-*/
-
-/*
-class SpdLog
-{
-public:
-
-}; 
-*/
-
-}
-
-using namespace UMPS::Python::Messaging;
-
+///--------------------------------------------------------------------------///
+///                              StdOut Logger                               ///
+///--------------------------------------------------------------------------///
 /// C'tor
 StandardOut::StandardOut(const UMPS::Logging::Level level) :
     mLogger(level)
@@ -137,7 +80,82 @@ std::shared_ptr<UMPS::Logging::ILog> StandardOut::getInstance()
     return result;
 }
 
-void PUMPS::Logging::initializeLogging(pybind11::module &m)
+///--------------------------------------------------------------------------///
+///                                 Day Logger                               ///
+///--------------------------------------------------------------------------///
+Daily::Daily() = default;
+
+/// Copy c'tor
+Daily::Daily(const Daily &logger)
+{
+    *this = logger;
+}
+
+/// Move c'tor
+Daily::Daily(Daily &&logger) noexcept
+{
+    *this = std::move(logger);
+}
+
+/// Destructor
+Daily::~Daily() = default;
+
+/// Copy assignment
+Daily& Daily::operator=(const Daily &) = default;
+
+/// Move assignment
+Daily& Daily::operator=(Daily &&) noexcept = default;
+
+void Daily::initialize(const std::string &loggerName,
+                       const std::string &fileName,
+                       const UMPS::Logging::Level level,
+                       const int hour,
+                       const int minute)
+{
+    mLogger.initialize(loggerName, fileName, level, hour, minute);
+}
+
+/// Error
+void Daily::error(const std::string &message)
+{
+    mLogger.error(message);
+}
+
+/// Warn
+void Daily::warn(const std::string &message)
+{
+    mLogger.warn(message);
+}
+
+/// Info
+void Daily::info(const std::string &message)
+{
+    mLogger.info(message);
+}
+
+/// Debug
+void Daily::debug(const std::string &message)
+{
+    mLogger.debug(message);
+}
+
+UMPS::Logging::Level Daily::getLevel() const noexcept
+{
+    return mLogger.getLevel();
+}
+
+/// Make instance
+std::shared_ptr<UMPS::Logging::ILog> Daily::getInstance()
+{
+    std::shared_ptr<UMPS::Logging::ILog> result
+       =  std::make_shared<UMPS::Logging::SpdLog> (mLogger);
+    return result;
+}
+
+///--------------------------------------------------------------------------///
+///                               Initialization                             ///
+///--------------------------------------------------------------------------///
+void UMPS::Python::Logging::initialize(pybind11::module &m)
 {
     pybind11::module lm = m.def_submodule("Logging");
     lm.attr("__doc__") = "Logging utilities for UMPS.";
@@ -155,8 +173,8 @@ void PUMPS::Logging::initializeLogging(pybind11::module &m)
         .value("Debug",
                UMPS::Logging::Level::Debug,
                "Everything is logged.");
-    // Stanard out logger
-    pybind11::class_<UMPS::Python::Messaging::StandardOut>
+    // Standard out logger
+    pybind11::class_<UMPS::Python::Logging::StandardOut>
          stdOut(lm, "StandardOut");
     stdOut.def(pybind11::init<> ());
     stdOut.def(pybind11::init<UMPS::Logging::Level> ());
@@ -166,7 +184,8 @@ typically is only useful for for the early stations of application
 development.
 
 Properties :
-    level : The logging level.  By default, this is an info-level logger. 
+    level : int
+        The logging level.  By default, this is an info-level logger. 
 
 )"""";
     stdOut.def_property("level",
@@ -185,4 +204,49 @@ Properties :
                &StandardOut::debug,
                "Issues a debug message.");
     //------------------------------------------------------------------------//
+    // Day logger
+    // Standard out logger
+    pybind11::class_<UMPS::Python::Logging::Daily> daily(lm, "Daily");
+    daily.def(pybind11::init<> ());
+    daily.doc() = R""""(
+This is an UMPS logger that writes messages to a file.  The file is rotated
+every day on the hour/minute specified during initialization.  The log output
+will look like:
+
+     [timestamp] [Logger Name] Message
+
+Read-only Properties :
+    level : int
+        The logging level.  By default, this is an info-level logger. 
+)"""";
+    daily.def_property_readonly("level",
+                                &Daily::getLevel);
+    daily.def("initialize",
+              &Daily::initialize,
+R""""(
+Initializes the logger.\n
+\n
+Parameters\n
+----------\n
+logger_name : str\n
+    The logger name.  This is how to identify the log in the output.\n
+file_name : str\n
+    The file to which to write messages.\n
+hour : int\n
+    Rotate the log on this hour of the day.  This should be in the range [0,23].\n
+minute : int\n
+    Rotate the log on this minute of the hour.  This should be in the range [0,59].\n
+)"""");
+    daily.def("error",
+              &Daily::error,
+              "Issues an error message.");
+    daily.def("warn",
+              &Daily::warn,
+              "Issues a warning message.");
+    daily.def("info",
+              &Daily::info,
+              "Issues an info message.");
+    daily.def("debug",
+              &Daily::debug,
+              "Issues a debug message.");
 }

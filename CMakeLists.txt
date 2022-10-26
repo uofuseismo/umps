@@ -326,18 +326,19 @@ if (WRAP_PYTHON)
    find_package(pybind11 REQUIRED)
    add_library(umps_python
                python/authentication/authentication.cpp
-               python/messageFormats/message.cpp
-               python/messageFormats/messages.cpp
-               python/messageFormats/dataPacket.cpp
+               #python/messageFormats/message.cpp
+               #python/messageFormats/messages.cpp
+               #python/messageFormats/dataPacket.cpp
                python/logging/log.cpp
-               python/proxyBroadcasts/dataPacketSubscriber.cpp
-               python/proxyBroadcasts/dataPacketSubscriberOptions.cpp
-               python/proxyBroadcasts/heartbeat.cpp
-               python/services/command.cpp
+               #python/proxyBroadcasts/dataPacketSubscriber.cpp
+               #python/proxyBroadcasts/dataPacketSubscriberOptions.cpp
+               #python/proxyBroadcasts/heartbeat.cpp
+               #python/services/command.cpp
                python/messaging/messaging.cpp
-               python/messaging/publisherSubscriber/publisher.cpp
-               python/messaging/publisherSubscriber/subscriberOptions.cpp
-               python/messaging/publisherSubscriber/subscriber.cpp)
+               #python/messaging/publisherSubscriber/publisher.cpp
+               #python/messaging/publisherSubscriber/subscriberOptions.cpp
+               #python/messaging/publisherSubscriber/subscriber.cpp
+               )
    set_target_properties(umps_python PROPERTIES
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 

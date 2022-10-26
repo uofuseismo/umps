@@ -323,6 +323,7 @@ void UMPS::Python::Authentication::initialize(pybind11::module &m)
         .value("Stonehouse",  UMPS::Authentication::SecurityLevel::Stonehouse,
                "A key exchange will be performed and IP addresses may be validated.");
 
+/*
     //------------------------------------------------------------------------//
     pybind11::class_<Keys> keys(auth, "Keys");
     keys.def(pybind11::init<> ());
@@ -390,8 +391,7 @@ Read-only Properties :
            "Resets the username and password");
 
     //------------------------------------------------------------------------//
-    pybind11::class_<ZAPOptions>
-        zap(auth, "ZAPOptions");
+    pybind11::class_<ZAPOptions> zap(auth, "ZAPOptions");
     zap.def(pybind11::init<> ());
     zap.doc() = R""""(
 This defines the ZeroMQ Authentication Protocol (ZAP) options.  Briefly, there
@@ -407,15 +407,16 @@ are four supported levels of security.
                      client have the server's public key as well as its own
                      public/private key pair.
 
-Options Properties :
+Optional Properties :
 
    domain : The ZeroMQ domain on which authentication will be performed.
 
 Read-only Properties :
 
-   is_authentication_server : True indicates that this is the machine that
-                              will perform authentication.
-   security_level : The current security level.
+   is_authentication_server : bool
+      True indicates that this is the machine that will perform authentication.
+   security_level : int
+      The current security level.
 
 )"""";
     zap.def("__copy__", [](const ZAPOptions &self)
@@ -454,4 +455,5 @@ Read-only Properties :
                               &ZAPOptions::isAuthenticationServer);
     zap.def_property_readonly("security_level",
                               &ZAPOptions::getSecurityLevel);
+*/
 }
