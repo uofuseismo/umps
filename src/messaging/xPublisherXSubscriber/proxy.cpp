@@ -13,7 +13,7 @@
 #include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/messaging/ipcDirectory.hpp"
 
 using namespace UMPS::Messaging::XPublisherXSubscriber;
@@ -84,7 +84,7 @@ public:
         // Make the logger
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

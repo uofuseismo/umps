@@ -1,4 +1,5 @@
-namespace UMPS {
+namespace UMPS
+{
 
 /** \mainpage notitle
 
@@ -6,22 +7,15 @@ This is the API documentation for UMPS.
 
 Initial examples demonstrating UMPS usage are found at \link GettingStarted getting started \endlink.
 
-The \b main \b documentation is organized into \em chapters that detail library capabilities.
+The main documentation is organized into \em chapters that detail key concepts and library capabilities.
 
 TODO - make CI artifact that uploads html as a tgz.  You can <a href="umps-doc.tgz">download</a> it as a tgz archive for offline reading.  
 
 For your first contact with UMPS, the best place is to look is at the \link GettingStarted getting started \endlink page that show you how to write and compile your first program with UMPS.
 
-Then, the \b quick \b reference \b pages give you a quite complete description of the API in a very condensed format that is specially useful to recall the syntax of a particular feature, or to have a quick look at the API. They currently cover the two following feature sets, and more will come in the future:
-  - \link QuickRefPage [QuickRef] Dense matrix and array manipulations \endlink
-  - \link SparseQuickRefPage [QuickRef] Sparse linear algebra \endlink
-
-The \b main \b documentation is organized into \em chapters covering different domains of features.
-They are themselves composed of \em user \em manual pages describing the different features in a comprehensive way, and \em reference pages that gives you access to the API documentation through the related UMPS's \em modules and \em classes.
-
 Under the \subpage UserManual_CustomizingMessageTypes section, you will find discussions and examples on extending %UMPS's features and supporting custom message types.
 
-Finally, do not miss the search engine, useful to quickly get to the documentation of a given class or function.
+Finally, the search engine allows you to quickly find the documentation corresponding to the given class or function.
 
 */
 

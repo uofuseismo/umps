@@ -14,11 +14,11 @@ def test_logging_standard_out():
     so.info("Info test - okay")
     so.debug("Debug test - okay")
 
-def test_logging_daily():
+def test_logging_daily_file():
     level = umpspy.Logging.Level.Debug
     logger_name = "test_logger"
     file_name = "tempLogger.txt"
-    d = umpspy.Logging.Daily()
+    d = umpspy.Logging.DailyFile()
     d.initialize(logger_name, file_name, level)
     d.error("Error test - okay")
     d.warn("Warn test - okay")
@@ -90,6 +90,6 @@ def test_messages_data_packet():
 
 if __name__ == "__main__":
     test_logging_standard_out()
-    test_logging_daily()
+    test_logging_daily_file()
     test_message_formats_text()
     test_message_formats_failure()

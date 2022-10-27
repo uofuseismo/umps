@@ -8,8 +8,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
 #include "umps/authentication/zapOptions.hpp"
-#include "umps/logging/stdout.hpp"
-#include "umps/logging/spdlog.hpp"
+#include "umps/logging/dailyFile.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/modules/process.hpp"
@@ -62,7 +61,7 @@ std::string parseOptions(int argc, char *argv[]);
 {
     auto logFileName = moduleName + ".log";  
     auto fullLogFileName = logFileDirectory / logFileName;
-    auto logger = std::make_shared<UMPS::Logging::SpdLog> (); 
+    auto logger = std::make_shared<UMPS::Logging::DailyFile> (); 
     logger->initialize(moduleName,
                        fullLogFileName,
                        verbosity,

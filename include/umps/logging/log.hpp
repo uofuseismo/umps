@@ -7,6 +7,7 @@ namespace UMPS::Logging
 /// @brief This is an abstract base class that allows users to define custom
 ///        loggers to be used in other applications.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license. 
+/// @ingroup Logging_BaseClass
 class ILog
 {
 public:

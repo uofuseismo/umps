@@ -1,36 +1,37 @@
-#ifndef UMPS_LOGGING_STDOUT_HPP
-#define UMPS_LOGGING_STDOUT_HPP
+#ifndef UMPS_LOGGING_STANDARD_OUT_HPP
+#define UMPS_LOGGING_STANDARD_OUT_HPP
 #include <memory>
 #include "umps/logging/log.hpp"
 namespace UMPS::Logging
 {
-/// StdOut "stdout.hpp" "umps/logging/stdout.hpp"
+/// StandardOut "stdout.hpp" "umps/logging/stdout.hpp"
 /// @brief A naive logger that prints all messages to standard out and,
 ///        in the case of errors, standard error.
 /// @note This class is not recommended for typical use.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class StdOut : public ILog
+/// @ingroup Logging_Loggers
+class StandardOut : public ILog
 {
 public:
     /// @brief Constructor.
-    explicit StdOut(Logging::Level level = Logging::Level::Info);
+    explicit StandardOut(Logging::Level level = Logging::Level::Info);
     /// @brief Copy constructor.
-    StdOut(const StdOut &logger);
+    StandardOut(const StandardOut &logger);
     /// @brief Move constructor.
-    StdOut(StdOut &&logger) noexcept;
+    StandardOut(StandardOut &&logger) noexcept;
 
     /// @brief Copy assignment operator.
     /// @param[in] logger   The logging class to copy to this.
     /// @result A deep copy of the logger class.
-    StdOut &operator=(const StdOut &logger); 
+    StandardOut &operator=(const StandardOut &logger); 
     /// @brief Move assignment operator.
     /// @param[in,out] logger  The logging class whose memory will be moved to
     ///                        this.  On exit, logger's behavior is undefined.
     /// @result The memory from logger moved to this.
-    StdOut &operator=(StdOut &&logger) noexcept;
+    StandardOut &operator=(StandardOut &&logger) noexcept;
 
     /// @brief Destructor.
-    ~StdOut() override;
+    ~StandardOut() override;
 
     /// @brief Sets the logging level.
     /// @param[in] level  The logging level.
@@ -51,8 +52,8 @@ public:
     /// @note This requires \c getLevel() be >= Level::DEBUG.
     void debug(const std::string &message) override;
 private:
-    class StdOutImpl;
-    std::unique_ptr<StdOutImpl> pImpl; 
+    class StandardOutImpl;
+    std::unique_ptr<StandardOutImpl> pImpl; 
 };
 }
 #endif

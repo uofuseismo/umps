@@ -1,7 +1,7 @@
 #include "umps/authentication/grasslands.hpp"
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::Authentication;
 
@@ -9,7 +9,7 @@ class Grasslands::GrasslandsImpl
 {
 public:
     GrasslandsImpl() :
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StandardOut> ())
     {    
     }    
     explicit GrasslandsImpl(std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -17,7 +17,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
     }
     std::shared_ptr<UMPS::Logging::ILog> mLogger;

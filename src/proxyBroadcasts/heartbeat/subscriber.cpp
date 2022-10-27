@@ -6,7 +6,7 @@
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyBroadcasts::Heartbeat;
@@ -22,7 +22,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

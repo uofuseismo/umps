@@ -4,7 +4,7 @@
 #include <vector>
 #include <thread>
 #include <zmq.hpp>
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
@@ -87,10 +87,10 @@ std::cerr << e.what() << std::endl;
 TEST(Messaging, PubSub)
 {
     //std::shared_ptr<void *> context = std::make_shared<void *> (zmq_ctx_new()); //zmq::context_t context{1};    
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
-    std::shared_ptr<UMPS::Logging::ILog> loggerPtr = std::make_shared<UMPS::Logging::StdOut> (logger);
-//       loggerPtr(std::make_shared<UMPS::Logging::StdOut> ());
+    std::shared_ptr<UMPS::Logging::ILog> loggerPtr = std::make_shared<UMPS::Logging::StandardOut> (logger);
+//       loggerPtr(std::make_shared<UMPS::Logging::StandardOut> ());
 //    loggerPtr->setLevel(UMPS::Logging::Level::DEBUG);
 
     // Create publisher and bind

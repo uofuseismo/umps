@@ -11,8 +11,7 @@
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messaging/context.hpp"
-#include "umps/logging/stdout.hpp"
-#include "umps/logging/log.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::Authentication;
 
@@ -42,7 +41,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
         }
         if (context == nullptr)
         {
@@ -66,7 +65,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         if (context == nullptr)
         {

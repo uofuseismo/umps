@@ -15,7 +15,6 @@
 #include "umps/messaging/routerDealer/request.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
-#include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyServices::PacketCache;

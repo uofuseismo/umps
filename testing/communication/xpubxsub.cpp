@@ -4,7 +4,7 @@
 #include <vector>
 #include <thread>
 #include <zmq.hpp>
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
@@ -42,10 +42,10 @@ void proxy()
     //options.setTopic(topic);
     options.setZAPOptions(zapOptions);
     // Make a logger
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     // Initialize the server
     XPubXSub::Proxy proxy(loggerPtr);
     proxy.initialize(options);
@@ -62,10 +62,10 @@ void proxy()
 /*
 void publisher(int id)
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     UMPS::Messaging::PublisherSubscriber::Publisher publisher(loggerPtr);
     publisher.bind(frontendAddress);
     // Deal with the slow joiner problem
@@ -91,10 +91,10 @@ void publisher(int id)
 
 void publisher(int id)
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     XPubXSub::PublisherOptions options;
     options.setAddress(frontendAddress); 
     XPubXSub::Publisher publisher;
@@ -114,10 +114,10 @@ void publisher(int id)
 
 void subscriber()
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     std::unique_ptr<UMPS::MessageFormats::IMessage> textMessageType
         = std::make_unique<UMPS::MessageFormats::Text> ();
     UMPS::MessageFormats::Messages messageTypes;

@@ -10,7 +10,6 @@
 #endif
 #include <map>
 #include <set>
-#include <zmq.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ip/host_name.hpp>
@@ -54,8 +53,7 @@
 #include "umps/proxyServices/proxyOptions.hpp"
 #include "umps/proxyServices/command/proxy.hpp"
 #include "umps/proxyServices/command/proxyOptions.hpp"
-#include "umps/logging/stdout.hpp"
-#include "umps/logging/spdlog.hpp"
+#include "umps/logging/dailyFile.hpp"
 
 #define MODULE_NAME "uOperator"
 
@@ -327,13 +325,13 @@ int main(int argc, char *argv[])
     constexpr int minute = 0;
     auto authenticatorLogFileName = options.mLogDirectory
                                   + "/" + "authenticator.log";
-    UMPS::Logging::SpdLog authenticationLogger;
+    UMPS::Logging::DailyFile authenticationLogger;
     authenticationLogger.initialize("Authenticator",
                                     authenticatorLogFileName,
                                     UMPS::Logging::Level::Info, // Always log
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
-        = std::make_shared<UMPS::Logging::SpdLog> (authenticationLogger); 
+        = std::make_shared<UMPS::Logging::DailyFile> (authenticationLogger);
     std::shared_ptr<UAuth::IAuthenticator> authenticator;
     std::shared_ptr<UAuth::IAuthenticator> adminAuthenticator{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> readOnlyAuthenticator{nullptr};
@@ -390,7 +388,7 @@ int main(int argc, char *argv[])
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
                                           + "connectionInformation.log";
-    UMPS::Logging::SpdLog connectionInformationLogger;
+    UMPS::Logging::DailyFile connectionInformationLogger;
     // Enforce at least info-level logging.  
     auto connectionInformationVerbosity = options.mVerbosity;
     if (connectionInformationVerbosity < UMPS::Logging::Level::Info)
@@ -402,7 +400,8 @@ int main(int argc, char *argv[])
                                            connectionInformationVerbosity,
                                            hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
-        = std::make_shared<UMPS::Logging::SpdLog> (connectionInformationLogger);
+        = std::make_shared<UMPS::Logging::DailyFile>
+          (connectionInformationLogger);
     auto connectionInformation
         = std::make_unique<UCI::Service>
           (connectionInformationLoggerPtr, authenticator);
@@ -411,13 +410,13 @@ int main(int argc, char *argv[])
     // Initialize the module registry service
     auto moduleRegistryLogFileName = options.mLogDirectory + "/" 
                                    + "moduleRegistry.log";
-    UMPS::Logging::SpdLog moduleRegistryLogger;
+    UMPS::Logging::DailyFile moduleRegistryLogger;
     moduleRegistryLogger.initialize("ModuleRegistry",
                                     moduleRegistryLogFileName,
                                     UMPS::Logging::Level::Info,
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> moduleRegistryLoggerPtr
-        = std::make_shared<UMPS::Logging::SpdLog> (moduleRegistryLogger);
+        = std::make_shared<UMPS::Logging::DailyFile> (moduleRegistryLogger);
     auto moduleRegistry
         = std::make_unique<UMPS::ProxyServices::Command::Proxy>
           (moduleRegistryLoggerPtr, adminAuthenticator, readOnlyAuthenticator);
@@ -431,11 +430,11 @@ int main(int argc, char *argv[])
         std::cout << "Starting " << moduleName
                   << " proxy broadcast" << std::endl;
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
-        UMPS::Logging::SpdLog logger; 
+        UMPS::Logging::DailyFile logger; 
         logger.initialize(moduleName, logFileName,
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-            = std::make_shared<UMPS::Logging::SpdLog> (logger);
+            = std::make_shared<UMPS::Logging::DailyFile> (logger);
         auto proxyBroadcast
             = std::make_unique<UMPS::ProxyBroadcasts::Proxy>
               (loggerPtr, readWriteAuthenticator, readOnlyAuthenticator);
@@ -461,11 +460,11 @@ int main(int argc, char *argv[])
         std::cout << "Starting " << moduleName
                   << " proxy service" << std::endl;
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
-        UMPS::Logging::SpdLog logger;
+        UMPS::Logging::DailyFile logger;
         logger.initialize(moduleName, logFileName,
                           options.mVerbosity, hour, minute);
         std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-            = std::make_shared<UMPS::Logging::SpdLog> (logger);
+            = std::make_shared<UMPS::Logging::DailyFile> (logger);
         auto proxyService
             = std::make_unique<UMPS::ProxyServices::Proxy>
               (loggerPtr, authenticator);

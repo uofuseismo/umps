@@ -1,13 +1,14 @@
 #include <string>
-#include <umps/logging/stdout.hpp>
-#include <umps/logging/spdlog.hpp>
+#include <umps/logging/standardOut.hpp>
+#include <umps/logging/dailyFile.hpp>
+#include <umps/logging/level.hpp>
 #include <pybind11/pybind11.h>
 #include "python/logging.hpp"
 
 using namespace UMPS::Python::Logging;
 
 ///--------------------------------------------------------------------------///
-///                              StdOut Logger                               ///
+///                              StandardOut Logger                               ///
 ///--------------------------------------------------------------------------///
 /// C'tor
 StandardOut::StandardOut(const UMPS::Logging::Level level) :
@@ -75,79 +76,79 @@ void StandardOut::debug(const std::string &message)
 std::shared_ptr<UMPS::Logging::ILog> StandardOut::getInstance()
 {
     std::shared_ptr<UMPS::Logging::ILog> result
-       =  std::make_shared<UMPS::Logging::StdOut> (mLogger);
+       =  std::make_shared<UMPS::Logging::StandardOut> (mLogger);
     return result;
 }
 
 ///--------------------------------------------------------------------------///
 ///                                 Day Logger                               ///
 ///--------------------------------------------------------------------------///
-Daily::Daily() = default;
+DailyFile::DailyFile() = default;
 
 /// Copy c'tor
-Daily::Daily(const Daily &logger)
+DailyFile::DailyFile(const DailyFile &logger)
 {
     *this = logger;
 }
 
 /// Move c'tor
-Daily::Daily(Daily &&logger) noexcept
+DailyFile::DailyFile(DailyFile &&logger) noexcept
 {
     *this = std::move(logger);
 }
 
 /// Destructor
-Daily::~Daily() = default;
+DailyFile::~DailyFile() = default;
 
 /// Copy assignment
-Daily& Daily::operator=(const Daily &) = default;
+DailyFile& DailyFile::operator=(const DailyFile &) = default;
 
 /// Move assignment
-Daily& Daily::operator=(Daily &&) noexcept = default;
+DailyFile& DailyFile::operator=(DailyFile &&) noexcept = default;
 
-void Daily::initialize(const std::string &loggerName,
-                       const std::string &fileName,
-                       const UMPS::Logging::Level level,
-                       const int hour,
-                       const int minute)
+void DailyFile::initialize(const std::string &loggerName,
+                           const std::string &fileName,
+                           const UMPS::Logging::Level level,
+                           const int hour,
+                           const int minute)
 {
     mLogger.initialize(loggerName, fileName, level, hour, minute);
 }
 
 /// Error
-void Daily::error(const std::string &message)
+void DailyFile::error(const std::string &message)
 {
     mLogger.error(message);
 }
 
 /// Warn
-void Daily::warn(const std::string &message)
+void DailyFile::warn(const std::string &message)
 {
     mLogger.warn(message);
 }
 
 /// Info
-void Daily::info(const std::string &message)
+void DailyFile::info(const std::string &message)
 {
     mLogger.info(message);
 }
 
 /// Debug
-void Daily::debug(const std::string &message)
+void DailyFile::debug(const std::string &message)
 {
     mLogger.debug(message);
 }
 
-UMPS::Logging::Level Daily::getLevel() const noexcept
+UMPS::Logging::Level DailyFile::getLevel() const noexcept
 {
     return mLogger.getLevel();
 }
 
 /// Make instance
-std::shared_ptr<UMPS::Logging::ILog> Daily::getInstance()
+std::shared_ptr<UMPS::Logging::ILog> DailyFile::getInstance()
 {
     std::shared_ptr<UMPS::Logging::ILog> result
-       =  std::make_shared<UMPS::Logging::SpdLog> (mLogger);
+       =  std::make_shared<UMPS::Logging::DailyFile> (mLogger);
     return result;
 }
 
@@ -205,7 +206,7 @@ Properties :
     //------------------------------------------------------------------------//
     // Day logger
     // Standard out logger
-    pybind11::class_<UMPS::Python::Logging::Daily> daily(lm, "Daily");
+    pybind11::class_<UMPS::Python::Logging::DailyFile> daily(lm, "DailyFile");
     daily.def(pybind11::init<> ());
     daily.doc() = R""""(
 This is an UMPS logger that writes messages to a file.  The file is rotated
@@ -219,9 +220,9 @@ Read-only Properties :
         The logging level.  By default, this is an info-level logger. 
 )"""";
     daily.def_property_readonly("level",
-                                &Daily::getLevel);
+                                &DailyFile::getLevel);
     daily.def("initialize",
-              &Daily::initialize,
+              &DailyFile::initialize,
 R""""(
 Initializes the logger.
 
@@ -242,15 +243,15 @@ minute : int
         pybind11::arg("hour") = 0,
         pybind11::arg("minute") = 0);
     daily.def("error",
-              &Daily::error,
+              &DailyFile::error,
               "Issues an error message.");
     daily.def("warn",
-              &Daily::warn,
+              &DailyFile::warn,
               "Issues a warning message.");
     daily.def("info",
-              &Daily::info,
+              &DailyFile::info,
               "Issues an info message.");
     daily.def("debug",
-              &Daily::debug,
+              &DailyFile::debug,
               "Issues a debug message.");
 }

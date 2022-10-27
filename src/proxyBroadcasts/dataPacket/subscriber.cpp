@@ -6,7 +6,6 @@
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
-#include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyBroadcasts::DataPacket;

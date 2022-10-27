@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 #include <pybind11/pybind11.h>
-#include <umps/logging/stdout.hpp>
-#include <umps/logging/spdlog.hpp>
+#include <umps/logging/standardOut.hpp>
+#include <umps/logging/dailyFile.hpp>
 #include <umps/logging/level.hpp>
 namespace UMPS::Python::Logging
 {
@@ -39,20 +39,20 @@ public:
     StandardOut& operator=(const StandardOut &);
     StandardOut& operator=(StandardOut &&) noexcept;
 private:
-    UMPS::Logging::StdOut mLogger;
+    UMPS::Logging::StandardOut mLogger;
 };
-/// @class Daily
+/// @class DailyFile
 /// @brief A logger that will dump messages for a given day to a file.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class Daily
+class DailyFile
 {
 public:
     /// @brief Constructor.
-    Daily();
+    DailyFile();
     /// @brief Copy constructor.
-    Daily(const Daily &daily);
+    DailyFile(const DailyFile &daily);
     /// @brief Move constructor.
-    Daily(Daily &&daily) noexcept;
+    DailyFile(DailyFile &&daily) noexcept;
     /// @brief Initialize the log.
     void initialize(const std::string &loggerName,
                     const std::string &fileName,
@@ -72,11 +72,11 @@ public:
     /// @result A shared pointer to the underlying logger.
     [[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getInstance(); 
     /// @brief Destructor.
-    ~Daily();
-    Daily& operator=(const Daily &); 
-    Daily& operator=(Daily &&) noexcept;
+    ~DailyFile();
+    DailyFile& operator=(const DailyFile &); 
+    DailyFile& operator=(DailyFile &&) noexcept;
 private:
-    UMPS::Logging::SpdLog mLogger;
+    UMPS::Logging::DailyFile mLogger;
 };
 void initialize(pybind11::module &m);
 }

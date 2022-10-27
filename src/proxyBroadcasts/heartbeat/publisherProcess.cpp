@@ -18,7 +18,7 @@
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/threadSafeQueue.hpp"
 
 using namespace UMPS::ProxyBroadcasts::Heartbeat;
@@ -34,7 +34,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
     }
     /// @brief Destructor

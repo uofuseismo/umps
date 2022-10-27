@@ -11,8 +11,7 @@
 #include "umps/authentication/user.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/authentication/certificate/keys.hpp"
-#include "umps/logging/stdout.hpp"
-#include "umps/logging/log.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/authentication/checkIP.hpp"
 
 /// Magic place where ZMQ will send authentication requests to.
@@ -418,7 +417,7 @@ public:
     AuthenticatorImpl() = delete;
     /*
     AuthenticatorImpl() :
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StandardOut> ())
     {
     }
     */
@@ -429,7 +428,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
     }
     /// Destructor

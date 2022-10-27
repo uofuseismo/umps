@@ -25,8 +25,7 @@
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
-#include "umps/logging/spdlog.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 namespace UPacketCache = UMPS::ProxyServices::PacketCache;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
@@ -86,10 +85,10 @@ int main(int argc, char *argv[])
     }
     auto zapOptions = options.mZAPOptions;
     // Create logger
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(options.mVerbosity);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     // Get the connection details
     logger.debug("Getting available services...");
     std::string dataPacketAddress;

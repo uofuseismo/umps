@@ -16,7 +16,7 @@
 #include "umps/messaging/requestRouter/router.hpp"
 #include "umps/messaging/requestRouter/routerOptions.hpp"
 #include "umps/messaging/context.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::Services::Command;
 namespace UAuth = UMPS::Authentication;
@@ -33,7 +33,7 @@ public:
         // Make the logger
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

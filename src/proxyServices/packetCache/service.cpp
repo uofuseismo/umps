@@ -10,7 +10,7 @@
 #include "umps/proxyBroadcasts/dataPacket/subscriberOptions.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/dataPacket.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/threadSafeQueue.hpp"
 
 using namespace UMPS::ProxyServices::PacketCache;
@@ -25,7 +25,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

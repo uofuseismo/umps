@@ -16,7 +16,7 @@
 #include "umps/proxyServices/command/moduleDetails.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/text.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include <gtest/gtest.h>
 
 #define FRONTEND "tcp://127.0.0.1:5000"
@@ -170,10 +170,10 @@ public:
 
 void proxy()
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     const std::vector<std::chrono::milliseconds> pingIntervals
     {
         std::chrono::milliseconds {10},
@@ -193,19 +193,19 @@ void proxy()
 
 void replier(int id)
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-         = std::make_shared<UMPS::Logging::StdOut> (logger);
+         = std::make_shared<UMPS::Logging::StandardOut> (logger);
     //std::unique_ptr<UMPS::Modules::IProcess> responder
     auto responder = std::make_unique<ResponderProcess> (loggerPtr, id);
     responder->start();
     responder->handleMainThread(std::chrono::seconds {3});
 /*
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-         = std::make_shared<UMPS::Logging::StdOut> (logger);
+         = std::make_shared<UMPS::Logging::StandardOut> (logger);
     ModuleDetails details;
     details.setName("test_module_" + std::to_string(id));
  
@@ -231,10 +231,10 @@ void replier(int id)
 
 void requestor()
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-         = std::make_shared<UMPS::Logging::StdOut> (logger);
+         = std::make_shared<UMPS::Logging::StandardOut> (logger);
 
     Requestor requestor(loggerPtr);
     RequestorOptions options;

@@ -7,8 +7,7 @@
 #include <map>
 #include "umps/modules/processManager.hpp"
 #include "umps/modules/process.hpp"
-#include "umps/logging/log.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::Modules;
 
@@ -26,7 +25,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

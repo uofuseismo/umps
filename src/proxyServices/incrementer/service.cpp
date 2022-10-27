@@ -14,7 +14,7 @@
 #include "umps/proxyServices/incrementer/counter.hpp"
 #include "umps/proxyServices/incrementer/replier.hpp"
 #include "umps/proxyServices/incrementer/replierOptions.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "umps/authentication/service.hpp"
 #include "umps/messaging/context.hpp"
 #include "private/staticUniquePointerCast.hpp"
@@ -40,7 +40,7 @@ public:
         }
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
         }
         else
         {

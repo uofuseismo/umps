@@ -14,7 +14,7 @@
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include "private/isEmpty.hpp"
 
@@ -32,7 +32,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

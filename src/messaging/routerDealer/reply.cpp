@@ -10,7 +10,7 @@
 #include "umps/messageFormats/message.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -34,7 +34,7 @@ public:
         // Make the logger
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
         }
         else
         {

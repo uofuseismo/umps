@@ -3,8 +3,6 @@
 #include <vector>
 #include <thread>
 #include <filesystem>
-#include <zmq.hpp>
-#include "umps/logging/stdout.hpp"
 #include "umps/proxyServices/proxy.hpp"
 #include "umps/proxyServices/proxyOptions.hpp"
 #include "umps/proxyServices/incrementer/counter.hpp"

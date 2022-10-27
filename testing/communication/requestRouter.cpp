@@ -8,7 +8,7 @@
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/proxyServices/incrementer/incrementRequest.hpp"
 #include "umps/proxyServices/incrementer/incrementResponse.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -85,10 +85,10 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 void server()
 {
     // Make a logger
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO); 
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     ProcessData pStruct;
     // Initialize the server
     UMPS::Messaging::RequestRouter::RouterOptions routerOptions;
@@ -134,10 +134,10 @@ void server()
 void client(int base)
 {
     // Make a logger
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
 
     UMPS::Messaging::RequestRouter::RequestOptions requestOptions;
     UMPS::ProxyServices::Incrementer::IncrementRequest request;
@@ -171,7 +171,7 @@ void client(int base)
 TEST(Messaging, RequestRouter)
 {
     //std::shared_ptr<void *> context = std::make_shared<void *> (zmq_ctx_new()); //zmq::context_t context{1};    
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
     auto serverThread  = std::thread(server);
     auto clientThread1 = std::thread(client, 100);

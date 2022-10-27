@@ -1,0 +1,16 @@
+namespace UMPS
+{
+/*!
+\page TopicLogging_Logging
+\ingroup Logging_chapter
+
+<p>
+Typically, we cannot stare at a terminal all day and monitor the output.  This is not only tedious but it is typically uninteresting since a program is generally working just fine.  For this reason, it is important that production code that will run in the background have a logging facility.  The logging facilities provided by UMPS build upon <a href="https://github.com/gabime/spdlog">SpdLog</a>.  However, you may have strong opinions about logging and want to provide your mechanism.  In UMPS, that is completely fine.
+</p>
+
+<br>
+<br>
+
+<p>
+*/
+}

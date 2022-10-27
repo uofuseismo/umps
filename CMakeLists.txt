@@ -58,8 +58,8 @@ endif()
 set(VERSION_SRC
     src/version.cpp)
 set(LOGGING_SRC
-    src/logging/stdout.cpp
-    src/logging/spdlog.cpp)
+    src/logging/standardOut.cpp
+    src/logging/dailyFile.cpp)
 set(MESSAGE_FORMAT_SRC
     src/messageFormats/failure.cpp
     src/messageFormats/message.cpp
@@ -355,12 +355,12 @@ if (${WRAP_PYTHON})
                          PREFIX ""
                          CXX_STANDARD 20
                          CXX_STANDARD_REQUIRED YES 
-                         CXX_EXTENSIONS NO) 
+                         CXX_EXTENSIONS NO)
    target_include_directories(umpspy
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/python/include>
                                       $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
    target_link_libraries(umpspy
-                         PRIVATE pybind11::module pybind11::lto umps umps_python)
+                         PRIVATE pybind11::module umps_python umps)
 endif()
 
 ##########################################################################################
@@ -428,13 +428,13 @@ target_include_directories(commTests
 # Add the tests
 add_test(NAME unitTests
          COMMAND unitTests)
-#add_test(NAME commTests
-#         COMMAND commTests)
+add_test(NAME commTests
+         COMMAND commTests)
 
 if (${WRAP_PYTHON})
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
-   add_test(NAME python_tests
-            COMMAND ${PYTHON_EXECUTABLE} -m pytest)
+#   add_test(NAME python_tests
+#            COMMAND ${PYTHON_EXECUTABLE} -m pytest)
 endif()
 
 ##########################################################################################

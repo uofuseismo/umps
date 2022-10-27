@@ -11,8 +11,7 @@
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
 #include "umps/messageFormats/message.hpp"
 #include "umps/services/connectionInformation/socketDetails/publisher.hpp"
-#include "umps/logging/stdout.hpp"
-#include "umps/logging/log.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::Messaging::PublisherSubscriber;
 namespace UCI = UMPS::Services::ConnectionInformation;
@@ -39,7 +38,7 @@ public:
         // Make the logger
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {
@@ -65,7 +64,7 @@ public:
         // Make the logger
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

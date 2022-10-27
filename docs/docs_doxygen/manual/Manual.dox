@@ -7,10 +7,10 @@ namespace UMPS {
 /** \page UserManual_Generalities General Topics
   - \subpage TopicMessages
   - \subpage TopicMessaging
-  - \subpage TopicMessageFormats
   - \subpage TopicModules
   - \subpage UserManual_UMPS
   - \subpage TopicNetworking
+  - \subpage TopicLogging
 */
 
 
@@ -26,7 +26,7 @@ namespace UMPS {
     \brief The most important class for those who wish to make their own messages.
     \ingroup Messages_chapter */
 /** \defgroup Messages_MessageFormats Message Formats
-    \brief Some commonly used message formats that exist for convenience.
+    \brief Some commonly core message formats in UMPS.
     \ingroup Messages_chapter */
 
 
@@ -89,9 +89,8 @@ namespace UMPS {
     \brief For those wishing to make their own loggers.
     \ingroup Logging_chapter */
 /** \defgroup Logging_Loggers Provided Loggers
-    \brief Loggers that ship with UMPS.
+    \brief Useful loggers that ship with UMPS.
     \ingroup Logging_chapter */
-
 
 /** \defgroup Modules_chapter Modules */
 /** \defgroup Modules_ModuleBaseClass Module Base Class

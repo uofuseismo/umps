@@ -15,8 +15,8 @@
 #include "umps/modules/module.hpp"
 #include "umps/modules/process.hpp"
 #include "umps/modules/processManager.hpp"
-#include "umps/logging/spdlog.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/dailyFile.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "umps/earthworm/traceBuf2.hpp"
 #include "umps/earthworm/waveRing.hpp"
 #include "umps/proxyBroadcasts/dataPacket/publisher.hpp"
@@ -176,7 +176,7 @@ std::shared_ptr<UMPS::Logging::ILog>
 {
     auto logFileName = moduleName + ".log";  
     auto fullLogFileName = logFileDirectory / logFileName;
-    auto logger = std::make_shared<UMPS::Logging::SpdLog> ();
+    auto logger = std::make_shared<UMPS::Logging::DailyFile> ();
     logger->initialize(moduleName,
                        fullLogFileName,
                        verbosity,
@@ -241,7 +241,7 @@ public:
         }
         if (mLogger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         mLocalCommand
             = std::make_unique<UMPS::Services::Command::Service> (mLogger);

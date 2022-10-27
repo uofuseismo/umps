@@ -6,7 +6,7 @@
 #include <mutex>
 #include "umps/proxyServices/packetCache/cappedCollection.hpp"
 #include "umps/proxyServices/packetCache/circularBuffer.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/applications/packetCache.hpp"
 
 using namespace UMPS::ProxyServices::PacketCache;
@@ -18,7 +18,7 @@ class CappedCollection<T>::CappedCollectionImpl
 public:
     /// C'tor
     CappedCollectionImpl() :
-        mLogger(std::make_shared<UMPS::Logging::StdOut> ())
+        mLogger(std::make_shared<UMPS::Logging::StandardOut> ())
     {
     }
     /// C'tor
@@ -27,7 +27,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
     }
     /// Destructor

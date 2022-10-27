@@ -23,7 +23,7 @@
 #include "umps/messageFormats/message.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messaging/context.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/messaging/ipcDirectory.hpp"
 namespace
 {
@@ -48,7 +48,7 @@ public:
         // Make the logger
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
         }
         else
         {

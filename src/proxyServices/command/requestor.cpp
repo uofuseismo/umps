@@ -15,7 +15,6 @@
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/context.hpp"
-#include "umps/logging/stdout.hpp"
 #include "private/messaging/requestReplySocket.hpp"
 #include "private/staticUniquePointerCast.hpp"
 

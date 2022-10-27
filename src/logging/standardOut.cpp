@@ -2,58 +2,58 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::Logging;
 
-class StdOut::StdOutImpl
+class StandardOut::StandardOutImpl
 {
 public:
-    StdOutImpl() :
-        mStdOutSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt> ()),
-        mLogger(std::make_shared<spdlog::logger> ("stdout", mStdOutSink))
+    StandardOutImpl() :
+        mStandardOutSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt> ()),
+        mLogger(std::make_shared<spdlog::logger> ("stdout", mStandardOutSink))
     {
-//        mLogger = spdlog::create("stdout", mStdOutSink);
+//        mLogger = spdlog::create("stdout", mStandardOutSink);
     }
-    //StdOutImpl() :
+    //StandardOutImpl() :
     //    mSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>() )
     //{   
     //}
     //std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mSink;
     Level mLevel = Level::Info;
-    std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mStdOutSink;// = std::make_shared<spdlog::sinks::stdout_sink_mt>();
+    std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> mStandardOutSink{nullptr};
     std::shared_ptr<spdlog::logger> mLogger = nullptr;
 };
 
 /// C'tor
-StdOut::StdOut(const Level level) :
-    pImpl(std::make_unique<StdOutImpl> ())
+StandardOut::StandardOut(const Level level) :
+    pImpl(std::make_unique<StandardOutImpl> ())
 {
     setLevel(level);
 }
 
 /// Copy c'tor
-StdOut::StdOut(const StdOut &logger)
+StandardOut::StandardOut(const StandardOut &logger)
 {
     *this = logger;
 }
 
 /// Move c'tor
-StdOut::StdOut(StdOut &&logger) noexcept
+StandardOut::StandardOut(StandardOut &&logger) noexcept
 {
     *this = std::move(logger);
 }
 
 /// Copy assignment
-StdOut& StdOut::operator=(const StdOut &logger)
+StandardOut& StandardOut::operator=(const StandardOut &logger)
 {
     if (&logger == this){return *this;}
-    pImpl = std::make_unique<StdOutImpl> (*logger.pImpl);
+    pImpl = std::make_unique<StandardOutImpl> (*logger.pImpl);
     return *this;
 }
 
 /// Move assignment
-StdOut& StdOut::operator=(StdOut &&logger) noexcept
+StandardOut& StandardOut::operator=(StandardOut &&logger) noexcept
 {
     if (&logger == this){return *this;}
     pImpl = std::move(logger.pImpl);
@@ -61,10 +61,10 @@ StdOut& StdOut::operator=(StdOut &&logger) noexcept
 }
 
 /// Destructor
-StdOut::~StdOut() = default;
+StandardOut::~StandardOut() = default;
 
 /// Level
-void StdOut::setLevel(const Level level) noexcept
+void StandardOut::setLevel(const Level level) noexcept
 {
     pImpl->mLevel = level;
     if (level == Level::Error)
@@ -89,13 +89,13 @@ void StdOut::setLevel(const Level level) noexcept
     }
 }
 
-Level StdOut::getLevel() const noexcept
+Level StandardOut::getLevel() const noexcept
 {   
     return pImpl->mLevel;
 }
 
 /// Info
-void StdOut::info(const std::string &message)
+void StandardOut::info(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Info)
     {
@@ -106,7 +106,7 @@ void StdOut::info(const std::string &message)
 }
 
 /// Warn
-void StdOut::warn(const std::string &message)
+void StandardOut::warn(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Warn)
     {
@@ -117,7 +117,7 @@ void StdOut::warn(const std::string &message)
 }
 
 /// Error
-void StdOut::error(const std::string &message)
+void StandardOut::error(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Error)
     {
@@ -128,7 +128,7 @@ void StdOut::error(const std::string &message)
 }
 
 /// Debug
-void StdOut::debug(const std::string &message)
+void StandardOut::debug(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Debug)
     {

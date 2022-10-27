@@ -4,7 +4,7 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 #include "umps/messaging/context.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
@@ -18,7 +18,7 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
     std::shared_ptr<UMPS::Logging::ILog> logger
-        = std::make_shared<UMPS::Logging::StdOut> ();
+        = std::make_shared<UMPS::Logging::StandardOut> ();
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
     std::unique_ptr<UMPS::Services::Command::Requestor> requestor{nullptr};
     UMPS::Services::Command::ModuleTable moduleTable;

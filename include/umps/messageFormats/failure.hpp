@@ -1,10 +1,10 @@
-#ifndef UMPS_MESSAGEFORMATS_FAILURE_HPP
-#define UMPS_MESSAGEFORMATS_FAILURE_HPP
+#ifndef UMPS_MESSAGE_FORMATS_FAILURE_HPP
+#define UMPS_MESSAGE_FORMATS_FAILURE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::MessageFormats
 {
-/// @class Failured "failure.hpp" "umps/messageFormats/failure.hpp"
+/// @class Failure "failure.hpp" "umps/messageFormats/failure.hpp"
 /// @brief This message is a general failure message.  For generalized
 ///        request-reply mechanisms, the server side code cannot terminate
 ///        with an exception.  In these truly exceptional situations, this

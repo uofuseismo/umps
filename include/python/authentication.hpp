@@ -14,7 +14,7 @@ class UserNameAndPassword
 public:
     UserNameAndPassword();
     UserNameAndPassword(const UserNameAndPassword &credentials);
-    UserNameAndPassword(const UMPS::Authentication::Certificate::UserNameAndPassword &credentials);
+    explicit UserNameAndPassword(const UMPS::Authentication::Certificate::UserNameAndPassword &credentials);
     UserNameAndPassword(UserNameAndPassword &&credentials) noexcept;
     UserNameAndPassword& operator=(const UserNameAndPassword &credentials);
     UserNameAndPassword& operator=(UserNameAndPassword &&credentials) noexcept;
@@ -37,7 +37,7 @@ class Keys
 public:
     Keys();
     Keys(const Keys &keys);
-    Keys(const UMPS::Authentication::Certificate::Keys &keys);
+    explicit Keys(const UMPS::Authentication::Certificate::Keys &keys);
     Keys(Keys &&keys) noexcept;
     Keys& operator=(const Keys &keys);
     Keys& operator=(Keys &&keys) noexcept;
@@ -57,7 +57,7 @@ public:
 
     ZAPOptions();
     ZAPOptions(const ZAPOptions &options);
-    ZAPOptions(const UMPS::Authentication::ZAPOptions &options);
+    explicit ZAPOptions(const UMPS::Authentication::ZAPOptions &options);
     ZAPOptions(ZAPOptions &&options) noexcept;
     ZAPOptions& operator=(const ZAPOptions &options);
     ZAPOptions& operator=(ZAPOptions &&options) noexcept;

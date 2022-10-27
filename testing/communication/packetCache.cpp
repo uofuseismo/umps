@@ -3,8 +3,6 @@
 #include <chrono>
 #include <vector>
 #include <thread>
-#include <zmq.hpp>
-#include "umps/logging/stdout.hpp"
 //#include "umps/proxyServices/packetCache/proxy.hpp"
 //#include "umps/proxyServices/packetCache/proxyOptions.hpp"
 #include "umps/proxyServices/proxy.hpp"

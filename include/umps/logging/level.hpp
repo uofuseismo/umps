@@ -6,6 +6,7 @@ namespace UMPS::Logging
 /// @class Level "level.hpp" "umps/logging/level.hpp"
 /// @brief Defines the logging level.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Logging_BaseClass
 enum class Level : uint32_t
 {
     NONE  = 0, /*!< This will not log anything. */

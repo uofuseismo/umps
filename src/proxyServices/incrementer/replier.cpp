@@ -17,7 +17,7 @@
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::ProxyServices::Incrementer;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
@@ -32,7 +32,7 @@ public:
     {
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

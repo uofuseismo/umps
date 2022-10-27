@@ -10,7 +10,7 @@
 //#include "umps/messaging/publisherSubscriber/publisher.hpp"
 //#include "umps/messaging/publisherSubscriber/subscriber.hpp"
 //#include "umps/messageFormats/pick.hpp"
-#include "umps/logging/stdout.hpp"
+//#include "umps/logging/stdout.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include "private/authentication/checkIP.hpp"
 #include <gtest/gtest.h>

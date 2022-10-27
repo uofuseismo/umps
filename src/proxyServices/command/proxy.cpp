@@ -31,7 +31,7 @@
 #include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/failure.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/messaging/ipcDirectory.hpp"
 #include "private/services/ping.hpp"
 #include "private/services/terminate.hpp"
@@ -236,7 +236,7 @@ public:
         // Make the logger
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {
@@ -295,7 +295,7 @@ public:
 #endif
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> ();
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
         }
         else
         {

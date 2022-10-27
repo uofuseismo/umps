@@ -20,7 +20,7 @@
 #include "umps/authentication/authenticator.hpp"
 #include "umps/authentication/grasslands.hpp"
 #include "umps/authentication/service.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 
 using namespace UMPS::ProxyServices;
 namespace UAuth = UMPS::Authentication;
@@ -45,7 +45,7 @@ public:
         }
         if (logger == nullptr)
         {
-            mLogger = std::make_shared<UMPS::Logging::StdOut> (); 
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
         }
         else
         {

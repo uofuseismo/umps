@@ -7,6 +7,7 @@ namespace UMPS::Logging
 /// DailyFile "dailyFile.hpp" "umps/logging/dailyFile.hpp"
 /// @brief A daily logger as implemented by the SpdLog library.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Logging_Loggers
 class DailyFile : public ILog
 {
 public:

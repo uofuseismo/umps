@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/daily_file_sink.h>
-#include "umps/logging/spdlog.hpp"
+#include "umps/logging/dailyFile.hpp"
 
 namespace fs = std::filesystem;
 
@@ -37,7 +37,7 @@ spdlog::level::level_enum levelToLevel(const Level level)
 }
 
 /// Implementation
-class SpdLog::SpdLogImpl
+class DailyFile::DailyFileImpl
 {
 public:
     std::shared_ptr<spdlog::logger> mLogger = nullptr;
@@ -45,50 +45,50 @@ public:
 };
 
 /// C'tor
-SpdLog::SpdLog() :
-    pImpl(std::make_unique<SpdLogImpl> ())
+DailyFile::DailyFile() :
+    pImpl(std::make_unique<DailyFileImpl> ())
 {
 }
 
 /// Copy c'tor
-SpdLog::SpdLog(const SpdLog &spdlog)
+DailyFile::DailyFile(const DailyFile &logger)
 {
-    *this = spdlog;
+    *this = logger;
 }
 
 /// Move c'tor
-SpdLog::SpdLog(SpdLog &&spdlog) noexcept
+DailyFile::DailyFile(DailyFile &&logger) noexcept
 {
-    *this = std::move(spdlog);
+    *this = std::move(logger);
 }
 
 /// Copy assignment
-SpdLog& SpdLog::operator=(const SpdLog &spdlog)
+DailyFile& DailyFile::operator=(const DailyFile &logger)
 {
-    if (&spdlog == this){return *this;}
-    pImpl = std::make_unique<SpdLogImpl> (*spdlog.pImpl);
+    if (&logger == this){return *this;}
+    pImpl = std::make_unique<DailyFileImpl> (*logger.pImpl);
     return *this;
 }
 
 /// Move assignment
-SpdLog& SpdLog::operator=(SpdLog &&spdlog) noexcept
+DailyFile& DailyFile::operator=(DailyFile &&logger) noexcept
 {
-    if (&spdlog == this){return *this;}
-    pImpl = std::move(spdlog.pImpl);
+    if (&logger == this){return *this;}
+    pImpl = std::move(logger.pImpl);
     return *this;
 }
 
 /// Destructor
-SpdLog::~SpdLog() = default;
+DailyFile::~DailyFile() = default;
 
 /// Get the logging level
-Level SpdLog::getLevel() const noexcept
+Level DailyFile::getLevel() const noexcept
 {
     return pImpl->mLevel;
 }
 
 /// Initialize the logger
-void SpdLog::initialize(const std::string &loggerName,
+void DailyFile::initialize(const std::string &loggerName,
                         const std::string &fileName,
                         const Level level,
                         const int hour, const int minute)
@@ -154,7 +154,7 @@ void SpdLog::initialize(const std::string &loggerName,
 }
 
 /// Info
-void SpdLog::info(const std::string &message)
+void DailyFile::info(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Info && pImpl->mLogger)
     {
@@ -165,7 +165,7 @@ void SpdLog::info(const std::string &message)
 }
 
 /// Warn
-void SpdLog::warn(const std::string &message)
+void DailyFile::warn(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Warn && pImpl->mLogger)
     {
@@ -176,7 +176,7 @@ void SpdLog::warn(const std::string &message)
 }
 
 /// Error
-void SpdLog::error(const std::string &message)
+void DailyFile::error(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Error && pImpl->mLogger)
     {
@@ -187,7 +187,7 @@ void SpdLog::error(const std::string &message)
 }
 
 /// Debug
-void SpdLog::debug(const std::string &message)
+void DailyFile::debug(const std::string &message)
 {
     if (pImpl->mLevel >= Level::Debug && pImpl->mLogger)
     {

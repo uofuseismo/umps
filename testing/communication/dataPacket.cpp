@@ -3,8 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <thread>
-#include <zmq.hpp>
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "umps/proxyBroadcasts/dataPacket/proxy.hpp"
 #include "umps/proxyBroadcasts/dataPacket/proxyOptions.hpp"
 #include "umps/proxyBroadcasts/proxy.hpp"
@@ -142,10 +141,10 @@ void baseProxy()
     options.setBackendHighWaterMark(200);
     //options.setTopic(topic);
     // Make a logger
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     // Initialize the server
     XPubXSub::Proxy proxy(loggerPtr);
     proxy.initialize(options);
@@ -164,10 +163,10 @@ void baseProxy()
 void basePublisher()
 {
     namespace XPubXSub = UMPS::Messaging::XPublisherXSubscriber;
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     XPubXSub::PublisherOptions options;
     options.setAddress(frontendAddress); 
     XPubXSub::Publisher publisher;
@@ -198,10 +197,10 @@ void basePublisher()
 /*
 void baseSubscriber()
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     std::unique_ptr<UMPS::MessageFormats::IMessage> messageType
         = std::make_unique<UMPS::MessageFormats::DataPacket<double>> (); 
     UMPS::MessageFormats::Messages messageTypes;

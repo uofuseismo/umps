@@ -14,7 +14,7 @@
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "private/staticUniquePointerCast.hpp"
 #include "private/authentication/checkIP.hpp"
 #include <gtest/gtest.h>
@@ -380,10 +380,10 @@ TEST(Messaging, Authenticator)
 
     //auto context = std::make_shared<zmq::context_t> (1);
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::DEBUG);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     UAuth::Service auth(context, loggerPtr);
 
     // Have this thread start the authenticator
@@ -398,11 +398,11 @@ TEST(Messaging, Authenticator)
     std::thread t3(sub, serverCertificate);
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-sleep(1);
+//sleep(1);
 //std::cout << auth.isRunning() << std::endl;
 //    std::cout << "killing it" << std::endl;
 //    auth.stop();
-sleep(1);
+//sleep(1);
     publisherThread.join();
     t3.join();
     auth.stop();

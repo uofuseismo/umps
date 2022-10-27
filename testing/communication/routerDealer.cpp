@@ -3,8 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <thread>
-#include <zmq.hpp>
-#include "umps/logging/stdout.hpp"
+#include "umps/logging/standardOut.hpp"
 #include "umps/messaging/routerDealer/proxy.hpp"
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/routerDealer/request.hpp"
@@ -69,10 +68,10 @@ void proxy()
     //options.setTopic(topic);
     options.setZAPOptions(zapOptions);
     // Make a logger
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     // Initialize the server
     Proxy proxy(loggerPtr);
     EXPECT_NO_THROW(proxy.initialize(options));
@@ -87,11 +86,11 @@ void proxy()
 
 void client(int id) 
 {
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     UMPS::MessageFormats::Text text;
     logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     RequestOptions options;
     options.setAddress(frontendAddress); 
     auto messageType = text.createInstance();
@@ -122,10 +121,10 @@ void client(int id)
 void server()
 {
     // Make a logger
-    UMPS::Logging::StdOut logger;
+    UMPS::Logging::StandardOut logger;
     logger.setLevel(UMPS::Logging::Level::INFO); 
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-        = std::make_shared<UMPS::Logging::StdOut> (logger);
+        = std::make_shared<UMPS::Logging::StandardOut> (logger);
     ProcessData pStruct;
     // Initialize the server
     ReplyOptions options;
