@@ -4,34 +4,50 @@ namespace UMPS
 \page TopicMessages Messages
 \ingroup Messages_chapter
 
-Messages are a fundamental item in UMPS as they are the things that ultimately get passed around.  Messages are both items that are transmitted via messaging protocols (e.g., tcp) and data structures (classes).  Consequently, there must exist a mechanism that goes from a bytes-based format to a class and vice-versa - a process known as (de)serialization.
+<p>
+Messages are a fundamental item in UMPS as they are the things that are ultimately passed around.  A message is simultaneously two things.  Firstly, a message is a data structure (i.e., a class).  Secondly, a message is a thing that is transmitted via a messaging protocol (e.g., TCP, IPC, inproc).  Consequently, there must exist a mechanism that goes from a byte-based format to a class and vice-versa - a process known as (de)serialization.  This may seem strange at first but keep in mind that the goal of UMPS is to transmit messages.  UMPS, to some extent, is like the postal service in that it does not care what is in the box; it just wants to get the box from A to B.
+
+</p>
 
 <br>
-
-To begin, let's consider the byte-based representation of a message.  In this case, we view a message as a collection of item-value pairs.  The item-value pairs can be expressed in plain-text format (e.g., <a href="https://www.json.org/json-en.html">JSON</a> or <a href="https://www.xml.com/">XML</a>) or binary format (e.g., <a href="https://cbor.io/">CBOR</a> or <a href="https://bsonspec.org/">BSON</a>).  Incidentally, UMPS messages use CBOR since they tend to result in smaller message sizes than BSON.  But all that is truly required of someone creating their own class is being able to convert the message to a string or byte-stream format and being able to convert a string or byte-stream format to a class.   
-
 <br>
 
-As programmers, what is important is that a message is also a class.  This is because classes are the natural way by which we define and manipulate objects in C++ (or any object-oriented language).  The link between these two representations is the message abstract base class.
+<p>
+Elaborating further on the duality of a message, understand that messages are classes.  This is because classes are collections of items that we interact with when writing programs.  Therefore, prior to sending a message, the user must define how the class will express all of its members in a byte-based format.
+</p>
+
+<br>
+<br>
+
+<p>
+The other side of the coin is that messages are a byte-based representation of the elements of the class.  Hence, a natural way to view a message is as a collection of item-value pairs.  Specifically, common mechanisms that express item-value pairs as plain-text are <a href="https://www.json.org/json-en.html">JSON</a> and <a href="https://www.xml.com/">XML</a>.  Alternatively, common mechanisms for expressing item-value pairs in a binary format are <a href="https://cbor.io/">CBOR</a> and <a href="https://bsonspec.org/">BSON</a>).  Of course, a message need not be an item-value pair.  It could be a fixed-format string such as an <a href="http://www.earthwormcentral.org/documentation3/PROGRAMMER/y2k-formats.html">Earthworm message</a>.  Therefore, upon receiving a message, the user must be able to map the byte-based values to the members of a class.  Before moving on, the curious reader may ask: What messaage format does UMPS actually use?  Answer: UMPS uses CBOR since CBOR tends to result in smaller message sizes than BSON.
+</p>
+
+<br>
+<br>
+
+<p>
+The link between these two conceptual models of a class is the message abstract base class (shown below).  When making a message, you will derive from IMessage and be forced to add all the requisite functionality that maps from values of member functions to byte-based representations and back.  As an aside, abstract base classes are commonly used in factory patterns.  So, in a sense, message consumers in UMPS are message factories.
+</p>
 
 \include umps/messageFormats/message.hpp
 
-As a user defining your own message type you must derive from this class and implement the following functions.  Since this is so critical, let's define each item:
+Since users will have to implement each method we expound on each item:
   - toMessage
-    - This converts the class to a string or byte-stream message.  We use a dirty trick with C++ that the std::string is a container that can contain binary data.  This does not matter to ZeroMQ as all it is concerned with is sending bytes.
+    - This converts the class to a string or byte-stream message.  Note, a std::string is a convenient container that can contain binary data so do not feel obligated to use a plain-text format like JSON.
   - fromMessage
     - This reconstitutes a class from the a byte-stream or string message.
   - getMessageType
-    - This allows the library to figure out which class it is supposed to create.  This value must be unique for your applications as naming collisions will create unforseen problems during deserialization.  Your serialized message should embed this information somewhere.  For our CBOR messages there is a item-value pair called MessageType.
-    - The message type is also passed onto ZeroMQ.  Loosely speaking, our messages are like emails in that they contain a subject and a body.  Specifically, the message type is the subject and the body is the serialized payload.  Reading the only subjects allows certain components of ZeroMQ to not have to read entire messages off the wire in certain communication paradigms.
+    - This allows the library to figure out which class it is supposed to create.  This value must be unique for your applications as naming collisions will create unforseen problems during deserialization.
+    - The message type is also passed onto ZeroMQ.  Loosely speaking, our messages are like emails in that they contain a subject and a body.  Specifically, the message type is the subject and the serialized payload is the body.  Reading only the subjects of the email allows certain components of UMPS to work more efficiently.
   - createInstance
-    - This is the first part of magic.  The UMPS interfaces to ZeroMQ return abstract-base message classes.  But those classes really have to correspond to a specific type of message class.
-  - getVersion
-    - It may happen that different components of your system are updated at different times but your message formats slightly change.  A clever behind-the-scenes parser can use the message version to great effect to deal with this problem.
+    - The UMPS messaging interfaces to ZeroMQ return an IMessage abstract base class.  But that IMessage really has to correspond to a specific type of message class.  By providing the library with a concrete implementation it can deserialize the message into the correct class and return the ABC.
   - clone
-    - This is the second part of magic.  The abstract-base message classes being returned from our ZeroMQ interfaces need to have the correct content and not be unpopulated classes.
+    - The IMessage types being returned from our ZeroMQ interfaces need to have all the content that was deserialized from the byte-based representation.  Cloning allows us to make sure that information is actually copied to the calling function.
+  - getMessageVersion
+    - It may happen that different components of your system are updated at different times but your message formats change slightly.  A clever behind-the-scenes parser can use the message version to great effect to deal with this problem.
 
-Though it may be difficult to imagine on the first read-through, this abstract base class is the reason you or I can create arbitrary messages, send those messages to and from different computers with UMPS, and, upon receipt of those messages, interact with them as normal classes in our applications.  No more arcane Earthworm messages.  No more being a slave to QuakeML.  Define the messages your application requires then send them.
+In closing this section, we realize the IMessage abstract base class seems unusual.  But it is the key enabling technology that allows you or me to create arbitrary messages, send those messages to and from different computers with UMPS, and, upon receipt of those messages, interact with them as normal classes in our applications.  The upshot is no more arcane Earthworm messages and no more tearing through QuakeML to extract information.  In UMPS, your data structures are the messages.
 
 */
 }
