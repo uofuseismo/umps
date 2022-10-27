@@ -1,5 +1,5 @@
-#ifndef PRIVATE_STATICUNIQUEPOINTERCAST_HPP
-#define PRIVATE_STATICUNIQUEPOINTERCAST_HPP
+#ifndef PRIVATE_STATIC_UNIQUEPOINTER_CAST_HPP
+#define PRIVATE_STATIC_UNIQUEPOINTER_CAST_HPP
 namespace
 {
 /// @brief Converts a unique pointer of one type to a unique pointer of 

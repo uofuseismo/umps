@@ -323,25 +323,13 @@ void UMPS::Python::Authentication::initialize(pybind11::module &m)
         .value("Stonehouse",  UMPS::Authentication::SecurityLevel::Stonehouse,
                "A key exchange will be performed and IP addresses may be validated.");
 
-/*
-    //------------------------------------------------------------------------//
+    //-----------------------------------Key Pair-----------------------------//
     pybind11::class_<Keys> keys(auth, "Keys");
     keys.def(pybind11::init<> ());
     keys.doc() = R""""(
 This defines the public/private keypair used by the ZeroMQ Authentication Protocol (ZAP).
 Typically, a Stonehouse client will be used from the Python API.  In this case, the
 client's public and private keys must be known as well as the server's public key.
-
-Options Properties :
-
-   domain : The ZeroMQ domain on which authentication will be performed.
-
-Read-only Properties :
-
-   is_authentication_server : True indicates that this is the machine that
-                              will perform authentication.
-   security_level : The current security level.
-
 )"""";
     keys.def("__copy__", [](const Keys &self)
     {   
@@ -353,7 +341,7 @@ Read-only Properties :
     keys.def("clear",
              &Keys::clear,
              "Clears all stored credentials and releases memory.");
-    //------------------------------------------------------------------------//
+    //---------------------------User Name and Password ----------------------//
     pybind11::class_<UserNameAndPassword> up(auth, "UserNameAndPassword");
     up.def(pybind11::init<> ());
     up.doc() = R""""(
@@ -390,7 +378,7 @@ Read-only Properties :
            &UserNameAndPassword::getPassword,
            "Resets the username and password");
 
-    //------------------------------------------------------------------------//
+    //---------------------------------ZAP Options----------------------------//
     pybind11::class_<ZAPOptions> zap(auth, "ZAPOptions");
     zap.def(pybind11::init<> ());
     zap.doc() = R""""(
@@ -400,16 +388,12 @@ are four supported levels of security.
    1.  Grasslands -> There is no authentication.
    2.  Strawhouse -> The ZAP server can authenticate IP addresses.
    3.  Woodhouse  -> The ZAP server can authenticate IP addresses as well as
-                     user names and password.  In this case, the Woodhouse
+                     a user name and password pair.  In this case, the Woodhouse
                      client must provide a user name and password.
    4.  Stonehouse -> The ZAP server can authenticate IP addresses as well as
-                     client public keys.  In this case, the Stonehouse
-                     client have the server's public key as well as its own
+                     a client's public keys.  In this case, the Stonehouse
+                     client must have the server's public key as well as its own
                      public/private key pair.
-
-Optional Properties :
-
-   domain : The ZeroMQ domain on which authentication will be performed.
 
 Read-only Properties :
 
@@ -417,6 +401,11 @@ Read-only Properties :
       True indicates that this is the machine that will perform authentication.
    security_level : int
       The current security level.
+
+Optional Properties :
+
+   domain : The ZeroMQ domain on which authentication will be performed.
+            By default this is global.
 
 )"""";
     zap.def("__copy__", [](const ZAPOptions &self)
@@ -455,5 +444,4 @@ Read-only Properties :
                               &ZAPOptions::isAuthenticationServer);
     zap.def_property_readonly("security_level",
                               &ZAPOptions::getSecurityLevel);
-*/
 }
