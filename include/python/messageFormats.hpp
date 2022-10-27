@@ -48,7 +48,7 @@ public:
     /// @brief Copy constructor.
     Messages(const Messages &messages);
     /// @brief Constructs from the UMPS messages class.
-    Messages(const UMPS::MessageFormats::Messages &messages);
+    explicit Messages(const UMPS::MessageFormats::Messages &messages);
     /// @brief Move constructor.
     Messages(Messages &&messages) noexcept;
     /// @brief Destructor.
@@ -87,7 +87,7 @@ public:
     /// @brief Copy constructor.
     Failure(const Failure &failure);
     /// @brief Constructs from the base class.
-    Failure(const UMPS::MessageFormats::Failure &failure);
+    explicit Failure(const UMPS::MessageFormats::Failure &failure);
     /// @brief Move constructor.
     Failure(Failure &&failure) noexcept;
     /// @brief Copy assignment operator.
@@ -105,7 +105,7 @@ public:
     /// @brief A copy of this class.
     [[nodiscard]] std::unique_ptr<IMessage> clone(const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const override;
     /// @brief A clone of the base class.
-    std::unique_ptr<UMPS::MessageFormats::IMessage> getInstanceOfBaseClass() const noexcept override;
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> getInstanceOfBaseClass() const noexcept override;
     /// @result The message type.
     [[nodiscard]] std::string getMessageType() const noexcept override;
     /// @brief Sets the failure message details.
@@ -131,7 +131,7 @@ public:
     /// @brief Copy constructor.
     Text(const Text &failure);
     /// @brief Constructs from the base class.
-    Text(const UMPS::MessageFormats::Text &text);
+    explicit Text(const UMPS::MessageFormats::Text &text);
     /// @brief Move constructor.
     Text(Text &&text) noexcept;
     /// @brief Copy assignment operator.
@@ -149,19 +149,19 @@ public:
     /// @brief A copy of this class.
     [[nodiscard]] std::unique_ptr<IMessage> clone(const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const override;
     /// @brief Clone of the base class.
-    std::unique_ptr<UMPS::MessageFormats::IMessage> getInstanceOfBaseClass() const noexcept override;
+    [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage> getInstanceOfBaseClass() const noexcept override;
     /// @result The message type.
     [[nodiscard]] std::string getMessageType() const noexcept override;
-    /// @brief Sets the failure message details.
-    void setDetails(const std::string &details) noexcept;
-    /// @result The failure mesasge details.
-    [[nodiscard]] std::string getDetails() const noexcept;
+    /// @brief Sets the contents of the message.
+    void setContents(const std::string &contents) noexcept;
+    /// @result The contents of the message.
+    [[nodiscard]] std::string getContents() const noexcept;
     /// @brief Resets the class.
     void clear() noexcept;
     /// @brief Destructor. 
     ~Text() override;
 private:
-    std::unique_ptr<UMPS::MessageFormats::Failure> pImpl;
+    std::unique_ptr<UMPS::MessageFormats::Text> pImpl;
 };
 void initialize(pybind11::module &m);
 }

@@ -321,7 +321,7 @@ endif()
 ##########################################################################################
 #                                      Python Wrapping                                   #
 ##########################################################################################
-if (WRAP_PYTHON)
+if (${WRAP_PYTHON})
    message("Will build Python bindings")
    find_package(pybind11 REQUIRED)
    add_library(umps_python
@@ -431,7 +431,7 @@ add_test(NAME unitTests
 add_test(NAME commTests
          COMMAND commTests)
 
-#if (WRAP_PYTHON)
+#if (${WRAP_PYTHON})
 #   file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
 #   add_test(NAME python_tests
 #            COMMAND ${PYTHON_EXECUTABLE} -m pytest)

@@ -2,6 +2,7 @@
 #include <umps/messageFormats/messages.hpp>
 #include <umps/messageFormats/text.hpp>
 #include <umps/messageFormats/failure.hpp>
+#include <pybind11/pybind11.h>
 #include "python/messageFormats.hpp"
 #include <private/staticUniquePointerCast.hpp>
 
@@ -168,6 +169,18 @@ UMPS::MessageFormats::Failure Failure::getNativeClass() const noexcept
 }
 
 /// Things to override
+void Failure::fromBaseClass(UMPS::MessageFormats::IMessage &message)
+{
+    if (message.getMessageType() != pImpl->getMessageType())
+    {
+        throw std::invalid_argument("Expecting message type: "
+                                    + pImpl->getMessageType()
+                                    + " but given: "
+                                    + message.getMessageType());
+    }
+    pImpl = static_unique_pointer_cast<UMPS::MessageFormats::Failure>
+            (message.clone());
+}
 std::unique_ptr<IMessage> Failure::clone(
     const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const
 {
@@ -178,8 +191,7 @@ std::unique_ptr<IMessage> Failure::clone(
    }
    auto copy = static_unique_pointer_cast<UMPS::MessageFormats::Failure>
                (message->clone());
-   auto result = std::make_unique<Failure> (*copy);
-   return result;
+   return std::make_unique<Failure> (*copy);
 }
 
 std::unique_ptr<IMessage> Failure::createInstance() const
@@ -219,6 +231,120 @@ void Failure::clear() noexcept
 }
 
 Failure::~Failure() = default;
+
+///--------------------------------------------------------------------------///
+///                                 Failure Message                          ///
+///--------------------------------------------------------------------------///
+/// C'tor
+Text::Text() :
+        pImpl(std::make_unique<UMPS::MessageFormats::Text> ())
+{
+}
+
+Text::Text(const Text &message)
+{
+    *this = message;
+}
+
+Text::Text(const UMPS::MessageFormats::Text &message)
+{
+    *this = message;
+}
+
+Text::Text(Text &&message) noexcept
+{
+    *this = std::move(message);
+}
+
+/// Operators
+Text& Text::operator=(const Text &message)
+{
+    if (&message == this){return *this;}
+    pImpl = std::make_unique<UMPS::MessageFormats::Text> (*message.pImpl);
+    return *this;
+}
+
+Text& Text::operator=(const UMPS::MessageFormats::Text &message)
+{
+    pImpl = std::make_unique<UMPS::MessageFormats::Text> (message);
+    return *this;
+}
+
+Text& Text::operator=(Text &&message) noexcept
+{
+    if (&message == this){return *this;}
+    pImpl = std::move(message.pImpl);
+    return *this;
+}
+
+UMPS::MessageFormats::Text Text::getNativeClass() const noexcept
+{
+    return *pImpl;
+}
+
+/// Things to override
+void Text::fromBaseClass(UMPS::MessageFormats::IMessage &message)
+{
+    if (message.getMessageType() != pImpl->getMessageType())
+    {
+        throw std::invalid_argument("Expecting message type: "
+                                    + pImpl->getMessageType()
+                                    + " but given: "
+                                    + message.getMessageType());
+    }
+    pImpl = static_unique_pointer_cast<UMPS::MessageFormats::Text>
+            (message.clone());
+}
+
+std::unique_ptr<IMessage> Text::clone(
+        const std::unique_ptr<UMPS::MessageFormats::IMessage> &message) const
+{
+    if (message->getMessageType() != pImpl->getMessageType())
+    {
+        throw std::invalid_argument("Expecting: " + pImpl->getMessageType()
+                                    + " but got: " + message->getMessageType());
+    }
+    auto copy = static_unique_pointer_cast<UMPS::MessageFormats::Text>
+            (message->clone());
+    return std::make_unique<Text> (*copy);
+}
+
+std::unique_ptr<IMessage> Text::createInstance() const
+{
+    return std::make_unique<Text> ();
+}
+
+std::unique_ptr<UMPS::MessageFormats::IMessage>
+Text::getInstanceOfBaseClass() const noexcept
+{
+    std::unique_ptr<UMPS::MessageFormats::IMessage> message
+            = pImpl->createInstance();
+    return message;
+}
+
+std::string Text::getMessageType() const noexcept
+{
+    return pImpl->getMessageType();
+}
+
+/// Details
+void Text::setContents(const std::string &contents) noexcept
+{
+    pImpl->setContents(contents);
+}
+
+std::string Text::getContents() const noexcept
+{
+    return pImpl->getContents();
+}
+
+/// Destructors
+void Text::clear() noexcept
+{
+    pImpl->clear();
+}
+
+Text::~Text() = default;
 
 ///--------------------------------------------------------------------------///
 ///                                  Iniitalize                              ///
@@ -284,4 +410,29 @@ Read-Only Properties:
                          &Failure::setDetails);
     failure.def_property_readonly("message_type",
                                   &Failure::getMessageType);
+    ///-------------------------------0Text----------------------------------///
+    pybind11::class_<UMPS::Python::MessageFormats::Text> text(mm, "Text");
+    text.def(pybind11::init<> ());
+    text.doc() = R""""(
+This is a container for a text message.  The contents can be arbitrary.
+For example, if you need to send the contents of an XML file then you
+could use this class.
+
+Properties:
+   contents : str
+      The contents of the message.
+
+Read-Only Properties:
+   message_type : str
+      The message type.
+)"""";
+    text.def("__copy__", [](const Text &self)
+    {
+        return Text(self);
+    });
+    text.def_property("contents",
+                      &Text::getContents,
+                      &Text::setContents);
+    text.def_property_readonly("message_type",
+                               &Text::getMessageType);
 }
