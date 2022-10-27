@@ -3,7 +3,6 @@
 #include <umps/logging/spdlog.hpp>
 #include <pybind11/pybind11.h>
 #include "python/logging.hpp"
-#include "log.hpp"
 
 using namespace UMPS::Python::Logging;
 
@@ -224,19 +223,24 @@ Read-only Properties :
     daily.def("initialize",
               &Daily::initialize,
 R""""(
-Initializes the logger.\n
-\n
-Parameters\n
-----------\n
-logger_name : str\n
-    The logger name.  This is how to identify the log in the output.\n
-file_name : str\n
-    The file to which to write messages.\n
-hour : int\n
-    Rotate the log on this hour of the day.  This should be in the range [0,23].\n
-minute : int\n
-    Rotate the log on this minute of the hour.  This should be in the range [0,59].\n
-)"""");
+Initializes the logger.
+
+Parameters
+----------
+logger_name : str
+    The logger name.  This is how to identify the log in the output.
+file_name : str
+    The file to which to write messages.
+hour : int
+    Rotate the log on this hour of the day.  This should be in the range [0,23].
+minute : int
+    Rotate the log on this minute of the hour.  This should be in the range [0,59].
+)"""",
+        pybind11::arg("logger_name"),
+        pybind11::arg("file_name"),
+        pybind11::arg("level") = UMPS::Logging::Level::Info,
+        pybind11::arg("hour") = 0,
+        pybind11::arg("minute") = 0);
     daily.def("error",
               &Daily::error,
               "Issues an error message.");

@@ -428,8 +428,8 @@ target_include_directories(commTests
 # Add the tests
 add_test(NAME unitTests
          COMMAND unitTests)
-add_test(NAME commTests
-         COMMAND commTests)
+#add_test(NAME commTests
+#         COMMAND commTests)
 
 if (${WRAP_PYTHON})
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)

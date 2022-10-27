@@ -37,6 +37,19 @@ public:
     /// @result A null pointer.
     [[nodiscard]] virtual std::unique_ptr<UMPS::MessageFormats::IMessage> getInstanceOfBaseClass() const noexcept;
 };
+/// @class PyMessage
+/// @brief This is a specialized class that allows the user to create a message
+///        in Python.
+/*
+class PyMessage : public UMPS::MessageFormats::IMessage, IMessage
+{
+public:
+    void setMessageType(const std::string &messageType);
+    [[nodiscard]] getMessageType() const noexcept override;
+private:
+
+};
+*/
 /// @class Messages
 /// @brief A container for Python IMessage types.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

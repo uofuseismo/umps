@@ -125,14 +125,17 @@ void SpdLog::initialize(const std::string &loggerName,
     if (!fs::exists(path))
     {
         auto parentPath = path.parent_path();
-        if (!fs::exists(parentPath))
+        if (!parentPath.empty())
         {
-            if (!fs::create_directories(parentPath))
+            if (!fs::exists(parentPath))
             {
-                auto errmsg = "Could not create logging directory: "
-                            + parentPath.string();
-                spdlog::critical(errmsg);
-                throw std::runtime_error(errmsg);
+                if (!fs::create_directories(parentPath))
+                {
+                    auto errmsg = "Could not create logging directory: "
+                                + parentPath.string();
+                    spdlog::critical(errmsg);
+                    throw std::runtime_error(errmsg);
+                }
             }
         }
     }

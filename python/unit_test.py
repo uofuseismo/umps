@@ -1,7 +1,35 @@
 #!/usr/bin/env python3
+import sys
+import os
+import glob
+sys.path.append(os.getcwd())
 import umpspy
 import numpy as np
 
+def test_logging_standard_out():
+    so = umpspy.Logging.StandardOut(umpspy.Logging.Level.Debug)
+    assert so.level == umpspy.Logging.Level.Debug, 'level is wrong'
+    so.error("Error test - okay")
+    so.warn("Warning test - okay")
+    so.info("Info test - okay")
+    so.debug("Debug test - okay")
+
+def test_logging_daily():
+    level = umpspy.Logging.Level.Debug
+    logger_name = "test_logger"
+    file_name = "tempLogger.txt"
+    d = umpspy.Logging.Daily()
+    d.initialize(logger_name, file_name, level)
+    d.error("Error test - okay")
+    d.warn("Warn test - okay")
+    d.info("Info test - okay")
+    d.debug("Debug test - okay")
+
+    output_file = glob.glob("tempLogger*")
+    assert len(output_file) == 1, 'log file not created'
+    os.remove(output_file[0])
+   
+    
 def test_message_formats_text():
     contents = "Contents"
     text = umpspy.MessageFormats.Text()
@@ -61,5 +89,7 @@ def test_messages_data_packet():
 #    #print(type(pick))
 
 if __name__ == "__main__":
+    test_logging_standard_out()
+    test_logging_daily()
     test_message_formats_text()
     test_message_formats_failure()
