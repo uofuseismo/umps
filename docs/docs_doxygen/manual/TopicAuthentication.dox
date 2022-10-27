@@ -15,7 +15,8 @@ We break the documentation into three main components based on your job function
    2. A smaller subset of users will be system administrators.  SysAds need to understand how to interact with the \ref Authentication_UserTable (i.e., add, generate, and remove credentials).
    3. Lastly, a strange few may want to read the uOperator source code.  Those sadists will have to understand how an \ref Authentication_Authenticator works.
 
-<br></br>
+<br>
+<br>
 
 You're still here.  Okay, in general, there are five \ref Authentication_SecurityLevels which, in ZeroMQ parlance, are
 

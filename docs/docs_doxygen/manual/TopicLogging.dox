@@ -1,16 +1,35 @@
 namespace UMPS
 {
 /*!
-\page TopicLogging_Logging
+\page TopicLogging Logging
 \ingroup Logging_chapter
 
 <p>
-Typically, we cannot stare at a terminal all day and monitor the output.  This is not only tedious but it is typically uninteresting since a program is generally working just fine.  For this reason, it is important that production code that will run in the background have a logging facility.  The logging facilities provided by UMPS build upon <a href="https://github.com/gabime/spdlog">SpdLog</a>.  However, you may have strong opinions about logging and want to provide your mechanism.  In UMPS, that is completely fine.
+Typically, we cannot stare at a terminal all day and monitor the output.  This is not only tedious but it is typically uninteresting since a program is generally working just fine.  For this reason, it is important that production code that will run in the background have a logging facility.  The logging facilities provided by UMPS build upon <a href="https://github.com/gabime/spdlog">SpdLog</a>.  While spdlog has more, we limit logging to four levels:
 </p>
 
-<br>
-<br>
+\include umps/logging/level.hpp
 
-<p>
+The following describes what type of behavior you should expect from UMPS for a given message
+
+   - error is for error messages.  Error messages typically corresond to an UMPS function throwing an error.
+   - warn is for warning messages.  Warning messages typically correspond to UMPS function making a decision and lurching forward.
+   - info is for information messages.  Information messages typically correspond to a successful event that UMPS deems important like a connection being established.  This is the default logging level for built-in loggers.
+   - debug is debugging messages.  Debug messages are extraordinarily granular and typically only useful while actively debugging a program. 
+
+Should you find the built-in loggers insufficient you can of course create your own.  In that case you would derive from the ILog base class:
+
+\include umps/logging/log.hpp
+
+Again, we are describing an abstract base class where you must
+
+   - report on the logger's logging level.
+   - define an action for an error message.
+   - define an action for a warning message.
+   - define an action for an info message.
+   - define an action for a debug message.
+
+By using dependency injection in constructors will then enable you to permeate your logger through UMPS.
+
 */
 }

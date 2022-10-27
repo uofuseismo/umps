@@ -19,8 +19,7 @@ namespace UMPS {
   - \subpage TopicClassHierarchy
 */
 
-/** \defgroup Messages_chapter Messages
-    \brief The fundamental elements that are transmitted via UMPS. */
+/** \defgroup Messages_chapter Messages */
 
 /** \defgroup Messages_BaseClass Abstract Message Base Class
     \brief The most important class for those who wish to make their own messages.
@@ -30,8 +29,7 @@ namespace UMPS {
     \ingroup Messages_chapter */
 
 
-/** \defgroup MessagingPatterns_chapter Messaging Patterns 
-    \brief Patterns for transmitting messages with UMPS. */
+/** \defgroup MessagingPatterns_chapter Messaging Patterns  */
 
 /** \defgroup MessagingPatterns_PubSub Publisher-Subscriber 
     \ingroup MessagingPatterns_chapter */
@@ -83,8 +81,7 @@ namespace UMPS {
     \brief This defines a user - who is someone who can be added to the database.
     \ingroup  Authentication_Utilities_UserTable */
 
-/** \defgroup Logging_chapter Logging 
-    \brief UMPS logging utilities. */
+/** \defgroup Logging_chapter Logging */
 /** \defgroup Logging_BaseClass Logging Base Class
     \brief For those wishing to make their own loggers.
     \ingroup Logging_chapter */
