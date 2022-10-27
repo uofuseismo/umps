@@ -325,16 +325,17 @@ if (WRAP_PYTHON)
    message("Will build Python bindings")
    find_package(pybind11 REQUIRED)
    add_library(umps_python
-               python/authentication/authentication.cpp
+               python/authentication.cpp
                #python/messageFormats/message.cpp
                #python/messageFormats/messages.cpp
                #python/messageFormats/dataPacket.cpp
-               python/logging/log.cpp
+               python/logging.cpp
                #python/proxyBroadcasts/dataPacketSubscriber.cpp
                #python/proxyBroadcasts/dataPacketSubscriberOptions.cpp
                #python/proxyBroadcasts/heartbeat.cpp
                #python/services/command.cpp
                python/messaging/messaging.cpp
+               python/messageFormats.cpp
                #python/messaging/publisherSubscriber/publisher.cpp
                #python/messaging/publisherSubscriber/subscriberOptions.cpp
                #python/messaging/publisherSubscriber/subscriber.cpp

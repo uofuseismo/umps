@@ -1,14 +1,8 @@
-//#include "messaging/publisherSubscriber/publisher.hpp"
-//#include "messaging/xPublisherXSubscriber/publisherOptions.hpp"
-//#include "initialize.hpp"
-//#include "proxyBroadcasts.hpp"
-//#include "services.hpp"
-//#include "log.hpp"
-//#include "messaging.hpp"
 #include <umps/version.hpp>
-#include <python/authentication.hpp>
-#include <python/logging.hpp>
-#include <python/messaging.hpp>
+#include "python/authentication.hpp"
+#include "python/logging.hpp"
+#include "python/messaging.hpp"
+#include "python/messageFormats.hpp"
 #include <pybind11/pybind11.h>
 
 PYBIND11_MODULE(umpspy, m)
@@ -20,6 +14,7 @@ PYBIND11_MODULE(umpspy, m)
     UMPS::Python::Logging::initialize(m);
     UMPS::Python::Authentication::initialize(m);
     UMPS::Python::Messaging::initialize(m);
+    UMPS::Python::MessageFormats::initialize(m);
  
     // Message formats
 //    pybind11::module messageFormatsModule = m.def_submodule("MessageFormats");
