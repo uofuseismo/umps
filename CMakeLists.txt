@@ -431,11 +431,11 @@ add_test(NAME unitTests
 add_test(NAME commTests
          COMMAND commTests)
 
-#if (${WRAP_PYTHON})
-#   file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
-#   add_test(NAME python_tests
-#            COMMAND ${PYTHON_EXECUTABLE} -m pytest)
-#endif()
+if (${WRAP_PYTHON})
+   file(COPY ${CMAKE_SOURCE_DIR}/python/unit_test.py DESTINATION .)
+   add_test(NAME python_tests
+            COMMAND ${PYTHON_EXECUTABLE} -m pytest)
+endif()
 
 ##########################################################################################
 #                                         Installation                                   #

@@ -2,29 +2,21 @@
 import umpspy
 import numpy as np
 
-"""
-def test_messages_pick():
-    pick = umpspy.MessageFormats.Pick()
-    pick.network = "UU"
-    pick.station = "ICU"
-    pick.channel = "EHZ"
-    pick.time = 1034
-    pick.location_code = "01"
-    pick.identifier = 101
-    pick.polarity = umpspy.MessageFormats.Polarity.up
-    pick.phase_hint = "P"
-    pick.algorithm = "test_algorithm"
+def test_message_formats_text():
+    contents = "Contents"
+    text = umpspy.MessageFormats.Text()
+    text.contents = contents
 
-    assert pick.network == "UU", "network failed"
-    assert pick.station == "ICU", "station failed"
-    assert pick.channel == "EHZ", "channel failed"
-    assert pick.location_code == "01", "location failed"
-    assert abs(pick.time - 1034) < 1.e-14, 'time failed'
-    assert pick.identifier == 101, "id failed"
-    assert pick.polarity == umpspy.MessageFormats.Polarity.up, "polarity failed"
-    assert pick.phase_hint == "P", "phase hint failed"
-    assert pick.algorithm == "test_algorithm", "algorithm failed"
-"""
+    assert text.contents == contents, "contents failed"
+    assert text.message_type == "UMPS::MessageFormats::Text", "message type failed"
+
+def test_message_formats_failure():
+    details = "unknown reason for failure"
+    failure = umpspy.MessageFormats.Failure()
+    failure.details = details
+
+    assert failure.details == details, "details failed"
+    assert failure.message_type == "UMPS::MessageFormats::Failure", "message type failed"
 
 """
 def test_messages_data_packet():
@@ -69,7 +61,5 @@ def test_messages_data_packet():
 #    #print(type(pick))
 
 if __name__ == "__main__":
-    a = 1
-    #test_messages_pick()
-    #test_messages_data_packet()
-    #test_messaging_pubsub_subscriber()
+    test_message_formats_text()
+    test_message_formats_failure()
