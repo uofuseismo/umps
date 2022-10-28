@@ -10,13 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install CMake
+        shell: bash
         run: sudo apt-get install cmake -y
+      - name: List files
         shell: bash
-      - name: Configure Doxygen
         run: |
+             pwd
              ls
-             cmake ./docs
+      - name: Configure Doxygen
         shell: bash
+        working-directory: docs
+        run: |
+             which cmake
+             cmake .
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
