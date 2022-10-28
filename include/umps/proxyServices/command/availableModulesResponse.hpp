@@ -119,7 +119,7 @@ public:
     /// @brief Destructor.
     ~AvailableModulesResponse() override;
     /// @}
-public:
+private:
     class AvailableModulesResponseImpl;
     std::unique_ptr<AvailableModulesResponseImpl> pImpl;
 };

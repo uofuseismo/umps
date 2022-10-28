@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYSERVICES_PACKETCACHE_BULKDATARESPONSE_HPP
-#define UMPS_PROXYSERVICES_PACKETCACHE_BULKDATARESPONSE_HPP
+#ifndef UMPS_PROXY_SERVICES_PACKET_CACHE_BULKDATA_RESPONSE_HPP
+#define UMPS_PROXY_SERVICES_PACKET_CACHE_BULKDATA_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include "umps/messageFormats/message.hpp"
@@ -55,7 +55,7 @@ public:
     void addDataResponse(const DataResponse<T> &response);
     /// @param[in,out] response  Adds a data response.  On exit, responses's
     ///                          behavior will be undefined.
-    void addDataResponse(DataResponse<T> &&repsonse);
+    void addDataResponse(DataResponse<T> &&response);
     /// @result The data responses.
     [[nodiscard]] std::vector<DataResponse<T>> getDataResponses() const noexcept;
     /// @result A pointer to the data responses.  This is an array whose 

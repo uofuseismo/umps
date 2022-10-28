@@ -87,6 +87,8 @@ public:
     [[nodiscard]]
     std::unique_ptr<AvailableModulesResponse> getAvailableModules() const;
     /// @brief Gets the commands for interacting with this program.
+    /// @param[in] moduleName  The name of the module from which to get
+    ///                        available commands.
     /// @result A message summarizing the options for interacting with
     ///         this program.
     /// @throws std::runtime_error if \c isInitialized() is false.
@@ -94,7 +96,9 @@ public:
     std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse>
         getCommands(const std::string &moduleName) const;
     /// @brief Issues a command to the program.
-    /// @param[in] request  The request to issue to the program.
+    /// @param[in] moduleName The name of the module to which the request will
+    ///                       be sent.
+    /// @param[in] request    The request to issue to the program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]]
     std::unique_ptr<UMPS::Services::Command::CommandResponse>

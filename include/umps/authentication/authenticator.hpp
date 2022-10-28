@@ -13,7 +13,7 @@ namespace UMPS::Authentication::Certificate
 }
 namespace UMPS::Authentication
 {
-/// @class Authenticator "authenticator.hpp" "umps/messaging/authentication/authenticator.hpp"
+/// @class IAuthenticator "authenticator.hpp" "umps/messaging/authentication/authenticator.hpp"
 /// @brief This the base class that defines an authenticator.  
 /// @note This is based on the pyzmq implementation in base.py
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.

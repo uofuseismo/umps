@@ -24,7 +24,7 @@ namespace UMPS
 }
 namespace UMPS::Services::Command
 {
-/// @class Requestor "localRequestor.hpp" "umps/services/command/localRequestor.hpp"
+/// @class Requestor "requestor.hpp" "umps/services/command/requestor.hpp"
 /// @brief This class allows the user to interact with programs running locally
 ///        via inter-process communication.  Note, the program to which to
 ///        communicate must be running and have opened an IPC reply service

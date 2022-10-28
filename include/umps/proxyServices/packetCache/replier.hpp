@@ -35,6 +35,7 @@ public:
     /// @name Constructors
     /// @{
 
+    /// @brief Constructor.
     Replier();
     /// @brief Constructs a request socket with the given logger.
     /// @param[in] logger  A pointer to the application's logger.

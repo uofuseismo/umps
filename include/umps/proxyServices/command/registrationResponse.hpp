@@ -31,9 +31,9 @@ public:
     /// @param[in] response  The response from which to initialize this class.
     RegistrationResponse(const RegistrationResponse &response);
     /// @brief Move constructor.
-    /// @param[in,out] details  The response from which to initialize this
-    ///                         class.  On exit, details's behavior is
-    ///                         undefined.
+    /// @param[in,out] response  The response from which to initialize this
+    ///                          class.  On exit, details's behavior is
+    ///                          undefined.
     RegistrationResponse(RegistrationResponse &&response) noexcept;
     /// @}
 

@@ -33,7 +33,7 @@ public:
 
     /// @name Operator
     /// @{
-    /// 
+
     /// @brief Copy assignment operator.
     /// @result A deep copy of the given response.
     AvailableConnectionsResponse& operator=(const AvailableConnectionsResponse &response);

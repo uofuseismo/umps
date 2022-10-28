@@ -23,7 +23,9 @@ public:
     /// @brief Copy constructor.
     /// @param[in] request  The request from which to initialize this class.
     SensorRequest(const SensorRequest &request);
-    /// @brief 
+    /// @brief Move constructor.
+    /// @param[in,out] request  The request from which to initialize this class.
+    ///                         On exit, request's behavior is undefined.
     SensorRequest(SensorRequest &&request) noexcept;
     /// @}
     

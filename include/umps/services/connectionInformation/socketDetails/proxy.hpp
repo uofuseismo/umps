@@ -48,6 +48,9 @@ public:
     Proxy& operator=(Proxy &&socket) noexcept;
     /// @}
 
+    /// @name Socket Types
+    /// @{
+
     /// @brief Sets the socket xpub/xsub pair for this proxy.
     /// @param[in] socketPair  socketPair.first is the frontend (where data
     ///                        comes in) and socketPair.second is the backend
@@ -93,6 +96,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases memory.
     void clear() noexcept;
     /// @brief Destructor.

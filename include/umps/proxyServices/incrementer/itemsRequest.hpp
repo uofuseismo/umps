@@ -1,11 +1,11 @@
-#ifndef UMPS_PROXYSERVICES_INCREMENTER_ITEMSREQUEST_HPP
-#define UMPS_PROXYSERVICES_INCREMENTER_ITEMSREQUEST_HPP
+#ifndef UMPS_PROXY_SERVICES_INCREMENTER_ITEMS_REQUEST_HPP
+#define UMPS_PROXY_SERVICES_INCREMENTER_ITEMS_REQUEST_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
 #include "umps/proxyServices/incrementer/enums.hpp"
 namespace UMPS::ProxyServices::Incrementer
 {
-/// @class ItemsRequest "itemRequest.hpp" "umps/proxyServices/incrementer/itemRequest.hpp"
+/// @class ItemsRequest "itemsRequest.hpp" "umps/proxyServices/incrementer/itemRequest.hpp"
 /// @brief To identify items (picks, events, origins, amplitudes, etc.) in the
 ///        processing pipeline we must assign them a unique object identifier.
 ///        The challenge in a distributed setting is that we need a single

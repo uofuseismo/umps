@@ -22,6 +22,7 @@ class Status : public UMPS::MessageFormats::IMessage
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Status();
     /// @brief Copy constructor.
@@ -37,10 +38,11 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment.
     /// @param[in] status  The heartbeat status class to copy to this.
     /// @result A deep copy of the status.
-    Status& operator=(const Status &Status);
+    Status& operator=(const Status &status);
     /// @brief Move assignment.
     /// @param[in,out] status  The heartbeat status class whose memory will
     ///                        be moved to this.  On exit status's behavior is
@@ -118,6 +120,7 @@ public:
 
     /// @name Debugging Utilities
     /// @{
+
     /// @brief Creates the class from a JSON status message.
     /// @throws std::runtime_error if the message is invalid.
     void fromJSON(const std::string &message);
@@ -146,6 +149,7 @@ public:
 
     /// @name Destructors
     /// @{
+
     /// @brief Resets the class and releases all memory.
     void clear() noexcept;
     /// @brief Destructor.

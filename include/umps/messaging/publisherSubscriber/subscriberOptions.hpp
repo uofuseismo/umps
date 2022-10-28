@@ -52,7 +52,9 @@ public:
 
     /// @name Subscriber Options
     /// @{
+
     /// @brief Sets the address to which the subscriber will bind.
+    /// @param[in] address  The address to which the subscriber will bind.
     /// @throws std::invalid_argument if the address is empty.
     void setAddress(const std::string &address);
     /// @result The socket's address.

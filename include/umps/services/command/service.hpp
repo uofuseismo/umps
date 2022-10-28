@@ -29,10 +29,10 @@ namespace UMPS::Services::Command
 {
 /// @class Service "service.hpp" "umps/services/command/service.hpp"
 /// @brief This class allows a background application to interact with a user.
-/// @detail This class will write the IPC file details for this module to the
-///         local modules table.  A user's application can query this table
-///         for the IPC file then directly make requests to the application
-///         via the underlying request-router.
+/// @details This class will write the IPC file details for this module to the
+///          local modules table.  A user's application can query this table
+///          for the IPC file then directly make requests to the application
+///          via the underlying request-router.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Service : public UMPS::Services::IService
 {
@@ -80,6 +80,7 @@ public:
     /// @name Destructors
     /// @{
 
+    /// @brief Destructor.
     ~Service() override;
     /// @}
 

@@ -67,6 +67,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment operator.
     /// @param[in,out] publisher  The publisher class whose memory will be
     ///                           moved to this.  On exit, publisher's

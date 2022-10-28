@@ -56,7 +56,7 @@ public:
     /// @brief Sets the time interval to send messages.
     /// @throws std::invalid_argument if the interval is not positive.
     void setInterval(const std::chrono::seconds &interval);
-    /// @reslt The time interval between status messages.
+    /// @result The time interval between status messages.
     [[nodiscard]] std::chrono::seconds getInterval() const noexcept;
 
     /// @brief Sets the name of the process.  

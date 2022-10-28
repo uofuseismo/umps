@@ -71,6 +71,7 @@ public:
 
     /// @name Starts the proxy.
     /// @{
+
     /// @brief Starts the proxy.
     /// @throws std::runtime_error if \c isInitialized() is false.
     void start();

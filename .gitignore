@@ -38,3 +38,5 @@ version.hpp
 
 documents
 docs/Makefile
+Doxyfile.out
+Doxyfile

@@ -109,7 +109,7 @@ public:
     /// @brief Destructor.
     ~TerminateResponse() override;
     /// @}
-public:
+private:
     class TerminateResponseImpl;
     std::unique_ptr<TerminateResponseImpl> pImpl;
 };

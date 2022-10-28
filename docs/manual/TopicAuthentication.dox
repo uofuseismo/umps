@@ -8,7 +8,9 @@ namespace UMPS
 This section details the concept of authentication in UMPS.  The reason it exists is somewhat fortuitous.  Soon after UMPS development commenced the University of Utah announced some pretty stringent, new security rules to prevent deparments from getting ransom-wared.  As a result, the first major diversion in UMPS was validating it could withstand an external security audit.  This does not however mean you need to understand the authentication mechanisms since the default UMPS behavior is to be completely open.  If that's okay for your project then go to another section.
 </p>
 
-<br></br>
+<br>
+<br>
+
 We break the documentation into three main components based on your job function.
 
    1. Since most users will be interested in connection to the uOperator.  All typical users need to know is know how a bit about \ref Authentication_ZAP and, possibly, where to get the uOperator's public key.

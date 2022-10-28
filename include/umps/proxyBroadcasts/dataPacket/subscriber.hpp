@@ -62,6 +62,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment.
     /// @param[in,out] subscriber  The subscriber whose memory will be moved to
     ///                            this.  On exit, subscriber's behavior is

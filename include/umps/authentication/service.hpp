@@ -1,5 +1,5 @@
-#ifndef UMPS_AUTHENTICATION_THREADAUTHENTICATOR_HPP
-#define UMPS_AUTHENTICATION_THREADAUTHENTICATOR_HPP
+#ifndef UMPS_AUTHENTICATION_THREAD_AUTHENTICATOR_HPP
+#define UMPS_AUTHENTICATION_THREAD_AUTHENTICATOR_HPP
 #include <memory>
 #include <vector>
 #include <string>
@@ -33,6 +33,7 @@ class Service
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Service();
     /// @brief Constructor with a specified logger.
@@ -72,6 +73,7 @@ public:
 
     /// @name Service State
     /// @{
+
     /// @brief Starts the authentication thread.
     /// @note You would start this service by doing the following:
     ///         // Start the service 
@@ -98,7 +100,7 @@ public:
     /// @{
 
     /// @brief Whitelists (allows) connections from the given IP address.
-    /// @param[in] addresses  The address from which to allow connections.
+    /// @param[in] address  The address from which to allow connections.
     /// @throws std::runtime_error if \c isRunning() is false.
     /// @throws std::invalid_argument if address is empty.
     void whitelist(const std::string &address);
@@ -141,6 +143,8 @@ public:
 
     /// @name Destructors
     /// @{
+
+    /// @brief Destructor.
     ~Service();
     /// @}
 

@@ -94,10 +94,8 @@ public:
     /// @result The module details.
     /// @throws std::runtime_error if \c haveModuleDetails() is false.
     [[nodiscard]] ModuleDetails getModuleDetails() const; 
-    // @result True indicates the module details were set.
+    /// @result True indicates the module details were set.
     [[nodiscard]] bool haveModuleDetails() const noexcept;
-
-    /// @brief If true then if the module is registered.
     /// @}
 
     /// @name High Water Mark

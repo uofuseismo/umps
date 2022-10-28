@@ -52,7 +52,7 @@ public:
     /// @result True indicates the module name was set.
     [[nodiscard]] bool haveModuleName() const noexcept;
     /// @result The name of the IPC file.
-    /// @Throws std::runtime_erorr if \c haveModuleName() is false.
+    /// @throws std::runtime_erorr if \c haveModuleName() is false.
     [[nodiscard]] std::string getIPCFileName() const;
     /// @}
 

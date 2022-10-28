@@ -27,7 +27,7 @@ namespace UMPS
 }
 namespace UMPS::Modules
 {
-/// @class Module "module.hpp" "umps/modules/module.hpp"
+/// @class IModule "module.hpp" "umps/modules/module.hpp"
 /// @brief This is a generic base class module.  It will implement some, but not
 ///        all, generic module activities.  Of course, any and all routines
 ///        can be overridden as necessary.

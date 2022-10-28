@@ -91,7 +91,7 @@ public:
     /// @brief Destructor.
     ~AvailableModulesRequest() override;
     /// @}
-public:
+private:
     class AvailableModulesRequestImpl;
     std::unique_ptr<AvailableModulesRequestImpl> pImpl;
 };

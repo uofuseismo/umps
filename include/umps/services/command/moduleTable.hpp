@@ -15,7 +15,7 @@ namespace UMPS::Services::Command
 class ModuleTable
 {
 public:
-    /// @names Constructors
+    /// @name Constructors
     /// @{
 
     /// @brief Constructor.
@@ -26,10 +26,10 @@ public:
     /// @{
 
     /// @brief Opens the process table in read-write mode.
-    /// @param[in] tableFile            The table file name which will store
-    ///                                 the local process information.
-    /// @param[in] createIfDoesNotExit  If the table does not exist then
-    ///                                 create it.
+    /// @param[in] tableFile             The table file name which will store
+    ///                                  the local process information.
+    /// @param[in] createIfDoesNotExist  If the table does not exist then
+    ///                                  create it.
     /// @throws std::invalid_argument if createIfDoesNotExist is false and the
     ///         table does not exist.
     /// @throws std::runtime_error if errors are encountered in creating
@@ -37,8 +37,8 @@ public:
     void open(const std::string &tableFile,
               bool createIfDoesNotExist = true);
     /// @brief Opens the default table.
-    /// @param[in] createIfDoesNotExit  If the table does not exist then
-    ///                                 create it. 
+    /// @param[in] createIfDoesNotExist  If the table does not exist then
+    ///                                  create it. 
     void open(bool createIfDoesNotExist = true);
     /// @brief Opens the table in read-only mode.
     /// @param[in] tableFile  The name of the file with the table.
@@ -97,7 +97,7 @@ public:
     /// @throws std::runtime_error if \c haveModule() is false.
     [[nodiscard]] ModuleDetails queryModule(const std::string &name) const;
 
-    /// @names Destructors
+    /// @name Destructors
     /// @{
     
     /// @brief Closes the local module table.

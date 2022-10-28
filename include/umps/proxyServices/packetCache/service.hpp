@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYSERVICES_PACKETCACHE_SERVICE_HPP
-#define UMPS_PROXYSERVICES_PACKETCACHE_SERVICE_HPP
+#ifndef UMPS_PROXY_SERVICES_PACKET_CACHE_SERVICE_HPP
+#define UMPS_PROXY_SERVICES_PACKET_CACHE_SERVICE_HPP
 #include <memory>
 //#include "umps/messageFormats/message.hpp"
 #include "umps/proxyServices/packetCache/enums.hpp"

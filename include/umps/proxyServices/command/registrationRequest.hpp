@@ -40,7 +40,7 @@ public:
     /// @param[in] request  The request from which to initialize this class.
     RegistrationRequest(const RegistrationRequest &request);
     /// @brief Move constructor.
-    /// @param[in,out] details  The request from which to initialize this class.
+    /// @param[in,out] request  The request from which to initialize this class.
     ///                         On exit, details's behavior is undefined.
     RegistrationRequest(RegistrationRequest &&request) noexcept;
     /// @}

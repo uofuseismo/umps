@@ -49,8 +49,8 @@ public:
     /// @{
 
     /// @brief Initializes the process options.
-    /// @param[in] options     The publisher process options.
-    /// @param[in] connection  The connection.
+    /// @param[in] options              The publisher process options.
+    /// @param[in] publisherConnection  The connection to the publisher.
     /// @throws std::invalid_argument if \c conection->isInitialized() is false.
     void initialize(const PublisherProcessOptions &options,
                     std::unique_ptr<Publisher> &&publisherConnection); 

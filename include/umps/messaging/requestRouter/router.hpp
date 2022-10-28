@@ -41,6 +41,7 @@ public:
     /// @name Constructors
     /// @{
 
+    /// @brief Constructor.
     Router();
     /// @brief Constructs a router with the given logger.
     /// @param[in] logger  A pointer to the application's logger.
@@ -103,6 +104,7 @@ public:
     ~Router();
     /// @}
 
+    /// @brief Alternative way of starting the router with std::thread.
     void operator()();
 
     Router(const Router &router) = delete;

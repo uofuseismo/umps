@@ -5,7 +5,7 @@
 #include "umps/services/connectionInformation/details.hpp"
 namespace UMPS::Services
 {
-/// @class IServer "service.hpp" "umps/services/service.hpp"
+/// @class IService "service.hpp" "umps/services/service.hpp"
 /// @brief This is the abstract base class which defines a service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class IService

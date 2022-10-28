@@ -27,6 +27,8 @@ public:
 
     /// @brief Constructor.
     ProcessManager();
+    /// @brief Constructs a process manager with a given logger.
+    /// @param[in] logger  The logger.
     explicit ProcessManager(std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 

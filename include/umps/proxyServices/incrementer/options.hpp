@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYSERVICES_INCREMENTER_OPTIONS_HPP
-#define UMPS_PROXYSERVICES_INCREMENTER_OPTIONS_HPP
+#ifndef UMPS_PROXY_SERVICES_INCREMENTER_OPTIONS_HPP
+#define UMPS_PROXY_SERVICES_INCREMENTER_OPTIONS_HPP
 #include <memory>
 namespace UMPS::Authentication
 {
@@ -123,10 +123,7 @@ public:
     /// @result The initial value of the incrementer.
     [[nodiscard]] int64_t getInitialValue() const noexcept;
 
-    /// @brief Sets the verbosity. 
-    /// @param[in] verbosity   The verbosity.
     //void setVerbosity(UMPS::Logging::Level verbosity) noexcept;
-    /// @result The verbosity of the conter.
     //[[nodiscard]] UMPS::Logging::Level getVerbosity() const noexcept;
 
     /// @brief Sets the ZeroMQ Authentication Protocol options.

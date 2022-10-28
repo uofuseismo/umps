@@ -10,9 +10,9 @@ namespace UMPS::Services::ModuleRegistry
 {
 /// @class RegistrationRequest registrationRequest.hpp "umps/services/moduleRegistry/registrationRequest.hpp"
 /// @brief Requests a module be registered with UMPS.
-/// @detail While no module needs to be explicitly registered, particularly 
-///         read-only modules, this is a really good thing to do because
-///         it allows remote shut down.
+/// @details While no module needs to be explicitly registered, particularly 
+///          read-only modules, this is a really good thing to do because
+///          it allows remote shut down.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class RegistrationRequest : public UMPS::MessageFormats::IMessage
 {

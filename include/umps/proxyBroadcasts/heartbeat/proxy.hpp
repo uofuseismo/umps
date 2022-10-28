@@ -27,7 +27,7 @@ namespace UMPS
 }
 namespace UMPS::ProxyBroadcasts::Heartbeat
 {
-/// @class Broadcast "broadcast.hpp" "umps/proxyBroadcasts/heartbeat/proxy.hpp"
+/// @class Proxy "proxy.hpp" "umps/proxyBroadcasts/heartbeat/proxy.hpp"
 /// @brief This defines the XPUB/XSUB proxy to broadcast heartbeats.
 ///        This is an intermediate message layer to which producers
 ///        can publish messages to this XSUB socket and from which
@@ -84,10 +84,12 @@ public:
 
     /// @name Destructors
     /// @{
+
+    /// @brief Destructor.
     ~Proxy() override;
     /// @}
 
-    Proxy(const Proxy &proxy);
+    Proxy(const Proxy &proxy) = delete;
     Proxy(Proxy &&proxy) noexcept = delete;
     Proxy& operator=(const Proxy &proxy) = delete;
     Proxy& operator=(Proxy &&proxy) noexcept = delete;

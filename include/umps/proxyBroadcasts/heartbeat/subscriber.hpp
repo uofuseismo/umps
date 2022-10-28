@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_SUBSCRIBER_HPP
-#define UMPS_PROXYBROADCASTS_HEARTBEAT_SUBSCRIBER_HPP
+#ifndef UMPS_PROXY_BROADCASTS_HEARTBEAT_SUBSCRIBER_HPP
+#define UMPS_PROXY_BROADCASTS_HEARTBEAT_SUBSCRIBER_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 namespace UMPS
@@ -28,6 +28,7 @@ class Subscriber
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Subscriber();
     /// @brief Move constructor.
@@ -39,6 +40,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Move assignment.
     /// @param[in,out] subscriber  The subscriber whose memory will be moved to
     ///                            this.  On exit, subscriber's behavior is

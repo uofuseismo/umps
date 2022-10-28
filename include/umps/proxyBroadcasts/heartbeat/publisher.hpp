@@ -79,7 +79,7 @@ public:
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::XPublisher getSocketDetails() const;
 
     /// @brief Sends a message.  This will serialize the message.
-    /// @param[in] message  The message to send.
+    /// @param[in] status  The status message to send.
     /// @throws std::runtime_error if the class is not initialized.
     /// @throws std::invalid_argument if the message cannot be serialized.
     void send(const Status &status);

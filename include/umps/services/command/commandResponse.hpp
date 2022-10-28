@@ -31,7 +31,7 @@ public:
     /// @{
 
     /// @brief The text-based response to the command.
-    /// @param[in] command  The text-based response.
+    /// @param[in] response  The text-based response.
     /// @throws std::invalid_argument if the response is empty.
     void setResponse(const std::string &response);
     /// @result The text-based response.

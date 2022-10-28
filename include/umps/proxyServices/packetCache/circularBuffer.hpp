@@ -88,9 +88,6 @@ public:
     /// @name Adding Packets
     /// @{
 
-    /// @brief Attempts to add the given packets to the buffer.
-    /// @param[in] packets  The packets to add to this buffer.
-    /// @sa \c addPacket() for rules defining a valid data packet.
     //void addPackets(const std::vector<UMPS::MessageFormats::DataPacket<T>> &packets);
     /// @brief Attempts to add the given packet to the buffer.
     /// @param[in] packet   The packet to add to this buffer.

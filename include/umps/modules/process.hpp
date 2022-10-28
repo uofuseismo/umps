@@ -4,7 +4,7 @@
 #include <memory>
 namespace UMPS::Modules
 {
-/// @class Process "process.hpp" "umps/modules/process.hpp"
+/// @class IProcess "process.hpp" "umps/modules/process.hpp"
 /// @brief A module is typically comprised of multiple processes.  This defines
 ///        the essential qualities that constitute a process in UMPS.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
