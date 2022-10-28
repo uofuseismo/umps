@@ -1,5 +1,5 @@
-#ifndef UMPS_MESSAGING_REQUESTROUTER_REPLY_HPP
-#define UMPS_MESSAGING_REQUESTROUTER_REPLY_HPP
+#ifndef UMPS_MESSAGING_ROUTER_DEALER_REPLY_HPP
+#define UMPS_MESSAGING_ROUTER_DEALER_REPLY_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations

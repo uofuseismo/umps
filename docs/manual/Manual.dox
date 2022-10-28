@@ -4,21 +4,8 @@
 namespace UMPS {
 
 
-/** \page UserManual_Generalities General Topics
-  - \subpage TopicInstall
-  - \subpage TopicMessages
-  - \subpage TopicMessaging
-  - \subpage TopicModules
-  - \subpage UserManual_UMPS
-  - \subpage TopicNetworking
-  - \subpage TopicLogging
-*/
+/** \page index Overview */
 
-
-/** \page UserManual_UMPS Understanding UMPS
-  - \subpage TopicInsideUMPS
-  - \subpage TopicClassHierarchy
-*/
 
 /** \defgroup Messages_chapter Messages */
 
@@ -26,32 +13,44 @@ namespace UMPS {
     \brief The most important class for those who wish to make their own messages.
     \ingroup Messages_chapter */
 /** \defgroup Messages_MessageFormats Message Formats
-    \brief Some commonly core message formats in UMPS.
+    \brief Some common core message formats in UMPS.
     \ingroup Messages_chapter */
 
 
 /** \defgroup MessagingPatterns_chapter Messaging Patterns  */
 
-/** \defgroup MessagingPatterns_PubSub Publisher-Subscriber 
-    \ingroup MessagingPatterns_chapter */
-/** \defgroup MessagingPatterns_ReqRep Request-Reply
+/** \defgroup MessagingPatterns_Context Context
+    \brief A context is like a thread used by ZeroMQ to send and receive messages.
     \ingroup MessagingPatterns_chapter */
 
+/** \defgroup MessagingPatterns_PubSub Publisher-Subscriber Patterns
+    \ingroup MessagingPatterns_chapter
+    \defgroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
+    \ingroup MessagingPatterns_PubSub
+    \defgroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
+    \ingroup MessagingPatterns_PubSub */
+
+/** \defgroup MessagingPatterns_ReqRep Request-Reply Patterns
+    \ingroup MessagingPatterns_chapter 
+    \defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
+    \ingroup MessagingPatterns_ReqRep 
+    \defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
+    \ingroup MessagingPatterns_ReqRep */
+
 /** \addtogroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
-    \brief The simplest communication mechanism.  This pattern is not recommended for real applications.
+    \brief The simplest communication mechanism which is included for pedagogical purposes only.  Here, one consumer receives messages from one producer.
     \ingroup MessagingPatterns_PubSub */
 /** \addtogroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
     \brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
     \ingroup MessagingPatterns_PubSub */
 /** \addtogroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
-    \brief A fully asynchronous request-reply mechanism.  This is commonly termed a message queue.
+    \brief A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers.  This will lead to highly scalable services.
     \ingroup MessagingPatterns_ReqRep */
 /** \addtogroup MessagingPatterns_ReqRep_RequestRouter Request-Router
     \brief Individual clients submit requests to an asynchronous server.
     \ingroup MessagingPatterns_ReqRep */
 
-/** \defgroup Authentication_chapter Authentication 
-    \brief Utilities for verifying connections. */
+/** \defgroup Authentication_chapter Authentication  */
  
 /** \defgroup Authentication_SecurityLevels Security Levels
     \brief Defines the various supported security levels in UMPS.

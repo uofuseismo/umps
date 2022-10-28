@@ -7,6 +7,7 @@ namespace UMPS::Messaging
 /// @class Context context.hpp "umps/messaging/context.hpp"
 /// @brief This is a wrapper around the ZeroMQ context.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup MessagingPatterns_Context
 class Context
 {
 public:
