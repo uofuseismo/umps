@@ -13,8 +13,9 @@ jobs:
         run: sudo apt-get install cmake -y
         shell: bash
       - name: Configure Doxygen
-        run: ls
-        run: cmake ./docs
+        run: |
+             ls
+             cmake ./docs
         shell: bash
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
