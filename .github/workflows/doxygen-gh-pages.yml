@@ -9,20 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Install CMake
+      - name: Install graphviz
         shell: bash
-        run: sudo apt-get install cmake -y
-      - name: List files
-        shell: bash
-        run: |
-             pwd
-             ls
-      - name: Configure Doxygen
-        shell: bash
-        working-directory: docs
-        run: |
-             which cmake
-             cmake .
+        run: sudo apt-get install graphviz -y
       - uses: DenverCoder1/doxygen-github-pages-action@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
