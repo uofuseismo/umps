@@ -39,10 +39,10 @@ version.hpp
 documents
 docs/Makefile
 Doxyfile.out
-docs/html/*png
-docs/html/*html
-docs/html/*js
-docs/html/*map
-docs/html/*md5
-docs/html/*css
-docs/html/search
+#docs/html/*png
+#docs/html/*html
+#docs/html/*js
+#docs/html/*map
+#docs/html/*md5
+#docs/html/*css
+#docs/html/search
