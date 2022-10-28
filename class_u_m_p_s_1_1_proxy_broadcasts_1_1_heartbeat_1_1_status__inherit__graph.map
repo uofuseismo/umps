@@ -1,0 +1,4 @@
+<map id="UMPS::ProxyBroadcasts::Heartbeat::Status" name="UMPS::ProxyBroadcasts::Heartbeat::Status">
+<area shape="rect" id="node1" title="Defines a modules status message." alt="" coords="6,95,183,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="5,5,184,47"/>
+</map>

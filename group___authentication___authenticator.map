@@ -1,0 +1,4 @@
+<map id="Authenticator" name="Authenticator">
+<area shape="rect" id="node1" title="The authenticator implements the requisite business logic to validate a connection...." alt="" coords="223,5,333,31"/>
+<area shape="rect" id="node2" href="$group___authentication___service.html" title="Authentication services are run by the uOperator. Whenever a connection is formed,..." alt="" coords="5,5,175,31"/>
+</map>

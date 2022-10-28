@@ -1,0 +1,4 @@
+<map id="UMPS::Services::ConnectionInformation::AvailableConnectionsResponse" name="UMPS::Services::ConnectionInformation::AvailableConnectionsResponse">
+<area shape="rect" id="node1" title="This class provides the connection information to for all available connections &#45; e...." alt="" coords="5,95,252,151"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="39,5,218,47"/>
+</map>

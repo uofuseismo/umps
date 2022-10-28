@@ -1,0 +1,4 @@
+<map id="UMPS::ProxyServices::Incrementer::IncrementResponse" name="UMPS::ProxyServices::Incrementer::IncrementResponse">
+<area shape="rect" id="node1" title="This is a response to an item increment request." alt="" coords="5,95,252,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="39,5,218,47"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="UMPS::ProxyBroadcasts::Heartbeat::Proxy" name="UMPS::ProxyBroadcasts::Heartbeat::Proxy">
+<area shape="rect" id="node1" title="This defines the XPUB/XSUB proxy to broadcast heartbeats. This is an intermediate message layer to wh..." alt="" coords="5,80,183,121"/>
+<area shape="rect" id="node2" title=" " alt="" coords="63,5,125,32"/>
+</map>

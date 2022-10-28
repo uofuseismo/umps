@@ -1,0 +1,6 @@
+<map id="UMPS::Logging::ILog" name="UMPS::Logging::ILog">
+<area shape="rect" id="node1" title="This is an abstract base class that allows users to define custom loggers to be used in other applica..." alt="" coords="216,5,371,32"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_logging_1_1_daily_file.html" title="A daily logger as implemented by the SpdLog library." alt="" coords="5,80,189,107"/>
+<area shape="rect" id="node3" href="$class_u_m_p_s_1_1_logging_1_1_log_it.html" title="A wrapper to Earthworm&#39;s logit facility. If this library is not compiled against Earthworm then all c..." alt="" coords="214,80,373,107"/>
+<area shape="rect" id="node4" href="$class_u_m_p_s_1_1_logging_1_1_standard_out.html" title="A naive logger that prints all messages to standard out and, in the case of errors,..." alt="" coords="397,80,605,107"/>
+</map>

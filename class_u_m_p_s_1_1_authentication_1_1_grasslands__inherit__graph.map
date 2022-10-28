@@ -1,0 +1,4 @@
+<map id="UMPS::Authentication::Grasslands" name="UMPS::Authentication::Grasslands">
+<area shape="rect" id="node1" title="This is a default authenticator that will allow all connections." alt="" coords="5,95,168,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_authentication_1_1_i_authenticator.html" title="This the base class that defines an authenticator." alt="" coords="5,5,168,47"/>
+</map>

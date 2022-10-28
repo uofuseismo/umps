@@ -1,0 +1,4 @@
+<map id="UMPS::MessageFormats::Failure" name="UMPS::MessageFormats::Failure">
+<area shape="rect" id="node1" title="This message is a general failure message. For generalized request&#45;reply mechanisms,..." alt="" coords="5,95,184,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="5,5,184,47"/>
+</map>

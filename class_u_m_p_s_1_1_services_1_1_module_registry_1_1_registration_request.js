@@ -1,0 +1,26 @@
+var class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request =
+[
+    [ "RegistrationRequest", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a69977c50333c4e040d9346b2e9881075", null ],
+    [ "RegistrationRequest", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a2d901c55bcd2dbb4811594bbead69110", null ],
+    [ "RegistrationRequest", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#aa85e63b7d28cda85aa90efb5414e406e", null ],
+    [ "~RegistrationRequest", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#af9a4a43c07cad1831531c778d767b2d7", null ],
+    [ "clear", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a633faf83cb01e32e07755db6feec5c8e", null ],
+    [ "clone", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a68bea15bf4329777aa872ec74cafe3c3", null ],
+    [ "createInstance", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a03a778a1f4cf2c383b582aa4494e2613", null ],
+    [ "fromCBOR", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#abedc9df87f8913c9a7e77209b6c443f5", null ],
+    [ "fromCBOR", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#aa486c8952e1e490279fcf805bec97129", null ],
+    [ "fromJSON", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a108335d7b176e17904e4431de18cf30a", null ],
+    [ "fromMessage", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a7ebc832349bec4bb6dc8b67caabde213", null ],
+    [ "fromMessage", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a2d5a68799818f866030d658e560d3ead", null ],
+    [ "getIdentifier", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a2b25210f91883c3d9ff4331e0e4e2923", null ],
+    [ "getMessageType", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#af96cb58e5772e91dfa544224d94b66a8", null ],
+    [ "getModuleDetails", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#abed6dbad65b713e1dc5fe970c2d32315", null ],
+    [ "haveModuleDetails", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#ab1a95f5408a2f3d37ec4dc0a0e6a058d", null ],
+    [ "operator=", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a264bda252c20231230629cd7c732f4ee", null ],
+    [ "operator=", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a69343e9e597524a504a2ce5dd5deff36", null ],
+    [ "setIdentifier", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#ac37175ace6a2e39ff9efecd1a3c94c4f", null ],
+    [ "setModuleDetails", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#adea9a068112e0c0f77ba60e8c783960a", null ],
+    [ "toCBOR", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a629b31b468cfa0f9a0378470c0f23d88", null ],
+    [ "toJSON", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#afdb8ed48915ed84dcaa131567493290b", null ],
+    [ "toMessage", "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registration_request.html#a7a94cc5ccb2d55588418b0e072bb9765", null ]
+];

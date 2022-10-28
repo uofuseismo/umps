@@ -1,0 +1,4 @@
+<map id="Cerficates" name="Cerficates">
+<area shape="rect" id="node1" title="The class defining how credentials are stored and how they map to various security levels." alt="" coords="227,13,313,38"/>
+<area shape="rect" id="node2" href="$group___authentication___z_a_p.html" title="Options for the interacting with the ZeroMQ authentication protocol." alt="" coords="5,5,179,45"/>
+</map>

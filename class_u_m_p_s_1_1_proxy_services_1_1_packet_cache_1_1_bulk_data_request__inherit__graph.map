@@ -1,0 +1,4 @@
+<map id="UMPS::ProxyServices::PacketCache::BulkDataRequest" name="UMPS::ProxyServices::PacketCache::BulkDataRequest">
+<area shape="rect" id="node1" title=" " alt="" coords="5,95,239,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="33,5,211,47"/>
+</map>

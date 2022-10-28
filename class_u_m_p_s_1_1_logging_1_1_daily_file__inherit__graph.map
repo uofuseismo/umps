@@ -1,0 +1,4 @@
+<map id="UMPS::Logging::DailyFile" name="UMPS::Logging::DailyFile">
+<area shape="rect" id="node1" title="A daily logger as implemented by the SpdLog library." alt="" coords="5,80,189,107"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_logging_1_1_i_log.html" title="This is an abstract base class that allows users to define custom loggers to be used in other applica..." alt="" coords="20,5,175,32"/>
+</map>

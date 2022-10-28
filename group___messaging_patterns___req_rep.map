@@ -1,0 +1,6 @@
+<map id="Request&#45;Reply" name="Request&#45;Reply">
+<area shape="rect" id="node1" title=" " alt="" coords="203,31,320,56"/>
+<area shape="rect" id="node3" href="$group___messaging_patterns___req_rep___request_router.html" title="Individual clients submit requests to an asynchronous server." alt="" coords="368,5,491,31"/>
+<area shape="rect" id="node4" href="$group___messaging_patterns___req_rep___router_dealer.html" title="A fully asynchronous request&#45;reply mechanism. This is commonly termed a message queue." alt="" coords="373,55,486,80"/>
+<area shape="rect" id="node2" href="$group___messaging_patterns__chapter.html" title=" " alt="" coords="5,31,155,56"/>
+</map>

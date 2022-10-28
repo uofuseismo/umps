@@ -1,0 +1,4 @@
+<map id="UMPS::ProxyServices::Command::RegistrationResponse" name="UMPS::ProxyServices::Command::RegistrationResponse">
+<area shape="rect" id="node1" title="The response to a module registration response." alt="" coords="5,95,252,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="39,5,218,47"/>
+</map>

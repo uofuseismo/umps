@@ -1,0 +1,4 @@
+<map id="UMPS::Services::ModuleRegistry::Service" name="UMPS::Services::ModuleRegistry::Service">
+<area shape="rect" id="node1" title="Implements the server&#45;side service for registering modules." alt="" coords="5,80,239,121"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_services_1_1_i_service.html" title="This is the abstract base class which defines a service." alt="" coords="31,5,213,32"/>
+</map>

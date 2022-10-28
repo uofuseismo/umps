@@ -1,0 +1,4 @@
+<map id="UMPS::Services::ConnectionInformation::Service" name="UMPS::Services::ConnectionInformation::Service">
+<area shape="rect" id="node1" title="Implements the server&#45;side connection information service." alt="" coords="5,80,209,121"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_services_1_1_i_service.html" title="This is the abstract base class which defines a service." alt="" coords="16,5,199,32"/>
+</map>

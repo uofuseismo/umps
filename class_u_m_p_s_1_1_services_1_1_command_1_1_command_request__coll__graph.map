@@ -1,0 +1,4 @@
+<map id="UMPS::Services::Command::CommandRequest" name="UMPS::Services::Command::CommandRequest">
+<area shape="rect" id="node1" title="Issues a text&#45;based command to the application." alt="" coords="5,95,204,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="15,5,194,47"/>
+</map>

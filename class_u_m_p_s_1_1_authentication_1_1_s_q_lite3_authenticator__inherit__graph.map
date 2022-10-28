@@ -1,0 +1,4 @@
+<map id="UMPS::Authentication::SQLite3Authenticator" name="UMPS::Authentication::SQLite3Authenticator">
+<area shape="rect" id="node1" title="Performs user authentication against a SQLite3 database." alt="" coords="5,95,173,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_authentication_1_1_i_authenticator.html" title="This the base class that defines an authenticator." alt="" coords="8,5,171,47"/>
+</map>

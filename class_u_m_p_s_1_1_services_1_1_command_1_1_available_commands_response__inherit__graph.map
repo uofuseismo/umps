@@ -1,0 +1,4 @@
+<map id="UMPS::Services::Command::AvailableCommandsResponse" name="UMPS::Services::Command::AvailableCommandsResponse">
+<area shape="rect" id="node1" title="The available text&#45;based interactive program commands." alt="" coords="5,95,232,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="29,5,208,47"/>
+</map>

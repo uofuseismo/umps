@@ -1,0 +1,4 @@
+<map id="User" name="User">
+<area shape="rect" id="node1" href="$group___authentication___utilities___user_table.html" title="On the server, all user credentials are stored in a single database. This program facilitates interac..." alt="" coords="5,5,96,31"/>
+<area shape="rect" id="node2" title="This defines a user &#45; who is someone who can be added to the database." alt="" coords="144,5,196,31"/>
+</map>

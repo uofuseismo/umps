@@ -1,0 +1,4 @@
+<map id="UMPS::Authentication::User" name="UMPS::Authentication::User">
+<area shape="rect" id="node1" title="This class defines a user (row) in the user authentication table." alt="" coords="13,95,176,136"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="5,5,184,47"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="ZeroMQ Authentication Protocol" name="ZeroMQ Authentication Protocol">
+<area shape="rect" id="node1" href="$group___authentication___certificate.html" title="The class defining how credentials are stored and how they map to various security levels." alt="" coords="392,13,479,38"/>
+<area shape="rect" id="node2" title="Options for the interacting with the ZeroMQ authentication protocol." alt="" coords="171,5,344,45"/>
+<area shape="rect" id="node3" href="$group___authentication__chapter.html" title="Utilities for verifying connections." alt="" coords="5,13,123,38"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="UMPS::ProxyServices::Command::AvailableModulesRequest" name="UMPS::ProxyServices::Command::AvailableModulesRequest">
+<area shape="rect" id="node1" title="Requests the available modules that have been registered with the remote module monitoring service." alt="" coords="5,95,225,151"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="26,5,205,47"/>
+</map>
