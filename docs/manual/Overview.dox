@@ -3,17 +3,13 @@ namespace UMPS
 
 /** \mainpage notitle
 
-This is the API documentation for UMPS. 
+This is the API documentation for <a href="https://uofuseismo.github.io/umps/modules.html">UMPS</a>.
 
-Initial examples demonstrating UMPS usage are found at \link GettingStarted getting started \endlink.
+For those looking to build from source, read the \link TopicInstall install \endlink document.
+
+Initial examples demonstrating UMPS usage are found at .
 
 The main documentation is organized into \em chapters that detail key concepts and library capabilities.
-
-TODO - make CI artifact that uploads html as a tgz.  You can <a href="umps-doc.tgz">download</a> it as a tgz archive for offline reading.  
-
-For your first contact with UMPS, the best place is to look is at the \link GettingStarted getting started \endlink page that show you how to write and compile your first program with UMPS.
-
-Under the \subpage UserManual_CustomizingMessageTypes section, you will find discussions and examples on extending %UMPS's features and supporting custom message types.
 
 Finally, the search engine allows you to quickly find the documentation corresponding to the given class or function.
 

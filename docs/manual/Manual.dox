@@ -5,6 +5,7 @@ namespace UMPS {
 
 
 /** \page UserManual_Generalities General Topics
+  - \subpage TopicInstall
   - \subpage TopicMessages
   - \subpage TopicMessaging
   - \subpage TopicModules

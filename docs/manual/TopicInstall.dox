@@ -1,0 +1,103 @@
+namespace UMPS
+{
+/*!
+\page TopicInstall Installation
+\ingroup Install_chapter
+
+This page outlines strategies for building UMPS from source.  The details for these steps can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
+
+\subsubsection TopicInstall_OS Operating Systems
+
+Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  While I anticipate that there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and using the latest LLVM compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and send create a merge request when you get things working.
+
+\subsubsection TopicInstall_Prerequisites Prerequisites
+
+<p>
+An important consideration in UMPS is performance.  For this reason we rely on compiled languages.  To build the core package from source you need to satisfy the following dependencies:
+</p>
+
+  - C++20
+  - <a href="https://cmake.org/">CMake</a> v3.16 or greater for generation of Makefiles.
+  - <a href="https://www.boost.org/">Boost</a> v1.70 or greater which is a useful set of C++ libraries. 
+  - <a href="https://github.com/jedisct1/libsodium">libsodium</a> which provides cryptographic utilities for the ZeroMQ authenticator.
+  - <a href="https://www.sqlite.org/index.html">libsqlite3</a> which provides simple database functionality.
+  - <a href="https://zeromq.org/">ZeroMQ</a> v4+ which handles the underlying messaging. 
+  - <a href="https://github.com/zeromq/cppzmq">cppzmq</a> which is a header-only C++ interface to ZeroMQ.
+  - <a href="https://github.com/gabime/spdlog">SpdLog</a> for logging.
+  - <a href="https://github.com/nlohmann/json">nlohmann</a> which is a header-only JSON and CBOR (de)serializing utility.
+  - <a href="https://github.com/google/googletest">GTest</a> for unit testing.
+
+Additionally, you may wish to get pybind11 and Doxygen to build the Python wrappers and documentation
+
+  - <a href="https://github.com/pybind/pybind11">pybind11</a> for generating Python wrappers.
+  - <a href="https://www.doxygen.nl/index.html">Doxygen</a> for generating the documentation.
+
+After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.  
+
+
+\subsubsection TopicInstall_Compiling Compiling
+
+To compile UMPS without Python you may make a script in the root source directory that looks like:
+
+    #!/bin/bash
+    export CXX=g++
+    export BUILD_DIR=gcc_build
+    if [ -d ${BUILD_DIR} ]; then
+       rm -rf ${BUILD_DIR}
+    fi 
+    mkdir -p ${BUILD_DIR}
+    cd ${BUILD_DIR}
+    cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCMAKE_CXX_FLAGS="-Wall"
+
+For those wishing to also generate the Python bindings, the following script may be of interest
+
+    #!/bin/bash
+    export CXX=clang++
+    export BUILD_DIR=clang_build
+    if [ -d ${BUILD_DIR} ]; then
+       rm -rf ${BUILD_DIR}
+    fi
+    mkdir -p ${BUILD_DIR}
+    cd ${BUILD_DIR}
+    cmake .. \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=${CXX} \
+    -DCMAKE_CXX_FLAGS="-Wall" \
+    -DWRAP_PYTHON=ON \
+    -DPYTHON_EXECUTABLE=${HOME}/anaconda3/bin/python \
+    -DPYTHON_LIBRARIES=${HOME}/anaconda3/lib/libpython3.8.so
+
+Upon a successful CMake configuration, you would then descend into the appropriate directory, 
+
+    cd clang_build
+    make
+
+With any luck the code will successfully compile.  You can then test it 
+
+    make test
+
+And install
+
+    make install
+
+which may require sudo privileges. 
+
+\subsubsection TopicInstall_Documentation Generating the Documentation
+
+In this instance, you would descend into the docs path
+
+    cd docs
+    mkdir docs_build
+    cd docs_build
+    cmake ..
+    make docs
+    firefox html/index.html
+
+A word to the wise: DO NOT touch docs/Doxyfile.gh or docs/html.  These exist for the benefit of github pages.
+
+*/
+}
