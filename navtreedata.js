@@ -23,7 +23,23 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "UMPS", "index.html", [
-    [ "General Topics", "_user_manual__generalities.html", "_user_manual__generalities" ],
+    [ "Overview", "index.html", [
+      [ "Overview", "group___authentication___certificate.html#Topic_Authentication_Certificate_Overview", null ]
+    ] ],
+    [ "Installation", "_topic_install.html", [
+      [ "Overview", "group___messaging_patterns___pub_sub___pub_sub.html#Topic_Messaging_PubSub_Overview", [
+        [ "An Example:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_Example", null ],
+        [ "The Publisher:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_ExamplePublisher", null ],
+        [ "The Subscriber:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_ExampleSubscriber", null ],
+        [ "The Driver:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_ExampleDriver", null ]
+      ] ]
+    ] ],
+    [ "Networking Tips", "_topic_networking.html", [
+      [ "Networking Tips", "_topic_networking.html#TopicNetworking_Tips", [
+        [ "Your IP Address", "_topic_networking.html#TopicNetworking_Tipcs_ip", null ],
+        [ "firewalld", "_topic_networking.html#TopicNetworking_Tips_firewalld", null ]
+      ] ]
+    ] ],
     [ "Chapters", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -46,18 +62,18 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"class_u_m_p_s_1_1_earthworm_1_1_trace_buf2.html#a6cce457ad6d718304ef5108afadf67ea",
-"class_u_m_p_s_1_1_message_formats_1_1_text.html#a9f7cf6c92477706ac58f184a154f56a4",
-"class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html#a431a0eee77bf0a92abb4e2a2da55a5b2",
-"class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_subscriber.html",
-"class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber_options.html#ab6794189d6d0c2e65750e4a5406a8870",
-"class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_counter.html",
-"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_bulk_data_response.html#a167e3fe9c8abbf8603f7a9c6806cbcfd",
-"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_response.html#afa0be3bf617e954d1d8b7ebe1a2393ef",
-"class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_request.html#a27544d01422c91c6ded310d306b52d1d",
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_reply.html#aacd7fb0a76b2494bb2f77bf040013406",
-"dealer_8hpp_source.html",
-"standard_out_8hpp_source.html"
+"class_u_m_p_s_1_1_earthworm_1_1_trace_buf2.html#a5074c232a124bc68cf1f3ecdae69aeeb",
+"class_u_m_p_s_1_1_message_formats_1_1_text.html#a66adc6337267a4db9c525d1a7bfaaf9d",
+"class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html",
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_publisher_options.html#ab1a055067b9f9621f38fd6b15a596799",
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber_options.html#a8ae7f497bfa0ffcd6091149c9e2487ee",
+"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html#ae23e82c468055c5c1da38c33aed3f8f7",
+"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_bulk_data_response.html",
+"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_response.html#acf020444ed7b389232a64af79473da59",
+"class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_request.html",
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_reply.html#a5030eb0733aa2654001498fae2e1321a",
+"data_packet_8hpp_source.html",
+"services_2module_registry_2registration_response_8hpp_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

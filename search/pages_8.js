@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['understanding_20umps_1346',['Understanding UMPS',['../_user_manual__u_m_p_s.html',1,'UserManual_Generalities']]]
+  ['publisher_20subscriber_1346',['Publisher Subscriber',['../group___messaging_patterns___pub_sub.html',1,'']]],
+  ['publisher_20subscriber_1347',['Publisher Subscriber',['../group___messaging_patterns___pub_sub___pub_sub.html',1,'']]]
 ];

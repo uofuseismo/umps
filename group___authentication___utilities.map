@@ -1,5 +1,5 @@
 <map id="Utilities" name="Utilities">
 <area shape="rect" id="node1" title="Programs for interacting adding/updating/removing users from the users table and generating key&#45;pairs..." alt="" coords="171,5,244,31"/>
 <area shape="rect" id="node2" href="$group___authentication___utilities___user_table.html" title="On the server, all user credentials are stored in a single database. This program facilitates interac..." alt="" coords="292,5,383,31"/>
-<area shape="rect" id="node3" href="$group___authentication__chapter.html" title="Utilities for verifying connections." alt="" coords="5,5,123,31"/>
+<area shape="rect" id="node3" href="$group___authentication__chapter.html" title=" " alt="" coords="5,5,123,31"/>
 </map>

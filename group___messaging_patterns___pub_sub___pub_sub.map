@@ -1,4 +1,4 @@
 <map id="Publisher&#45;Subscriber" name="Publisher&#45;Subscriber">
-<area shape="rect" id="node1" title="The simplest communication mechanism. This pattern is not recommended for real applications." alt="" coords="208,5,363,31"/>
-<area shape="rect" id="node2" href="$group___messaging_patterns___pub_sub.html" title=" " alt="" coords="5,5,160,31"/>
+<area shape="rect" id="node1" title="The simplest communication mechanism which is included for pedagogical purposes only...." alt="" coords="208,13,363,38"/>
+<area shape="rect" id="node2" href="$group___messaging_patterns___pub_sub.html" title=" " alt="" coords="5,5,160,45"/>
 </map>
