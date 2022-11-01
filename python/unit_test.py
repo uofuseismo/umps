@@ -6,6 +6,9 @@ sys.path.append(os.getcwd())
 import umpspy
 import numpy as np
 
+################################################################################
+#                                  Logging                                     #
+################################################################################
 def test_logging_standard_out():
     so = umpspy.Logging.StandardOut(umpspy.Logging.Level.Debug)
     assert so.level == umpspy.Logging.Level.Debug, 'level is wrong'
@@ -28,8 +31,10 @@ def test_logging_daily_file():
     output_file = glob.glob("tempLogger*")
     assert len(output_file) == 1, 'log file not created'
     os.remove(output_file[0])
-   
     
+################################################################################
+#                                  Message Formats                             #
+################################################################################
 def test_message_formats_text():
     contents = "Contents"
     text = umpspy.MessageFormats.Text()
@@ -45,6 +50,33 @@ def test_message_formats_failure():
 
     assert failure.details == details, "details failed"
     assert failure.message_type == "UMPS::MessageFormats::Failure", "message type failed"
+
+################################################################################
+#                                 Authentication                               #
+################################################################################
+def test_authentication_username_password():
+    user = 'user'
+    password = 'password'
+    cred = umpspy.Authentication.UserNameAndPassword() 
+    cred.user_name = user
+    cred.password = password
+    assert cred.user_name == user, 'username failed'
+    assert cred.password == password, 'password failed'
+
+def test_authentication_keys():
+    public_key = "x"*40
+    private_key = "y"*40
+    metadata = 'something about this key'
+    keys = umpspy.Authentication.Keys()
+    keys.public_key = public_key
+    keys.private_key = private_key
+    keys.metadata = metadata
+    assert keys.public_key == public_key, 'public key failed'
+    assert keys.private_key == private_key, 'private key failed'
+    assert keys.metadata == metadata, 'metadata failed'
+
+def test_authentication_zap_options():
+    zap = umpspy.Authentication.ZAPOptions()
 
 """
 def test_messages_data_packet():
@@ -93,3 +125,6 @@ if __name__ == "__main__":
     test_logging_daily_file()
     test_message_formats_text()
     test_message_formats_failure()
+    test_authentication_username_password()
+    test_authentication_keys()
+    test_authentication_zap_options()

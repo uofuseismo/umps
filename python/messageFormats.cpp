@@ -71,6 +71,12 @@ UMPS::MessageFormats::Messages Messages::getNativeClass() const noexcept
     return *pImpl;
 }
 
+const UMPS::MessageFormats::Messages&
+    Messages::getNativeClassReference() const noexcept
+{
+    return *pImpl;
+}
+
 /// Destructor
 Messages::~Messages() = default;
 
@@ -161,6 +167,12 @@ Failure& Failure::operator=(Failure &&message) noexcept
     if (&message == this){return *this;}
     pImpl = std::move(message.pImpl);
     return *this;
+}
+
+const UMPS::MessageFormats::Failure&
+Failure::getNativeClassReference() const noexcept
+{
+    return *pImpl;
 }
 
 UMPS::MessageFormats::Failure Failure::getNativeClass() const noexcept
@@ -275,6 +287,12 @@ Text& Text::operator=(Text &&message) noexcept
     if (&message == this){return *this;}
     pImpl = std::move(message.pImpl);
     return *this;
+}
+
+const UMPS::MessageFormats::Text&
+Text::getNativeClassReference() const noexcept
+{
+    return *pImpl;
 }
 
 UMPS::MessageFormats::Text Text::getNativeClass() const noexcept

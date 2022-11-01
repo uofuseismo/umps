@@ -8,21 +8,21 @@
 using namespace UMPS::Python::Logging;
 
 ///--------------------------------------------------------------------------///
-///                              StandardOut Logger                               ///
+///                              StandardOut Logger                          ///
 ///--------------------------------------------------------------------------///
-/// C'tor
+/// Constructor
 StandardOut::StandardOut(const UMPS::Logging::Level level) :
     mLogger(level)
 {
 }
 
-/// Copy c'tor
+/// Copy constructor
 StandardOut::StandardOut(const StandardOut &logger)
 {
     *this = logger;
 }
 
-/// Move c'tor
+/// Move constructor
 StandardOut::StandardOut(StandardOut &&logger) noexcept
 {
     *this = std::move(logger);
@@ -174,8 +174,9 @@ void UMPS::Python::Logging::initialize(pybind11::module &m)
                UMPS::Logging::Level::Debug,
                "Everything is logged.");
     // Standard out logger
-    pybind11::class_<UMPS::Python::Logging::StandardOut>
-         stdOut(lm, "StandardOut");
+    pybind11::class_<UMPS::Python::Logging::StandardOut,
+                     std::shared_ptr<UMPS::Python::Logging::StandardOut>>
+        stdOut(lm, "StandardOut");
     stdOut.def(pybind11::init<> ());
     stdOut.def(pybind11::init<UMPS::Logging::Level> ());
     stdOut.doc() = R""""(
@@ -206,7 +207,9 @@ Properties :
     //------------------------------------------------------------------------//
     // Day logger
     // Standard out logger
-    pybind11::class_<UMPS::Python::Logging::DailyFile> daily(lm, "DailyFile");
+    pybind11::class_<UMPS::Python::Logging::DailyFile,
+                     std::shared_ptr<UMPS::Python::Logging::DailyFile>>
+        daily(lm, "DailyFile");
     daily.def(pybind11::init<> ());
     daily.doc() = R""""(
 This is an UMPS logger that writes messages to a file.  The file is rotated

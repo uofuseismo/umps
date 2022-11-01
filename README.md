@@ -17,7 +17,7 @@ This software was initially presented in On-premises Integration of Machine Lear
 The software is currently under active development.  An initial release is slated for mid-2023.  The major development pushes right now are:
 
    1. Improving remote monitoring of and interaction with modules.
-   2. Creating a doxygen-based manual. 
+   2. Creating a doxygen-based manual.
    3. Migrating some modules to a subsequent library - [Utah Real-Time Seismology](https://github.com/uofuseismo/urts).
    4. Continuous delivery.
 

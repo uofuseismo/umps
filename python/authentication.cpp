@@ -1,3 +1,6 @@
+#include <iostream>
+#include <array>
+#include <algorithm>
 #include "python/authentication.hpp"
 #include "umps/authentication/certificate/keys.hpp"
 #include "umps/authentication/certificate/userNameAndPassword.hpp"
@@ -58,6 +61,11 @@ Keys& Keys::operator=(Keys &&options) noexcept
 }
 
 /// Native class
+const UAuth::Certificate::Keys& Keys::getNativeClassReference() const noexcept
+{
+    return *pImpl;
+}
+
 UAuth::Certificate::Keys Keys::getNativeClass() const noexcept
 {
     return *pImpl;
@@ -72,10 +80,86 @@ void Keys::clear()
     pImpl->clear();
 }
 
-// Load the keys from a text file
+/// Load the keys from a text file
 void Keys::loadFromTextFile(const std::string &fileName)
 {
     pImpl->loadFromTextFile(fileName);
+}
+
+/// Public key
+void Keys::setPublicKey(const std::string &key)
+{
+    constexpr size_t length{40};
+    if (key.size() != length)
+    {
+        throw std::invalid_argument("Key must be length 40");
+    }
+    std::array<char, length + 1> work{'\0'};
+    std::copy(key.begin(), key.begin() + length, work.data());
+    pImpl->setPublicKey(work);
+}
+
+std::string Keys::getPublicKey() const
+{
+    constexpr size_t length{40};
+    if (!pImpl->havePublicKey())
+    {
+        throw std::runtime_error("Public key not set");
+    }
+    auto key = pImpl->getPublicTextKey();
+    std::string result;
+    result.resize(length);
+    std::copy(key.begin(), key.begin() + length, result.begin());
+    return result;
+}
+
+/// Private key
+void Keys::setPrivateKey(const std::string &key)
+{
+    constexpr size_t length{40};
+    if (key.size() != length)
+    {
+        throw std::invalid_argument("Key must be length 40");
+    }
+    std::array<char, length + 1> work{'\0'};
+    std::copy(key.begin(), key.begin() + length, work.data());
+    pImpl->setPrivateKey(work);
+}
+
+std::string Keys::getPrivateKey() const
+{
+    constexpr size_t length{40};
+    if (!pImpl->havePrivateKey())
+    {   
+        throw std::runtime_error("Private key not set");
+    }   
+    auto key = pImpl->getPrivateTextKey();
+    std::string result;
+    result.resize(length);
+    std::copy(key.begin(), key.begin() + length, result.begin());
+    return result;
+}
+
+/// Metadata
+void Keys::setMetadata(const std::string &metadata)
+{
+    pImpl->setMetadata(metadata);
+}
+
+std::string Keys::getMetadata() const
+{
+    return pImpl->getMetadata();
+}
+
+/// Write to text file
+void Keys::writePublicKeyToTextFile(const std::string &fileName) const
+{
+    pImpl->writePublicKeyToTextFile(fileName);
+}
+
+void Keys::writePrivateKeyToTextFile(const std::string &fileName) const
+{
+    pImpl->writePrivateKeyToTextFile(fileName);
 }
 
 ///--------------------------------------------------------------------------///
@@ -131,6 +215,12 @@ UserNameAndPassword& UserNameAndPassword::operator=(
 }
 
 UserNameAndPassword::~UserNameAndPassword() = default;
+
+const UAuth::Certificate::UserNameAndPassword&
+    UserNameAndPassword::getNativeClassReference() const noexcept
+{
+    return *pImpl;
+}
 
 UAuth::Certificate::UserNameAndPassword
     UserNameAndPassword::getNativeClass() const noexcept
@@ -220,6 +310,12 @@ ZAPOptions& ZAPOptions::operator=(ZAPOptions &&options) noexcept
 }
 
 /// Native class
+const UMPS::Authentication::ZAPOptions&
+    ZAPOptions::getNativeClassReference() const noexcept
+{
+    return *pImpl;
+}
+
 UMPS::Authentication::ZAPOptions
     ZAPOptions::getNativeClass() const noexcept
 {
@@ -293,14 +389,14 @@ bool ZAPOptions::isAuthenticationServer() const noexcept
 void ZAPOptions::setStonehouseClient(const Keys &serverKeysIn,
                                      const Keys &clientKeysIn)
 {
-    auto serverKeys = serverKeysIn.getNativeClass();
-    auto clientKeys = clientKeysIn.getNativeClass();
+    auto serverKeys = serverKeysIn.getNativeClassReference();
+    auto clientKeys = clientKeysIn.getNativeClassReference();
     pImpl->setStonehouseClient(serverKeys, clientKeys);
 }
 
 void ZAPOptions::setStonehouseServer(const Keys &serverKeysIn)
 {
-    auto serverKeys = serverKeysIn.getNativeClass();
+    auto serverKeys = serverKeysIn.getNativeClassReference();
     pImpl->setStonehouseServer(serverKeys);
 }
 
@@ -330,14 +426,38 @@ void UMPS::Python::Authentication::initialize(pybind11::module &m)
 This defines the public/private keypair used by the ZeroMQ Authentication Protocol (ZAP).
 Typically, a Stonehouse client will be used from the Python API.  In this case, the
 client's public and private keys must be known as well as the server's public key.
+
+Properties :
+    public_key : str
+        The public key.  This must be length 40.
+    private_key : str
+        The private key.  This must be length 40.
+    metadata : str
+        Some additional information about the keys.  For example, this may
+        be something like "Key intended for server a.host@domain"
 )"""";
     keys.def("__copy__", [](const Keys &self)
     {   
         return Keys(self);
     }); 
+    keys.def_property("public_key",
+                      &Keys::getPublicKey,
+                      &Keys::setPublicKey);
+    keys.def_property("private_key",
+                      &Keys::getPrivateKey,
+                      &Keys::setPrivateKey);
+    keys.def_property("metadata",
+                      &Keys::getMetadata,
+                      &Keys::setMetadata);
     keys.def("load",
              &Keys::loadFromTextFile,
              "Loads the credentials from a text file.");
+    keys.def("write_public_key_to_text_file",
+             &Keys::writePublicKeyToTextFile,
+             "Writes the public key to the specified file for use by UMPS.");
+    keys.def("write_private_key_to_text_file",
+             &Keys::writePublicKeyToTextFile,
+             "Writes the private key to the specified file for use by UMPS.");
     keys.def("clear",
              &Keys::clear,
              "Clears all stored credentials and releases memory.");

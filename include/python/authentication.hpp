@@ -19,6 +19,7 @@ public:
     UserNameAndPassword& operator=(const UserNameAndPassword &credentials);
     UserNameAndPassword& operator=(UserNameAndPassword &&credentials) noexcept;
     UserNameAndPassword& operator=(const UMPS::Authentication::Certificate::UserNameAndPassword &credentials);
+    [[nodiscard]] const UMPS::Authentication::Certificate::UserNameAndPassword& getNativeClassReference() const noexcept;
     [[nodiscard]] UMPS::Authentication::Certificate::UserNameAndPassword getNativeClass() const noexcept;
     void setPassword(const std::string &password);
     [[nodiscard]] std::string getPassword() const;
@@ -35,16 +36,45 @@ private:
 class Keys
 {
 public:
+    /// @brief Constructor.
     Keys();
+    /// @brief Copy constructor.
     Keys(const Keys &keys);
+    /// @brief Constructs this class from the native UMPS class.
     explicit Keys(const UMPS::Authentication::Certificate::Keys &keys);
+    /// @brief Move constructor.
     Keys(Keys &&keys) noexcept;
+    /// @brief Copy assignment.
     Keys& operator=(const Keys &keys);
+    /// @brief Move assignment.
     Keys& operator=(Keys &&keys) noexcept;
+    /// @brief Make a copy of this class from the native UMPS class.
     Keys& operator=(const UMPS::Authentication::Certificate::Keys &keys);
+    /// @result A reference to the native class.
+    [[nodiscard]] const UMPS::Authentication::Certificate::Keys& getNativeClassReference() const noexcept;
+    /// @result A copy of the native class.
     [[nodiscard]] UMPS::Authentication::Certificate::Keys getNativeClass() const noexcept;
+    /// @brief Destructor.
     ~Keys();
+    /// @brief Loads the key from a text file.
     void loadFromTextFile(const std::string &fileName);
+    /// @brief Sets the private key.
+    void setPrivateKey(const std::string &privateKey);
+    /// @result The private key.
+    [[nodiscard]] std::string getPrivateKey() const;
+    /// @brief Sets the public key.
+    void setPublicKey(const std::string &publicKey);
+    /// @result The public key.
+    [[nodiscard]] std::string getPublicKey() const;
+    /// @brief Sets metadata for the key.
+    void setMetadata(const std::string &metadata);
+    /// @result The keys metadata.
+    [[nodiscard]] std::string getMetadata() const; 
+    /// @brief Writes the public key to a text file.
+    void writePublicKeyToTextFile(const std::string &fileName) const;
+    /// @brief Writes the private key to a text file.
+    void writePrivateKeyToTextFile(const std::string &fileName) const;
+    /// @brief Resets the class.
     void clear();
 private:
     std::unique_ptr<UMPS::Authentication::Certificate::Keys> pImpl;
@@ -62,6 +92,7 @@ public:
     ZAPOptions& operator=(const ZAPOptions &options);
     ZAPOptions& operator=(ZAPOptions &&options) noexcept;
     ZAPOptions& operator=(const UMPS::Authentication::ZAPOptions &options);
+    [[nodiscard]] const UMPS::Authentication::ZAPOptions& getNativeClassReference() const noexcept;
     [[nodiscard]] UMPS::Authentication::ZAPOptions getNativeClass() const noexcept;
     ~ZAPOptions();
 

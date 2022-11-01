@@ -11,6 +11,8 @@ Initial examples demonstrating UMPS usage are found at .
 
 The main documentation is organized into \em chapters that detail key concepts and library capabilities.
 
+This software was initially presented in On-premises Integration of Machine Learning Models at UUSS - Distributed Computing and Messaging at the SSA 2022 conference and will be in a forthcoming Computers and Geosciences paper - UMPS: A Messaging system for seismological applications.  Development was funded by the State of Utah and the United States Geologic Survey (grant numbers coming soon...).
+
 Finally, the search engine allows you to quickly find the documentation corresponding to the given class or function.
 
 */

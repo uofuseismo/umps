@@ -41,9 +41,45 @@ public:
 /// @brief This is a specialized class that allows the user to create a message
 ///        in Python.
 /*
-class PyMessage : public UMPS::MessageFormats::IMessage, IMessage
+class PyMessage : public UMPS::MessageFormats::IMessage
 {
 public:
+    using IMessage::IMessage; // Inherit constructors.
+    // Trampoline getMessageType
+    std::string get_message_type() override
+    {
+        PYBIND11_OVERRIDE_PURE(
+            std::string,     /// Return type
+            IMessage,        /// Parent class
+            get_message_type /// Name of function in C++ (must match Python name) 
+        );
+    }
+    std::string get_message_version() override
+    {
+        PYBIND11_OVERRIDE_PURE(
+            std::string,         /// Return type
+            IMessage,            /// Parent class
+            get_message_version  /// Name of function in C++ (must match Python name)
+        );
+    }
+    [[nodiscard]] virtual std::unique_ptr<IMessage> clone() const = 0;
+    /// @brief Create a clone of this class.
+    [[nodiscard]] virtual std::unique_ptr<IMessage> createInstance() const noexcept = 0;
+    /// @brief Converts this class to a string representation.
+    /// @result The class expressed in string format.
+    /// @note Though the container is a string the message need not be
+    ///       human readable.
+    [[nodiscard]] virtual std::string toMessage() const = 0;
+    /// @brief Converst this message from a string representation to a class.
+    virtual void fromMessage(const std::string &message) = 0;
+    /// @brief Converts this message from a string representation to a class.
+    virtual void fromMessage(const char *data, size_t length) = 0;
+    /// @result The message type.
+    [[nodiscard]] virtual std::string getMessageType() const noexcept = 0;
+    /// @result The message version.
+    [[nodiscard]] virtual std::string getMessageVersion() const noexcept = 0;
+
+
     void setMessageType(const std::string &messageType);
     [[nodiscard]] getMessageType() const noexcept override;
 private:
@@ -66,6 +102,8 @@ public:
     Messages(Messages &&messages) noexcept;
     /// @brief Destructor.
     ~Messages();
+    /// @result A reference to the native class
+    [[nodiscard]] const UMPS::MessageFormats::Messages& getNativeClassReference() const noexcept;
     /// @result A copy of the underlying native class. 
     [[nodiscard]] UMPS::MessageFormats::Messages getNativeClass() const noexcept;
     /// @result Copy assignment operator.
@@ -111,6 +149,8 @@ public:
     Failure& operator=(Failure &&) noexcept;
     /// @brief Creates the message from a base class.
     void fromBaseClass(UMPS::MessageFormats::IMessage &message) override;
+    /// @result A reference to the native class.
+    [[nodiscard]] const UMPS::MessageFormats::Failure& getNativeClassReference() const noexcept;
     /// @result A copy of the native class.
     [[nodiscard]] UMPS::MessageFormats::Failure getNativeClass() const noexcept;
     /// @brief An instance of this class.
@@ -155,6 +195,8 @@ public:
     Text& operator=(Text &&) noexcept;
     /// @brief Creates the message from a base class.
     void fromBaseClass(UMPS::MessageFormats::IMessage &message) override;
+    /// @result A reference to the native class.
+    [[nodiscard]] const UMPS::MessageFormats::Text& getNativeClassReference() const noexcept;
     /// @result A copy of the native class.
     [[nodiscard]] UMPS::MessageFormats::Text getNativeClass() const noexcept;
     /// @brief An instance of this class.
