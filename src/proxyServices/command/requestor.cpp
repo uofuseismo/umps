@@ -15,12 +15,13 @@
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/context.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include "private/messaging/requestReplySocket.hpp"
-#include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyServices::Command;
 namespace UCommand = UMPS::Services::Command;
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
+namespace UMF = UMPS::MessageFormats;
 
 class Requestor::RequestorImpl : public ::RequestSocket 
 {
@@ -164,7 +165,7 @@ std::unique_ptr<AvailableModulesResponse>
     auto message = pImpl->request(requestMessage);
     if (message != nullptr)
     {
-        result = static_unique_pointer_cast<AvailableModulesResponse>
+        result = UMF::static_unique_pointer_cast<AvailableModulesResponse>
                  (std::move(message));
     }
     else
@@ -194,8 +195,8 @@ std::unique_ptr<UCommand::AvailableCommandsResponse>
             throw std::runtime_error("Failed to get commands.  Failed with: "
                                    + failureMessage.getDetails());
         } 
-        result = static_unique_pointer_cast<UCommand::AvailableCommandsResponse>
-                 (std::move(message));
+        result = UMF::static_unique_pointer_cast
+                 <UCommand::AvailableCommandsResponse> (std::move(message));
     }
     else
     {
@@ -223,7 +224,7 @@ std::unique_ptr<UCommand::CommandResponse>
             throw std::runtime_error("Failed to issue command.  Failed with: "
                                    + failureMessage.getDetails());
         }
-        result = static_unique_pointer_cast<UCommand::CommandResponse>
+        result = UMF::static_unique_pointer_cast<UCommand::CommandResponse>
                  (std::move(message));
     }
     else
@@ -253,7 +254,7 @@ std::unique_ptr<UCommand::TerminateResponse>
                 "Failed to issue terminate command.  Failed with: "
                + failureMessage.getDetails());
         }
-        result = static_unique_pointer_cast<UCommand::TerminateResponse>
+        result = UMF::static_unique_pointer_cast<UCommand::TerminateResponse>
                  (std::move(message));
     }
     else

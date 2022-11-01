@@ -299,7 +299,6 @@ void UMPS::Python::Messaging::initialize(pybind11::module &m)
     pybind11::class_<UMPS::Python::Messaging::Context,
                      std::shared_ptr<UMPS::Python::Messaging::Context>>
                     context(messagingModule, "Context");
-    context.attr("__doc__") = "Core messaging utilities for UMPS.";
     context.def(pybind11::init<int> ());
     context.doc() = R""""(
 This is an UMPS context.  Loosely speaking, a context is like a thread

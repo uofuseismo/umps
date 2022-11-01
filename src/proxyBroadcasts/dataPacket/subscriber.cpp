@@ -6,12 +6,13 @@
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyBroadcasts::DataPacket;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
+namespace UMF = UMPS::MessageFormats;
 
 template<class T>
 class Subscriber<T>::SubscriberImpl
@@ -140,7 +141,7 @@ std::unique_ptr<UMPS::MessageFormats::DataPacket<T>>
     Subscriber<T>::receive() const
 {
     auto dataPacket
-        = static_unique_pointer_cast<UMPS::MessageFormats::DataPacket<T>>
+        = UMF::static_unique_pointer_cast<UMPS::MessageFormats::DataPacket<T>>
           (pImpl->mSubscriber->receive());
     return dataPacket;
 }

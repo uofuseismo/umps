@@ -16,10 +16,11 @@
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/messaging/requestRouter/request.hpp"
 #include "umps/messaging/context.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include "private/messaging/requestReplySocket.hpp"
-#include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::Services::Command;
+namespace UMF = UMPS::MessageFormats;
 
 class Requestor::RequestorImpl : public RequestSocket
 {
@@ -145,7 +146,7 @@ std::unique_ptr<AvailableCommandsResponse> Requestor::getCommands() const
             throw std::runtime_error("Failed to get commands.  Failed with: "
                                    + failureMessage.getDetails());
         }
-        result = static_unique_pointer_cast<AvailableCommandsResponse>
+        result = UMF::static_unique_pointer_cast<AvailableCommandsResponse>
                  (std::move(message));
     }
     else

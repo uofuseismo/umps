@@ -15,7 +15,7 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/text.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
 {
@@ -30,6 +30,7 @@ const uint64_t idBase = 100;
 using namespace UMPS::Messaging::PublisherSubscriber;
 namespace XPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UAuth = UMPS::Authentication;
+namespace UMF = UMPS::MessageFormats;
 
 void proxy()
 {
@@ -135,7 +136,7 @@ void subscriber()
     {
         auto message = subscriber.receive();
         auto pickMessage
-            = static_unique_pointer_cast<UMPS::MessageFormats::Text>
+            = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Text>
               (std::move(message));
         EXPECT_EQ(pickMessage->getContents(),
                   std::to_string(idBase + i));

@@ -17,7 +17,6 @@
 #include "umps/logging/standardOut.hpp"
 #include "umps/authentication/service.hpp"
 #include "umps/messaging/context.hpp"
-#include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyServices::Incrementer;
 namespace UAuth = UMPS::Authentication;

@@ -13,13 +13,14 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/text.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UAuth = UMPS::Authentication;
+namespace UMF = UMPS::MessageFormats;
 
 // Faces internal network (sub)
 const std::string frontendAddress = "tcp://127.0.0.1:5555";
@@ -111,7 +112,7 @@ void client(int id)
         text.setContents(messageContents);
         auto message = client.request(text);
         auto response
-            = static_unique_pointer_cast<UMPS::MessageFormats::Text>
+            = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Text>
               (std::move(message));
         EXPECT_EQ(response->getContents(), responseMessageContents);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));

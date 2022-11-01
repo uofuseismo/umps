@@ -15,12 +15,13 @@
 #include "umps/messaging/routerDealer/request.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyServices::PacketCache;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
+namespace UMF = UMPS::MessageFormats;
 
 class Requestor::RequestorImpl
 {
@@ -107,7 +108,7 @@ void Requestor::disconnect()
 std::unique_ptr<SensorResponse> Requestor::request(const SensorRequest &request)
 {
     auto response 
-        = static_unique_pointer_cast<SensorResponse>
+        = UMF::static_unique_pointer_cast<SensorResponse>
           (pImpl->mRequestor->request(request));
     return response;
 }
@@ -124,7 +125,7 @@ std::unique_ptr<DataResponse<double>>
         throw std::invalid_argument("Location code not set");
     }
     auto response 
-        = static_unique_pointer_cast<DataResponse<double>>
+        = UMF::static_unique_pointer_cast<DataResponse<double>>
           (pImpl->mRequestor->request(request));
     return response;
 }
@@ -138,7 +139,7 @@ std::unique_ptr<BulkDataResponse<double>>
         throw std::invalid_argument("No requests");
     }
     auto response
-        = static_unique_pointer_cast<BulkDataResponse<double>>
+        = UMF::static_unique_pointer_cast<BulkDataResponse<double>>
           (pImpl->mRequestor->request(request));
     return response;
 }

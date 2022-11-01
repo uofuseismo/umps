@@ -21,7 +21,6 @@
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
-#include "private/staticUniquePointerCast.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 

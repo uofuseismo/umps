@@ -2,11 +2,12 @@
 #include <umps/messageFormats/messages.hpp>
 #include <umps/messageFormats/text.hpp>
 #include <umps/messageFormats/failure.hpp>
+#include <umps/messageFormats/staticUniquePointerCast.hpp>
 #include <pybind11/pybind11.h>
 #include "python/messageFormats.hpp"
-#include <private/staticUniquePointerCast.hpp>
 
 using namespace UMPS::Python::MessageFormats;
+namespace UMF = UMPS::MessageFormats;
 
 ///--------------------------------------------------------------------------///
 ///                                    IMessage                              ///
@@ -190,7 +191,7 @@ void Failure::fromBaseClass(UMPS::MessageFormats::IMessage &message)
                                     + " but given: "
                                     + message.getMessageType());
     }
-    pImpl = static_unique_pointer_cast<UMPS::MessageFormats::Failure>
+    pImpl = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Failure>
             (message.clone());
 }
 std::unique_ptr<IMessage> Failure::clone(
@@ -201,7 +202,7 @@ std::unique_ptr<IMessage> Failure::clone(
        throw std::invalid_argument("Expecting: " + pImpl->getMessageType()
                                  + " but got: " + message->getMessageType());
    }
-   auto copy = static_unique_pointer_cast<UMPS::MessageFormats::Failure>
+   auto copy = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Failure>
                (message->clone());
    return std::make_unique<Failure> (*copy);
 }
@@ -310,7 +311,7 @@ void Text::fromBaseClass(UMPS::MessageFormats::IMessage &message)
                                     + " but given: "
                                     + message.getMessageType());
     }
-    pImpl = static_unique_pointer_cast<UMPS::MessageFormats::Text>
+    pImpl = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Text>
             (message.clone());
 }
 
@@ -322,7 +323,7 @@ std::unique_ptr<IMessage> Text::clone(
         throw std::invalid_argument("Expecting: " + pImpl->getMessageType()
                                     + " but got: " + message->getMessageType());
     }
-    auto copy = static_unique_pointer_cast<UMPS::MessageFormats::Text>
+    auto copy = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Text>
             (message->clone());
     return std::make_unique<Text> (*copy);
 }

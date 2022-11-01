@@ -12,12 +12,13 @@
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messaging/routerDealer/request.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyServices::Incrementer;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
+namespace UMF = UMPS::MessageFormats;
 
 class Requestor::RequestorImpl
 {
@@ -104,7 +105,7 @@ void Requestor::disconnect()
 std::unique_ptr<ItemsResponse> Requestor::request(const ItemsRequest &request)
 {
     auto response 
-        = static_unique_pointer_cast<ItemsResponse>
+        = UMF::static_unique_pointer_cast<ItemsResponse>
           (pImpl->mRequestor->request(request));
     return response;
 }
@@ -115,7 +116,7 @@ std::unique_ptr<IncrementResponse>
 {
     if (!request.haveItem()){throw std::invalid_argument("Item not set");}
     auto response 
-        = static_unique_pointer_cast<IncrementResponse>
+        = UMF::static_unique_pointer_cast<IncrementResponse>
           (pImpl->mRequestor->request(request));
     return response;
 }

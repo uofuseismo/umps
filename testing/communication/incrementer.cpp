@@ -18,8 +18,6 @@
 #include "umps/proxyServices/incrementer/options.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
-#include "private/staticUniquePointerCast.hpp"
-#include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 
 namespace

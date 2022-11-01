@@ -9,10 +9,12 @@
 #include "umps/proxyServices/incrementer/incrementRequest.hpp"
 #include "umps/proxyServices/incrementer/incrementResponse.hpp"
 #include "umps/logging/standardOut.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
 {
+
+namespace UMF = UMPS::MessageFormats;
 
 const std::string serverHost = "tcp://*:5555"; 
 const std::string localHost  = "tcp://127.0.0.1:5555";
@@ -161,7 +163,7 @@ void client(int base)
         request.setIdentifier(base + i);
         auto message = client.request(request);
         auto response
-        = static_unique_pointer_cast<UMPS::ProxyServices::Incrementer::IncrementResponse>
+        = UMF::static_unique_pointer_cast<UMPS::ProxyServices::Incrementer::IncrementResponse>
           (std::move(message));
         EXPECT_EQ(request.getIdentifier(), response->getIdentifier());
         //std::cout << request.getIdentifier() << " " << response->getIdentifier() << std::endl;//Identifier() << std::endl;

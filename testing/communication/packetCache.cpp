@@ -25,7 +25,6 @@
 #include "umps/messaging/routerDealer/reply.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 */
-#include "private/staticUniquePointerCast.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
 

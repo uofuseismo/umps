@@ -7,12 +7,13 @@
 #include "umps/messaging/context.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
 #include "umps/logging/standardOut.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyBroadcasts::Heartbeat;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
+namespace UMF = UMPS::MessageFormats;
 
 class Subscriber::SubscriberImpl
 {
@@ -93,8 +94,8 @@ Subscriber::~Subscriber() = default;
 /// Receive
 std::unique_ptr<Status> Subscriber::receive() const
 {
-    auto status
-        = static_unique_pointer_cast<Status> (pImpl->mSubscriber->receive());
+    auto status = UMF::static_unique_pointer_cast<Status>
+                  (pImpl->mSubscriber->receive());
     return status;
 }
 

@@ -15,11 +15,12 @@
 #include "umps/messaging/requestRouter/requestOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/logging/standardOut.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include "private/isEmpty.hpp"
 
 namespace URequestRouter = UMPS::Messaging::RequestRouter;
 namespace UAuth = UMPS::Authentication;
+namespace UMF = UMPS::MessageFormats;
 using namespace UMPS::Services::ConnectionInformation;
 
 class Requestor::RequestorImpl
@@ -119,7 +120,7 @@ std::vector<Details> Requestor::getAllConnectionDetails() const
     if (message != nullptr)
     {
         auto detailsMessage
-            = static_unique_pointer_cast<AvailableConnectionsResponse>
+            = UMF::static_unique_pointer_cast<AvailableConnectionsResponse>
               (std::move(message));
         result = detailsMessage->getDetails();
     }

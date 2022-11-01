@@ -6,12 +6,13 @@
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/services/connectionInformation/socketDetails/subscriber.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyBroadcasts::Pick;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 namespace UPubSub = UMPS::Messaging::PublisherSubscriber;
+namespace UMF = UMPS::MessageFormats;
 
 class Subscriber::SubscriberImpl
 {
@@ -90,7 +91,7 @@ Subscriber::~Subscriber() = default;
 /// Receive
 std::unique_ptr<UMPS::MessageFormats::Pick> Subscriber::receive() const
 {
-    auto pick = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+    auto pick = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Pick>
                 (pImpl->mSubscriber->receive());
     return pick;
 }

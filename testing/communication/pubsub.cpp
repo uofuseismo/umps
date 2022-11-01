@@ -12,7 +12,7 @@
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
 {
@@ -22,6 +22,7 @@ const std::string localHost  = "tcp://127.0.0.1:5555";
 //const std::string localHost = "inproc://a"; //{"inproc://#1"};
 //const std::string localHost = "ipc://*";
 using namespace UMPS::Messaging::PublisherSubscriber;
+namespace UMF = UMPS::MessageFormats;
 
 /*
 template<typename TO, typename FROM>
@@ -138,7 +139,7 @@ auto context = std::make_shared<UMPS::Messaging::Context> (1);
 //    auto pickMessage = std::make_unique<UMPS::MessageFormats::Pick> ();
     auto message = subscriber.receive(); //dynamic_cast<UMPS::MessageFormats::Pick *> (subscriber.receive().get());
     auto pickMessage
-        = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+        = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Pick>
           (std::move(message));
     //std::cout << pickMessage->toJSON() << std::endl;
     EXPECT_NEAR(pickMessage->getTime(), pick.getTime(), 1.e-10);

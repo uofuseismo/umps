@@ -10,7 +10,6 @@
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
 #include "umps/services/connectionInformation/socketDetails/xPublisher.hpp"
 #include "umps/messaging/context.hpp"
-#include "private/staticUniquePointerCast.hpp"
 
 using namespace UMPS::ProxyBroadcasts::Pick;
 namespace UCI = UMPS::Services::ConnectionInformation;

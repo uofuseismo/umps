@@ -15,13 +15,14 @@
 #include "umps/messageFormats/messages.hpp"
 #include "umps/messageFormats/pick.hpp"
 #include "umps/logging/standardOut.hpp"
-#include "private/staticUniquePointerCast.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include "private/authentication/checkIP.hpp"
 #include <gtest/gtest.h>
 namespace
 {
 
 namespace UAuth = UMPS::Authentication;
+namespace UMF = UMPS::MessageFormats;
 
 /*
 TEST(Messaging, IAuthenticator)
@@ -358,7 +359,7 @@ void sub(const UAuth::Certificate::Keys serverCertificate)
 
     //std::this_thread::sleep_for(std::chrono::seconds(3));
     auto pickMessage
-        = static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+        = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Pick>
           (std::move(message));
     //std::cout << pickMessage->toJSON() << std::endl;
     auto pick = makePickMessage();

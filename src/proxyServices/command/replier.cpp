@@ -12,9 +12,9 @@
 #include "umps/services/command/terminateRequest.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/log.hpp"
+#include "umps/messageFormats/staticUniquePointerCast.hpp"
 //#include "private/messaging/replySocket.hpp"
 #include "private/messaging/requestReplySocket.hpp"
-#include "private/staticUniquePointerCast.hpp"
 #include "private/services/ping.hpp"
 #include "private/services/terminate.hpp"
 
@@ -25,6 +25,7 @@
 using namespace UMPS::ProxyServices::Command;
 namespace URouterDealer = UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
+namespace UMF = UMPS::MessageFormats;
 
 /// This is a router-router pattern so we put a request (or dealer) socket on
 /// the backend.
@@ -297,7 +298,7 @@ void Replier::initialize(const ReplierOptions &options)
         throw std::runtime_error("Registration request timed-out");
     }
     auto response
-        = static_unique_pointer_cast<RegistrationResponse>
+        = UMF::static_unique_pointer_cast<RegistrationResponse>
           (std::move(replyMessage));
     if (response->getReturnCode() != RegistrationReturnCode::Success)
     {
