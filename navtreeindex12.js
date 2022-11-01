@@ -1,11 +1,13 @@
 var NAVTREEINDEX12 =
 {
+"services_2module_registry_2registration_request_8hpp_source.html":[5,0,0,0,9,2,3],
 "services_2module_registry_2registration_response_8hpp_source.html":[5,0,0,0,9,2,4],
 "services_2module_registry_2service_8hpp_source.html":[5,0,0,0,9,2,5],
 "services_2service_8hpp_source.html":[5,0,0,0,9,3],
 "socket_options_8hpp_source.html":[5,0,0,0,5,6],
 "sqlite3_authenticator_8hpp_source.html":[5,0,0,0,0,5],
 "standard_out_8hpp_source.html":[5,0,0,0,3,4],
+"static_unique_pointer_cast_8hpp_source.html":[5,0,0,0,4,5],
 "status_8hpp_source.html":[5,0,0,0,7,1,6],
 "struct_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_interpolated_signal.html":[4,0,0,8,2,6],
 "struct_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_interpolated_signal.html#a32bce53e28badce85ea2afaaa3f5b5f9":[4,0,0,8,2,6,2],
@@ -14,7 +16,7 @@ var NAVTREEINDEX12 =
 "struct_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_interpolated_signal.html#afaeb7c27818067c398d1fcabe2024e2d":[4,0,0,8,2,6,3],
 "terminate_request_8hpp_source.html":[5,0,0,0,9,0,11],
 "terminate_response_8hpp_source.html":[5,0,0,0,9,0,12],
-"text_8hpp_source.html":[5,0,0,0,4,5],
+"text_8hpp_source.html":[5,0,0,0,4,6],
 "trace_buf2_8hpp_source.html":[5,0,0,0,2,0],
 "user_8hpp_source.html":[5,0,0,0,0,6],
 "user_name_and_password_8hpp_source.html":[5,0,0,0,0,0,2],
