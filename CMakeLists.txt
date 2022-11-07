@@ -3,7 +3,7 @@ project(UMPS VERSION 0.1.0 LANGUAGES CXX)
 enable_testing()
 
 # Some options
-option(EARTHWORM_DEFAULT_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" ON)
+#option(EARTHWORM_DEFAULT_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" ON)
 option(WRAP_PYTHON "Compile the Python bindings" OFF)
 
 # Ensure we have necessary packages 
@@ -19,15 +19,7 @@ find_package(nlohmann_json 3.2.0 REQUIRED)
 #find_package(Doxygen)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
-set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindZeroMQ REQUIRED)
-set(FindEarthworm_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
-set(FindTBB_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
-find_package(FindEarthworm)
-if (${FindEarthworm_FOUND})
-   find_package(FindMiniSEED)
-endif()
-#find_package(FindTBB)
 
 # Versioning information
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
