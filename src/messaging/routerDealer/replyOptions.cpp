@@ -25,8 +25,8 @@ public:
     > mCallback;
     std::string mAddress;
     std::string mRoutingIdentifier;
-    int mHighWaterMark = 0;
-    bool mHaveCallback = false;
+    int mHighWaterMark{0};
+    bool mHaveCallback{false};
 };
 
 /// C'tor

@@ -78,18 +78,18 @@ TEST(Messaging, PubSubPublisherOptions)
     const int zero = 0;
     const std::chrono::milliseconds timeOut{10};
     PublisherSubscriber::PublisherOptions options;
-    options.setAddress(address);
-    options.setHighWaterMark(highWaterMark);
-    options.setTimeOut(timeOut);
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(highWaterMark));
+    EXPECT_NO_THROW(options.setSendTimeOut(timeOut));
 
     PublisherSubscriber::PublisherOptions optionsCopy(options);
 
     EXPECT_EQ(optionsCopy.getAddress(), address);
-    EXPECT_EQ(optionsCopy.getHighWaterMark(), highWaterMark);
-    EXPECT_EQ(optionsCopy.getTimeOut(), timeOut);
+    EXPECT_EQ(optionsCopy.getSendHighWaterMark(), highWaterMark);
+    EXPECT_EQ(optionsCopy.getSendTimeOut(), timeOut);
 
     options.clear();
-    EXPECT_EQ(options.getHighWaterMark(), zero); 
+    EXPECT_EQ(options.getSendHighWaterMark(), zero); 
 }
 
 TEST(Messaging, PubSubSubscriberOptions)
@@ -106,24 +106,24 @@ TEST(Messaging, PubSubSubscriberOptions)
     const std::chrono::milliseconds timeOut{10};
     const int zero = 0;
     PublisherSubscriber::SubscriberOptions options;
-    options.setAddress(address);
-    options.setHighWaterMark(highWaterMark);
-    options.setMessageTypes(messageTypes);
-    options.setTimeOut(timeOut);
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setMessageTypes(messageTypes));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(highWaterMark));
+    EXPECT_NO_THROW(options.setReceiveTimeOut(timeOut));
 
     PublisherSubscriber::SubscriberOptions optionsCopy(options);
 
     EXPECT_EQ(optionsCopy.getAddress(), address);
-    EXPECT_EQ(optionsCopy.getHighWaterMark(), highWaterMark);
-    EXPECT_EQ(optionsCopy.getTimeOut(), timeOut);
+    EXPECT_EQ(optionsCopy.getReceiveHighWaterMark(), highWaterMark);
+    EXPECT_EQ(optionsCopy.getReceiveTimeOut(), timeOut);
     EXPECT_TRUE(optionsCopy.haveMessageTypes());
     auto messagesBack = optionsCopy.getMessageTypes();
     EXPECT_TRUE(messagesBack.contains(textMessage));
     EXPECT_TRUE(messagesBack.contains(packetMessage));
 
     options.clear();
-    EXPECT_EQ(options.getHighWaterMark(), zero); 
-    EXPECT_EQ(options.getTimeOut(), std::chrono::milliseconds{-1});
+    EXPECT_EQ(options.getReceiveHighWaterMark(), zero); 
+    EXPECT_EQ(options.getReceiveTimeOut(), std::chrono::milliseconds{-1});
     EXPECT_FALSE(options.haveMessageTypes());
 }
 

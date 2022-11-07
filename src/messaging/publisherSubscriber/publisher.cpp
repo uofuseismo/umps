@@ -20,35 +20,6 @@ namespace UAuth = UMPS::Authentication;
 class Publisher::PublisherImpl
 {
 public:
-    /*
-    /// C'tor
-    PublisherImpl(std::shared_ptr<zmq::context_t> context,
-                  std::shared_ptr<UMPS::Logging::ILog> logger,
-                  int )
-    {
-        // Ensure the context gets made
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        // Make the logger
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        // Now make the socket
-        mPublisher = std::make_unique<zmq::socket_t> (*mContext,
-                                                      zmq::socket_type::pub);
-    }
-    */
     /// C'tor
     PublisherImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
                   const std::shared_ptr<UMPS::Logging::ILog> &logger)
@@ -105,39 +76,21 @@ public:
     bool mInitialized = false;
 };
 
-/// C'tor
+/// Constructors
 Publisher::Publisher() :
     pImpl(std::make_unique<PublisherImpl> (nullptr, nullptr))
 {
 }
-
-/// C'tor
-/*
-Publisher::Publisher(std::shared_ptr<zmq::context_t> &context) :
-   pImpl(std::make_unique<PublisherImpl> (context, nullptr, 0))
-{
-}
-*/
 
 Publisher::Publisher(std::shared_ptr<UMPS::Messaging::Context> &context) :
    pImpl(std::make_unique<PublisherImpl> (context, nullptr))
 {
 }
 
-/// C'tor with logger
 Publisher::Publisher(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<PublisherImpl> (nullptr, logger))
 {
 }
-
-/// C'tor with context and logger
-/*
-Publisher::Publisher(std::shared_ptr<zmq::context_t> &context,
-                     std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<PublisherImpl> (context, logger, 0))
-{
-}
-*/
 
 Publisher::Publisher(std::shared_ptr<UMPS::Messaging::Context> &context,
                      std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -177,8 +130,8 @@ void Publisher::initialize(const PublisherOptions &options)
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mPublisher);
     // Set other options
-    auto timeOut = static_cast<int> (options.getTimeOut().count());
-    auto hwm = pImpl->mOptions.getHighWaterMark();
+    auto timeOut = static_cast<int> (options.getSendTimeOut().count());
+    auto hwm = pImpl->mOptions.getSendHighWaterMark();
     if (hwm > 0){pImpl->mPublisher->set(zmq::sockopt::sndhwm, hwm);}
     if (timeOut >= 0)
     {   

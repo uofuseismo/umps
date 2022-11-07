@@ -14,8 +14,8 @@ class SubscriberOptions<T>::SubscriberOptionsImpl
 public:
     SubscriberOptionsImpl()
     {
-        mOptions.setHighWaterMark(8192);
-        mOptions.setTimeOut(std::chrono::milliseconds{10});
+        mOptions.setReceiveHighWaterMark(8192);
+        mOptions.setReceiveTimeOut(std::chrono::milliseconds{10});
         UMPS::MessageFormats::Messages messageTypes;
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataPacketMessageType
             = std::make_unique<UMPS::MessageFormats::DataPacket<T>> (); 
@@ -100,13 +100,13 @@ bool SubscriberOptions<T>::haveAddress() const noexcept
 template<class T>
 void SubscriberOptions<T>::setHighWaterMark(const int hwm)
 {
-    pImpl->mOptions.setHighWaterMark(hwm);
+    pImpl->mOptions.setReceiveHighWaterMark(hwm);
 }
 
 template<class T>
 int SubscriberOptions<T>::getHighWaterMark() const noexcept
 {
-    return pImpl->mOptions.getHighWaterMark();
+    return pImpl->mOptions.getReceiveHighWaterMark();
 }
 
 /// ZAP options
@@ -127,13 +127,13 @@ template<class T>
 void SubscriberOptions<T>::setTimeOut(
     const std::chrono::milliseconds &timeOut) noexcept
 {
-    pImpl->mOptions.setTimeOut(timeOut);
+    pImpl->mOptions.setReceiveTimeOut(timeOut);
 }
 
 template<class T>
 std::chrono::milliseconds SubscriberOptions<T>::getTimeOut() const noexcept
 {
-    return pImpl->mOptions.getTimeOut();
+    return pImpl->mOptions.getReceiveTimeOut();
 }
 
 /// Gets the options

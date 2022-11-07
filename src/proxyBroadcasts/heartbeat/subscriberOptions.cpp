@@ -13,8 +13,8 @@ class SubscriberOptions::SubscriberOptionsImpl
 public:
     SubscriberOptionsImpl()
     {
-        mOptions.setHighWaterMark(1024);
-        mOptions.setTimeOut(std::chrono::milliseconds{10});
+        mOptions.setReceiveHighWaterMark(1024);
+        mOptions.setReceiveTimeOut(std::chrono::milliseconds{10});
         UMPS::MessageFormats::Messages messageTypes;
         std::unique_ptr<UMPS::MessageFormats::IMessage> statusMessageType
             = std::make_unique<Status> (); 
@@ -88,12 +88,12 @@ bool SubscriberOptions::haveAddress() const noexcept
 /// High water mark
 void SubscriberOptions::setHighWaterMark(const int hwm)
 {
-    pImpl->mOptions.setHighWaterMark(hwm);
+    pImpl->mOptions.setReceiveHighWaterMark(hwm);
 }
 
 int SubscriberOptions::getHighWaterMark() const noexcept
 {
-    return pImpl->mOptions.getHighWaterMark();
+    return pImpl->mOptions.getReceiveHighWaterMark();
 }
 
 /// ZAP options
@@ -111,12 +111,12 @@ UAuth::ZAPOptions SubscriberOptions::getZAPOptions() const noexcept
 void SubscriberOptions::setTimeOut(
     const std::chrono::milliseconds timeOut) noexcept
 {
-    pImpl->mOptions.setTimeOut(timeOut);
+    pImpl->mOptions.setReceiveTimeOut(timeOut);
 }
 
 std::chrono::milliseconds SubscriberOptions::getTimeOut() const noexcept
 {
-    return pImpl->mOptions.getTimeOut();
+    return pImpl->mOptions.getReceiveTimeOut();
 }
 
 /// Gets the options

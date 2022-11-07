@@ -63,7 +63,7 @@ SubscriberOptions&
 }
 
 /// High water mark
-void SubscriberOptions::setHighWaterMark(const int hwm)
+void SubscriberOptions::setReceiveHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
@@ -72,7 +72,7 @@ void SubscriberOptions::setHighWaterMark(const int hwm)
     pImpl->mHighWaterMark = hwm;
 }
 
-int SubscriberOptions::getHighWaterMark() const noexcept
+int SubscriberOptions::getReceiveHighWaterMark() const noexcept
 {
     return pImpl->mHighWaterMark;
 }
@@ -110,7 +110,7 @@ UAuth::ZAPOptions SubscriberOptions::getZAPOptions() const noexcept
 }
 
 /// Timeout
-void SubscriberOptions::setTimeOut(
+void SubscriberOptions::setReceiveTimeOut(
     const std::chrono::milliseconds &timeOut) noexcept
 {
     constexpr std::chrono::milliseconds zero{0};
@@ -124,7 +124,7 @@ void SubscriberOptions::setTimeOut(
     }
 }
 
-std::chrono::milliseconds SubscriberOptions::getTimeOut() const noexcept
+std::chrono::milliseconds SubscriberOptions::getReceiveTimeOut() const noexcept
 {
     return pImpl->mTimeOut;
 }

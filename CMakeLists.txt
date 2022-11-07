@@ -27,33 +27,33 @@ find_package(FindEarthworm)
 if (${FindEarthworm_FOUND})
    find_package(FindMiniSEED)
 endif()
-find_package(FindTBB)
+#find_package(FindTBB)
 
 # Versioning information
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
                ${CMAKE_SOURCE_DIR}/include/umps/version.hpp)
 
 
-set(BUILD_EW FALSE)
-set(BUILD_MSEED FALSE)
-if (${FindEarthworm_FOUND})
-   message("Will compile Earthworm")
-   set(BUILD_EW TRUE)
-   if (${EARTHWORM_DEFAULT_TRACEBUF2_SIZE})
-      set(EARTHWORM_TRACEBUF2_SIZE 4096)
-   endif()
-   message("Using TraceBuf2 message size of: " ${EARTHWORM_TRACEBUF2_SIZE})
-   if (${FindMiniSEED_FOUND})
-      message("Will compile earthworm modules with MiniSEED")
-      set(BUILD_MSEED TRUE)
-      add_compile_definitions(WITH_MSEED)
-   endif()
-endif()
-if (${FindTBB_FOUND})
-   message("Building with TBB")
-   set(BUILD_TBB TRUE)
-   add_compile_definitions(WITH_TBB)
-endif() 
+#set(BUILD_EW FALSE)
+#set(BUILD_MSEED FALSE)
+#if (${FindEarthworm_FOUND})
+#   message("Will compile Earthworm")
+#   set(BUILD_EW TRUE)
+#   if (${EARTHWORM_DEFAULT_TRACEBUF2_SIZE})
+#      set(EARTHWORM_TRACEBUF2_SIZE 4096)
+#   endif()
+#   message("Using TraceBuf2 message size of: " ${EARTHWORM_TRACEBUF2_SIZE})
+#   if (${FindMiniSEED_FOUND})
+#      message("Will compile earthworm modules with MiniSEED")
+#      set(BUILD_MSEED TRUE)
+#      add_compile_definitions(WITH_MSEED)
+#   endif()
+#endif()
+#if (${FindTBB_FOUND})
+#   message("Building with TBB")
+#   set(BUILD_TBB TRUE)
+#   add_compile_definitions(WITH_TBB)
+#endif() 
 
 set(VERSION_SRC
     src/version.cpp)
@@ -172,17 +172,17 @@ set(MODULES_LIBSRC
     src/proxyServices/command/requestorOptions.cpp
     src/proxyServices/command/replier.cpp
     src/proxyServices/command/replierOptions.cpp
-    src/proxyServices/incrementer/counter.cpp
-    src/proxyServices/incrementer/incrementRequest.cpp
-    src/proxyServices/incrementer/incrementResponse.cpp
-    src/proxyServices/incrementer/itemsRequest.cpp
-    src/proxyServices/incrementer/itemsResponse.cpp
-    src/proxyServices/incrementer/options.cpp
-    src/proxyServices/incrementer/requestor.cpp
-    src/proxyServices/incrementer/requestorOptions.cpp
-    src/proxyServices/incrementer/replier.cpp
-    src/proxyServices/incrementer/replierOptions.cpp
-    src/proxyServices/incrementer/service.cpp
+    #src/proxyServices/incrementer/counter.cpp
+    #src/proxyServices/incrementer/incrementRequest.cpp
+    #src/proxyServices/incrementer/incrementResponse.cpp
+    #src/proxyServices/incrementer/itemsRequest.cpp
+    #src/proxyServices/incrementer/itemsResponse.cpp
+    #src/proxyServices/incrementer/options.cpp
+    #src/proxyServices/incrementer/requestor.cpp
+    #src/proxyServices/incrementer/requestorOptions.cpp
+    #src/proxyServices/incrementer/replier.cpp
+    #src/proxyServices/incrementer/replierOptions.cpp
+    #src/proxyServices/incrementer/service.cpp
     src/proxyServices/packetCache/bulkDataRequest.cpp
     src/proxyServices/packetCache/bulkDataResponse.cpp
     src/proxyServices/packetCache/circularBuffer.cpp
@@ -200,13 +200,13 @@ set(MODULES_LIBSRC
     src/proxyServices/packetCache/requestor.cpp
     src/proxyServices/packetCache/requestorOptions.cpp
     src/modules/operator/readZAPOptions.cpp)
-if (${BUILD_EW})
-   set(EARTHWORM_SRC 
-       src/earthworm/traceBuf2.cpp
-       src/earthworm/waveRing.cpp
-       src/logging/logit.cpp
-       )
-endif()
+#if (${BUILD_EW})
+#   set(EARTHWORM_SRC 
+#       src/earthworm/traceBuf2.cpp
+#       src/earthworm/waveRing.cpp
+#       src/logging/logit.cpp
+#       )
+#endif()
 
 set(BUILD_SHARED_LIBS YES)
 add_library(umps ${VERSION_SRC} ${LOGGING_SRC} ${MESSAGING_SRC}
@@ -226,19 +226,19 @@ target_include_directories(umps
                            PRIVATE Boost::program_options
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/umps>
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
-if (${BUILD_TBB})
-    target_include_directories(umps PRIVATE ${TBB_INCLUDE_DIR})
-    target_link_libraries(umps PRIVATE ${TBB_LIBRARY})
-endif()
-if (${BUILD_EW})
-    target_include_directories(umps PRIVATE ${EARTHWORM_INCLUDE_DIR})
-    target_link_libraries(umps PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
-    target_compile_definitions(umps PRIVATE WITH_EARTHWORM=1)
-    if (${BUILD_MSEED})
-       target_include_directories(umps PRIVATE ${MINISEED_INCLUDE_DIR})
-       target_link_libraries(umps PRIVATE ${MINISEED_LIBRARY})
-    endif()
-endif()
+#if (${BUILD_TBB})
+#    target_include_directories(umps PRIVATE ${TBB_INCLUDE_DIR})
+#    target_link_libraries(umps PRIVATE ${TBB_LIBRARY})
+#endif()
+#if (${BUILD_EW})
+#    target_include_directories(umps PRIVATE ${EARTHWORM_INCLUDE_DIR})
+#    target_link_libraries(umps PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
+#    target_compile_definitions(umps PRIVATE WITH_EARTHWORM=1)
+#    if (${BUILD_MSEED})
+#       target_include_directories(umps PRIVATE ${MINISEED_INCLUDE_DIR})
+#       target_link_libraries(umps PRIVATE ${MINISEED_LIBRARY})
+#    endif()
+#endif()
 
 ##########################################################################################
 #                                         Modules                                        #
@@ -265,15 +265,15 @@ target_include_directories(packetCache
 target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
 
 
-add_executable(incrementer src/modules/services/incrementer.cpp)
-set_target_properties(incrementer PROPERTIES
-                      CXX_STANDARD 20
-                      CXX_STANDARD_REQUIRED YES
-                      CXX_EXTENSIONS NO)
-target_include_directories(incrementer
-                           PRIVATE ${CMAKE_SOURCE_DIR}/include
-                           PRIVATE Boost::program_options)
-target_link_libraries(incrementer PRIVATE umps Boost::program_options Threads::Threads)
+#add_executable(incrementer src/modules/services/incrementer.cpp)
+#set_target_properties(incrementer PROPERTIES
+#                      CXX_STANDARD 20
+#                      CXX_STANDARD_REQUIRED YES
+#                      CXX_EXTENSIONS NO)
+#target_include_directories(incrementer
+#                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+#                           PRIVATE Boost::program_options)
+#target_link_libraries(incrementer PRIVATE umps Boost::program_options Threads::Threads)
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
 set_target_properties(uKeyPair PROPERTIES
@@ -305,18 +305,18 @@ target_include_directories(uCommand
                            PRIVATE Boost::program_options)
 target_link_libraries(uCommand PRIVATE Boost::program_options umps)
 
-if (${BUILD_EW})
-    add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
-    set_target_properties(broadcastWaveRing PROPERTIES
-                          CXX_STANDARD 20
-                          CXX_STANDARD_REQUIRED YES 
-                          CXX_EXTENSIONS NO) 
-    target_include_directories(broadcastWaveRing
-                               PRIVATE ${CMAKE_SOURCE_DIR}/include
-                               PRIVATE Boost::program_options)
-
-    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options Threads::Threads)
-endif()
+#if (${BUILD_EW})
+#    add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
+#    set_target_properties(broadcastWaveRing PROPERTIES
+#                          CXX_STANDARD 20
+#                          CXX_STANDARD_REQUIRED YES 
+#                          CXX_EXTENSIONS NO) 
+#    target_include_directories(broadcastWaveRing
+#                               PRIVATE ${CMAKE_SOURCE_DIR}/include
+#                               PRIVATE Boost::program_options)
+#
+#    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options Threads::Threads)
+#endif()
 
 ##########################################################################################
 #                                      Python Wrapping                                   #
@@ -382,16 +382,16 @@ set(TEST_SRC
     #testing/broadcasts/pick.cpp
     testing/services/proxyOptions.cpp
     testing/services/packetCache.cpp
-    testing/services/incrementer.cpp
+    #testing/services/incrementer.cpp
     testing/services/command.cpp
     testing/services/connectionInformation.cpp
     #testing/services/moduleRegistry.cpp
     testing/messaging/authentication.cpp
     testing/messaging/options.cpp
     )
-if (${BUILD_EW})
-   set(TEST_SRC ${TEST_SRC} testing/messageFormats/earthworm.cpp)
-endif()
+#if (${BUILD_EW})
+#   set(TEST_SRC ${TEST_SRC} testing/messageFormats/earthworm.cpp)
+#endif()
 add_executable(unitTests ${TEST_SRC})
 set_target_properties(unitTests PROPERTIES
                       CXX_STANDARD 20
@@ -408,12 +408,12 @@ set(TEST_COMMUNICATION_SRC
     testing/communication/remoteCommand.cpp
     testing/communication/pubsub.cpp
     testing/communication/authentication.cpp
-    testing/communication/requestRouter.cpp
+    #testing/communication/requestRouter.cpp
     testing/communication/xpubxsub.cpp
     testing/communication/routerDealer.cpp
     testing/communication/dataPacket.cpp
     testing/communication/packetCache.cpp
-    testing/communication/incrementer.cpp
+    #testing/communication/incrementer.cpp
 )
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
 set_target_properties(commTests PROPERTIES

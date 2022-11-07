@@ -1,5 +1,5 @@
-#ifndef UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBEROPTIONS_HPP
-#define UMPS_MESSAGING_PUBLISHERSUBSCRIBER_SUBSCRIBEROPTIONS_HPP
+#ifndef UMPS_MESSAGING_PUBLISHER_SUBSCRIBER_SUBSCRIBER_OPTIONS_HPP
+#define UMPS_MESSAGING_PUBLISHER_SUBSCRIBER_SUBSCRIBER_OPTIONS_HPP
 #include <memory>
 #include <string>
 #include <chrono>
@@ -73,15 +73,15 @@ public:
     /// @result True indicates the message types have been set.
     [[nodiscard]] bool haveMessageTypes() const noexcept;
 
-    /// @brief This sets a hard limit on the maximum number of messages that
-    ///        can be queued.
+    /// @brief Influences the number of messages that can be queued on the
+    ///        socket.
     /// @param[in] highWaterMark  The high limit on the maximum number of
     ///                           messages that this socket can queue.
     ///                           0 sets this to "infinite."  
     /// @throws std::invalid_argument if the high water mark is negative. 
-    void setHighWaterMark(int highWaterMark);
+    void setReceiveHighWaterMark(int highWaterMark);
     /// @result The high water mark.  The default is 0 (infinite).
-    [[nodiscard]] int getHighWaterMark() const noexcept;
+    [[nodiscard]] int getReceiveHighWaterMark() const noexcept;
 
     /// @brief If the subscriber waits the timeOut length of time before
     ///        receiving a message then it will return without a message.
@@ -91,9 +91,9 @@ public:
     ///                      zero then the subscriber will immediately return.
     ///                      If this is negative then the subscriber will wait
     ///                      indefinitely until a message is received.
-    void setTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
+    void setReceiveTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
     /// @result The time out duration in milliseconds.
-    [[nodiscard]] std::chrono::milliseconds getTimeOut() const noexcept;
+    [[nodiscard]] std::chrono::milliseconds getReceiveTimeOut() const noexcept;
     /// @}
 
     /// @name ZeroMQ Authentication Protocol Options

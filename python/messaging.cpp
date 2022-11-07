@@ -142,24 +142,24 @@ PublisherSubscriber::SubscriberOptions::getZAPOptions() const noexcept
 void PublisherSubscriber::SubscriberOptions::setReceiveTimeOut(
     const std::chrono::milliseconds &timeOut) noexcept
 {
-    pImpl->setTimeOut(timeOut);
+    pImpl->setReceiveTimeOut(timeOut);
 }
 
 std::chrono::milliseconds
 PublisherSubscriber::SubscriberOptions::getReceiveTimeOut() const noexcept
 {
-    return pImpl->getTimeOut();
+    return pImpl->getReceiveTimeOut();
 }
 
 /// HWM
 void PublisherSubscriber::SubscriberOptions::setReceiveHighWaterMark(const int hwm)
 {
-    pImpl->setHighWaterMark(hwm);
+    pImpl->setReceiveHighWaterMark(hwm);
 }
 
 int PublisherSubscriber::SubscriberOptions::getReceiveHighWaterMark() const noexcept
 {
-    return pImpl->getHighWaterMark();
+    return pImpl->getReceiveHighWaterMark();
 }
 
 /// Reset class
@@ -246,24 +246,24 @@ std::string PublisherSubscriber::PublisherOptions::getAddress() const
 void PublisherSubscriber::PublisherOptions::setSendTimeOut(
     const std::chrono::milliseconds &timeOut) noexcept
 {
-    pImpl->setTimeOut(timeOut);
+    pImpl->setSendTimeOut(timeOut);
 }
 
 std::chrono::milliseconds
 PublisherSubscriber::PublisherOptions::getSendTimeOut() const noexcept
 {
-    return pImpl->getTimeOut();
+    return pImpl->getSendTimeOut();
 }
 
 /// HWM
 void PublisherSubscriber::PublisherOptions::setSendHighWaterMark(const int hwm)
 {
-    pImpl->setHighWaterMark(hwm);
+    pImpl->setSendHighWaterMark(hwm);
 }
 
 int PublisherSubscriber::PublisherOptions::getSendHighWaterMark() const noexcept
 {
-    return pImpl->getHighWaterMark();
+    return pImpl->getSendHighWaterMark();
 }
 
 /// ZAP options

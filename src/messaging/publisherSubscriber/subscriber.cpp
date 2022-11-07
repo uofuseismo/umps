@@ -19,34 +19,6 @@ namespace UAuth = UMPS::Authentication;
 class Subscriber::SubscriberImpl
 {
 public:
-    /*
-    /// C'tor
-    SubscriberImpl(std::shared_ptr<zmq::context_t> context,
-                   std::shared_ptr<UMPS::Logging::ILog> logger, int)
-    {
-        // Ensure the context gets made
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        // Make the logger
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        // Now make the socket
-        mSubscriber = std::make_unique<zmq::socket_t> (*mContext,
-                                                       zmq::socket_type::sub);
-    }
-    */
     /// C'tor
     SubscriberImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
                    const std::shared_ptr<UMPS::Logging::ILog> &logger)
@@ -104,18 +76,11 @@ public:
     bool mConnected = false;
 };
 
-/// C'tor
+/// Constructors
 Subscriber::Subscriber() :
     pImpl(std::make_unique<SubscriberImpl> (nullptr, nullptr))
 {
 }
-
-/*
-Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context) :
-   pImpl(std::make_unique<SubscriberImpl> (context, nullptr, 0))
-{
-}
-*/
 
 Subscriber::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context) :
     pImpl(std::make_unique<SubscriberImpl> (context, nullptr)) 
@@ -126,14 +91,6 @@ Subscriber::Subscriber(std::shared_ptr<UMPS::Logging::ILog> &logger) :
     pImpl(std::make_unique<SubscriberImpl> (nullptr, logger))
 {
 }
-
-/*
-Subscriber::Subscriber(std::shared_ptr<zmq::context_t> &context,
-                       std::shared_ptr<UMPS::Logging::ILog> &logger) :
-    pImpl(std::make_unique<SubscriberImpl> (context, logger, 0))
-{
-}
-*/
 
 Subscriber::Subscriber(std::shared_ptr<UMPS::Messaging::Context> &context,
                        std::shared_ptr<UMPS::Logging::ILog> &logger) :
@@ -177,8 +134,8 @@ void Subscriber::initialize(const SubscriberOptions &options)
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mSubscriber);
     // Set other options
-    auto timeOut = static_cast<int> (options.getTimeOut().count());
-    auto hwm = pImpl->mOptions.getHighWaterMark();
+    auto timeOut = static_cast<int> (options.getReceiveTimeOut().count());
+    auto hwm = pImpl->mOptions.getReceiveHighWaterMark();
     if (hwm > 0){pImpl->mSubscriber->set(zmq::sockopt::rcvhwm, hwm);}
     if (timeOut >= 0)
     {

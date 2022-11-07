@@ -62,7 +62,7 @@ PublisherOptions&
 }
 
 /// High water mark
-void PublisherOptions::setHighWaterMark(const int hwm)
+void PublisherOptions::setSendHighWaterMark(const int hwm)
 {
     if (hwm < 0)
     {
@@ -71,7 +71,7 @@ void PublisherOptions::setHighWaterMark(const int hwm)
     pImpl->mHighWaterMark = hwm;
 }
 
-int PublisherOptions::getHighWaterMark() const noexcept
+int PublisherOptions::getSendHighWaterMark() const noexcept
 {
     return pImpl->mHighWaterMark;
 }
@@ -109,7 +109,7 @@ UAuth::ZAPOptions PublisherOptions::getZAPOptions() const noexcept
 }
 
 /// Timeout
-void PublisherOptions::setTimeOut(
+void PublisherOptions::setSendTimeOut(
     const std::chrono::milliseconds &timeOut) noexcept
 {
     constexpr std::chrono::milliseconds zero{0};
@@ -123,7 +123,7 @@ void PublisherOptions::setTimeOut(
     }
 }
 
-std::chrono::milliseconds PublisherOptions::getTimeOut() const noexcept
+std::chrono::milliseconds PublisherOptions::getSendTimeOut() const noexcept
 {
     return pImpl->mTimeOut;
 }

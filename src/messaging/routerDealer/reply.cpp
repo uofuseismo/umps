@@ -143,14 +143,15 @@ void Reply::initialize(const ReplyOptions &options)
     pImpl->mOptions = options;
     // Get zap options
     auto zapOptions = pImpl->mOptions.getZAPOptions();
-    auto highWaterMark = pImpl->mOptions.getHighWaterMark();
+    auto receiveHighWaterMark = pImpl->mOptions.getHighWaterMark();
+    auto sendHighWaterMark = pImpl->mOptions.getHighWaterMark();
     auto address = pImpl->mOptions.getAddress();
     // Set the ZAP options
     zapOptions.setSocketOptions(&*pImpl->mServer);
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
     // Set the high water mark
-    pImpl->mServer->set(zmq::sockopt::rcvhwm, highWaterMark);
-    pImpl->mServer->set(zmq::sockopt::sndhwm, highWaterMark);
+    pImpl->mServer->set(zmq::sockopt::rcvhwm, receiveHighWaterMark);
+    pImpl->mServer->set(zmq::sockopt::sndhwm, sendHighWaterMark);
     if (pImpl->mOptions.haveRoutingIdentifier())
     {
         pImpl->mServer->set(zmq::sockopt::routing_id,
