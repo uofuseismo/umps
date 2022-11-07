@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_u_m_p_s_1_1_earthworm_1_1_wave_ring.html" title="A utility for reading from an Earthworm wave ring." alt="" coords="5,5,217,32"/>
+<area shape="rect" id="node1" href="$class_u_m_p_s_1_1_logging_1_1_i_log.html" title="This is an abstract base class that allows users to define custom loggers to be used in other applica..." alt="" coords="5,56,160,83"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_logging_1_1_daily_file.html" title="A daily logger as implemented by the SpdLog library." alt="" coords="220,5,404,32"/>
+<area shape="rect" id="node3" href="$class_u_m_p_s_1_1_logging_1_1_log_it.html" title="A wrapper to Earthworm&#39;s logit facility. If this library is not compiled against Earthworm then all c..." alt="" coords="233,56,391,83"/>
+<area shape="rect" id="node4" href="$class_u_m_p_s_1_1_logging_1_1_standard_out.html" title="A naive logger that prints all messages to standard out and, in the case of errors,..." alt="" coords="208,107,416,133"/>
 </map>

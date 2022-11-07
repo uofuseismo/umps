@@ -139,16 +139,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7d35aed7609f7275c8bdb65c73b70b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a739822e2abe578127a53194ac74447b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a739822e2abe578127a53194ac74447b1">haveMessageTypes</a> () const noexcept</td></tr>
 <tr class="separator:a739822e2abe578127a53194ac74447b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfe2650c5fe4416bbcba7fd3c1ef862f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#acfe2650c5fe4416bbcba7fd3c1ef862f">setHighWaterMark</a> (int highWaterMark)</td></tr>
-<tr class="memdesc:acfe2650c5fe4416bbcba7fd3c1ef862f"><td class="mdescLeft">&#160;</td><td class="mdescRight">This sets a hard limit on the maximum number of messages that can be queued.  <a href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#acfe2650c5fe4416bbcba7fd3c1ef862f">More...</a><br /></td></tr>
-<tr class="separator:acfe2650c5fe4416bbcba7fd3c1ef862f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad88820c5040877c873cb7dbff44442cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#ad88820c5040877c873cb7dbff44442cc">getHighWaterMark</a> () const noexcept</td></tr>
-<tr class="separator:ad88820c5040877c873cb7dbff44442cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa29dbefe02082af1990d1b2a90ad670b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#aa29dbefe02082af1990d1b2a90ad670b">setTimeOut</a> (const std::chrono::milliseconds &amp;timeOut) noexcept</td></tr>
-<tr class="memdesc:aa29dbefe02082af1990d1b2a90ad670b"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the subscriber waits the timeOut length of time before receiving a message then it will return without a message. This is useful when the subscriber thread has other responsibilities.  <a href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#aa29dbefe02082af1990d1b2a90ad670b">More...</a><br /></td></tr>
-<tr class="separator:aa29dbefe02082af1990d1b2a90ad670b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee43a1676c7f16c78ef3fde7910636a3"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#aee43a1676c7f16c78ef3fde7910636a3">getTimeOut</a> () const noexcept</td></tr>
-<tr class="separator:aee43a1676c7f16c78ef3fde7910636a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84d2acfb517a491653e35765a63de14b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a84d2acfb517a491653e35765a63de14b">setReceiveHighWaterMark</a> (int highWaterMark)</td></tr>
+<tr class="memdesc:a84d2acfb517a491653e35765a63de14b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Influences the number of messages that can be queued on the socket.  <a href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a84d2acfb517a491653e35765a63de14b">More...</a><br /></td></tr>
+<tr class="separator:a84d2acfb517a491653e35765a63de14b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afec9366152fb132e2c68b2d0493aae91"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#afec9366152fb132e2c68b2d0493aae91">getReceiveHighWaterMark</a> () const noexcept</td></tr>
+<tr class="separator:afec9366152fb132e2c68b2d0493aae91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f56fc0b085bd9df6c7b5d26aefe31c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a1f56fc0b085bd9df6c7b5d26aefe31c2">setReceiveTimeOut</a> (const std::chrono::milliseconds &amp;timeOut) noexcept</td></tr>
+<tr class="memdesc:a1f56fc0b085bd9df6c7b5d26aefe31c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the subscriber waits the timeOut length of time before receiving a message then it will return without a message. This is useful when the subscriber thread has other responsibilities.  <a href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a1f56fc0b085bd9df6c7b5d26aefe31c2">More...</a><br /></td></tr>
+<tr class="separator:a1f56fc0b085bd9df6c7b5d26aefe31c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc40bbf51b4cc898594b6eb2d03d150c"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#acc40bbf51b4cc898594b6eb2d03d150c">getReceiveTimeOut</a> () const noexcept</td></tr>
+<tr class="separator:acc40bbf51b4cc898594b6eb2d03d150c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">ZeroMQ Authentication Protocol Options</div></td></tr>
 <tr class="memitem:ac795a4a77c03598b53a82721aeda2f57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#ac795a4a77c03598b53a82721aeda2f57">setZAPOptions</a> (const <a class="el" href="class_u_m_p_s_1_1_authentication_1_1_z_a_p_options.html">Authentication::ZAPOptions</a> &amp;options)</td></tr>
 <tr class="memdesc:ac795a4a77c03598b53a82721aeda2f57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the ZAP options to be used when configuring the socket.  <a href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#ac795a4a77c03598b53a82721aeda2f57">More...</a><br /></td></tr>
@@ -257,32 +257,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ad88820c5040877c873cb7dbff44442cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad88820c5040877c873cb7dbff44442cc">&#9670;&nbsp;</a></span>getHighWaterMark()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int UMPS::Messaging::PublisherSubscriber::SubscriberOptions::getHighWaterMark </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The high water mark. The default is 0 (infinite). </dd></dl>
-
-</div>
-</div>
 <a id="a7d35aed7609f7275c8bdb65c73b70b3c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7d35aed7609f7275c8bdb65c73b70b3c">&#9670;&nbsp;</a></span>getMessageTypes()</h2>
 
@@ -307,8 +281,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="aee43a1676c7f16c78ef3fde7910636a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee43a1676c7f16c78ef3fde7910636a3">&#9670;&nbsp;</a></span>getTimeOut()</h2>
+<a id="afec9366152fb132e2c68b2d0493aae91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afec9366152fb132e2c68b2d0493aae91">&#9670;&nbsp;</a></span>getReceiveHighWaterMark()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -317,7 +291,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::chrono::milliseconds UMPS::Messaging::PublisherSubscriber::SubscriberOptions::getTimeOut </td>
+          <td class="memname">int UMPS::Messaging::PublisherSubscriber::SubscriberOptions::getReceiveHighWaterMark </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The high water mark. The default is 0 (infinite). </dd></dl>
+
+</div>
+</div>
+<a id="acc40bbf51b4cc898594b6eb2d03d150c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc40bbf51b4cc898594b6eb2d03d150c">&#9670;&nbsp;</a></span>getReceiveTimeOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::milliseconds UMPS::Messaging::PublisherSubscriber::SubscriberOptions::getReceiveTimeOut </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -505,40 +505,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="acfe2650c5fe4416bbcba7fd3c1ef862f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfe2650c5fe4416bbcba7fd3c1ef862f">&#9670;&nbsp;</a></span>setHighWaterMark()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void UMPS::Messaging::PublisherSubscriber::SubscriberOptions::setHighWaterMark </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>highWaterMark</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>This sets a hard limit on the maximum number of messages that can be queued. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">highWaterMark</td><td>The high limit on the maximum number of messages that this socket can queue. 0 sets this to "infinite." <br  />
- </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if the high water mark is negative. <br  />
- </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a5bb3bce9825647cf0b09e05e316efe25"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5bb3bce9825647cf0b09e05e316efe25">&#9670;&nbsp;</a></span>setMessageTypes()</h2>
 
@@ -565,8 +531,42 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="aa29dbefe02082af1990d1b2a90ad670b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa29dbefe02082af1990d1b2a90ad670b">&#9670;&nbsp;</a></span>setTimeOut()</h2>
+<a id="a84d2acfb517a491653e35765a63de14b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84d2acfb517a491653e35765a63de14b">&#9670;&nbsp;</a></span>setReceiveHighWaterMark()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UMPS::Messaging::PublisherSubscriber::SubscriberOptions::setReceiveHighWaterMark </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>highWaterMark</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Influences the number of messages that can be queued on the socket. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">highWaterMark</td><td>The high limit on the maximum number of messages that this socket can queue. 0 sets this to "infinite." <br  />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if the high water mark is negative. <br  />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1f56fc0b085bd9df6c7b5d26aefe31c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f56fc0b085bd9df6c7b5d26aefe31c2">&#9670;&nbsp;</a></span>setReceiveTimeOut()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -575,7 +575,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void UMPS::Messaging::PublisherSubscriber::SubscriberOptions::setTimeOut </td>
+          <td class="memname">void UMPS::Messaging::PublisherSubscriber::SubscriberOptions::setReceiveTimeOut </td>
           <td>(</td>
           <td class="paramtype">const std::chrono::milliseconds &amp;&#160;</td>
           <td class="paramname"><em>timeOut</em></td><td>)</td>

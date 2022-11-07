@@ -2,7 +2,6 @@ var dir_c591884bd638e2293e54b546c0aa3073 =
 [
     [ "authentication", "dir_9af23124c770af3cb758a642f19577c4.html", "dir_9af23124c770af3cb758a642f19577c4" ],
     [ "broadcasts", "dir_12cb90c3735a703eb173023653331299.html", "dir_12cb90c3735a703eb173023653331299" ],
-    [ "earthworm", "dir_90430ca4e37ea338aea8887fa8b148f5.html", "dir_90430ca4e37ea338aea8887fa8b148f5" ],
     [ "logging", "dir_664777776daad7a3a5e4c1a2f63c39f7.html", "dir_664777776daad7a3a5e4c1a2f63c39f7" ],
     [ "messageFormats", "dir_b28687d4bf7cbd6c24d998b70196d7b8.html", "dir_b28687d4bf7cbd6c24d998b70196d7b8" ],
     [ "messaging", "dir_59431e698987213421d132c3e095724b.html", "dir_59431e698987213421d132c3e095724b" ],
