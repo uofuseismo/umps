@@ -7,8 +7,9 @@ var class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options =
     [ "clear", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a6986f40e7db42c3445d5eaa5bb9a96bc", null ],
     [ "getAddress", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a970572ee1fc7e1ab62f62b33eb7e710d", null ],
     [ "getCallback", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a25ce100f1eafae918019c9879c09fbb4", null ],
-    [ "getHighWaterMark", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a45d1b470c101f856f3de69a0fa0b6611", null ],
+    [ "getReceiveHighWaterMark", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a461e8657743fa91239ab510291e24e3e", null ],
     [ "getRoutingIdentifier", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#ac3afc3fb8c998c2cda1b2be67da6af93", null ],
+    [ "getSendHighWaterMark", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a197235183eb260bc07a7632d116f4ad0", null ],
     [ "getZAPOptions", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a9c539a8e54ac9437c795bad291df6d6a", null ],
     [ "haveAddress", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#ac0c299bc3bf9a002a4138f333f0b3c29", null ],
     [ "haveCallback", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a0b59120993229a9932ecd788083b0e30", null ],
@@ -17,7 +18,8 @@ var class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options =
     [ "operator=", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#ae4a0e035e72534503f4db911f483da91", null ],
     [ "setAddress", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a69606052deea1d13bae68e6cc3f98e83", null ],
     [ "setCallback", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a51f47b5095e63efeb893797fb392c740", null ],
-    [ "setHighWaterMark", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#aebf8599887f3c9e48c19bcf29c7f95ba", null ],
+    [ "setReceiveHighWaterMark", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#aba0f4ce375223646cf89c1e8cdabb47e", null ],
     [ "setRoutingIdentifier", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#afdbee34b3f88b1f5c83ca66eca8c4bfb", null ],
+    [ "setSendHighWaterMark", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#ac25f95836ea3d5ff2832c131b8588e0b", null ],
     [ "setZAPOptions", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a3e81c87d66ee01598dc8dd1155542f85", null ]
 ];
