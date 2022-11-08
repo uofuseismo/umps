@@ -28,6 +28,12 @@ var NAVTREE =
     ] ],
     [ "Installation", "_topic_install.html", [
       [ "Overview", "group___messaging_patterns___pub_sub___pub_sub.html#Topic_Messaging_PubSub_Overview", [
+        [ "uOperator", "group___applications__chapter.html#uOperator", [
+          [ "Operating Systems", "_topic_install.html#TopicInstall_OS", null ],
+          [ "Prerequisites", "_topic_install.html#TopicInstall_Prerequisites", null ],
+          [ "Compiling", "_topic_install.html#TopicInstall_Compiling", null ],
+          [ "Generating the Documentation", "_topic_install.html#TopicInstall_Documentation", null ]
+        ] ],
         [ "An Example:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_Example", null ],
         [ "The Publisher:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_ExamplePublisher", null ],
         [ "The Subscriber:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_ExampleSubscriber", null ],

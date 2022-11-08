@@ -2,6 +2,9 @@ var annotated_dup =
 [
     [ "UMPS", null, [
       [ "Authentication", null, [
+        [ "uOperator", "group___applications__chapter.html#uOperator", [
+          [ "uOperator", "group___applications__chapter.html#uOperator", null ]
+        ] ],
         [ "Certificate", null, [
           [ "Keys", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_keys.html", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_keys" ],
           [ "UserNameAndPassword", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_user_name_and_password.html", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_user_name_and_password" ]

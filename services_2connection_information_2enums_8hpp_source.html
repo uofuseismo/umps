@@ -96,47 +96,61 @@ $(document).ready(function(){initNavTree('services_2connection_information_2enum
 <div class="title">enums.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_ENUMS_HPP</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define UMPS_SERVICES_CONNECTIONINFORMATION_ENUMS_HPP</span></div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_ENUMS_HPP</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define UMPS_SERVICES_CONNECTION_INFORMATION_ENUMS_HPP</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="keyword">namespace </span>UMPS::Services::ConnectionInformation</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;{</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">enum class</span> ConnectionType</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    Service,   </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    Broadcast  </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;};</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">enum class</span> ConnectOrBind</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    Connect,  </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    Bind      </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;};</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">enum class</span> SocketType</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    Unknown,     </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    Request,     </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    Dealer,      </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    Reply,       </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    Response,    </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    Router,      </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    Publisher,   </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    XPublisher,  </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    Subscriber,  </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    XSubscriber, </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="class_proxy.html">Proxy</a>        </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;};</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">enum class</span> ReturnCode</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;{</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    SUCCESS = 0,           </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    NO_ITEM = 1,           </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    INVALID_MESSAGE = 2,   </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    ALGORITHM_FAILURE = 3  </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="group___applications___operator.html#gad45ef6550bebe768224ea36e6bba31fe">    9</a></span>&#160;<span class="keyword">enum class</span> <a class="code" href="group___applications___operator.html#gad45ef6550bebe768224ea36e6bba31fe">ConnectionType</a></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <a class="code" href="group___applications___operator.html#ggad45ef6550bebe768224ea36e6bba31feac2ba7e785c49050f48da9aacc45c2b85">Service</a>,   </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <a class="code" href="group___applications___operator.html#ggad45ef6550bebe768224ea36e6bba31feabe55b6387170df0ca68f41225268e842">Broadcast</a>  </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;};</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">enum class</span> ConnectOrBind</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    Connect,  </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    Bind      </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;};</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="group___applications___operator.html#gae30f32e64f53967cac8d851f01602a67">   28</a></span>&#160;<span class="keyword">enum class</span> <a class="code" href="group___applications___operator.html#gae30f32e64f53967cac8d851f01602a67">SocketType</a></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a>,     </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a15c2d85f1fae22a3c3a0594510a1f611">Request</a>,     </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67af01d4c0d85ece9b196ab4b8efc16c92b">Dealer</a>,      </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a25d8df6e580905091a0d5ef5b9e05bf0">Reply</a>,       </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ad64ed3e9c10229648e069f56e32f4c8e">Response</a>,    </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a9cd72ef099fa539e3b793ffb8d36f0bd">Router</a>,      </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">Publisher</a>,   </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab46a5abdffc8d4830aa4b007fef46f0f">XPublisher</a>,  </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">Subscriber</a>,  </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab92ed014a910ddc782d980aa84055104">XSubscriber</a>, </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="class_proxy.html">Proxy</a>        </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;};</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">enum class</span> ReturnCode</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;{</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    SUCCESS = 0,           </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    NO_ITEM = 1,           </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    INVALID_MESSAGE = 2,   </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    ALGORITHM_FAILURE = 3  </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67af01d4c0d85ece9b196ab4b8efc16c92b"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67af01d4c0d85ece9b196ab4b8efc16c92b">UMPS::Services::ConnectionInformation::SocketType::Dealer</a></div><div class="ttdeci">@ Dealer</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67ab46a5abdffc8d4830aa4b007fef46f0f"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab46a5abdffc8d4830aa4b007fef46f0f">UMPS::Services::ConnectionInformation::SocketType::XPublisher</a></div><div class="ttdeci">@ XPublisher</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggad45ef6550bebe768224ea36e6bba31feac2ba7e785c49050f48da9aacc45c2b85"><div class="ttname"><a href="group___applications___operator.html#ggad45ef6550bebe768224ea36e6bba31feac2ba7e785c49050f48da9aacc45c2b85">UMPS::Services::ConnectionInformation::ConnectionType::Service</a></div><div class="ttdeci">@ Service</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67a25d8df6e580905091a0d5ef5b9e05bf0"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a25d8df6e580905091a0d5ef5b9e05bf0">UMPS::Services::ConnectionInformation::SocketType::Reply</a></div><div class="ttdeci">@ Reply</div></div>
 <div class="ttc" id="aclass_proxy_html"><div class="ttname"><a href="class_proxy.html">Proxy</a></div><div class="ttdoc">This is the intermediary that allows communication between a client and a backend service.</div></div>
+<div class="ttc" id="agroup___applications___operator_html_gad45ef6550bebe768224ea36e6bba31fe"><div class="ttname"><a href="group___applications___operator.html#gad45ef6550bebe768224ea36e6bba31fe">UMPS::Services::ConnectionInformation::ConnectionType</a></div><div class="ttdeci">ConnectionType</div><div class="ttdoc">Defines the connection type.</div><div class="ttdef"><b>Definition:</b> enums.hpp:9</div></div>
+<div class="ttc" id="agroup___applications___operator_html_gae30f32e64f53967cac8d851f01602a67"><div class="ttname"><a href="group___applications___operator.html#gae30f32e64f53967cac8d851f01602a67">UMPS::Services::ConnectionInformation::SocketType</a></div><div class="ttdeci">SocketType</div><div class="ttdoc">This defines the socket type. Note, ZeroMQ may have more socket types than what is enumerated here....</div><div class="ttdef"><b>Definition:</b> enums.hpp:28</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a88183b946cc5f0e8c96b2e66e1c74a7e">UMPS::Services::ConnectionInformation::SocketType::Unknown</a></div><div class="ttdeci">@ Unknown</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67ad64ed3e9c10229648e069f56e32f4c8e"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ad64ed3e9c10229648e069f56e32f4c8e">UMPS::Services::ConnectionInformation::SocketType::Response</a></div><div class="ttdeci">@ Response</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67a9cd72ef099fa539e3b793ffb8d36f0bd"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a9cd72ef099fa539e3b793ffb8d36f0bd">UMPS::Services::ConnectionInformation::SocketType::Router</a></div><div class="ttdeci">@ Router</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggad45ef6550bebe768224ea36e6bba31feabe55b6387170df0ca68f41225268e842"><div class="ttname"><a href="group___applications___operator.html#ggad45ef6550bebe768224ea36e6bba31feabe55b6387170df0ca68f41225268e842">UMPS::Services::ConnectionInformation::ConnectionType::Broadcast</a></div><div class="ttdeci">@ Broadcast</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">UMPS::Services::ConnectionInformation::SocketType::Subscriber</a></div><div class="ttdeci">@ Subscriber</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">UMPS::Services::ConnectionInformation::SocketType::Publisher</a></div><div class="ttdeci">@ Publisher</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67a15c2d85f1fae22a3c3a0594510a1f611"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a15c2d85f1fae22a3c3a0594510a1f611">UMPS::Services::ConnectionInformation::SocketType::Request</a></div><div class="ttdeci">@ Request</div></div>
+<div class="ttc" id="agroup___applications___operator_html_ggae30f32e64f53967cac8d851f01602a67ab92ed014a910ddc782d980aa84055104"><div class="ttname"><a href="group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab92ed014a910ddc782d980aa84055104">UMPS::Services::ConnectionInformation::SocketType::XSubscriber</a></div><div class="ttdeci">@ XSubscriber</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
