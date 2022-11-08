@@ -89,12 +89,13 @@ UAuth::ZAPOptions ReplierOptions::getZAPOptions() const noexcept
 /// High water mark
 void ReplierOptions::setHighWaterMark(const int highWaterMark)
 {
-    pImpl->mOptions.setHighWaterMark(highWaterMark);
+    pImpl->mOptions.setSendHighWaterMark(highWaterMark);
+    pImpl->mOptions.setReceiveHighWaterMark(highWaterMark);
 }
 
 int ReplierOptions::getHighWaterMark() const noexcept
 {
-    return pImpl->mOptions.getHighWaterMark();
+    return pImpl->mOptions.getSendHighWaterMark();
 }
 
 /// Reply options

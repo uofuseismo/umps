@@ -281,21 +281,24 @@ TEST(Messaging, RouterDealerRequestOptions)
 TEST(Messaging, RouterDealerReplyOptions)
 {
     RouterDealer::ReplyOptions options; 
-    int hwm = 240;
+    const int sendhwm{240};
+    const int recvhwm{250}; 
     const std::string address = "tcp://127.0.0.2:5556";
     const std::string routingIdentifier{"tempIdentifier"};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
     std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
         = std::make_unique<UMPS::MessageFormats::Text> ();
-    EXPECT_NO_THROW(options.setHighWaterMark(hwm));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendhwm));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(recvhwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setRoutingIdentifier(routingIdentifier));
     //EXPECT_NO_THROW(options.addMessageFormat(textMessage));
     
     RouterDealer::ReplyOptions optionsCopy(options); 
-    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
+    EXPECT_EQ(optionsCopy.getSendHighWaterMark(), sendhwm);
+    EXPECT_EQ(optionsCopy.getReceiveHighWaterMark(), recvhwm);
     EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(optionsCopy.getAddress(), address);
@@ -303,7 +306,8 @@ TEST(Messaging, RouterDealerReplyOptions)
     EXPECT_EQ(optionsCopy.getRoutingIdentifier(), routingIdentifier);
 
     options.clear();
-    EXPECT_EQ(options.getHighWaterMark(), 0);
+    EXPECT_EQ(options.getSendHighWaterMark(), 0);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
     EXPECT_FALSE(options.haveRoutingIdentifier());
 }
 

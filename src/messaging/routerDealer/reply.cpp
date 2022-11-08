@@ -11,18 +11,21 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/standardOut.hpp"
+#include "private/messaging/requestReplySocket.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
-class Reply::ReplyImpl
+class Reply::ReplyImpl : public ::ReplySocket
 {
 public:
     /// C'tor
     ReplyImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
-              const std::shared_ptr<UMPS::Logging::ILog> &logger)
+              const std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        ::ReplySocket(context, logger) 
     {
+/*
         if (context == nullptr)
         {
             mContext = std::make_shared<UMPS::Messaging::Context> (1);
@@ -45,7 +48,9 @@ public:
                           (mContext->getContext());
         mServer = std::make_unique<zmq::socket_t> (*contextPtr,
                                                    zmq::socket_type::rep);
+*/
     }
+/*
     /// Indicate that the service is started/running
     void setRunning(const bool running = true)
     {
@@ -77,27 +82,9 @@ public:
         mSocketDetails.setSecurityLevel(mSecurityLevel);
         mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::Bind);
     }
+*/
 ///private:
-    mutable std::mutex mMutex;
-    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
-    std::unique_ptr<zmq::socket_t> mServer{nullptr};
-    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::function<
-          std::unique_ptr<UMPS::MessageFormats::IMessage>
-          (const std::string &messageType, const void *contents,
-           const size_t length)
-    > mCallback;
     ReplyOptions mOptions;
-    UCI::SocketDetails::Reply mSocketDetails;
-    std::string mAddress;
-    // Timeout in milliseconds.  0 means return immediately while -1 means
-    // wait indefinitely.
-    std::chrono::milliseconds mPollTimeOutMS{10};
-    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
-    bool mHaveCallback{false};
-    bool mRunning{false};
-    bool mConnected{false};
-    bool mInitialized{false};
 };
 
 /// C'tor
@@ -140,12 +127,23 @@ void Reply::initialize(const ReplyOptions &options)
     // Hangup
     pImpl->mOptions.clear();
     pImpl->disconnect();
+    // Connect
+    pImpl->connect(options);
     pImpl->mOptions = options;
-    // Get zap options
+/*    
+    auto socketOptions = pImpl->convertSocketOptions(options);
+    pImpl->connect(socketOptions);
+    socketOptions.setAddress(options.getAddress());
+    socketOptions.setCallback(options.getCallback());
+    socketOptions.setZAPOptions(options.getZAPOptions());
+    socketOptions.setSendHighWaterMark(options.getHighWaterMark());
+    socketOptions.setReceiveHighWaterMark(options.getHighWaterMark());
+    if (pImpl->mOptions.haveRoutingIdentifier())
+    socketOptions.setRoutingIdentifier();
+    auto address = pImpl->mOptions.getAddress();
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     auto receiveHighWaterMark = pImpl->mOptions.getHighWaterMark();
     auto sendHighWaterMark = pImpl->mOptions.getHighWaterMark();
-    auto address = pImpl->mOptions.getAddress();
     // Set the ZAP options
     zapOptions.setSocketOptions(&*pImpl->mServer);
     pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
@@ -172,15 +170,16 @@ void Reply::initialize(const ReplyOptions &options)
         pImpl->mAddress = pImpl->mServer->get(zmq::sockopt::last_endpoint);
     }
     pImpl->mConnected = true; 
-    pImpl->updateSocketDetails();
+//    pImpl->updateSocketDetails();
     pImpl->mInitialized = true;
     pImpl->mLogger->debug("Reply initialized!");
+*/
 }
 
 /// Initialized?
 bool Reply::isInitialized() const noexcept
 {
-    return pImpl->mInitialized;
+    return pImpl->isConnected();
 }
 
 /// Starts the service
@@ -190,6 +189,8 @@ void Reply::start()
     {
          throw std::runtime_error("Reply not initialized");
     }
+    pImpl->start();
+/*
     stop(); // Make sure service is stopped
     // Poll setup
     constexpr size_t nPollItems = 1;
@@ -264,6 +265,7 @@ void Reply::start()
         }
     }
     pImpl->mLogger->debug("Service loop finished");
+*/
 }
 
 /// Is the router running?
@@ -285,5 +287,5 @@ UCI::SocketDetails::Reply Reply::getSocketDetails() const
     {
         throw std::runtime_error("Reply not initialized");
     }
-    return pImpl->mSocketDetails;
+    return pImpl->getSocketDetails();
 }

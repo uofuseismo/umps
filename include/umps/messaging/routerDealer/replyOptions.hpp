@@ -101,16 +101,34 @@ public:
     [[nodiscard]] bool haveCallback() const noexcept;
     /// @}
 
+    /// @name ZeroMQ Authentication Protocol
+    /// @{
+
+    /// @brief Sets the ZAP options.
+    /// @param[in] options  The ZAP options which will define the socket's
+    ///                     security protocol.
+    void setZAPOptions(const Authentication::ZAPOptions &options);
+    /// @result The ZAP options.
+    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
+    /// @}
+
     /// @name High Water Mark
     /// @{
 
-    /// @param[in] highWaterMark  The approximate max number of messages to 
-    ///                           cache on the socket.  0 will set this to
+    /// @param[in] highWaterMark  The approximate max number of request messages
+    ///                           to cache on the socket.  0 will set this to
     ///                           "infinite".
     /// @throws std::invalid_argument if highWaterMark is negative.
-    void setHighWaterMark(int highWaterMark);
-    /// @result The high water mark.  The default is 0.
-    [[nodiscard]] int getHighWaterMark() const noexcept;
+    void setSendHighWaterMark(int highWaterMark);
+    /// @result The request high water mark.  The default is 0.
+    [[nodiscard]] int getSendHighWaterMark() const noexcept;
+    /// @param[in] highWaterMark  The approximate max number of response messages
+    ///                           to cache on the socket.  0 will set this to
+    ///                           "infinite".
+    /// @throws std::invalid_argument if highWaterMark is negative.
+    void setReceiveHighWaterMark(int highWaterMark);
+    /// @result The response high water mark.  The default is 0.
+    [[nodiscard]] int getReceiveHighWaterMark() const noexcept;
     /// @}
 
     /// @name Routing Identifier
@@ -128,17 +146,6 @@ public:
     [[nodiscard]] std::string getRoutingIdentifier() const;
     /// @result True indicates the routing identifier was set.
     [[nodiscard]] bool haveRoutingIdentifier() const noexcept;
-    /// @}
-
-    /// @name ZeroMQ Authentication Protocol
-    /// @{
-
-    /// @brief Sets the ZAP options.
-    /// @param[in] options  The ZAP options which will define the socket's
-    ///                     security protocol.
-    void setZAPOptions(const Authentication::ZAPOptions &options);
-    /// @result The ZAP options.
-    [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
     /// @name Message types

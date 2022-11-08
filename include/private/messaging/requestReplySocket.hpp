@@ -550,8 +550,7 @@ public:
     void connect(const UMPS::Messaging::RouterDealer::RequestOptions &options)
     {
         auto socketOptions = convertSocketOptions(options); // Throws
-        constexpr bool lConnect{true};
-        connectOrBind(socketOptions, lConnect); 
+        connect(socketOptions);
     }
     /// @brief Connect
     void connect(const UMPS::Messaging::SocketOptions &socketOptions)
@@ -600,19 +599,39 @@ public:
     {
         UMPS::Messaging::SocketOptions socketOptions;
         socketOptions.setAddress(options.getAddress());
-        socketOptions.setZAPOptions(options.getZAPOptions());
-        socketOptions.setReceiveHighWaterMark(options.getHighWaterMark());
-        auto sendHighWaterMark = options.getHighWaterMark();
-        socketOptions.setSendHighWaterMark(sendHighWaterMark);
         socketOptions.setCallback(options.getCallback()); // Need this
+        socketOptions.setZAPOptions(options.getZAPOptions());
+        auto sendHighWaterMark = options.getSendHighWaterMark();
+        auto receiveHighWaterMark = options.getReceiveHighWaterMark();
+        socketOptions.setSendHighWaterMark(sendHighWaterMark);
+        socketOptions.setReceiveHighWaterMark(receiveHighWaterMark);
+        // Don't hang around so we can get back to polling
+        std::chrono::milliseconds sendTimeOut{0};
+        socketOptions.setSendTimeOut(sendTimeOut);
+        // In practice this is the polling time out
+        std::chrono::milliseconds receiveTimeOut{0};
+        socketOptions.setReceiveTimeOut(receiveTimeOut);
+        if (options.haveRoutingIdentifier())
+        {
+            socketOptions.setRoutingIdentifier(options.getRoutingIdentifier());
+        }
         return socketOptions;
     }
     /// @brief Connect
     void connect(const UMPS::Messaging::RouterDealer::ReplyOptions &options)
     {
         auto socketOptions = convertSocketOptions(options); // Throws
+        connect(socketOptions);
+    }
+    /// @brief Connect
+    void connect(const UMPS::Messaging::SocketOptions &socketOptions)
+    {
+        if (!socketOptions.haveAddress())
+        {
+            throw std::invalid_argument("Address not set");
+        }
         constexpr bool lConnect{true};
-        connectOrBind(socketOptions, lConnect); 
+        connectOrBind(socketOptions, lConnect);
     }
     /// @brief Bind
     void bind(const UMPS::Messaging::RouterDealer::ReplyOptions &options)
