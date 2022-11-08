@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_SERVICEOPTIONS_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_SERVICEOPTIONS_HPP
+#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_SERVICE_OPTIONS_HPP
+#define UMPS_SERVICES_CONNECTION_INFORMATION_SERVICE_OPTIONS_HPP
 #include <memory>
 #include "umps/logging/level.hpp"
 namespace UMPS::Authentication
@@ -11,6 +11,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @class ServiceOptions "serviceOptions.hpp" "umps/services/connectionInformation/serviceOptions.hpp"
 /// @brief The options for controlling the connection information service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 class ServiceOptions
 {
 public:

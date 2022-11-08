@@ -1,10 +1,11 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_ENUMS_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_ENUMS_HPP
+#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_ENUMS_HPP
+#define UMPS_SERVICES_CONNECTION_INFORMATION_ENUMS_HPP
 #include <memory>
 namespace UMPS::Services::ConnectionInformation
 {
 /// @brief Defines the connection type.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 enum class ConnectionType
 {
     Service,   /*!< The connection is to a service.  This will be a 
@@ -23,6 +24,7 @@ enum class ConnectOrBind
 ///        types than what is enumerated here.  These are simply the patterns
 ///        exposed in UMPS.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 enum class SocketType
 {
     Unknown,     /*!< The socket type is not specified. */

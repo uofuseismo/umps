@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_DETAILS_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_DETAILS_HPP
+#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_DETAILS_HPP
+#define UMPS_SERVICES_CONNECTION_INFORMATION_DETAILS_HPP
 #include <memory>
 #include <string>
 #include "umps/services/connectionInformation/enums.hpp"
@@ -22,6 +22,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @brief This class provides the connection requisite details to establish
 ///        a connection to a service or broadcast.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 class Details
 {
 public:

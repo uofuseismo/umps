@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLECONNECTIONSRESPONSE_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_AVAILABLECONNECTIONSRESPONSE_HPP
+#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_AVAILABLE_CONNECTIONS_RESPONSE_HPP
+#define UMPS_SERVICES_CONNECTION_INFORMATION_AVAILABLE_CONNECTIONS_RESPONSE_HPP
 #include <memory>
 #include <vector>
 #include "umps/services/connectionInformation/enums.hpp"
@@ -14,6 +14,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @brief This class provides the connection information to for all
 ///        available connections - e.g., broadcasts, services, etc.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 class AvailableConnectionsResponse : public UMPS::MessageFormats::IMessage
 {
 public:

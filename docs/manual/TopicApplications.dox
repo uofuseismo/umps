@@ -1,0 +1,91 @@
+namespace UMPS
+{
+/*!
+\page TopicApplications Applications
+\ingroup Applications_chapter
+
+In this chapter we describe some standalone applications available in UMPS.  
+
+\subsection uOperator
+
+<p>
+The UMPS Operator (uOperator) is the essential service in UMPS.  uOperator's purpose is to overcome the challenge of discovering peers on our network by making a centralized message relay.  Essentially, uOperator is a look-up service; you specify who you would like to communicate with and it provides the connection details.  
+</p>
+
+<br><br>
+
+For example, the below figure we consider a custom application in the below figure.  Here, the application calls a scalable location service named EventLocator and writes the located events to a broadcast named EventBroadcast.
+
+\image html exampleApplication.jpg "An example location application." width=300cm
+
+<br><br>
+
+The natural question is how does your application know which IP addresses to which to connect?  The first option is fairly straightforward; hardcode the requisite addresses for the EventBroadcast and EventLocator in a configuration file.  It does not require much imagination to see how this will become unwieldy.  Another option is to simply blast through every open port on a network and play 20 questions in an effort to figure out what communication occurs through this port.  This is not the most efficient strategy.  The solution we adopt is to simply make a central service that knows the IP addresses for various communication types.  Consequently, to use UMPS you must
+
+   1. Draw your communication architecture and provide names to message patterns.
+   2. Let your external applications know one IP address (the address of the uOperator) and the names of the broadcasts and services it needs to communicate with.
+
+Basically, that's it.  Some more details will come through when looking at a generic uOperator initialization file.
+
+\code
+[uOperator]
+# The directory to which module log files will be written.
+logFileDirectory = logs
+
+# The server's (IP) address.  For TCP connections we will append port numbers to this
+# base address.  For example: 127.0.0.1:8080 (see openPortBlockStart)
+address = 127.0.0.1
+
+#
+# Open ports.  Typically we will want a block of ports to be open so that 
+# we can open as many broadcasts/services as necessary for the application.
+# The ports begin at the given port beginning and end (inclusively) on the
+# ended ports.  There must be at least 3 ports open:
+#   (a) 1 port to allow access the connection information
+#   (b) 1 port to which to publish heartbeats
+#   (c) 1 port from which to read heartbeat subscriptions
+openPortBlockStart = 8080
+openPortBlockEnd   = 8090
+
+# This defines the security level for all communication.
+# 0 -> Grasslands   There is no security.
+# 1 -> Strawhouse   IP addresses are checked against a blacklist.
+# 2 -> Woodhouse    IP addresses are checked against a blacklist and
+#                   users must provide a user/name and password.
+# 3 -> Stonehouse   IP addresses are checked against a blacklist and
+#                   users must provided a public key.  Users must also
+#                   specify a private key.
+# 4 -> Ironhouse    Currently unsupported.  But in this model IP addreses
+#                   are checked against a blacklist, users must provide a
+#                   public key, and the server public key must then be
+#                   authenticated by the user.
+securityLevel = 0
+
+# User table for any security level above 0
+userTable=/home/USER/.local/share/UMPS/tables/user.sqlite3
+
+# The server's public key and private keypair.  This is necessary for the
+# stonehouse server since uOperator will be a connection authenticator.
+serverPublicKeyFile=/home/USER/.local/share/UMPS/keys/serverPublicKey.txt
+serverPrivateKeyFile=/home/USER/.local/share/UMPS/keys/serverPrivateKey.txt
+
+################################################################################
+#                                Proxy Services                                #
+################################################################################
+# Overview:
+# Proxy services are scalable request/reply mechanisms.
+[ProxyServices:EventLocator]
+name=EventLocator
+
+################################################################################
+#                               Proxy Broadcasts                               #
+################################################################################
+[ProxyServices:EventBroadcast]
+name=EventBroadcast
+
+\endcode
+
+Some things to note:
+
+*/
+}

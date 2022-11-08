@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOR_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOR_HPP
+#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_REQUESTOR_HPP
+#define UMPS_SERVICES_CONNECTION_INFORMATION_REQUESTOR_HPP
 #include <memory>
 #include <vector>
 namespace UMPS
@@ -35,6 +35,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @brief This defines the requestor that interacts with the connection
 ///        information service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 class Requestor
 {
 public:

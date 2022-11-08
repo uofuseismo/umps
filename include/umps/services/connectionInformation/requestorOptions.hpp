@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOROPTIONS_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_REQUESTOROPTIONS_HPP
+#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_REQUESTOR_OPTIONS_HPP
+#define UMPS_SERVICES_CONNECTION_INFORMATION_REQUESTOR_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS
@@ -18,6 +18,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @class RequestorOptions "requestorOptions.hpp" "umps/services/connectionInformation/requestorOptions.hpp"
 /// @brief This defines the options for the connection information client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 class RequestorOptions
 {
 public:

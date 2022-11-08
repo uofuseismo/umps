@@ -1,5 +1,5 @@
-#ifndef UMPS_SERVICES_CONNECTIONINFORMATION_SERVICE_HPP
-#define UMPS_SERVICES_CONNECTIONINFORMATION_SERVICE_HPP
+#ifndef UMPS_SERVICES_CONNECTION_INFORMATION_SERVICE_HPP
+#define UMPS_SERVICES_CONNECTION_INFORMATION_SERVICE_HPP
 #include <memory>
 #include "umps/services/service.hpp"
 namespace UMPS
@@ -39,6 +39,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @class Service service.hpp "umps/services/connectionInformation/service.hpp"
 /// @brief Implements the server-side connection information service.
 /// @copyright Ben Baker (Univeristy of Utah) distributed under the MIT license.
+/// @ingroup Applications_Operator
 class Service : public UMPS::Services::IService
 {
 public:

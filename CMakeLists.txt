@@ -3,7 +3,6 @@ project(UMPS VERSION 0.1.0 LANGUAGES CXX)
 enable_testing()
 
 # Some options
-#option(EARTHWORM_DEFAULT_TRACEBUF2_SIZE "TraceBuf2 message size in bytes" ON)
 option(WRAP_PYTHON "Compile the Python bindings" OFF)
 
 # Ensure we have necessary packages 
@@ -25,27 +24,6 @@ find_package(FindZeroMQ REQUIRED)
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
                ${CMAKE_SOURCE_DIR}/include/umps/version.hpp)
 
-
-#set(BUILD_EW FALSE)
-#set(BUILD_MSEED FALSE)
-#if (${FindEarthworm_FOUND})
-#   message("Will compile Earthworm")
-#   set(BUILD_EW TRUE)
-#   if (${EARTHWORM_DEFAULT_TRACEBUF2_SIZE})
-#      set(EARTHWORM_TRACEBUF2_SIZE 4096)
-#   endif()
-#   message("Using TraceBuf2 message size of: " ${EARTHWORM_TRACEBUF2_SIZE})
-#   if (${FindMiniSEED_FOUND})
-#      message("Will compile earthworm modules with MiniSEED")
-#      set(BUILD_MSEED TRUE)
-#      add_compile_definitions(WITH_MSEED)
-#   endif()
-#endif()
-#if (${FindTBB_FOUND})
-#   message("Building with TBB")
-#   set(BUILD_TBB TRUE)
-#   add_compile_definitions(WITH_TBB)
-#endif() 
 
 set(VERSION_SRC
     src/version.cpp)

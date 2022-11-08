@@ -97,4 +97,12 @@ namespace UMPS {
     \brief Processes are independent components of a program - e.g., heartbeating.
     \ingroup Modules_chapter */
 
+/** \defgroup Applications_chapter Applications */
+/** \defgroup Applications_Operator uOperator
+    \brief The critical message relay hub in the hub and spoke architecture.
+    \ingroup Applications_chapter */
+/** \defgroup Applications_LocalCommand uCommand
+    \brief Allows users to interact with locally running modules.
+    \ingroup Applications_chapter */
+
 }
