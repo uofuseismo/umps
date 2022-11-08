@@ -12,6 +12,7 @@
 #include "umps/messageFormats/messages.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/logging/standardOut.hpp"
+#include "private/messaging/requestReplySocket.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
