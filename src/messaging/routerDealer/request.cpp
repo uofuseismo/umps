@@ -1,7 +1,9 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#ifndef NDEBUG
 #include <cassert>
+#endif
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "umps/messaging/routerDealer/request.hpp"
@@ -12,60 +14,25 @@
 #include "umps/messageFormats/messages.hpp"
 #include "umps/services/connectionInformation/socketDetails/request.hpp"
 #include "umps/logging/standardOut.hpp"
+#include "private/messaging/requestReplySocket.hpp"
 
 using namespace UMPS::Messaging::RouterDealer;
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
-class Request::RequestImpl
+class Request::RequestImpl : public ::RequestSocket
 {
 public:
     /// C'tor
     RequestImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
-                const std::shared_ptr<UMPS::Logging::ILog> &logger)
+                const std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        RequestSocket(context, logger)
     {
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<UMPS::Messaging::Context> (1);
-        }
-        else
-        {
-            mContext = context;
-        }
-        // Make the logger
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
-        }
-        else
-        {
-            mLogger = logger;
-        }
-        // Now make the socket
-        auto contextPtr = reinterpret_cast<zmq::context_t *>
-                          (mContext->getContext());
-        mClient = std::make_unique<zmq::socket_t> (*contextPtr,
-                                                   zmq::socket_type::req);
-    }
-    /// Update socket details
-    void updateSocketDetails()
-    {   
-        mSocketDetails.setAddress(mAddress);
-        mSocketDetails.setSecurityLevel(mSecurityLevel);
-        mSocketDetails.setConnectOrBind(UCI::ConnectOrBind::Bind);
     }
 //private:
     UMPS::MessageFormats::Messages mMessageFormats;
     RequestOptions mOptions;
-    std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
-    std::unique_ptr<zmq::socket_t> mClient{nullptr};
-    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
-    std::string mAddress;
     UCI::SocketDetails::Request mSocketDetails;
-    int mHighWaterMark = 200;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
-    bool mInitialized = false;
-    bool mConnected = false;
 };
 
 /// C'tor
@@ -115,42 +82,25 @@ void Request::initialize(const RequestOptions &options)
     {
         throw std::invalid_argument("No message formats set");
     }
-    pImpl->mMessageFormats = options.getMessageFormats();
-    pImpl->mOptions.clear();
-    disconnect();
-    pImpl->mOptions = options;
-    //  
-    auto zapOptions = pImpl->mOptions.getZAPOptions();
-    auto highWaterMark = pImpl->mOptions.getHighWaterMark();
-    auto address = pImpl->mOptions.getAddress();
-    // Set the ZAP options
-    zapOptions.setSocketOptions(&*pImpl->mClient);
-    pImpl->mSecurityLevel = zapOptions.getSecurityLevel();
-    // Set the high water mark
-    pImpl->mClient->set(zmq::sockopt::rcvhwm, highWaterMark);
-    //pImpl->mClient->set(zmq::sockopt::sndhwm, highWaterMark); 
-    pImpl->mClient->set(zmq::sockopt::rcvtimeo, 1000);
+    // Extract options for populating the socket info 
+    UMPS::Messaging::SocketOptions socketOptions;
+    socketOptions.setAddress(options.getAddress());
+    socketOptions.setMessageFormats(options.getMessageFormats());
+    socketOptions.setZAPOptions(pImpl->mOptions.getZAPOptions());
+    socketOptions.setSendHighWaterMark(options.getSendHighWaterMark());
+    socketOptions.setReceiveHighWaterMark(options.getReceiveHighWaterMark());
+    socketOptions.setSendTimeOut(options.getSendTimeOut());
+    socketOptions.setReceiveTimeOut(options.getReceiveTimeOut());
     // Connect
-    pImpl->mLogger->debug("Request attempting to connect to: " + address);
-    pImpl->mClient->connect(address);
-    pImpl->mLogger->debug("Request connected to: " + address + "!");
-    // Resolve end point
-    pImpl->mAddress = address;
-    if (address.find("tcp") != std::string::npos ||
-        address.find("ipc") != std::string::npos)
-    {
-        pImpl->mAddress = pImpl->mClient->get(zmq::sockopt::last_endpoint);
-    }
-    pImpl->mConnected = true;
-    pImpl->updateSocketDetails();
-    pImpl->mInitialized = true;
-    pImpl->mLogger->debug("Request socket initialized!");
+    pImpl->connect(socketOptions);
+    // Copy the options
+    pImpl->mOptions = options; 
 }
 
 /// Initialized?
 bool Request::isInitialized() const noexcept
 {
-    return pImpl->mInitialized;
+    return pImpl->isConnected();
 }
 
 /// Make a request
@@ -158,85 +108,22 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
     Request::request(const UMPS::MessageFormats::IMessage &request)
 {
     if (!isInitialized()){throw std::runtime_error("Not initialized");}
-    auto messageType = request.getMessageType();
-    if (messageType.empty())
+    auto message = pImpl->request(request);
+    if (message == nullptr)
     {
-        pImpl->mLogger->error("Message type is empty");
+        pImpl->mLogger->warn("Request timed out");
     }
-    //auto requestMessage = request.toCBOR();
-    auto requestMessage = request.toMessage();
-    if (requestMessage.empty())
-    {
-        pImpl->mLogger->error("Message contents is empty");
-    }
-    // Send the message
-    pImpl->mLogger->debug("Sending message: " + messageType);
-    zmq::const_buffer headerRequest{messageType.data(), messageType.size()};
-    
-    pImpl->mClient->send(headerRequest, zmq::send_flags::sndmore);
-    zmq::const_buffer bufferRequest{requestMessage.data(),
-                                    requestMessage.size()};
-    pImpl->mClient->send(bufferRequest);
-    // Wait for the response
-    pImpl->mLogger->debug("Blocking for response...");
-    // Receive all parts of the message
-    zmq::multipart_t responseReceived(*pImpl->mClient);
-    if (responseReceived.empty()){return nullptr;} // Timeout
-#ifndef NDEBUG
-    assert(responseReceived.size() == 2);
-#else
-    if (responseReceived.size() != 2)
-    {
-        pImpl->mLogger->error("Only 2-part messages handled");
-        throw std::runtime_error("Only 2-part messages handled");
-    }
-#endif
-    // Unpack the response
-    std::string responseMessageType = responseReceived.at(0).to_string();
-    if (!pImpl->mMessageFormats.contains(responseMessageType))
-    {
-        throw std::runtime_error("Unhandled response type: "
-                               + responseMessageType);
-    }
-    const auto payload = static_cast<char *> (responseReceived.at(1).data());
-    auto responseLength = responseReceived.at(1).size();
-    auto response = pImpl->mMessageFormats.get(responseMessageType);
-    try
-    {
-        response->fromMessage(payload, responseLength);
-    }
-    catch (const std::exception &e) 
-    {
-        auto errorMsg = "Failed to unpack message of type: " + messageType;
-        pImpl->mLogger->error(errorMsg);
-        throw;
-    }
-    return response;
+    return message;
 }
 
 /// Disconnect
 void Request::disconnect()
 {
-    if (pImpl->mConnected)
-    {
-        pImpl->mLogger->debug("Disconnecting from " + pImpl->mAddress);
-        pImpl->mClient->disconnect(pImpl->mAddress);
-        pImpl->mSocketDetails.clear();
-        pImpl->mAddress.clear();
-        pImpl->mConnected = false;
-    }
+    pImpl->disconnect();
 }
 
 /// Destructor 
 Request::~Request() = default;
-
-/// Security level
-/*
-UAuth::SecurityLevel Request::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
-}
-*/
 
 /// Connection details
 UCI::SocketDetails::Request Request::getSocketDetails() const
@@ -245,5 +132,5 @@ UCI::SocketDetails::Request Request::getSocketDetails() const
     {
         throw std::runtime_error("Request not initialized");
     }
-    return pImpl->mSocketDetails;
+    return pImpl->getSocketDetails();
 }

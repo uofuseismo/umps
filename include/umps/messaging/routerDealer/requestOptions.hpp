@@ -70,18 +70,6 @@ public:
     [[nodiscard]] bool haveAddress() const noexcept;
     /// @}
 
-    /// @name High Water Mark
-    /// @{
-
-    /// @param[in] highWaterMark  The approximate max number of messages to 
-    ///                           cache on the socket.  0 will set this to
-    ///                           "infinite".
-    /// @throws std::invalid_argument if highWaterMark is negative.
-    void setHighWaterMark(int highWaterMark);
-    /// @result The high water mark.  The default is 0.
-    [[nodiscard]] int getHighWaterMark() const noexcept;
-    /// @}
-
     /// @name ZeroMQ Authentication Protocol
     /// @{
 
@@ -108,6 +96,47 @@ public:
     [[nodiscard]] UMPS::MessageFormats::Messages getMessageFormats() const;
     /// @result True indicates the message types have been set.
     [[nodiscard]] bool haveMessageFormats() const noexcept;
+    /// @}
+
+    /// @name High Water Mark
+    /// @{
+
+    /// @param[in] highWaterMark  The approximate max number of request messages
+    ///                           to cache on the socket.  0 will set this to
+    ///                           "infinite".
+    /// @throws std::invalid_argument if highWaterMark is negative.
+    void setSendHighWaterMark(int highWaterMark);
+    /// @result The send high water mark.  The default is 0.
+    [[nodiscard]] int getSendHighWaterMark() const noexcept;
+    /// @param[in] highWaterMark  The approximate max number of response messages
+    ///                           to cache on the socket.  0 will set this to
+    ///                           "infinite".
+    /// @throws std::invalid_argument if highWaterMark is negative.
+    void setReceiveHighWaterMark(int highWaterMark);
+    /// @result The send high water mark.  The default is 0.
+    [[nodiscard]] int getReceiveHighWaterMark() const noexcept;
+    /// @}
+
+    /// @name Time Out
+    /// @{
+
+    /// @param[in] timeOut  The time to wait before a request send times out.
+    ///                     If this is negative then the wait time will be
+    ///                     infinite.
+    void setSendTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
+    /// @result The send time out.  The default is 0 (return immediately).
+    [[nodiscard]] std::chrono::milliseconds getSendTimeOut() const noexcept;
+    /// @param[in] timeOut  The time to wait before a response from the server
+    ///                     result in a time out.  If this is negative then the
+    ///                     wait time will be infinite.
+    void setReceiveTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
+    /// @result The send time out.  The default is -1 (infinite).
+    [[nodiscard]] std::chrono::milliseconds getReceiveTimeOut() const noexcept;
+    /// @}
+
+    /// @name Time Out
+    /// @{
+
     /// @}
 
     /// @name Destructors

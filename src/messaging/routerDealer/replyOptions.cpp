@@ -25,6 +25,8 @@ public:
     > mCallback;
     std::string mAddress;
     std::string mRoutingIdentifier;
+    std::chrono::milliseconds mSendTimeOut{-1};
+    std::chrono::milliseconds mReceiveTimeOut{-1};
     int mHighWaterMark{0};
     bool mHaveCallback{false};
 };

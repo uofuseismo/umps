@@ -1,4 +1,3 @@
-#include <map>
 #include <string>
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
@@ -15,8 +14,10 @@ public:
     UMPS::MessageFormats::Messages mMessageFormats;
     UAuth::ZAPOptions mZAPOptions;
     std::string mAddress;
-    int mHighWaterMark = 0;
-    bool mHaveCallback = false;
+    std::chrono::milliseconds mSendTimeOut{0};
+    std::chrono::milliseconds mReceiveTimeOut{-1};
+    int mSendHighWaterMark{0};
+    int mReceiveHighWaterMark{0};
 };
 
 /// C'tor
@@ -95,18 +96,71 @@ UAuth::ZAPOptions RequestOptions::getZAPOptions() const noexcept
 }
 
 /// High water mark
-void RequestOptions::setHighWaterMark(const int highWaterMark)
+void RequestOptions::setSendHighWaterMark(const int highWaterMark)
 {
     if (highWaterMark < 0)
     {
         throw std::invalid_argument("High water mark must be non-negative");
     }
-    pImpl->mHighWaterMark = highWaterMark;
+    pImpl->mSendHighWaterMark = highWaterMark;
 }
 
-int RequestOptions::getHighWaterMark() const noexcept
+int RequestOptions::getSendHighWaterMark() const noexcept
 {
-    return pImpl->mHighWaterMark;
+    return pImpl->mSendHighWaterMark;
+}
+
+void RequestOptions::setReceiveHighWaterMark(const int highWaterMark)
+{
+    if (highWaterMark < 0)
+    {
+        throw std::invalid_argument("High water mark must be non-negative");
+    }
+    pImpl->mReceiveHighWaterMark = highWaterMark;
+}
+
+int RequestOptions::getReceiveHighWaterMark() const noexcept
+{
+    return pImpl->mReceiveHighWaterMark;
+}
+
+/// Time out
+void RequestOptions::setReceiveTimeOut(
+    const std::chrono::milliseconds &timeOut) noexcept
+{
+    constexpr std::chrono::milliseconds zero{0};
+    if (timeOut < zero)
+    {
+        pImpl->mReceiveTimeOut = std::chrono::milliseconds {-1};
+    }
+    else
+    {
+        pImpl->mReceiveTimeOut = timeOut;
+    }
+}
+
+std::chrono::milliseconds RequestOptions::getReceiveTimeOut() const noexcept
+{
+    return pImpl->mReceiveTimeOut;
+}
+
+void RequestOptions::setSendTimeOut(
+    const std::chrono::milliseconds &timeOut) noexcept
+{
+    constexpr std::chrono::milliseconds zero{0};
+    if (timeOut < zero)
+    {
+        pImpl->mSendTimeOut = std::chrono::milliseconds {-1};
+    }
+    else
+    {
+        pImpl->mSendTimeOut = timeOut;
+    }
+}
+
+std::chrono::milliseconds RequestOptions::getSendTimeOut() const noexcept
+{
+    return pImpl->mSendTimeOut;
 }
 
 /*

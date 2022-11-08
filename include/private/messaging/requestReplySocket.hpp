@@ -519,8 +519,12 @@ public:
         socketOptions.setAddress(options.getAddress()); // Throws
         socketOptions.setZAPOptions(options.getZAPOptions());
         socketOptions.setMessageFormats(options.getMessageFormats());
-        auto receiveHighWaterMark = options.getHighWaterMark();
+        auto receiveHighWaterMark = options.getReceiveHighWaterMark();
+        auto sendHighWaterMark = options.getSendHighWaterMark();
         socketOptions.setReceiveHighWaterMark(receiveHighWaterMark);
+        socketOptions.setSendHighWaterMark(sendHighWaterMark);
+        socketOptions.setSendTimeOut(options.getSendTimeOut());
+        socketOptions.setReceiveTimeOut(options.getReceiveTimeOut());
         // Use default of 0 which is infinite
         //socketOptions.setSendHighWaterMark(sendHighWaterMark);
         return socketOptions;
