@@ -22,7 +22,7 @@
 using namespace UMPS::Services::Command;
 namespace UMF = UMPS::MessageFormats;
 
-class Requestor::RequestorImpl : public RequestSocket
+class Requestor::RequestorImpl : public ::RequestSocket
 {
 public:
     /// @brief Constructor

@@ -19,7 +19,8 @@ class RequestorOptions::RequestorOptionsImpl
 public:
     RequestorOptionsImpl()
     {
-        mOptions.setHighWaterMark(2048);
+        mOptions.setSendHighWaterMark(2048);
+        mOptions.setReceiveHighWaterMark(0);
         std::unique_ptr<UMPS::MessageFormats::IMessage> dataResponse
             = std::make_unique<DataResponse<double>> ();
         std::unique_ptr<UMPS::MessageFormats::IMessage> bulkResponse
@@ -110,12 +111,12 @@ UAuth::ZAPOptions RequestorOptions::getZAPOptions() const noexcept
 /// High water mark
 void RequestorOptions::setHighWaterMark(const int highWaterMark)
 {
-    pImpl->mOptions.setHighWaterMark(highWaterMark);
+    pImpl->mOptions.setSendHighWaterMark(highWaterMark);
 }
 
 int RequestorOptions::getHighWaterMark() const noexcept
 {
-    return pImpl->mOptions.getHighWaterMark();
+    return pImpl->mOptions.getSendHighWaterMark();
 }
 
 /// Request options

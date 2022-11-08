@@ -241,53 +241,64 @@ TEST(Messaging, RouterDealerProxyOptions)
 TEST(Messaging, RouterDealerRequestOptions)
 {
     RouterDealer::RequestOptions options;
-    int hwm = 240;
+    const int sendhwm{240};
+    const int rcvhwm{250};
     const std::string address = "tcp://127.0.0.2:5556";
-    //const std::chrono::milliseconds timeOut{120};
+    const std::chrono::milliseconds sendTimeOut{120};
+    const std::chrono::milliseconds receiveTimeOut{150};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
     std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
         = std::make_unique<UMPS::MessageFormats::Text> (); 
     UMPS::MessageFormats::Messages messageFormats;
     messageFormats.add(textMessage);
-    EXPECT_NO_THROW(options.setHighWaterMark(hwm));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendhwm));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(rcvhwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
-    //EXPECT_NO_THROW(options.setTimeOut(timeOut));
+    options.setSendTimeOut(sendTimeOut);
+    options.setReceiveTimeOut(receiveTimeOut);
     EXPECT_NO_THROW(options.setMessageFormats(messageFormats));
         
     RouterDealer::RequestOptions optionsCopy(options); 
-    EXPECT_EQ(options.getHighWaterMark(), hwm);
+    EXPECT_EQ(options.getSendHighWaterMark(), sendhwm);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), rcvhwm);
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(options.getAddress(), address);
-    //EXPECT_EQ(options.getTimeOut(), timeOut);
+    EXPECT_EQ(options.getSendTimeOut(), sendTimeOut);
+    EXPECT_EQ(options.getReceiveTimeOut(), receiveTimeOut);
     EXPECT_TRUE(options.getMessageFormats().contains(textMessage));
 
     options.clear();
-    EXPECT_EQ(options.getHighWaterMark(), 0); 
-    //const std::chrono::milliseconds negativeOne{-1};
-    //EXPECT_EQ(options.getTimeOut(), negativeOne);
+    EXPECT_EQ(options.getSendHighWaterMark(), 0); 
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
+    const std::chrono::milliseconds negativeOne{-1};
+    EXPECT_EQ(options.getSendTimeOut(), std::chrono::milliseconds {0});
+    EXPECT_EQ(options.getReceiveTimeOut(), negativeOne);
 }
 
 TEST(Messaging, RouterDealerReplyOptions)
 {
     RouterDealer::ReplyOptions options; 
-    int hwm = 240;
+    const int sendhwm{240};
+    const int recvhwm{250}; 
     const std::string address = "tcp://127.0.0.2:5556";
     const std::string routingIdentifier{"tempIdentifier"};
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
     std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
         = std::make_unique<UMPS::MessageFormats::Text> ();
-    EXPECT_NO_THROW(options.setHighWaterMark(hwm));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendhwm));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(recvhwm));
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setRoutingIdentifier(routingIdentifier));
     //EXPECT_NO_THROW(options.addMessageFormat(textMessage));
     
     RouterDealer::ReplyOptions optionsCopy(options); 
-    EXPECT_EQ(optionsCopy.getHighWaterMark(), hwm);
+    EXPECT_EQ(optionsCopy.getSendHighWaterMark(), sendhwm);
+    EXPECT_EQ(optionsCopy.getReceiveHighWaterMark(), recvhwm);
     EXPECT_EQ(optionsCopy.getZAPOptions().getSecurityLevel(),
               UAuth::SecurityLevel::Strawhouse);
     EXPECT_EQ(optionsCopy.getAddress(), address);
@@ -295,7 +306,8 @@ TEST(Messaging, RouterDealerReplyOptions)
     EXPECT_EQ(optionsCopy.getRoutingIdentifier(), routingIdentifier);
 
     options.clear();
-    EXPECT_EQ(options.getHighWaterMark(), 0);
+    EXPECT_EQ(options.getSendHighWaterMark(), 0);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
     EXPECT_FALSE(options.haveRoutingIdentifier());
 }
 

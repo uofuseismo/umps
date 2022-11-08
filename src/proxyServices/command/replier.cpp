@@ -268,7 +268,8 @@ void Replier::initialize(const ReplierOptions &options)
     UMPS::Messaging::SocketOptions socketOptions;
     socketOptions.setAddress(replyOptions.getAddress());
     socketOptions.setZAPOptions(replyOptions.getZAPOptions());
-    socketOptions.setReceiveHighWaterMark(replyOptions.getHighWaterMark());
+    socketOptions.setReceiveHighWaterMark(
+        replyOptions.getReceiveHighWaterMark());
     socketOptions.setSendHighWaterMark(0); // Cache all responses
     //socketOptions.setLingerPeriod(std::chrono::milliseconds {10});
     // Polling loop so return immediately

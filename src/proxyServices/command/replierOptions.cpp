@@ -130,7 +130,8 @@ void ReplierOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 /// HWM
 void ReplierOptions::setHighWaterMark(const int hwm)
 {
-    pImpl->mOptions.setHighWaterMark(hwm);
+    pImpl->mOptions.setReceiveHighWaterMark(hwm);
+    pImpl->mOptions.setSendHighWaterMark(hwm);
 }
 
 /// Options

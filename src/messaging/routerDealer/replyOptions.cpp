@@ -25,7 +25,10 @@ public:
     > mCallback;
     std::string mAddress;
     std::string mRoutingIdentifier;
-    int mHighWaterMark{0};
+    std::chrono::milliseconds mSendTimeOut{-1};
+    std::chrono::milliseconds mReceiveTimeOut{-1};
+    int mSendHighWaterMark{0}; // Infinite
+    int mReceiveHighWaterMark{0}; // Infinite
     bool mHaveCallback{false};
 };
 
@@ -105,18 +108,32 @@ UAuth::ZAPOptions ReplyOptions::getZAPOptions() const noexcept
 }
 
 /// High water mark
-void ReplyOptions::setHighWaterMark(const int highWaterMark)
+void ReplyOptions::setSendHighWaterMark(const int highWaterMark)
 {
     if (highWaterMark < 0)
     {
         throw std::invalid_argument("High water mark must be non-negative");
     }
-    pImpl->mHighWaterMark = highWaterMark;
+    pImpl->mSendHighWaterMark = highWaterMark;
 }
 
-int ReplyOptions::getHighWaterMark() const noexcept
+int ReplyOptions::getSendHighWaterMark() const noexcept
 {
-    return pImpl->mHighWaterMark;
+    return pImpl->mSendHighWaterMark;
+}
+
+void ReplyOptions::setReceiveHighWaterMark(const int highWaterMark)
+{
+    if (highWaterMark < 0)
+    {
+        throw std::invalid_argument("High water mark must be non-negative");
+    }
+    pImpl->mReceiveHighWaterMark = highWaterMark;
+}
+
+int ReplyOptions::getReceiveHighWaterMark() const noexcept
+{
+    return pImpl->mReceiveHighWaterMark;
 }
 
 /// Sets the routing id
