@@ -6,9 +6,11 @@
 #include <umps/messaging/publisherSubscriber/subscriber.hpp>
 #include <umps/messaging/publisherSubscriber/subscriberOptions.hpp>
 #include <umps/authentication/zapOptions.hpp>
+#include <umps/logging/log.hpp>
 #include "python/messaging.hpp"
 #include "python/authentication.hpp"
 #include "python/messageFormats.hpp"
+#include "python/logging.hpp"
 
 namespace
 {
@@ -290,6 +292,49 @@ void PublisherSubscriber::PublisherOptions::clear() noexcept
 PublisherSubscriber::PublisherOptions::~PublisherOptions() = default;
 
 ///--------------------------------------------------------------------------///
+///                            Pub/Sub Subscriber                            ///
+///--------------------------------------------------------------------------///
+
+PublisherSubscriber::Publisher::Publisher() :
+    pImpl(std::make_unique<UMPS::Messaging::PublisherSubscriber::Publisher> ())
+{
+}
+
+PublisherSubscriber::Publisher::Publisher(
+    UMPS::Python::Logging::ILog &logger)
+{
+    auto nativeLogger = logger.getSharedPointer();
+    pImpl = std::make_unique<UMPS::Messaging::PublisherSubscriber::Publisher>
+            (nativeLogger);
+}
+
+PublisherSubscriber::Publisher::Publisher(
+    UMPS::Python::Messaging::Context &context)
+{
+    auto nativeContext = context.getSharedPointer();
+    pImpl = std::make_unique<UMPS::Messaging::PublisherSubscriber::Publisher>
+            (nativeContext); 
+}
+
+
+PublisherSubscriber::Publisher::Publisher(
+    UMPS::Python::Messaging::Context &context,
+    UMPS::Python::Logging::ILog &logger)
+{
+    auto nativeContext = context.getSharedPointer();
+    auto nativeLogger = logger.getSharedPointer();
+    pImpl = std::make_unique<UMPS::Messaging::PublisherSubscriber::Publisher>
+            (nativeContext, nativeLogger); 
+}
+
+/// Destructor
+PublisherSubscriber::Publisher::~Publisher() = default;
+
+///--------------------------------------------------------------------------///
+///                             Router/Dealer                                ///
+///--------------------------------------------------------------------------///
+
+///--------------------------------------------------------------------------///
 ///                            Initialization                                ///
 ///--------------------------------------------------------------------------///
 void UMPS::Python::Messaging::initialize(pybind11::module &m)
@@ -399,5 +444,14 @@ Optional Properties :
     pubSubPublisherOptions.def("clear",
                                &PublisherSubscriber::PublisherOptions::clear,
                                "Resets the class.");
-
+    ///---------------------------Publisher----------------------------------///
+    pybind11::class_<UMPS::Python::Messaging::PublisherSubscriber::Publisher>
+        pubSubPublisher(pubSubModule, "PublisherOptions");
+    pubSubPublisher.def(pybind11::init<> ());
+    pubSubPublisher.def(pybind11::init<UMPS::Python::Messaging::Context &,
+                                       UMPS::Python::Logging::ILog &> ());
+    pubSubPublisher.doc() = R""""(
+The publisher in a publisher/subscriber pattern.
+)"""";
+ 
 }

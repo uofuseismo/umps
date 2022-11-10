@@ -41,6 +41,7 @@ public:
     std::chrono::milliseconds mSendTimeOut{-1}; // Infinite
     std::chrono::milliseconds mReceiveTimeOut{-1}; // Infinite
     std::chrono::milliseconds mLingerPeriod{-1}; // Infinite
+    std::chrono::milliseconds mPollingTimeOut{10}; // Definitely not infinite
     int mSendHighWaterMark{0}; // Infinite
     int mReceiveHighWaterMark{0}; // Infinite
     bool mHaveCallback{false};
@@ -271,4 +272,19 @@ UMPS::MessageFormats::Messages SocketOptions::getMessageFormats() const
 bool SocketOptions::haveMessageFormats() const noexcept
 {
     return !pImpl->mMessageFormats.empty();
+}
+
+/// Polling time out
+void SocketOptions::setPollingTimeOut(const std::chrono::milliseconds &timeOut)
+{
+    if (timeOut.count() < 0)
+    {
+        throw std::invalid_argument("Time out cannot be negative");
+    }
+    pImpl->mPollingTimeOut = timeOut;
+}
+
+std::chrono::milliseconds SocketOptions::getPollingTimeOut() const noexcept
+{
+    return pImpl->mPollingTimeOut;
 }

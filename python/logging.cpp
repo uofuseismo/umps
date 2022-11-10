@@ -73,7 +73,7 @@ void StandardOut::debug(const std::string &message)
 }
 
 /// Make instance
-std::shared_ptr<UMPS::Logging::ILog> StandardOut::getInstance()
+std::shared_ptr<UMPS::Logging::ILog> StandardOut::getSharedPointer()
 {
     std::shared_ptr<UMPS::Logging::ILog> result
        =  std::make_shared<UMPS::Logging::StandardOut> (mLogger);
@@ -145,7 +145,7 @@ UMPS::Logging::Level DailyFile::getLevel() const noexcept
 }
 
 /// Make instance
-std::shared_ptr<UMPS::Logging::ILog> DailyFile::getInstance()
+std::shared_ptr<UMPS::Logging::ILog> DailyFile::getSharedPointer()
 {
     std::shared_ptr<UMPS::Logging::ILog> result
        =  std::make_shared<UMPS::Logging::DailyFile> (mLogger);

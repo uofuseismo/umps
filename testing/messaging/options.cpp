@@ -33,6 +33,7 @@ TEST(Messaging, SocketOptions)
     const int recvHWM{2}; 
     const std::chrono::milliseconds sendTimeOut{31};
     const std::chrono::milliseconds recvTimeOut{32};
+    const std::chrono::milliseconds pollingTimeOut{11};
     const std::chrono::milliseconds lingerPeriod{-5}; // Resolve to -1
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStrawhouseClient();
@@ -43,6 +44,7 @@ TEST(Messaging, SocketOptions)
     EXPECT_NO_THROW(options.setReceiveHighWaterMark(recvHWM));
     options.setSendTimeOut(sendTimeOut);
     options.setReceiveTimeOut(recvTimeOut);
+    EXPECT_NO_THROW(options.setPollingTimeOut(pollingTimeOut));
     options.setZAPOptions(zapOptions);
     options.setRoutingIdentifier(routingID);
     options.setLingerPeriod(lingerPeriod);
@@ -54,6 +56,7 @@ TEST(Messaging, SocketOptions)
     EXPECT_EQ(copy.getReceiveHighWaterMark(), recvHWM);
     EXPECT_EQ(copy.getSendTimeOut(), sendTimeOut);
     EXPECT_EQ(copy.getReceiveTimeOut(), recvTimeOut);
+    EXPECT_EQ(copy.getPollingTimeOut(), pollingTimeOut);
     EXPECT_EQ(copy.getRoutingIdentifier(), routingID);
     EXPECT_EQ(copy.getLingerPeriod(), std::chrono::milliseconds {-1});
     EXPECT_EQ(copy.getZAPOptions().getSecurityLevel(),
@@ -65,6 +68,7 @@ TEST(Messaging, SocketOptions)
     EXPECT_EQ(options.getSendHighWaterMark(), 0);
     EXPECT_EQ(options.getReceiveTimeOut(), std::chrono::milliseconds {-1});
     EXPECT_EQ(options.getSendTimeOut(), std::chrono::milliseconds {-1});
+    EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {10});
     EXPECT_EQ(options.getLingerPeriod(), std::chrono::milliseconds {-1});
     EXPECT_FALSE(options.haveRoutingIdentifier());
     EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
@@ -283,6 +287,7 @@ TEST(Messaging, RouterDealerReplyOptions)
     RouterDealer::ReplyOptions options; 
     const int sendhwm{240};
     const int recvhwm{250}; 
+    const std::chrono::milliseconds pollingTimeOut{12};
     const std::string address = "tcp://127.0.0.2:5556";
     const std::string routingIdentifier{"tempIdentifier"};
     UAuth::ZAPOptions zapOptions;
@@ -294,6 +299,7 @@ TEST(Messaging, RouterDealerReplyOptions)
     EXPECT_NO_THROW(options.setZAPOptions(zapOptions));
     EXPECT_NO_THROW(options.setAddress(address));
     EXPECT_NO_THROW(options.setRoutingIdentifier(routingIdentifier));
+    EXPECT_NO_THROW(options.setPollingTimeOut(pollingTimeOut));
     //EXPECT_NO_THROW(options.addMessageFormat(textMessage));
     
     RouterDealer::ReplyOptions optionsCopy(options); 
@@ -304,11 +310,13 @@ TEST(Messaging, RouterDealerReplyOptions)
     EXPECT_EQ(optionsCopy.getAddress(), address);
     //EXPECT_TRUE(options.getMessageFormats().contains(textMessage));
     EXPECT_EQ(optionsCopy.getRoutingIdentifier(), routingIdentifier);
+    EXPECT_EQ(optionsCopy.getPollingTimeOut(), pollingTimeOut);
 
     options.clear();
     EXPECT_EQ(options.getSendHighWaterMark(), 0);
     EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
     EXPECT_FALSE(options.haveRoutingIdentifier());
+    EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {10});
 }
 
 }

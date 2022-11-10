@@ -8,10 +8,16 @@
 #include <umps/logging/level.hpp>
 namespace UMPS::Python::Logging
 {
+class ILog
+{
+public:
+    virtual ~ILog() = default;
+    [[nodiscard]] virtual std::shared_ptr<UMPS::Logging::ILog> getSharedPointer(){return nullptr;};
+};
 /// @class StandardOut
 /// @brief A wrapper for the standard out logger.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class StandardOut
+class StandardOut : public ILog
 {
 public:
     /// @brief Constructor.
@@ -21,7 +27,7 @@ public:
     /// @brief Move constructor.
     StandardOut(StandardOut &&logger) noexcept;
     /// @brief Destructor.
-    ~StandardOut();
+    ~StandardOut() override;
     /// @brief Sets the logging level.
     void setLevel(UMPS::Logging::Level level) noexcept;
     /// @result The logging level.
@@ -35,7 +41,7 @@ public:
     /// @brief Issue a debug message.
     void debug(const std::string &message);
     /// @result A shared pointer to the underlying logger.
-    [[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getInstance();
+    [[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getSharedPointer() override final;
     StandardOut& operator=(const StandardOut &);
     StandardOut& operator=(StandardOut &&) noexcept;
 private:
@@ -44,7 +50,7 @@ private:
 /// @class DailyFile
 /// @brief A logger that will dump messages for a given day to a file.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-class DailyFile
+class DailyFile : public ILog
 {
 public:
     /// @brief Constructor.
@@ -70,9 +76,9 @@ public:
     /// @brief Issue a debug message.
     void debug(const std::string &message);
     /// @result A shared pointer to the underlying logger.
-    [[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getInstance(); 
+    [[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getSharedPointer() override final;
     /// @brief Destructor.
-    ~DailyFile();
+    ~DailyFile() override;
     DailyFile& operator=(const DailyFile &); 
     DailyFile& operator=(DailyFile &&) noexcept;
 private:

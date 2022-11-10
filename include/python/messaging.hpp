@@ -22,6 +22,10 @@ namespace UMPS
   {
    class ZAPOptions;
   }
+  namespace Logging
+  {
+   class ILog;
+  }
   namespace MessageFormats
   {
    class IMessage;
@@ -117,10 +121,23 @@ private:
 class Publisher
 {
 public:
-    //Publisher(UMPS::Python::Messaging::Context &context,
-    //          UMPS::Python::Logging::ILog &logger);
+    /// @brief Constructor.
+    Publisher();
+    /// @brief Constructor with a given context.
+    explicit Publisher(UMPS::Python::Messaging::Context &context);
+    /// @brief Constructor with a given logger.
+    explicit Publisher(UMPS::Python::Logging::ILog &logger);
+    /// @brief Constructor with a given context and logger.
+    Publisher(UMPS::Python::Messaging::Context &context,
+              UMPS::Python::Logging::ILog &logger);
+    /// @brief Initializes the publisher.
     void initialize(const PublisherOptions &options);
-
+    /// @brief Sends a message.
+    void send(const UMPS::Python::MessageFormats::IMessage &message) const;
+    /// @result True indicates the class is initialized.
+    [[nodiscard]] bool isInitialized() const noexcept;
+    /// @brief Destructor.
+    ~Publisher();
 private:
     std::unique_ptr<UMPS::Messaging::PublisherSubscriber::Publisher> pImpl;
 };
@@ -130,7 +147,23 @@ private:
 class Subscriber
 {
 public:
- 
+    /// @brief Constructor.
+    Subscriber();
+    /// @brief Constructor with a given context.
+    explicit Subscriber(UMPS::Python::Messaging::Context &context);
+    /// @brief Constructor with a given logger.
+    explicit Subscriber(UMPS::Python::Logging::ILog &logger);
+    /// @brief Constructor with a given context and logger.
+    Subscriber(UMPS::Python::Messaging::Context &context,
+               UMPS::Python::Logging::ILog &logger);
+    /// @brief Initializes the subscriber.
+    void initialize(const SubscriberOptions &options);
+    /// @result A message.
+    [[nodiscard]] std::unique_ptr<UMPS::Python::MessageFormats::IMessage> receive() const;
+    /// @result True indicates the class is initialized.
+    [[nodiscard]] bool isInitialized() const noexcept;
+    /// @brief Destructor.
+    ~Subscriber();
 private:
     std::unique_ptr<UMPS::Messaging::PublisherSubscriber::Subscriber> pImpl;
 };
