@@ -352,7 +352,6 @@ set(TEST_SRC
     #testing/broadcasts/pick.cpp
     testing/services/proxyOptions.cpp
     testing/services/packetCache.cpp
-    #testing/services/incrementer.cpp
     testing/services/command.cpp
     testing/services/connectionInformation.cpp
     #testing/services/moduleRegistry.cpp

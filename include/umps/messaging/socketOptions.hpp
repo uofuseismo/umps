@@ -122,7 +122,7 @@ public:
     /// @brief If this amount of time ellapses before a message is received then
     ///        the receive message call will return without message.
     ///        This is useful when the receiving thread has other
-    ///        responsibilities.  Such would be the case on polling sockets.
+    ///        responsibilities.
     /// @param[in] timeOut  The receive time out duration in milliseconds.  If
     ///                     this is zero then the requestor will immediately
     ///                     return.  If this is negative then the requestor will
@@ -143,6 +143,17 @@ public:
     void setSendTimeOut(const std::chrono::milliseconds &timeOut) noexcept;
     /// @result The time out duration in milliseconds.
     [[nodiscard]] std::chrono::milliseconds getSendTimeOut() const noexcept;
+
+    /// @brief A polling thread is contained in a while loop that runs until
+    ///        the service is terminated.  The polling thread will wait this 
+    ///        amount of time for a request before proceeding.
+    /// @param[in] timeOut  The amount of time for a polling thread will wait
+    ///                     for a message before proceeding.
+    /// @throws std::invalid_argument if this is negative.
+    void setPollingTimeOut(const std::chrono::milliseconds &timeOut);
+    /// @result The amount of time a polling thread will wait before proceeding
+    ///         to other activities.
+    [[nodiscard]] std::chrono::milliseconds getPollingTimeOut() const noexcept; 
     /// @}
 
     /// @name Routing Identifier

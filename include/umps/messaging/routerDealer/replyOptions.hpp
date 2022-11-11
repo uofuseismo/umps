@@ -112,6 +112,21 @@ public:
     [[nodiscard]] Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
+    /// @name Time Out
+    /// @{
+
+    /// @brief A polling thread is contained in a while loop that runs until
+    ///        the service is terminated.  The polling thread will wait this 
+    ///        amount of time for a request before proceeding.
+    /// @param[in] timeOut  The amount of time for a polling thread will wait
+    ///                     for a message before proceeding.
+    /// @throws std::invalid_argument if this is negative.
+    void setPollingTimeOut(const std::chrono::milliseconds &timeOut);
+    /// @result The amount of time a polling thread will wait before proceeding
+    ///         to other activities.
+    [[nodiscard]] std::chrono::milliseconds getPollingTimeOut() const noexcept;
+    /// @}
+
     /// @name High Water Mark
     /// @{
 

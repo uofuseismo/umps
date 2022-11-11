@@ -126,6 +126,7 @@ public:
         auto receiveTimeOut = options.getReceiveTimeOut();
         auto sendTimeOut = options.getSendTimeOut();  
         auto lingerPeriod = options.getLingerPeriod(); 
+        mPollingTimeOut = options.getPollingTimeOut();
         // Set the socket options
         zapOptions.setSocketOptions(&*mSocket);
         mSocket->set(zmq::sockopt::rcvhwm, receiveHighWaterMark);
@@ -295,7 +296,7 @@ public:
             {
                  {{mSocket->handle(), 0, ZMQ_POLLIN, 0}}
             };
-            zmq::poll(pollItems.data(), pollItems.size(), mPollTimeOut);
+            zmq::poll(pollItems.data(), pollItems.size(), mPollingTimeOut);
             // Got something
             if (pollItems[0].revents & ZMQ_POLLIN)
             {
@@ -491,7 +492,7 @@ public:
     std::thread mPollThread;
     std::string mAddress;
     zmq::socket_type mSocketType;
-    std::chrono::milliseconds mPollTimeOut{10};
+    std::chrono::milliseconds mPollingTimeOut{10};
     bool mConnected{false};
     bool mConnect{true};
     bool mRunning{false};
@@ -605,11 +606,13 @@ public:
         auto receiveHighWaterMark = options.getReceiveHighWaterMark();
         socketOptions.setSendHighWaterMark(sendHighWaterMark);
         socketOptions.setReceiveHighWaterMark(receiveHighWaterMark);
-        // Don't hang around so we can get back to polling
-        std::chrono::milliseconds sendTimeOut{0};
+//TODO
+std::chrono::milliseconds pollingTimeOut{10}; // = options.getPollingTimeOut();
+        socketOptions.setPollingTimeOut(pollingTimeOut);
+        // These are not used
+        constexpr std::chrono::milliseconds sendTimeOut{0};
         socketOptions.setSendTimeOut(sendTimeOut);
-        // In practice this is the polling time out
-        std::chrono::milliseconds receiveTimeOut{0};
+        constexpr std::chrono::milliseconds receiveTimeOut{0};
         socketOptions.setReceiveTimeOut(receiveTimeOut);
         if (options.haveRoutingIdentifier())
         {

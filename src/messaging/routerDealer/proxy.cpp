@@ -397,23 +397,6 @@ void Proxy::stop()
     pImpl->setStarted(false);
 }
 
-/*
-// Stops the proxy
-void Proxy::stop()
-{
-    if (isRunning())
-    {   
-        pImpl->mLogger->debug("Terminating proxy...");
-        pImpl->mCommand->send(zmq::str_buffer("TERMINATE"),
-                              zmq::send_flags::none);
-        pImpl->disconnectFrontend();
-        pImpl->disconnectBackend();
-    }   
-    pImpl->mInitialized = false;
-    pImpl->setStarted(false);
-}
-*/
-
 /// Connection details
 UCI::SocketDetails::Proxy Proxy::getSocketDetails() const
 {

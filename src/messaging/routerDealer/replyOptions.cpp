@@ -27,6 +27,7 @@ public:
     std::string mRoutingIdentifier;
     std::chrono::milliseconds mSendTimeOut{-1};
     std::chrono::milliseconds mReceiveTimeOut{-1};
+    std::chrono::milliseconds mPollingTimeOut{10};
     int mSendHighWaterMark{0}; // Infinite
     int mReceiveHighWaterMark{0}; // Infinite
     bool mHaveCallback{false};
@@ -201,4 +202,19 @@ std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
 bool ReplyOptions::haveCallback() const noexcept
 {
     return pImpl->mHaveCallback;
+}
+
+/// Polling time out
+void ReplyOptions::setPollingTimeOut(const std::chrono::milliseconds &timeOut)
+{
+    if (timeOut.count() < 0)
+    {
+        throw std::invalid_argument("Time out cannot be negative");
+    }
+    pImpl->mPollingTimeOut = timeOut;
+}
+
+std::chrono::milliseconds ReplyOptions::getPollingTimeOut() const noexcept
+{
+    return pImpl->mPollingTimeOut;
 }
