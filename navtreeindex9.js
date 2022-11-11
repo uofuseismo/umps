@@ -1,5 +1,9 @@
 var NAVTREEINDEX9 =
 {
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a5a8307fa11a280c2979ea6c717117c88":[3,5,0,1,2],
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a6d2a656846b7ffd544b34d02aaa1833d":[3,5,0,1,7],
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a6f2495d39ccfcc49c669fae59106fadb":[3,5,0,1,1],
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a92e39ebf22129d345f3ca0662c7e8ea5":[3,5,0,1,22],
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a97e2318ed81979fdc922117428d56791":[3,5,0,1,21],
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#aa384ebbcbf01c7fd37b69f8a8942a968":[3,5,0,1,9],
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#aa3e2adbeee3bbe4f594ba3a02b3bd706":[3,5,0,1,15],
@@ -245,9 +249,5 @@ var NAVTREEINDEX9 =
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_subscriber.html#af625d929b228a69d7cbb79450521d846":[4,0,0,8,1,0,6,9],
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html":[4,0,0,8,1,0,7],
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a064a4dfae88365c50c4d490644d53303":[4,0,0,8,1,0,7,9],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a06d695a0bd79a2a086e0676b999dd9a1":[4,0,0,8,1,0,7,13],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a0c097583890a2c27078f8e32b0c87d09":[4,0,0,8,1,0,7,14],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a28968587af720c3efdb971834c72d5fc":[4,0,0,8,1,0,7,1],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a2c4ec1aa81508eec330d40f91572cb4a":[4,0,0,8,1,0,7,15],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a4fda3082bc3ab3f3c9faaec47ca77fbb":[4,0,0,8,1,0,7,7]
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a06d695a0bd79a2a086e0676b999dd9a1":[4,0,0,8,1,0,7,13]
 };

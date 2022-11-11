@@ -1,5 +1,9 @@
 var NAVTREEINDEX4 =
 {
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a3a38387917a49b52a277aee833d577b4":[4,0,0,6,1,1,7],
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a3c21ff35a83909fe666a61bee1aa13d3":[4,0,0,6,1,1,4],
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a4e70fbc28660a22caabd266de382008b":[4,0,0,6,1,1,2],
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a5ab5764ee24e84eabec0d0bd4da23bed":[4,0,0,6,1,1,3],
 "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a8ab4853534c710190b0dd164122fcc8e":[4,0,0,6,1,1,1],
 "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a8b5eb4d1bb2daf1a23102309bd2a1f49":[4,0,0,6,1,1,16],
 "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a8fe923e0edebdf86d3ff46070321a35e":[4,0,0,6,1,1,22],
@@ -245,9 +249,5 @@ var NAVTREEINDEX4 =
 "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_request.html#ae28e0fc96e7773bc63d8f30855b2eafe":[4,0,0,7,0,0,5],
 "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_request.html#af0b91fa2e1493107ae9925dff9d9ebbc":[4,0,0,7,0,0,15],
 "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_request.html#af8727bfeb47a4092fcc51d9598993ebe":[4,0,0,7,0,0,10],
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html":[4,0,0,7,0,1],
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html#a13e908d6d79303785756ec11975e2955":[4,0,0,7,0,1,18],
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html#a14c4aa2ca598af49ee0462233c96881f":[4,0,0,7,0,1,3],
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html#a1c4af44dbffd27b2b8a71634d7180781":[4,0,0,7,0,1,12],
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html#a22005fd1d48185f4ee8ac9232ee8fafe":[4,0,0,7,0,1,10]
+"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html":[4,0,0,7,0,1]
 };

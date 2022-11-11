@@ -155,7 +155,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9f8c12443dfb98e2da62266a615bebed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Time Out</div></td></tr>
 <tr class="memitem:a64810926fdc8b54d95b11167a4f120b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a64810926fdc8b54d95b11167a4f120b2">setReceiveTimeOut</a> (const std::chrono::milliseconds &amp;timeOut) noexcept</td></tr>
-<tr class="memdesc:a64810926fdc8b54d95b11167a4f120b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this amount of time ellapses before a message is received then the receive message call will return without message. This is useful when the receiving thread has other responsibilities. Such would be the case on polling sockets.  <a href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a64810926fdc8b54d95b11167a4f120b2">More...</a><br /></td></tr>
+<tr class="memdesc:a64810926fdc8b54d95b11167a4f120b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this amount of time ellapses before a message is received then the receive message call will return without message. This is useful when the receiving thread has other responsibilities.  <a href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a64810926fdc8b54d95b11167a4f120b2">More...</a><br /></td></tr>
 <tr class="separator:a64810926fdc8b54d95b11167a4f120b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2170b151438ceeab50de293caf7f89b9"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a2170b151438ceeab50de293caf7f89b9">getReceiveTimeOut</a> () const noexcept</td></tr>
 <tr class="separator:a2170b151438ceeab50de293caf7f89b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,6 +164,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a966ac9817d9f8a764adc8477dd4688a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c49792e8461e0aaafd9fc77b80c2470"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a8c49792e8461e0aaafd9fc77b80c2470">getSendTimeOut</a> () const noexcept</td></tr>
 <tr class="separator:a8c49792e8461e0aaafd9fc77b80c2470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4706d5d9f63a07cdf3e397325a42feab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a4706d5d9f63a07cdf3e397325a42feab">setPollingTimeOut</a> (const std::chrono::milliseconds &amp;timeOut)</td></tr>
+<tr class="memdesc:a4706d5d9f63a07cdf3e397325a42feab"><td class="mdescLeft">&#160;</td><td class="mdescRight">A polling thread is contained in a while loop that runs until the service is terminated. The polling thread will wait this amount of time for a request before proceeding.  <a href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a4706d5d9f63a07cdf3e397325a42feab">More...</a><br /></td></tr>
+<tr class="separator:a4706d5d9f63a07cdf3e397325a42feab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6099476d3c3efeb46e3d7762a6f5b46f"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#a6099476d3c3efeb46e3d7762a6f5b46f">getPollingTimeOut</a> () const noexcept</td></tr>
+<tr class="separator:a6099476d3c3efeb46e3d7762a6f5b46f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Routing Identifier</div></td></tr>
 <tr class="memitem:ac0b79d75a7a6c5999f881ec909e5b860"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#ac0b79d75a7a6c5999f881ec909e5b860">setRoutingIdentifier</a> (const std::string &amp;identifier)</td></tr>
 <tr class="memdesc:ac0b79d75a7a6c5999f881ec909e5b860"><td class="mdescLeft">&#160;</td><td class="mdescRight">This provides a way for a socket to identify itself for the benefit of a proxy that must route messages to specific endpoints. For most applications this is not required and you should let ZeroMQ automatically populate this information.  <a href="class_u_m_p_s_1_1_messaging_1_1_socket_options.html#ac0b79d75a7a6c5999f881ec909e5b860">More...</a><br /></td></tr>
@@ -357,6 +362,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a6099476d3c3efeb46e3d7762a6f5b46f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6099476d3c3efeb46e3d7762a6f5b46f">&#9670;&nbsp;</a></span>getPollingTimeOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::milliseconds UMPS::Messaging::SocketOptions::getPollingTimeOut </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The amount of time a polling thread will wait before proceeding to other activities. </dd></dl>
 
 </div>
 </div>
@@ -792,6 +823,38 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a4706d5d9f63a07cdf3e397325a42feab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4706d5d9f63a07cdf3e397325a42feab">&#9670;&nbsp;</a></span>setPollingTimeOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UMPS::Messaging::SocketOptions::setPollingTimeOut </td>
+          <td>(</td>
+          <td class="paramtype">const std::chrono::milliseconds &amp;&#160;</td>
+          <td class="paramname"><em>timeOut</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A polling thread is contained in a while loop that runs until the service is terminated. The polling thread will wait this amount of time for a request before proceeding. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">timeOut</td><td>The amount of time for a polling thread will wait for a message before proceeding. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this is negative. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ae428c7a07413823359d5f7f722f4b824"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae428c7a07413823359d5f7f722f4b824">&#9670;&nbsp;</a></span>setReceiveHighWaterMark()</h2>
 
@@ -850,7 +913,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table>
 </div><div class="memdoc">
 
-<p>If this amount of time ellapses before a message is received then the receive message call will return without message. This is useful when the receiving thread has other responsibilities. Such would be the case on polling sockets. </p>
+<p>If this amount of time ellapses before a message is received then the receive message call will return without message. This is useful when the receiving thread has other responsibilities. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">timeOut</td><td>The receive time out duration in milliseconds. If this is zero then the requestor will immediately return. If this is negative then the requestor will wait indefinitely until a message is received. </td></tr>

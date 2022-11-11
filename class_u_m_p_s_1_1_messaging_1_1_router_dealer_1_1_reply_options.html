@@ -146,6 +146,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3e81c87d66ee01598dc8dd1155542f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c539a8e54ac9437c795bad291df6d6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_authentication_1_1_z_a_p_options.html">Authentication::ZAPOptions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a9c539a8e54ac9437c795bad291df6d6a">getZAPOptions</a> () const noexcept</td></tr>
 <tr class="separator:a9c539a8e54ac9437c795bad291df6d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Time Out</div></td></tr>
+<tr class="memitem:a6d791a71077050967e391f45557a1fab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a6d791a71077050967e391f45557a1fab">setPollingTimeOut</a> (const std::chrono::milliseconds &amp;timeOut)</td></tr>
+<tr class="memdesc:a6d791a71077050967e391f45557a1fab"><td class="mdescLeft">&#160;</td><td class="mdescRight">A polling thread is contained in a while loop that runs until the service is terminated. The polling thread will wait this amount of time for a request before proceeding.  <a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a6d791a71077050967e391f45557a1fab">More...</a><br /></td></tr>
+<tr class="separator:a6d791a71077050967e391f45557a1fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78e2aa15873c17021f321606b6cfa2f4"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a78e2aa15873c17021f321606b6cfa2f4">getPollingTimeOut</a> () const noexcept</td></tr>
+<tr class="separator:a78e2aa15873c17021f321606b6cfa2f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">High Water Mark</div></td></tr>
 <tr class="memitem:ac25f95836ea3d5ff2832c131b8588e0b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#ac25f95836ea3d5ff2832c131b8588e0b">setSendHighWaterMark</a> (int highWaterMark)</td></tr>
 <tr class="separator:ac25f95836ea3d5ff2832c131b8588e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -293,6 +299,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a78e2aa15873c17021f321606b6cfa2f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78e2aa15873c17021f321606b6cfa2f4">&#9670;&nbsp;</a></span>getPollingTimeOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::milliseconds UMPS::Messaging::RouterDealer::ReplyOptions::getPollingTimeOut </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The amount of time a polling thread will wait before proceeding to other activities. </dd></dl>
 
 </div>
 </div>
@@ -594,6 +626,38 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>It is important this function never throw, crash, etc. This is when exiting gracefully matters. </dd></dl>
+
+</div>
+</div>
+<a id="a6d791a71077050967e391f45557a1fab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d791a71077050967e391f45557a1fab">&#9670;&nbsp;</a></span>setPollingTimeOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UMPS::Messaging::RouterDealer::ReplyOptions::setPollingTimeOut </td>
+          <td>(</td>
+          <td class="paramtype">const std::chrono::milliseconds &amp;&#160;</td>
+          <td class="paramname"><em>timeOut</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A polling thread is contained in a while loop that runs until the service is terminated. The polling thread will wait this amount of time for a request before proceeding. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">timeOut</td><td>The amount of time for a polling thread will wait for a message before proceeding. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::invalid_argument</td><td>if this is negative. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

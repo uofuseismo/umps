@@ -1,5 +1,9 @@
 var NAVTREEINDEX8 =
 {
+"class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#a76cb6f2c42d645ed48ca9e940a05b68b":[4,0,0,7,4,6],
+"class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#a807ed4b2d25850914bf09370a0052772":[4,0,0,7,4,1],
+"class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#a903c104bdd1dbd8afc1fc35775734c6b":[4,0,0,7,4,0],
+"class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#aa2b2b0d24c2cddec8624839b9457f253":[4,0,0,7,4,7],
 "class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#ab057d5b77cf64ff98a87feb08afe8658":[4,0,0,7,4,14],
 "class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#abb3adf116009da7f1b58296cf4b89ae2":[4,0,0,7,4,3],
 "class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#aef034fdcb8289a59fe47fc29fbbb1700":[4,0,0,7,4,13],
@@ -245,9 +249,5 @@ var NAVTREEINDEX8 =
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a3c5628f33886391bbea48389898230a4":[3,5,0,1,8],
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a3e7835600f9974a6338ba8be79b14a17":[3,5,0,1,11],
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a4bf5342ba90dda088eeeb20fbc94f20a":[3,5,0,1,20],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a4cc13b3ca0d5c04cc4d4932334f954e2":[3,5,0,1,19],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a5a8307fa11a280c2979ea6c717117c88":[3,5,0,1,2],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a6d2a656846b7ffd544b34d02aaa1833d":[3,5,0,1,7],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a6f2495d39ccfcc49c669fae59106fadb":[3,5,0,1,1],
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a92e39ebf22129d345f3ca0662c7e8ea5":[3,5,0,1,22]
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a4cc13b3ca0d5c04cc4d4932334f954e2":[3,5,0,1,19]
 };
