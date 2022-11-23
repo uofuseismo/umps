@@ -16,6 +16,7 @@ find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 #find_package(Doxygen)
+add_compile_definitions(UMPS_SRC)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindZeroMQ REQUIRED)
@@ -190,12 +191,12 @@ target_link_libraries(umps
                       PUBLIC cppzmq Threads::Threads
                       PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json ${SQLite3_LIBRARIES})
 target_include_directories(umps
+                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            PRIVATE spdlog::spdlog
                            PRIVATE ${cppzmq_INCLUDE_DIR}
                            PRIVATE ${SQLite3_INCLUDE_DIRS}
                            PRIVATE Boost::program_options
-                           PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/umps>
-                           PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+                           PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/umps>)
 #if (${BUILD_TBB})
 #    target_include_directories(umps PRIVATE ${TBB_INCLUDE_DIR})
 #    target_link_libraries(umps PRIVATE ${TBB_LIBRARY})

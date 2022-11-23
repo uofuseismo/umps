@@ -1,3 +1,4 @@
+#ifdef UMPS_SRC
 #ifndef PRIVATE_ISEMPTY_HPP
 #define PRIVATE_ISEMPTY_HPP
 #include <string>
@@ -15,4 +16,5 @@ bool isEmpty(const std::string &s)
                        });
 }
 }
+#endif
 #endif

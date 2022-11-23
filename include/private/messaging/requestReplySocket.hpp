@@ -1,5 +1,6 @@
 #ifndef PRIVATE_MESSAGING_REQUEST_REPLY_SOCKET_HPP
 #define PRIVATE_MESSAGING_REQUEST_REPLY_SOCKET_HPP
+#ifdef UMPS_SRC
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -654,4 +655,5 @@ std::chrono::milliseconds pollingTimeOut{10}; // = options.getPollingTimeOut();
 ///private:
 };
 }
+#endif
 #endif

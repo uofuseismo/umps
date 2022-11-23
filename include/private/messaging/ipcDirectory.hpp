@@ -1,5 +1,6 @@
 #ifndef PRIVATE_MESSAGING_IPCDIRECTORY_HPP
 #define PRIVATE_MESSAGING_IPCDIRECTORY_HPP
+#ifdef UMPS_SRC
 #include <filesystem>
 #include <string>
 namespace
@@ -85,4 +86,5 @@ void removeIPCFile(const std::string &address,
     }
 }
 }
+#endif
 #endif
