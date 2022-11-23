@@ -16,6 +16,7 @@ find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 #find_package(Doxygen)
+add_compile_definitions(UMPS_SRC)
 
 set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindZeroMQ REQUIRED)

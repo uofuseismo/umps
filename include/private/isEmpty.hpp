@@ -1,5 +1,6 @@
 #ifndef PRIVATE_ISEMPTY_HPP
 #define PRIVATE_ISEMPTY_HPP
+#ifdef UMPS_SRC
 #include <string>
 #include <algorithm>
 namespace
@@ -15,4 +16,5 @@ bool isEmpty(const std::string &s)
                        });
 }
 }
+#endif
 #endif

@@ -1,5 +1,6 @@
 #ifndef PRIVATE_THREAD_SAFE_QUEUE_HPP
 #define PRIVATE_THREAD_SAFE_QUEUE_HPP
+#ifdef UMPS_SRC
 #include <queue>
 #include <memory>
 #include <mutex>
@@ -188,4 +189,5 @@ private:
     std::condition_variable mConditionVariable;
 };
 }
+#endif
 #endif
