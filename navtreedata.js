@@ -1,24 +1,26 @@
 /*
-@licstart  The following is the entire license notice for the
-JavaScript code in this file.
+ @licstart  The following is the entire license notice for the JavaScript code in this file.
 
-Copyright (C) 1997-2019 by Dimitri van Heesch
+ The MIT License (MIT)
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of version 2 of the GNU General Public License as published by
-the Free Software Foundation
+ Copyright (C) 1997-2020 by Dimitri van Heesch
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ and associated documentation files (the "Software"), to deal in the Software without restriction,
+ including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ The above copyright notice and this permission notice shall be included in all copies or
+ substantial portions of the Software.
 
-@licend  The above is the entire license notice
-for the JavaScript code in this file
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ @licend  The above is the entire license notice for the JavaScript code in this file
 */
 var NAVTREE =
 [
@@ -66,18 +68,18 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-".html",
-"class_u_m_p_s_1_1_logging_1_1_i_log.html#aaaf26c4249666453be07af369c929b93",
-"class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a84d2acfb517a491653e35765a63de14b",
-"class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#aa3d422294832c1ad1cb3761ba78b4d88",
-"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html#a3a38387917a49b52a277aee833d577b4",
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html#a13e908d6d79303785756ec11975e2955",
-"class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_increment_response.html#aa72c519759a96ec55a7348b52e77f510",
-"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_circular_buffer.html#a931864695092917a5a00af30ffb86e91",
-"class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#a76cb6f2c42d645ed48ca9e940a05b68b",
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a5a8307fa11a280c2979ea6c717117c88",
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html#a0c097583890a2c27078f8e32b0c87d09",
-"functions_func_x.html"
+"_topic_install.html",
+"class_u_m_p_s_1_1_logging_1_1_standard_out.html#ad8662470c0678e854f8f0c20a6707e7f",
+"class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_request.html#ae8cf6e4a6f161f6eaaa9bc30fd138807",
+"class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy_options.html#aeb499225f8c723f6b15742f47a450524",
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_publisher.html#ae09d960dc604ddfe02808e8986c94bc0",
+"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html#ae0070d895bc824732742600ca94b93c8",
+"class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_items_request.html#ab6c2dc784de5655e7b79de1b2c31ccaf",
+"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_data_request.html#a4e73162a22853b903c0dc9b996e57fa4",
+"class_u_m_p_s_1_1_services_1_1_command_1_1_available_commands_response.html#a11ba81cc382da6d2469e2e7fccbf2fad",
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a2d495dc43a1c0a2235beff9d2661f87c",
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_subscriber.html#abafa37082a49803e4917e03d6fdf89ce",
+"group___applications___operator.html#ggad45ef6550bebe768224ea36e6bba31feabe55b6387170df0ca68f41225268e842"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

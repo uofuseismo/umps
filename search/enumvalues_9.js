@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['xpublisher_1286',['XPublisher',['../group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab46a5abdffc8d4830aa4b007fef46f0f',1,'UMPS::Services::ConnectionInformation']]],
-  ['xsubscriber_1287',['XSubscriber',['../group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab92ed014a910ddc782d980aa84055104',1,'UMPS::Services::ConnectionInformation']]]
+  ['xpublisher_1283',['XPublisher',['../group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab46a5abdffc8d4830aa4b007fef46f0f',1,'UMPS::Services::ConnectionInformation']]],
+  ['xsubscriber_1284',['XSubscriber',['../group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67ab92ed014a910ddc782d980aa84055104',1,'UMPS::Services::ConnectionInformation']]]
 ];

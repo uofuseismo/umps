@@ -1,4 +1,4 @@
 <map id="User Privileges" name="User Privileges">
-<area shape="rect" id="node1" title="Defines the minimum required user&#45;privileges to access various messaging relays." alt="" coords="171,5,291,31"/>
-<area shape="rect" id="node2" href="$group___authentication__chapter.html" title=" " alt="" coords="5,5,123,31"/>
+<area shape="rect" id="node1" title="Defines the minimum required user&#45;privileges to access various messaging relays." alt="" coords="213,5,333,31"/>
+<area shape="rect" id="node2" href="$group___authentication__chapter.html" title=" " alt="" coords="5,5,165,31"/>
 </map>

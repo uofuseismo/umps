@@ -1,6 +1,6 @@
 <map id="Publisher&#45;Subscriber Patterns" name="Publisher&#45;Subscriber Patterns">
 <area shape="rect" id="node1" href="$group___messaging_patterns___pub_sub___x_pub_x_sub.html" title="A fully asynchronous publish&#45;subscribe mechanism whereby a forwarder (proxy) relays messages from mul..." alt="" coords="409,5,556,45"/>
-<area shape="rect" id="node2" href="$group___messaging_patterns__chapter.html" title=" " alt="" coords="5,42,155,67"/>
+<area shape="rect" id="node2" href="$group___messaging_patterns__chapter.html" title=" " alt="" coords="5,35,155,75"/>
 <area shape="rect" id="node4" title=" " alt="" coords="203,35,357,75"/>
 <area shape="rect" id="node3" href="$group___messaging_patterns___pub_sub___pub_sub.html" title="The simplest communication mechanism which is included for pedagogical purposes only...." alt="" coords="405,70,560,95"/>
 </map>
