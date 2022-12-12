@@ -8,7 +8,6 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include <zmq.hpp>
 #include "umps/proxyBroadcasts/heartbeat/publisherProcess.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp"
 #include "umps/proxyBroadcasts/heartbeat/publisher.hpp"
