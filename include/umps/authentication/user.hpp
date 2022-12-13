@@ -22,6 +22,7 @@ public:
     /// @name Constructors
     /// @{
 
+    /// @brief Constructor.
     User();
     /// @brief Copy constructor.
     /// @param[in] user  The user class from which to initialize this class.

@@ -13,6 +13,7 @@ namespace UMPS::ProxyServices::Command
 /// @class ProxyOptions "proxyOptions.hpp" "umps/proxyServices/command/proxyOptions.hpp"
 /// @brief Defines the options for the command proxy.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices_Command
 class ProxyOptions
 {
 public:

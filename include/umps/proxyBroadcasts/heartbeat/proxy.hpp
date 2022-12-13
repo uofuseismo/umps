@@ -33,6 +33,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 ///        can publish messages to this XSUB socket and from which
 ///        subscribers can receive content from this XPUB socket.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class Proxy : public IProxy
 {
 public:

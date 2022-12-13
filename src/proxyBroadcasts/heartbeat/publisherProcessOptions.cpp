@@ -15,20 +15,20 @@ public:
     std::chrono::seconds mInterval{30};
 };
 
-/// C'tor
+/// Constructor
 PublisherProcessOptions::PublisherProcessOptions() :
     pImpl(std::make_unique<PublisherProcessOptionsImpl> ())
 {
 }
 
-/// Copy c'tor
+/// Copy constructor
 PublisherProcessOptions::PublisherProcessOptions(
     const PublisherProcessOptions &options)
 {
     *this = options;
 }
 
-/// Move c'tor
+/// Move constructor
 PublisherProcessOptions::PublisherProcessOptions(
     PublisherProcessOptions &&options) noexcept
 {

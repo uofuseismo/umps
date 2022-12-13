@@ -20,6 +20,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @brief This process will send status messages to the heartbeat broadcast
 ///        at regular intervals. 
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class PublisherProcessOptions
 {
 public:

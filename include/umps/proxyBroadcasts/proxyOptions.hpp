@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_PROXYOPTIONS_HPP
-#define UMPS_PROXYBROADCASTS_PROXYOPTIONS_HPP
+#ifndef UMPS_PROXY_BROADCASTS_PROXY_OPTIONS_HPP
+#define UMPS_PROXY_BROADCASTS_PROXY_OPTIONS_HPP
 #include <memory>
 namespace UMPS
 {
@@ -19,6 +19,7 @@ namespace UMPS::ProxyBroadcasts
 ///        the packet cache service.  Note the terminology - clients connect
 ///        to the frontend and servers connect to the backend.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts
 class ProxyOptions
 {
 public:

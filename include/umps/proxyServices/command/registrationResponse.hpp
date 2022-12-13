@@ -19,6 +19,7 @@ enum class RegistrationReturnCode
 /// @brief The response to a module registration response.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 /// @sa RegistrationResponse 
+/// @ingroup UMPS_ProxyServices_Command
 class RegistrationResponse : public UMPS::MessageFormats::IMessage
 {
 public:

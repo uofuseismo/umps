@@ -24,6 +24,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @details The publisher sends heartbeats and it is up to the subscribers to
 ///          be listening.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class PublisherOptions
 {
 public:

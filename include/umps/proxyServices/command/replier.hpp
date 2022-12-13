@@ -27,6 +27,7 @@ namespace UMPS::ProxyServices::Command
 /// @class Replier "replier.hpp" "umps/proxyServices/command/replier.hpp"
 /// @brief A replier mechanism for the server in the remote command service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices_Command
 class Replier
 {
 public:

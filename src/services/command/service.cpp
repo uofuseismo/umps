@@ -1,5 +1,4 @@
 #include <iostream>
-#include <chrono>
 #include <thread>
 #include <csignal>
 #include <filesystem>
@@ -26,9 +25,9 @@ namespace URequestRouter = UMPS::Messaging::RequestRouter;
 class Service::ServiceImpl
 {
 public:
-    /// C'tor
+    /// Constructor
     ServiceImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                     std::shared_ptr<UMPS::Logging::ILog> logger)
+                     const std::shared_ptr<UMPS::Logging::ILog> &logger)
     {
         // Make the logger
         if (logger == nullptr)

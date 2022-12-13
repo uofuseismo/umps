@@ -8,6 +8,7 @@ namespace UMPS::ProxyServices::Command
 /// @brief Requests the available modules that have been registered with the
 ///        remote module monitoring service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices_Command
 class AvailableModulesRequest : public UMPS::MessageFormats::IMessage
 {
 public:

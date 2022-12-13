@@ -29,6 +29,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @brief A ZeroMQ publisher specialized for sending heartbeat (status)
 ///        messages.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class Publisher
 {
 public:

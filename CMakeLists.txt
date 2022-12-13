@@ -143,6 +143,7 @@ set(MODULES_LIBSRC
     src/proxyServices/command/requestorOptions.cpp
     src/proxyServices/command/replier.cpp
     src/proxyServices/command/replierOptions.cpp
+    src/proxyServices/command/replierProcess.cpp
     #src/proxyServices/incrementer/counter.cpp
     #src/proxyServices/incrementer/incrementRequest.cpp
     #src/proxyServices/incrementer/incrementResponse.cpp

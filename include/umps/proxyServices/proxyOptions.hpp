@@ -20,6 +20,7 @@ namespace UMPS::ProxyServices
 ///        to the frontend and subscribers connect to the backend so that
 ///        data flows from front to back.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices
 class ProxyOptions
 {
 public:

@@ -12,6 +12,7 @@ namespace UMPS::ProxyServices::Command
 /// @brief This sets the parameters for the utility that will allow users to 
 ///        interact with remote modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices_Command
 class RequestorOptions
 {
 public:

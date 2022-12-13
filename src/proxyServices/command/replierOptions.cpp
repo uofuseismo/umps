@@ -19,6 +19,7 @@ public:
         address << static_cast<void const *> (this);
         auto routingIdentifier = "module_" + address.str();
         mOptions.setRoutingIdentifier(routingIdentifier);
+        mOptions.setPollingTimeOut(std::chrono::milliseconds {10});
     }
     URouterDealer::ReplyOptions mOptions;
     ModuleDetails mDetails;
@@ -70,6 +71,8 @@ void ReplierOptions::clear() noexcept
 
 /// Destructor
 ReplierOptions::~ReplierOptions() = default;
+
+void setPollingInterval(const std::chrono::milliseconds &pollingInterval);
 
 /// Module details
 void ReplierOptions::setModuleDetails(const ModuleDetails &details)
@@ -141,3 +144,22 @@ URouterDealer::ReplyOptions ReplierOptions::getOptions() const
     if (!haveCallback()){throw std::runtime_error("Callback not set");}
     return pImpl->mOptions;
 }
+
+/// Polling interval
+void ReplierOptions::setPollingTimeOut(
+    const std::chrono::milliseconds &pollingInterval)
+{
+    constexpr std::chrono::milliseconds zero{0};
+    if (pollingInterval < zero)
+    {
+        throw std::invalid_argument("Polling interval must be positive");
+    }
+    pImpl->mOptions.setPollingTimeOut(pollingInterval);
+}
+
+/*
+std::chrono::milliseconds ReplierOptions::getPollingTimeOut() const noexcept
+{
+    return pImpl->mOptions.getPollingTimeOut();
+}
+*/
