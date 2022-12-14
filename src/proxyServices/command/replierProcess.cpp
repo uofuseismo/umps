@@ -204,7 +204,8 @@ UMPS::ProxyServices::Command::createReplierProcess(
     //
     std::string service = "ModuleRegistry";
     ReplierOptions replierOptions;
-    auto interval= replierOptions.getPollingTimeOut();
+    replierOptions.setModuleDetails(moduleDetails);
+    auto interval = replierOptions.getPollingTimeOut();
     auto sendHighWaterMark= replierOptions.getSendHighWaterMark();
     auto receiveHighWaterMark= replierOptions.getReceiveHighWaterMark();
     std::string address;
