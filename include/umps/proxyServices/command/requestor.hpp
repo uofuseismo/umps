@@ -33,6 +33,7 @@ namespace UMPS::ProxyServices::Command
 ///        i.e., - on a different machine.  Nominally, you will only want this
 ///        to be used by privileged users that you trust.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices_Command
 class Requestor
 {
 public:

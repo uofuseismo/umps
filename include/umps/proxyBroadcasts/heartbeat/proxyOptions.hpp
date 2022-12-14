@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_PROXYOPTIONS_HPP
-#define UMPS_PROXYBROADCASTS_HEARTBEAT_PROXYOPTIONS_HPP
+#ifndef UMPS_PROXY_BROADCASTS_HEARTBEAT_PROXY_OPTIONS_HPP
+#define UMPS_PROXY_BROADCASTS_HEARTBEAT_PROXY_OPTIONS_HPP
 #include <memory>
 namespace UMPS::Authentication
 {
@@ -13,6 +13,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 ///        to the frontend and subscribers connect to the backend so that
 ///        data flows from front to back.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class ProxyOptions
 {
 public:

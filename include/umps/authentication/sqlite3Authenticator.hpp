@@ -34,10 +34,12 @@ public:
     /// @param[in] authenticator  The authenticator from which to initialize
     ///                           this class.  On exit, authenticator's behavior
     ///                           is undefined.
+    /// @param[in] privileges     The user's minimum privileges level to connect. 
     SQLite3Authenticator(SQLite3Authenticator &&authenticator,
                          UserPrivileges privileges = UserPrivileges::ReadOnly) noexcept;
     /// @brief Constructor with a specified logger.
     /// @param[in] logger   The logging utility.
+    /// @param[in] privileges     The user's minimum privileges level to connect.
     explicit SQLite3Authenticator(std::shared_ptr<UMPS::Logging::ILog> &logger,
                                   UserPrivileges privileges = UserPrivileges::ReadOnly);
     /// @}
@@ -55,6 +57,7 @@ public:
 
     /// @name Tables
     /// @{
+
     /// @brief Opens the users table.
     /// @param[in] fileName   The name of the SQLite3 user table file.
     /// @param[in] createIfDoesNotExist  If true and the table does not exist

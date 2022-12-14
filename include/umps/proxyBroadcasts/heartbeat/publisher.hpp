@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_PUBLISHER_HPP
-#define UMPS_PROXYBROADCASTS_HEARTBEAT_PUBLISHER_HPP
+#ifndef UMPS_PROXY_BROADCASTS_HEARTBEAT_PUBLISHER_HPP
+#define UMPS_PROXY_BROADCASTS_HEARTBEAT_PUBLISHER_HPP
 #include <memory>
 #include "umps/authentication/enums.hpp"
 // Forward declarations
@@ -29,6 +29,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @brief A ZeroMQ publisher specialized for sending heartbeat (status)
 ///        messages.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class Publisher
 {
 public:

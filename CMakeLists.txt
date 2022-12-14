@@ -35,7 +35,7 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/failure.cpp
     src/messageFormats/message.cpp
     src/messageFormats/messages.cpp
-    src/messageFormats/dataPacket.cpp
+    #src/messageFormats/dataPacket.cpp
     src/messageFormats/pick.cpp
     src/messageFormats/text.cpp)
 set(MESSAGING_SRC
@@ -113,10 +113,10 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/proxyOptions.cpp
     #src/proxyBroadcasts/dataPacket/proxy.cpp
     #src/proxyBroadcasts/dataPacket/proxyOptions.cpp
-    src/proxyBroadcasts/dataPacket/publisher.cpp
-    src/proxyBroadcasts/dataPacket/publisherOptions.cpp
-    src/proxyBroadcasts/dataPacket/subscriber.cpp
-    src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
+    #src/proxyBroadcasts/dataPacket/publisher.cpp
+    #src/proxyBroadcasts/dataPacket/publisherOptions.cpp
+    #src/proxyBroadcasts/dataPacket/subscriber.cpp
+    #src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
     #src/proxyBroadcasts/heartbeat/proxy.cpp
     #src/proxyBroadcasts/heartbeat/proxyOptions.cpp
     src/proxyBroadcasts/heartbeat/publisher.cpp
@@ -143,33 +143,23 @@ set(MODULES_LIBSRC
     src/proxyServices/command/requestorOptions.cpp
     src/proxyServices/command/replier.cpp
     src/proxyServices/command/replierOptions.cpp
-    #src/proxyServices/incrementer/counter.cpp
-    #src/proxyServices/incrementer/incrementRequest.cpp
-    #src/proxyServices/incrementer/incrementResponse.cpp
-    #src/proxyServices/incrementer/itemsRequest.cpp
-    #src/proxyServices/incrementer/itemsResponse.cpp
-    #src/proxyServices/incrementer/options.cpp
-    #src/proxyServices/incrementer/requestor.cpp
-    #src/proxyServices/incrementer/requestorOptions.cpp
-    #src/proxyServices/incrementer/replier.cpp
-    #src/proxyServices/incrementer/replierOptions.cpp
-    #src/proxyServices/incrementer/service.cpp
-    src/proxyServices/packetCache/bulkDataRequest.cpp
-    src/proxyServices/packetCache/bulkDataResponse.cpp
-    src/proxyServices/packetCache/circularBuffer.cpp
-    src/proxyServices/packetCache/cappedCollection.cpp
-    src/proxyServices/packetCache/dataRequest.cpp
-    src/proxyServices/packetCache/dataResponse.cpp
-    src/proxyServices/packetCache/wigginsInterpolator.cpp
-    #src/proxyServices/packetCache/proxy.cpp
-    #src/proxyServices/packetCache/proxyOptions.cpp
-    src/proxyServices/packetCache/sensorRequest.cpp
-    src/proxyServices/packetCache/sensorResponse.cpp
-    src/proxyServices/packetCache/service.cpp
-    src/proxyServices/packetCache/replier.cpp
-    src/proxyServices/packetCache/replierOptions.cpp
-    src/proxyServices/packetCache/requestor.cpp
-    src/proxyServices/packetCache/requestorOptions.cpp
+    src/proxyServices/command/replierProcess.cpp
+    #src/proxyServices/packetCache/bulkDataRequest.cpp
+    #src/proxyServices/packetCache/bulkDataResponse.cpp
+    #src/proxyServices/packetCache/circularBuffer.cpp
+    #src/proxyServices/packetCache/cappedCollection.cpp
+    #src/proxyServices/packetCache/dataRequest.cpp
+    #src/proxyServices/packetCache/dataResponse.cpp
+    #src/proxyServices/packetCache/wigginsInterpolator.cpp
+    ##src/proxyServices/packetCache/proxy.cpp
+    ##src/proxyServices/packetCache/proxyOptions.cpp
+    #src/proxyServices/packetCache/sensorRequest.cpp
+    #src/proxyServices/packetCache/sensorResponse.cpp
+    #src/proxyServices/packetCache/service.cpp
+    #src/proxyServices/packetCache/replier.cpp
+    #src/proxyServices/packetCache/replierOptions.cpp
+    #src/proxyServices/packetCache/requestor.cpp
+    #src/proxyServices/packetCache/requestorOptions.cpp
     src/modules/operator/readZAPOptions.cpp)
 #if (${BUILD_EW})
 #   set(EARTHWORM_SRC 
@@ -224,27 +214,6 @@ target_include_directories(uOperator
                            PRIVATE ${CMAKE_SOURCE_DIR}/include
                            PRIVATE Boost::program_options)
 target_link_libraries(uOperator PRIVATE umps Boost::program_options Threads::Threads)
-
-#add_executable(packetCache src/modules/services/packetCache.cpp)
-#set_target_properties(packetCache PROPERTIES
-#                      CXX_STANDARD 20
-#                      CXX_STANDARD_REQUIRED YES
-#                      CXX_EXTENSIONS NO)
-#target_include_directories(packetCache
-#                           PRIVATE ${CMAKE_SOURCE_DIR}/include
-#                           PRIVATE Boost::program_options)
-#target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
-
-
-#add_executable(incrementer src/modules/services/incrementer.cpp)
-#set_target_properties(incrementer PROPERTIES
-#                      CXX_STANDARD 20
-#                      CXX_STANDARD_REQUIRED YES
-#                      CXX_EXTENSIONS NO)
-#target_include_directories(incrementer
-#                           PRIVATE ${CMAKE_SOURCE_DIR}/include
-#                           PRIVATE Boost::program_options)
-#target_link_libraries(incrementer PRIVATE umps Boost::program_options Threads::Threads)
 
 add_executable(uKeyPair src/modules/authentication/keypair.cpp)
 set_target_properties(uKeyPair PROPERTIES
@@ -342,17 +311,15 @@ set(TEST_SRC
     testing/main.cpp
     testing/messageFormats/messages.cpp
     testing/messageFormats/heartbeat.cpp
-    testing/messageFormats/pick.cpp
-    testing/messageFormats/dataPacket.cpp
+    #testing/messageFormats/pick.cpp
     testing/messageFormats/failure.cpp
     testing/messageFormats/text.cpp
     testing/messageFormats/heartbeat.cpp
     testing/broadcasts/proxyOptions.cpp
-    testing/broadcasts/dataPacket.cpp
+    #testing/broadcasts/dataPacket.cpp
     testing/broadcasts/heartbeat.cpp
     #testing/broadcasts/pick.cpp
     testing/services/proxyOptions.cpp
-    #testing/services/packetCache.cpp
     testing/services/command.cpp
     testing/services/connectionInformation.cpp
     #testing/services/moduleRegistry.cpp
@@ -381,9 +348,6 @@ set(TEST_COMMUNICATION_SRC
     #testing/communication/requestRouter.cpp
     testing/communication/xpubxsub.cpp
     testing/communication/routerDealer.cpp
-    testing/communication/dataPacket.cpp
-    #testing/communication/packetCache.cpp
-    #testing/communication/incrementer.cpp
 )
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
 set_target_properties(commTests PROPERTIES

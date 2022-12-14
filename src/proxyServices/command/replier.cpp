@@ -1,19 +1,16 @@
 #include <iostream>
 #include <thread>
+#include <utility>
 #include "umps/proxyServices/command/replier.hpp"
 #include "umps/proxyServices/command/replierOptions.hpp"
 #include "umps/proxyServices/command/registrationRequest.hpp"
 #include "umps/proxyServices/command/registrationResponse.hpp"
 #include "umps/proxyServices/command/moduleDetails.hpp"
-#include "umps/messaging/routerDealer/reply.hpp"
-#include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/messageFormats/failure.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/services/command/terminateRequest.hpp"
-#include "umps/services/connectionInformation/socketDetails/reply.hpp"
 #include "umps/logging/log.hpp"
 #include "umps/messageFormats/staticUniquePointerCast.hpp"
-//#include "private/messaging/replySocket.hpp"
 #include "private/messaging/requestReplySocket.hpp"
 #include "private/services/ping.hpp"
 #include "private/services/terminate.hpp"
@@ -33,8 +30,10 @@ class Replier::ReplierImpl : public ::RequestReplySocket
 {
 public:
     ReplierImpl(std::shared_ptr<UMPS::Messaging::Context> context,
-                      std::shared_ptr<UMPS::Logging::ILog> logger) :
-        ::RequestReplySocket(zmq::socket_type::dealer, context, logger)
+                std::shared_ptr<UMPS::Logging::ILog> logger) :
+        ::RequestReplySocket(zmq::socket_type::dealer,
+                             std::move(context),
+                             std::move(logger))
     {
         std::unique_ptr<UMPS::MessageFormats::IMessage> registrationResponse
             =  std::make_unique<RegistrationResponse> ();
@@ -51,6 +50,7 @@ public:
         {
             throw std::runtime_error("Callback not set for poll");
         }
+        auto pollingTimeOut = mOptions.getOptions().getPollingTimeOut();
         ::PingRequest privatePingRequest;
         ::PingResponse privatePingResponse;
         ::TerminateRequest privateTerminateRequest;
@@ -69,7 +69,7 @@ public:
             };
             zmq::poll(pollItems.data(),
                       pollItems.size(),
-                      std::chrono::milliseconds {10});
+                      pollingTimeOut);
             // Got something
             if (pollItems[0].revents & ZMQ_POLLIN)
             {
@@ -395,3 +395,7 @@ bool Replier::isRunning() const noexcept
 {
     return pImpl->isRunning();
 }
+
+///--------------------------------------------------------------------------///
+///                       Utility to Create a Replier                        ///
+///--------------------------------------------------------------------------///

@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_PUBLISHEROPTIONS_HPP
-#define UMPS_PROXYBROADCASTS_HEARTBEAT_PUBLISHEROPTIONS_HPP
+#ifndef UMPS_PROXY_BROADCASTS_HEARTBEAT_PUBLISHER_OPTIONS_HPP
+#define UMPS_PROXY_BROADCASTS_HEARTBEAT_PUBLISHER_OPTIONS_HPP
 #include <memory>
 #include <string>
 #include <chrono>
@@ -24,6 +24,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @details The publisher sends heartbeats and it is up to the subscribers to
 ///          be listening.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class PublisherOptions
 {
 public:

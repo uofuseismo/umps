@@ -35,6 +35,7 @@ namespace UMPS::ProxyServices
 ///        (3) propagated to the frontend, and (4) finally the reply is
 ///        received by the original client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices
 class Proxy
 {
 public:

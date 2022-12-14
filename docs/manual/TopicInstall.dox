@@ -6,11 +6,11 @@ namespace UMPS
 
 This page outlines strategies for building UMPS from source.  The details for these steps can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
 
-\subsubsection TopicInstall_OS Operating Systems
+\subsection TopicInstall_OS Operating Systems
 
 Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  While I anticipate that there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and using the latest LLVM compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and send create a merge request when you get things working.
 
-\subsubsection TopicInstall_Prerequisites Prerequisites
+\subsection TopicInstall_Prerequisites Prerequisites
 
 <p>
 An important consideration in UMPS is performance.  For this reason we rely on compiled languages.  To build the core package from source you need to satisfy the following dependencies:
@@ -35,7 +35,7 @@ Additionally, you may wish to get pybind11 and Doxygen to build the Python wrapp
 After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.  
 
 
-\subsubsection TopicInstall_Compiling Compiling
+\subsection TopicInstall_Compiling Compiling
 
 To compile UMPS without Python you may make a script in the root source directory that looks like:
 
@@ -86,7 +86,7 @@ And install
 
 which may require sudo privileges. 
 
-\subsubsection TopicInstall_Documentation Generating the Documentation
+\subsection TopicInstall_Documentation Generating the Documentation
 
 In this instance, you would descend into the docs path
 

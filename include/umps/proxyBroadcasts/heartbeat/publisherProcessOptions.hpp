@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_PUBLISHERPROCESSOPTIONS
-#define UMPS_PROXYBROADCASTS_HEARTBEAT_PUBLISHERPROCESSOPTIONS
+#ifndef UMPS_PROXY_BROADCASTS_HEARTBEAT_PUBLISHER_PROCESS_OPTIONS_HPP
+#define UMPS_PROXY_BROADCASTS_HEARTBEAT_PUBLISHER_PROCESS_OPTIONS_HPP
 #include <memory>
 #include <chrono>
 namespace UMPS
@@ -20,6 +20,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @brief This process will send status messages to the heartbeat broadcast
 ///        at regular intervals. 
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class PublisherProcessOptions
 {
 public:

@@ -23,6 +23,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 /// @class Subscriber "subscriber.hpp" "umps/proxyBroadcasts/heartbeat/subscriber.hpp"
 /// @brief A convenience function to subscribe to a heartbeat broadcast.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class Subscriber
 {
 public:

@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_HEARTBEAT_BROADCAST_HPP
-#define UMPS_PROXYBROADCASTS_HEARTBEAT_BROADCAST_HPP
+#ifndef UMPS_PROXY_BROADCASTS_HEARTBEAT_PROXY_HPP
+#define UMPS_PROXY_BROADCASTS_HEARTBEAT_PROXY_HPP
 #include <memory>
 #include "umps/proxyBroadcasts/proxy.hpp"
 namespace UMPS
@@ -33,6 +33,7 @@ namespace UMPS::ProxyBroadcasts::Heartbeat
 ///        can publish messages to this XSUB socket and from which
 ///        subscribers can receive content from this XPUB socket.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts_Heartbeat
 class Proxy : public IProxy
 {
 public:

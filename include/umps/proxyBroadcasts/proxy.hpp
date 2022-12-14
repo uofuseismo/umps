@@ -1,5 +1,5 @@
-#ifndef UMPS_PROXYBROADCASTS_PROXY_HPP
-#define UMPS_PROXYBROADCASTS_PROXY_HPP
+#ifndef UMPS_PROXY_BROADCASTS_PROXY_HPP
+#define UMPS_PROXY_BROADCASTS_PROXY_HPP
 #include <memory>
 namespace UMPS
 {
@@ -32,6 +32,7 @@ namespace UMPS::ProxyBroadcasts
 ///        can publish messages to this XSUB socket and from which
 ///        subscribers can receive content from this XPUB socket.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyBroadcasts
 class Proxy
 {
 public:

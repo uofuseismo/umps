@@ -6,7 +6,6 @@ namespace UMPS
 
 <p>
 Messages are a fundamental item in UMPS as they are the things that are ultimately passed around.  A message is simultaneously two things.  Firstly, a message is a data structure (i.e., a class).  Secondly, a message is a thing that is transmitted via a messaging protocol (e.g., TCP, IPC, inproc).  Consequently, there must exist a mechanism that goes from a byte-based format to a class and vice-versa - a process known as (de)serialization.  This may seem strange at first but keep in mind that the goal of UMPS is to transmit messages.  UMPS, to some extent, is like the postal service in that it does not care what is in the box; it just wants to get the box from A to B.
-
 </p>
 
 <br>

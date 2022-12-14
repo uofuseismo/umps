@@ -31,6 +31,7 @@ namespace UMPS
 /// @brief This is the intermediary that allows communication between a client
 ///        and a backend service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices_Command
 namespace UMPS::ProxyServices::Command
 {
 class Proxy

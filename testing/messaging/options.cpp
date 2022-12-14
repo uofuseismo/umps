@@ -9,7 +9,7 @@
 #include "umps/messaging/routerDealer/proxyOptions.hpp"
 #include "umps/messaging/routerDealer/requestOptions.hpp"
 #include "umps/messaging/routerDealer/replyOptions.hpp"
-#include "umps/messageFormats/dataPacket.hpp"
+#include "umps/messageFormats/failure.hpp"
 #include "umps/messageFormats/text.hpp"
 #include "umps/messageFormats/messages.hpp"
 #include <gtest/gtest.h>
@@ -101,10 +101,10 @@ TEST(Messaging, PubSubSubscriberOptions)
     UMPS::MessageFormats::Messages messageTypes;
     std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
         = std::make_unique<UMPS::MessageFormats::Text> ();
-    std::unique_ptr<UMPS::MessageFormats::IMessage> packetMessage
-        = std::make_unique<UMPS::MessageFormats::DataPacket<double>> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> failureMessage
+        = std::make_unique<UMPS::MessageFormats::Failure> ();
     EXPECT_NO_THROW(messageTypes.add(textMessage));
-    EXPECT_NO_THROW(messageTypes.add(packetMessage));
+    EXPECT_NO_THROW(messageTypes.add(failureMessage));
     const std::string address = "tcp://127.0.0.1:5555";
     const int highWaterMark = 120;
     const std::chrono::milliseconds timeOut{10};
@@ -123,7 +123,7 @@ TEST(Messaging, PubSubSubscriberOptions)
     EXPECT_TRUE(optionsCopy.haveMessageTypes());
     auto messagesBack = optionsCopy.getMessageTypes();
     EXPECT_TRUE(messagesBack.contains(textMessage));
-    EXPECT_TRUE(messagesBack.contains(packetMessage));
+    EXPECT_TRUE(messagesBack.contains(failureMessage));
 
     options.clear();
     EXPECT_EQ(options.getReceiveHighWaterMark(), zero); 

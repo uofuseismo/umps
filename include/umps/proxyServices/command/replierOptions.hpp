@@ -29,6 +29,7 @@ namespace UMPS::ProxyServices::Command
 /// @brief Defines the options for the thread managing remote activity to
 ///        respond.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup UMPS_ProxyServices_Command
 class ReplierOptions
 {
 public:
@@ -98,17 +99,6 @@ public:
     [[nodiscard]] bool haveModuleDetails() const noexcept;
     /// @}
 
-    /// @name High Water Mark
-    /// @{
-
-    /// @brief Influences the maximum number of messages to cache on the socket.
-    /// @param[in] highWaterMark  The approximate max number of messages to 
-    ///                           cache on the socket.  0 will set this to
-    ///                           "infinite".
-    /// @throws std::invalid_argument if highWaterMark is negative.
-    void setHighWaterMark(int highWaterMark);
-    /// @}
-
     /// @name ZeroMQ Authentication Protocol
     /// @{
 
@@ -116,6 +106,48 @@ public:
     /// @param[in] options  The ZAP options which will define the socket's
     ///                     security protocol.
     void setZAPOptions(const Authentication::ZAPOptions &options);
+    /// @result The ZAP options.
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
+    /// @}
+
+    /// @name High Water Mark
+    /// @{
+
+    /// @brief Influences the maximum number of request messages to cache on the
+    ///        socket.
+    /// @param[in] highWaterMark  The approximate max number of request messages
+    ///                           to cache on the socket.  0 will set this to
+    ///                           "infinite".
+    /// @throws std::invalid_argument if highWaterMark is negative.
+    void setReceiveHighWaterMark(int highWaterMark);
+    /// @result The approximate number of request messages to cache.
+    [[nodiscard]] int getReceiveHighWaterMark() const noexcept;
+    /// @brief Influences the maximum number of reply messages to cache on the
+    ///        socket.
+    /// @param[in] highWaterMark  The approximate max number of reply messages
+    ///                           to cache on the socket.  0 will set this to
+    ///                           "infinite".
+    /// @throws std::invalid_argument if highWaterMark is negative.
+    void setSendHighWaterMark(int highWaterMark);
+    /// @result The approximate number of response messages to cache.
+    [[nodiscard]] int getSendHighWaterMark() const noexcept;
+    /// @}
+
+    /// @name Polling Interval
+    /// @{
+
+    /// @brief Sets the polling interval for the process that communicates with
+    ///        the module registry.
+    /// @param[in] timeOut  The polling timeout.  After this time the module
+    ///                     registry polling process can check other things,
+    ///                     like if the program is shutting down.  This must
+    ///                     be a balance between being too short which
+    ///                     unnecessarily chews cycles and being too long so
+    ///                     as to make this utility unresponsive.
+    /// @throws std::invalid_argument if the polling interval is negative.
+    void setPollingTimeOut(const std::chrono::milliseconds &pollingInterval);
+    /// @result The polling interval.
+    [[nodiscard]] std::chrono::milliseconds getPollingTimeOut() const noexcept;
     /// @}
 
     /// @result The reply options.

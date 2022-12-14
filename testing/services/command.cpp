@@ -16,8 +16,10 @@
 #include "umps/proxyServices/command/registrationRequest.hpp"
 #include "umps/proxyServices/command/registrationResponse.hpp"
 #include "umps/proxyServices/command/requestorOptions.hpp"
+#include "umps/proxyServices/command/replierOptions.hpp"
 #include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
+#include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/authentication/zapOptions.hpp"
 #include <gtest/gtest.h>
 
@@ -376,6 +378,61 @@ TEST(Command, AvailableModulesResponse)
     EXPECT_EQ(response.getMessageType(),
               "UMPS::ProxyServices::Command::AvailableModulesResponse");
 }
+
+
+std::unique_ptr<UMPS::MessageFormats::IMessage>
+    dumbyCallback(const std::string &, const void *, const size_t)
+{
+    return nullptr;
+}
+
+TEST(Command, ReplierOptions)
+{
+    const std::chrono::milliseconds timeOut{12};
+    const int sendHWM{16};
+    const int receiveHWM{17};
+    const std::string address{"tcp://127.0.0.1:8090"};
+    UMPS::Authentication::ZAPOptions zapOptions;
+    zapOptions.setStrawhouseServer();
+    UMPS::ProxyServices::Command::ModuleDetails details;
+    details.setName("Test");
+    details.setInstance(1);
+    details.setMachine("test.box");
+    details.setParentProcessIdentifier(2);
+    details.setProcessIdentifier(3);
+
+    UMPS::ProxyServices::Command::ReplierOptions options;
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setModuleDetails(details));
+    options.setZAPOptions(zapOptions);
+    EXPECT_NO_THROW(options.setPollingTimeOut(timeOut));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendHWM));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(receiveHWM));
+    options.setCallback(std::bind(&dumbyCallback,
+                                 std::placeholders::_1,
+                                 std::placeholders::_2,
+                                 std::placeholders::_3));
+
+    UMPS::ProxyServices::Command::ReplierOptions copy(options);
+    EXPECT_EQ(copy.getOptions().getAddress(), address);
+    EXPECT_EQ(copy.getOptions().getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel());
+    EXPECT_EQ(copy.getOptions().getPollingTimeOut(), timeOut);
+    EXPECT_EQ(copy.getOptions().getSendHighWaterMark(), sendHWM);
+    EXPECT_EQ(copy.getOptions().getReceiveHighWaterMark(), receiveHWM);
+    EXPECT_TRUE(copy.getModuleDetails() == details);
+
+    options.clear();
+    zapOptions.clear();
+    // TODO should make getters/setters 
+    EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {10});
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel()); 
+    EXPECT_EQ(options.getSendHighWaterMark(), 0);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
+    EXPECT_FALSE(options.haveAddress());
+    EXPECT_FALSE(options.haveModuleDetails());
+} 
 
 TEST(Command, ModuleTable)
 {
