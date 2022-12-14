@@ -225,15 +225,15 @@ target_include_directories(uOperator
                            PRIVATE Boost::program_options)
 target_link_libraries(uOperator PRIVATE umps Boost::program_options Threads::Threads)
 
-add_executable(packetCache src/modules/services/packetCache.cpp)
-set_target_properties(packetCache PROPERTIES
-                      CXX_STANDARD 20
-                      CXX_STANDARD_REQUIRED YES
-                      CXX_EXTENSIONS NO)
-target_include_directories(packetCache
-                           PRIVATE ${CMAKE_SOURCE_DIR}/include
-                           PRIVATE Boost::program_options)
-target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
+#add_executable(packetCache src/modules/services/packetCache.cpp)
+#set_target_properties(packetCache PROPERTIES
+#                      CXX_STANDARD 20
+#                      CXX_STANDARD_REQUIRED YES
+#                      CXX_EXTENSIONS NO)
+#target_include_directories(packetCache
+#                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+#                           PRIVATE Boost::program_options)
+#target_link_libraries(packetCache PRIVATE umps Boost::program_options Threads::Threads)
 
 
 #add_executable(incrementer src/modules/services/incrementer.cpp)
@@ -352,7 +352,7 @@ set(TEST_SRC
     testing/broadcasts/heartbeat.cpp
     #testing/broadcasts/pick.cpp
     testing/services/proxyOptions.cpp
-    testing/services/packetCache.cpp
+    #testing/services/packetCache.cpp
     testing/services/command.cpp
     testing/services/connectionInformation.cpp
     #testing/services/moduleRegistry.cpp
@@ -382,7 +382,7 @@ set(TEST_COMMUNICATION_SRC
     testing/communication/xpubxsub.cpp
     testing/communication/routerDealer.cpp
     testing/communication/dataPacket.cpp
-    testing/communication/packetCache.cpp
+    #testing/communication/packetCache.cpp
     #testing/communication/incrementer.cpp
 )
 add_executable(commTests ${TEST_COMMUNICATION_SRC})
