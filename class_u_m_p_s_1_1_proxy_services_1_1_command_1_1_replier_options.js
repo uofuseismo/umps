@@ -7,6 +7,10 @@ var class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options =
     [ "clear", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a9560092a57a4e36259a3b85bfef6b517", null ],
     [ "getModuleDetails", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#ab3dcca6ba52105baabe7378be484582a", null ],
     [ "getOptions", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#aae7dbd5f4dfb5467e38900f82a9df503", null ],
+    [ "getPollingTimeOut", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#af0bd4c27e4e9b05ebf4852717ef989a4", null ],
+    [ "getReceiveHighWaterMark", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a83743c46388bed186a6a9d3979d83c2a", null ],
+    [ "getSendHighWaterMark", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#af817fc5f18b570e07b6803ed9a3240c3", null ],
+    [ "getZAPOptions", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a3e8e86503abae253cbb2a6d45114e2cd", null ],
     [ "haveAddress", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#ab87d625557158d8e19e5945d8c956135", null ],
     [ "haveCallback", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#aa5162ab7d00f62b29139cf5ab09ee48a", null ],
     [ "haveModuleDetails", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#abfa6344ad3c90b16663ea7684c2ecfd7", null ],
@@ -14,7 +18,9 @@ var class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options =
     [ "operator=", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a39a58b76bc2ecf301810c26fae624f1c", null ],
     [ "setAddress", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a8a9a725e157e01de438293afee667f3b", null ],
     [ "setCallback", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a9b76b342b96ced562658d925b3104f40", null ],
-    [ "setHighWaterMark", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a977fccc2905fbda2e096f6e217eef46e", null ],
     [ "setModuleDetails", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#ad8622ee8669b9d52e0a404d7fb27f37d", null ],
+    [ "setPollingTimeOut", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a496ee08e5124e26ed08fbd92121ce4b2", null ],
+    [ "setReceiveHighWaterMark", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a668e7e035d9030848915006ca7d0c140", null ],
+    [ "setSendHighWaterMark", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#aee404a77e34b0553b70315067a377221", null ],
     [ "setZAPOptions", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html#a11fcc5467ab6f09d0a764532ac32cd91", null ]
 ];

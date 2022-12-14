@@ -97,11 +97,11 @@ $(document).ready(function(){initNavTree('_topic_install.html',''); initResizabl
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>This page outlines strategies for building UMPS from source. The details for these steps can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.</p>
-<h3><a class="anchor" id="TopicInstall_OS"></a>
-Operating Systems</h3>
+<h2><a class="anchor" id="TopicInstall_OS"></a>
+Operating Systems</h2>
 <p>Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22. While I anticipate that there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated. For these circumstances, I recommend installing and using the latest LLVM compiler suite. As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and send create a merge request when you get things working.</p>
-<h3><a class="anchor" id="TopicInstall_Prerequisites"></a>
-Prerequisites</h3>
+<h2><a class="anchor" id="TopicInstall_Prerequisites"></a>
+Prerequisites</h2>
 <p>An important consideration in UMPS is performance. For this reason we rely on compiled languages. To build the core package from source you need to satisfy the following dependencies: </p>
 <ul>
 <li>C++20</li>
@@ -122,8 +122,8 @@ Prerequisites</h3>
 </ul>
 <p>After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>. <br  />
 </p>
-<h3><a class="anchor" id="TopicInstall_Compiling"></a>
-Compiling</h3>
+<h2><a class="anchor" id="TopicInstall_Compiling"></a>
+Compiling</h2>
 <p>To compile UMPS without Python you may make a script in the root source directory that looks like: </p><pre class="fragment">#!/bin/bash
 export CXX=g++
 export BUILD_DIR=gcc_build
@@ -157,8 +157,8 @@ make
 </pre><p> With any luck the code will successfully compile. You can then test it </p><pre class="fragment">make test
 </pre><p> And install </p><pre class="fragment">make install
 </pre><p> which may require sudo privileges.</p>
-<h3><a class="anchor" id="TopicInstall_Documentation"></a>
-Generating the Documentation</h3>
+<h2><a class="anchor" id="TopicInstall_Documentation"></a>
+Generating the Documentation</h2>
 <p>In this instance, you would descend into the docs path </p><pre class="fragment">cd docs
 mkdir docs_build
 cd docs_build
@@ -172,7 +172,7 @@ firefox html/index.html
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Dec 12 2022 20:30:31 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Dec 14 2022 22:46:26 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

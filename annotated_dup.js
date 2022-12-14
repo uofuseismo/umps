@@ -26,12 +26,12 @@ var annotated_dup =
         [ "StandardOut", "class_u_m_p_s_1_1_logging_1_1_standard_out.html", "class_u_m_p_s_1_1_logging_1_1_standard_out" ]
       ] ],
       [ "MessageFormats", null, [
-        [ "DataPacket", "class_u_m_p_s_1_1_message_formats_1_1_data_packet.html", "class_u_m_p_s_1_1_message_formats_1_1_data_packet" ],
         [ "Failure", "class_u_m_p_s_1_1_message_formats_1_1_failure.html", "class_u_m_p_s_1_1_message_formats_1_1_failure" ],
         [ "IMessage", "class_u_m_p_s_1_1_message_formats_1_1_i_message.html", "class_u_m_p_s_1_1_message_formats_1_1_i_message" ],
         [ "Messages", "class_u_m_p_s_1_1_message_formats_1_1_messages.html", "class_u_m_p_s_1_1_message_formats_1_1_messages" ],
         [ "Pick", "class_u_m_p_s_1_1_message_formats_1_1_pick.html", "class_u_m_p_s_1_1_message_formats_1_1_pick" ],
-        [ "Text", "class_u_m_p_s_1_1_message_formats_1_1_text.html", "class_u_m_p_s_1_1_message_formats_1_1_text" ]
+        [ "Text", "class_u_m_p_s_1_1_message_formats_1_1_text.html", "class_u_m_p_s_1_1_message_formats_1_1_text" ],
+        [ "DataPacket", "class_u_m_p_s_1_1_message_formats_1_1_data_packet.html", null ]
       ] ],
       [ "Messaging", null, [
         [ "PublisherSubscriber", null, [
@@ -70,12 +70,7 @@ var annotated_dup =
       ] ],
       [ "ProxyBroadcasts", null, [
         [ "DataPacket", null, [
-          [ "Proxy", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_proxy.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_proxy" ],
-          [ "ProxyOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_proxy_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_proxy_options" ],
-          [ "Publisher", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_publisher.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_publisher" ],
-          [ "PublisherOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_publisher_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_publisher_options" ],
-          [ "SubscriberOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_subscriber_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_subscriber_options" ],
-          [ "Subscriber", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_subscriber.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_subscriber" ]
+          [ "SubscriberOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_subscriber_options.html", null ]
         ] ],
         [ "Heartbeat", null, [
           [ "Proxy", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy" ],
@@ -108,6 +103,7 @@ var annotated_dup =
           [ "RegistrationResponse", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_registration_response.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_registration_response" ],
           [ "Replier", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier" ],
           [ "ReplierOptions", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_options" ],
+          [ "ReplierProcess", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process" ],
           [ "Requestor", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor" ],
           [ "RequestorOptions", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options" ]
         ] ],
@@ -194,5 +190,6 @@ var annotated_dup =
     [ "Proxy", "class_proxy.html", null ],
     [ "RegistrationReturnCode", "class_registration_return_code.html", null ],
     [ "SecurityLevel", "class_security_level.html", null ],
+    [ "umps", "classumps.html", null ],
     [ "UserPrivileges", "class_user_privileges.html", null ]
 ];

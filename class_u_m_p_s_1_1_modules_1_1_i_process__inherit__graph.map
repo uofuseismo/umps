@@ -1,4 +1,5 @@
 <map id="UMPS::Modules::IProcess" name="UMPS::Modules::IProcess">
-<area shape="rect" id="node1" title="A module is typically comprised of multiple processes. This defines the essential qualities that cons..." alt="" coords="19,5,205,32"/>
-<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_publisher_process.html" title="This process will send status messages to the heartbeat broadcast at regular intervals." alt="" coords="5,80,219,121"/>
+<area shape="rect" id="node1" title="A module is typically comprised of multiple processes. This defines the essential qualities that cons..." alt="" coords="5,46,191,73"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_publisher_process.html" title="This process will send status messages to the heartbeat broadcast at regular intervals." alt="" coords="239,5,452,47"/>
+<area shape="rect" id="node3" href="$class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process.html" title=" " alt="" coords="245,71,446,112"/>
 </map>

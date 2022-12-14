@@ -155,17 +155,8 @@ std::pair&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" v
 <tr class="memdesc:a2ab1d850f0f8852f206ccf01c5c05b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment operator.  <a href="class_u_m_p_s_1_1_authentication_1_1_s_q_lite3_authenticator.html#a2ab1d850f0f8852f206ccf01c5c05b2c">More...</a><br /></td></tr>
 <tr class="separator:a2ab1d850f0f8852f206ccf01c5c05b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Tables</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>Opens the users table.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">fileName</td><td>The name of the SQLite3 user table file. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">createIfDoesNotExist</td><td>If true and the table does not exist then the application will attempt to create the table. </td></tr>
-  </table>
-  </dd>
-</dl>
-</div></td></tr>
-<tr class="memitem:aac301448184004220721e3d353417f87"><td class="memItemLeft" align="right" valign="top"><a id="aac301448184004220721e3d353417f87"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>openUsersTable</b> (const std::string &amp;fileName, bool createIfDoesNotExist=true)</td></tr>
+<tr class="memitem:aac301448184004220721e3d353417f87"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_authentication_1_1_s_q_lite3_authenticator.html#aac301448184004220721e3d353417f87">openUsersTable</a> (const std::string &amp;fileName, bool createIfDoesNotExist=true)</td></tr>
+<tr class="memdesc:aac301448184004220721e3d353417f87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens the users table.  <a href="class_u_m_p_s_1_1_authentication_1_1_s_q_lite3_authenticator.html#aac301448184004220721e3d353417f87">More...</a><br /></td></tr>
 <tr class="separator:aac301448184004220721e3d353417f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a850a8fe3c7db11974cd2cab53ce8c371"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_authentication_1_1_s_q_lite3_authenticator.html#a850a8fe3c7db11974cd2cab53ce8c371">haveUsersTable</a> () const noexcept</td></tr>
 <tr class="separator:a850a8fe3c7db11974cd2cab53ce8c371"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -272,6 +263,8 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">authenticator</td><td>The authenticator from which to initialize this class. On exit, authenticator's behavior is undefined. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">privileges</td><td>The user's minimum privileges level to connect. <br  />
+ </td></tr>
   </table>
   </dd>
 </dl>
@@ -316,6 +309,7 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">logger</td><td>The logging utility. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">privileges</td><td>The user's minimum privileges level to connect. </td></tr>
   </table>
   </dd>
 </dl>
@@ -725,6 +719,43 @@ result.first is the status code where "200" means okay, "400" means a client err
 
 </div>
 </div>
+<a id="aac301448184004220721e3d353417f87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac301448184004220721e3d353417f87">&#9670;&nbsp;</a></span>openUsersTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UMPS::Authentication::SQLite3Authenticator::openUsersTable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fileName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>createIfDoesNotExist</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opens the users table. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">fileName</td><td>The name of the SQLite3 user table file. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">createIfDoesNotExist</td><td>If true and the table does not exist then the application will attempt to create the table. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a0b492d33ae1937631ed99cbbff0e1720"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0b492d33ae1937631ed99cbbff0e1720">&#9670;&nbsp;</a></span>openWhitelistTable()</h2>
 
@@ -908,7 +939,7 @@ result.first is the status code where "200" means okay, "400" means a client err
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Authentication</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_authentication_1_1_s_q_lite3_authenticator.html">SQLite3Authenticator</a></li>
-    <li class="footer">Generated on Mon Dec 12 2022 20:30:31 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Dec 14 2022 22:46:26 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
