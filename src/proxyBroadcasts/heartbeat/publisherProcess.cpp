@@ -286,10 +286,10 @@ std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
     PublisherProcessOptions processOptions;
     std::string broadcast = "Heartbeat";
     auto interval = processOptions.getInterval();
-    // Load things from the initialization file if possible 
-    boost::property_tree::ptree propertyTree;
+    // Load things from the initialization file if possible
     if (std::filesystem::exists(iniFile))
     {
+        boost::property_tree::ptree propertyTree;
         boost::property_tree::ini_parser::read_ini(iniFile,
                                                    propertyTree);
         // Get broadcast name

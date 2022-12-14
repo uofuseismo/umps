@@ -20,6 +20,8 @@ public:
         auto routingIdentifier = "module_" + address.str();
         mOptions.setRoutingIdentifier(routingIdentifier);
         mOptions.setPollingTimeOut(std::chrono::milliseconds {10});
+        mOptions.setSendHighWaterMark(0); // Infinite
+        mOptions.setReceiveHighWaterMark(0); // Infinite
     }
     URouterDealer::ReplyOptions mOptions;
     ModuleDetails mDetails;
@@ -131,9 +133,14 @@ void ReplierOptions::setZAPOptions(const UAuth::ZAPOptions &options)
 }
 
 /// HWM
-void ReplierOptions::setHighWaterMark(const int hwm)
+void ReplierOptions::setReceiveHighWaterMark(const int hwm)
 {
     pImpl->mOptions.setReceiveHighWaterMark(hwm);
+}
+
+/// HWM
+void ReplierOptions::setSendHighWaterMark(const int hwm)
+{
     pImpl->mOptions.setSendHighWaterMark(hwm);
 }
 

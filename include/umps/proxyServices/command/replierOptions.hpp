@@ -111,12 +111,20 @@ public:
     /// @name High Water Mark
     /// @{
 
-    /// @brief Influences the maximum number of messages to cache on the socket.
-    /// @param[in] highWaterMark  The approximate max number of messages to
-    ///                           cache on the socket.  0 will set this to
+    /// @brief Influences the maximum number of request messages to cache on the
+    ///        socket.
+    /// @param[in] highWaterMark  The approximate max number of request messages
+    ///                           to cache on the socket.  0 will set this to
     ///                           "infinite".
     /// @throws std::invalid_argument if highWaterMark is negative.
-    void setHighWaterMark(int highWaterMark);
+    void setReceiveHighWaterMark(int highWaterMark);
+    /// @brief Influences the maximum number of reply messages to cache on the
+    ///        socket.
+    /// @param[in] highWaterMark  The approximate max number of reply messages
+    ///                           to cache on the socket.  0 will set this to
+    ///                           "infinite".
+    /// @throws std::invalid_argument if highWaterMark is negative.
+    void setSendHighWaterMark(int highWaterMark);
     /// @}
 
     /// @name Polling Interval

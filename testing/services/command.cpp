@@ -389,7 +389,8 @@ std::unique_ptr<UMPS::MessageFormats::IMessage>
 TEST(Command, ReplierOptions)
 {
     const std::chrono::milliseconds timeOut{12};
-    int hwm = 16;
+    const int sendHWM{16};
+    const int receiveHWM{17};
     const std::string address{"tcp://127.0.0.1:8090"};
     UMPS::Authentication::ZAPOptions zapOptions;
     zapOptions.setStrawhouseServer();
@@ -405,7 +406,8 @@ TEST(Command, ReplierOptions)
     EXPECT_NO_THROW(options.setModuleDetails(details));
     options.setZAPOptions(zapOptions);
     EXPECT_NO_THROW(options.setPollingTimeOut(timeOut));
-    EXPECT_NO_THROW(options.setHighWaterMark(hwm));
+    EXPECT_NO_THROW(options.setSendHighWaterMark(sendHWM));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(receiveHWM));
     options.setCallback(std::bind(&dumbyCallback,
                                  std::placeholders::_1,
                                  std::placeholders::_2,
@@ -416,7 +418,8 @@ TEST(Command, ReplierOptions)
     EXPECT_EQ(copy.getOptions().getZAPOptions().getSecurityLevel(),
               zapOptions.getSecurityLevel());
     EXPECT_EQ(copy.getOptions().getPollingTimeOut(), timeOut);
-    EXPECT_EQ(copy.getOptions().getSendHighWaterMark(), hwm);
+    EXPECT_EQ(copy.getOptions().getSendHighWaterMark(), sendHWM);
+    EXPECT_EQ(copy.getOptions().getReceiveHighWaterMark(), receiveHWM);
     EXPECT_TRUE(copy.getModuleDetails() == details);
 
     options.clear();
@@ -426,6 +429,8 @@ TEST(Command, ReplierOptions)
     //          std::chrono::milliseconds {10});
     //EXPECT_EQ(options.getOptions().getZAPOptions().getSecurityLevel(),
     //          zapOptions.getSecurityLevel()); 
+    //EXPECT_EQ(options.getOptions().getSendHighWaterMark(), 0);
+    //EXPECT_EQ(options.getOptions().getReceiveHighWaterMark(), 0);
     EXPECT_FALSE(options.haveAddress());
     EXPECT_FALSE(options.haveModuleDetails());
     //EXPECT_EQ(options.getOptions().getSendHighWaterMark(), 0);

@@ -19,7 +19,7 @@ namespace UMPS
  }
  namespace ProxyServices::Command
  {
-  class ReplierProcessOptions;
+  class ReplierOptions;
   class Replier;
  }
 }
@@ -42,8 +42,8 @@ public:
     /// @brief Constructor with a given context.
     explicit ReplierProcess(std::shared_ptr<UMPS::Messaging::Context> &context);
     /// @brief Constructor with a given logger and context.
-    //ReplierProcess(std::shared_ptr<UMPS::Messaging::Context> &context,
-    //               std::shared_ptr<UMPS::Logging::ILog> &logger);
+    ReplierProcess(std::shared_ptr<UMPS::Messaging::Context> &context,
+                   std::shared_ptr<UMPS::Logging::ILog> &logger);
     /// @}
 
     /// @name Step 1: Initialization
@@ -51,17 +51,25 @@ public:
 
     /// @brief Initializes the process options.
     /// @param[in] options            The replier process options.
-    /// @param[in] replierConnection  The connection to the replier.
     /// @throws std::invalid_argument if \c conection->isInitialized() is false.
-    void initialize(const ReplierProcessOptions &options,
-                    std::unique_ptr<Replier> &&replierConnection);
+    void initialize(const ReplierOptions &options);
     /// @result True indicates the publisher process is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The name of the process.
     [[nodiscard]] std::string getName() const noexcept override;
     /// @}
 
-    /// @name Step 3: Stop the Process
+    /// @name Step 2: Run the Replier Process
+    /// @{
+
+    /// @brief Starts the replier process.
+    /// @throws std::runtime_error if \c isInitialized() is false.
+    void start() override;
+    /// @result True indicates the process is running.
+    [[nodiscard]] bool isRunning() const noexcept override;
+    /// @}
+
+    /// @name Step 3: Stop the Replier Process
     /// @{
 
     /// @brief Stops the replier process.  This will send a 
@@ -90,7 +98,7 @@ private:
 ///         connected and ready to reply to remote module interaction 
 ///         commands.
 /// @ingroup UMPS_ProxyServices_Command
-std::unique_ptr<UMPS::ProxyServices::Command::ReplierProcess>
+std::unique_ptr<ReplierProcess>
     createReplierProcess(const UMPS::Services::ConnectionInformation::Requestor &requestor,
                          const std::string &iniFile,
                          const std::string &section = "ModuleRegistry",
