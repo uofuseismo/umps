@@ -372,6 +372,7 @@ int main(int argc, char *argv[])
             = std::make_shared<UAuth::SQLite3Authenticator>
                      (authenticationLoggerPtr,
                       UAuth::UserPrivileges::Administrator);
+        admin->openUsersTable(options.mUserTable, false);
         auto readOnly
             = std::make_shared<UAuth::SQLite3Authenticator>
                      (authenticationLoggerPtr, UAuth::UserPrivileges::ReadOnly);
