@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <filesystem>
 #ifndef NDEBUG
@@ -206,7 +207,7 @@ UMPS::ProxyServices::Command::createReplierProcess(
     ReplierOptions replierOptions;
     replierOptions.setModuleDetails(moduleDetails);
     auto interval = replierOptions.getPollingTimeOut();
-    auto sendHighWaterMark= replierOptions.getSendHighWaterMark();
+    auto sendHighWaterMark = replierOptions.getSendHighWaterMark();
     auto receiveHighWaterMark= replierOptions.getReceiveHighWaterMark();
     std::string address;
     // Load things from the initialization file if possible

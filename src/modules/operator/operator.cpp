@@ -422,10 +422,8 @@ int main(int argc, char *argv[])
           (moduleRegistryLoggerPtr, adminAuthenticator, readOnlyAuthenticator);
     auto serviceKey = "ProxyServices::" + moduleRegistry->getName();
     moduleRegistry->initialize(options.mModuleRegistryOptions);
-    auto moduleRegistryConnectionDetails
-        = moduleRegistry->getConnectionDetails();
     modules.mConnectionInformation->addConnection(
-        moduleRegistryConnectionDetails);
+        moduleRegistry->getConnectionDetails());
     moduleRegistry->start();
     // Start the proxy broadcasts
     for (const auto &proxyOptions : options.mProxyBroadcastOptions)

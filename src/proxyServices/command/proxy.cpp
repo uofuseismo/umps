@@ -938,6 +938,21 @@ public:
     {
         stop(); 
         setRunning(true);
+        if (mSymmetricAuthentication)
+        {
+            mAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                               &*mAuthenticatorService);
+        }
+        else
+        {
+            mFrontendAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                               &*mFrontendAuthenticatorService);
+            mBackendAuthenticatorThread = std::thread(&UAuth::Service::start,
+                                               &*mBackendAuthenticatorService);
+        }
+        // Give authenticators a chance to start then start proxy.  Otherwise,
+        // a sneaky person can connect pre-authentication.
+        std::this_thread::sleep_for(std::chrono::milliseconds{5});
         mProxyThread = std::thread(&ProxyImpl::runPoller, this);
         mModuleStatusThread = std::thread(&ProxyImpl::runModulePinger, this);
     }
@@ -945,8 +960,35 @@ public:
     void stop()
     {
         setRunning(false);
+        if (mSymmetricAuthentication)
+        {
+            if (mAuthenticatorService->isRunning())
+            {
+                mAuthenticatorService->stop();
+            }
+        }
+        else
+        {
+            if (mFrontendAuthenticatorService->isRunning())
+            {
+                mFrontendAuthenticatorService->stop();
+            }
+            if (mBackendAuthenticatorService->isRunning())
+            {
+                mBackendAuthenticatorService->stop();
+            }
+        }
         if (mProxyThread.joinable()){mProxyThread.join();}
         if (mModuleStatusThread.joinable()){mModuleStatusThread.join();}
+        if (mAuthenticatorThread.joinable()){mAuthenticatorThread.join();}
+        if (mFrontendAuthenticatorThread.joinable())
+        {
+            mFrontendAuthenticatorThread.join();
+        }
+        if (mBackendAuthenticatorThread.joinable())
+        {
+            mBackendAuthenticatorThread.join();
+        }
     }
     /// @brief Update connection details.
     void updateConnectionDetails()
@@ -1040,6 +1082,9 @@ public:
     std::string mBackendAddress;
     std::string mMonitorAddress;
     const std::string mProxyName{"ModuleRegistry"};
+    std::thread mAuthenticatorThread;
+    std::thread mFrontendAuthenticatorThread;
+    std::thread mBackendAuthenticatorThread;
     std::thread mProxyThread;
     std::thread mModuleStatusThread;
     std::vector<std::chrono::milliseconds>
