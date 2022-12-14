@@ -286,18 +286,23 @@ std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
     PublisherProcessOptions processOptions;
     std::string broadcast = "Heartbeat";
     auto interval = processOptions.getInterval();
+    std::string address;
     // Load things from the initialization file if possible
     if (std::filesystem::exists(iniFile))
     {
         boost::property_tree::ptree propertyTree;
         boost::property_tree::ini_parser::read_ini(iniFile,
                                                    propertyTree);
+        // Get the address (if applicable)
+        address = propertyTree.get<std::string> (section + ".address",
+                                                 address);
         // Get broadcast name
         broadcast = propertyTree.get<std::string> (section + ".broadcast",
                                                    broadcast);
         if (broadcast.empty())
         {
-            throw std::runtime_error("Heartbeat broadcast not set");
+            throw std::runtime_error(
+                    "Must either set heartbeat broadcast or address");
         }
         // Interval
         auto iInterval = static_cast<int> (interval.count());
@@ -311,8 +316,11 @@ std::unique_ptr<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
         processOptions.setName(processName);
     } // End check on ini file
     // Get the heartbeat broadcast's address and the ZAP options
-    auto address
-        = requestor.getProxyBroadcastFrontendDetails(broadcast).getAddress();
+    if (address.empty())
+    {
+        address = requestor.getProxyBroadcastFrontendDetails(
+                      broadcast).getAddress();
+    }
     auto zapOptions = requestor.getZAPOptions();
     // Create the publisher
     PublisherOptions publisherOptions;

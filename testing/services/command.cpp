@@ -425,15 +425,13 @@ TEST(Command, ReplierOptions)
     options.clear();
     zapOptions.clear();
     // TODO should make getters/setters 
-    //EXPECT_EQ(options.getOptions().getPollingTimeOut(),
-    //          std::chrono::milliseconds {10});
-    //EXPECT_EQ(options.getOptions().getZAPOptions().getSecurityLevel(),
-    //          zapOptions.getSecurityLevel()); 
-    //EXPECT_EQ(options.getOptions().getSendHighWaterMark(), 0);
-    //EXPECT_EQ(options.getOptions().getReceiveHighWaterMark(), 0);
+    EXPECT_EQ(options.getPollingTimeOut(), std::chrono::milliseconds {10});
+    EXPECT_EQ(options.getZAPOptions().getSecurityLevel(),
+              zapOptions.getSecurityLevel()); 
+    EXPECT_EQ(options.getSendHighWaterMark(), 0);
+    EXPECT_EQ(options.getReceiveHighWaterMark(), 0);
     EXPECT_FALSE(options.haveAddress());
     EXPECT_FALSE(options.haveModuleDetails());
-    //EXPECT_EQ(options.getOptions().getSendHighWaterMark(), 0);
 } 
 
 TEST(Command, ModuleTable)

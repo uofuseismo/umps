@@ -106,6 +106,8 @@ public:
     /// @param[in] options  The ZAP options which will define the socket's
     ///                     security protocol.
     void setZAPOptions(const Authentication::ZAPOptions &options);
+    /// @result The ZAP options.
+    [[nodiscard]] UMPS::Authentication::ZAPOptions getZAPOptions() const noexcept;
     /// @}
 
     /// @name High Water Mark
@@ -118,6 +120,8 @@ public:
     ///                           "infinite".
     /// @throws std::invalid_argument if highWaterMark is negative.
     void setReceiveHighWaterMark(int highWaterMark);
+    /// @result The approximate number of request messages to cache.
+    [[nodiscard]] int getReceiveHighWaterMark() const noexcept;
     /// @brief Influences the maximum number of reply messages to cache on the
     ///        socket.
     /// @param[in] highWaterMark  The approximate max number of reply messages
@@ -125,6 +129,8 @@ public:
     ///                           "infinite".
     /// @throws std::invalid_argument if highWaterMark is negative.
     void setSendHighWaterMark(int highWaterMark);
+    /// @result The approximate number of response messages to cache.
+    [[nodiscard]] int getSendHighWaterMark() const noexcept;
     /// @}
 
     /// @name Polling Interval
@@ -141,7 +147,7 @@ public:
     /// @throws std::invalid_argument if the polling interval is negative.
     void setPollingTimeOut(const std::chrono::milliseconds &pollingInterval);
     /// @result The polling interval.
-    //[[nodiscard]] std::chrono::milliseconds getPollingTimeOut() const noexcept;
+    [[nodiscard]] std::chrono::milliseconds getPollingTimeOut() const noexcept;
     /// @}
 
     /// @result The reply options.

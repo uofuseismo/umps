@@ -15,7 +15,7 @@
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
-#include "umps/services/connectionInformation/socketDetails/xSubscriber.hpp"
+#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::ProxyServices::Command;
@@ -139,12 +139,9 @@ void ReplierProcess::initialize(const ReplierOptions &options)
     }
     stop(); // Stop the replier in case it is running
     // Create the replier
-    ReplierOptions replierOptions;
-
     pImpl->mReplier
         = std::make_unique<Replier> (pImpl->mContext, pImpl->mLogger);
-    pImpl->mReplier->initialize(replierOptions);
-
+    pImpl->mReplier->initialize(options);
     // All done
 #ifndef NDEBUG
     assert(pImpl->mReplier->isInitialized());
@@ -183,9 +180,13 @@ void ReplierProcess::stop()
 ///--------------------------------------------------------------------------///
 ///                       Create From an Initialization File                 ///
 ///--------------------------------------------------------------------------///
+[[maybe_unused]]
 std::unique_ptr<ReplierProcess>
 UMPS::ProxyServices::Command::createReplierProcess(
         const UCI::Requestor &requestor,
+        const ModuleDetails &moduleDetails,
+        const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+                (const std::string &, const void *, size_t )> &callback,
         const std::string &iniFile,
         const std::string &section,
         std::shared_ptr<UMPS::Messaging::Context> context,
@@ -203,33 +204,52 @@ UMPS::ProxyServices::Command::createReplierProcess(
     //
     std::string service = "ModuleRegistry";
     ReplierOptions replierOptions;
-    auto interval = replierOptions.getOptions().getPollingTimeOut();
-    auto sendHighWaterMark
-        = replierOptions.getOptions().getSendHighWaterMark();
-    auto receiveHighWaterMark
-        = replierOptions.getOptions().getReceiveHighWaterMark();
+    auto interval= replierOptions.getPollingTimeOut();
+    auto sendHighWaterMark= replierOptions.getSendHighWaterMark();
+    auto receiveHighWaterMark= replierOptions.getReceiveHighWaterMark();
+    std::string address;
     // Load things from the initialization file if possible
     if (std::filesystem::exists(iniFile))
     {
         boost::property_tree::ptree propertyTree;
         boost::property_tree::ini_parser::read_ini(iniFile,
                                                    propertyTree);
+        // Get the address (if applicable)
+        address = propertyTree.get<std::string> (section + ".address", address);
         // Get service name
         service = propertyTree.get<std::string> (section + ".proxyService",
                                                  service);
-        if (service.empty())
+        if (address.empty() && service.empty())
         {
-            throw std::runtime_error("Module registry service not set");
+            throw std::runtime_error("Must either set service name or address");
         }
-        // Interval
+        // Polling interval
         auto iInterval = static_cast<int> (interval.count());
-        iInterval = propertyTree.get<int> (section + ".interval", iInterval);
-        interval = std::chrono::seconds {iInterval};
+        iInterval = propertyTree.get<int> (section + ".pollerTimeOut",
+                                           iInterval);
+        interval = std::chrono::milliseconds {iInterval};
         replierOptions.setPollingTimeOut(interval);
         // HWM
+        receiveHighWaterMark
+            = propertyTree.get<int> (section + ".receiveHighWaterMark",
+                                     receiveHighWaterMark);
         replierOptions.setReceiveHighWaterMark(receiveHighWaterMark);
+        sendHighWaterMark
+                = propertyTree.get<int> (section + ".sendHighWaterMark",
+                                         sendHighWaterMark);
         replierOptions.setSendHighWaterMark(sendHighWaterMark);
     } // End check on ini file
+    // Get the service's address and the ZAP options
+    if (address.empty())
+    {
+        address
+            = requestor.getProxyServiceBackendDetails(service).getAddress();
+    }
+    auto zapOptions = requestor.getZAPOptions();
+    replierOptions.setAddress(address);
+    replierOptions.setZAPOptions(zapOptions);
+    // Set the callback
+    replierOptions.setCallback(callback);
     // Create
     auto result = std::make_unique<ReplierProcess> (context, logger);
     result->initialize(replierOptions);

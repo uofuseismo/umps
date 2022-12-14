@@ -132,16 +132,31 @@ void ReplierOptions::setZAPOptions(const UAuth::ZAPOptions &options)
     pImpl->mOptions.setZAPOptions(options);
 }
 
+UAuth::ZAPOptions ReplierOptions::getZAPOptions() const noexcept
+{
+    return pImpl->mOptions.getZAPOptions();
+}
+
 /// HWM
 void ReplierOptions::setReceiveHighWaterMark(const int hwm)
 {
     pImpl->mOptions.setReceiveHighWaterMark(hwm);
 }
 
+int ReplierOptions::getReceiveHighWaterMark() const noexcept
+{
+    return pImpl->mOptions.getReceiveHighWaterMark();
+}
+
 /// HWM
 void ReplierOptions::setSendHighWaterMark(const int hwm)
 {
     pImpl->mOptions.setSendHighWaterMark(hwm);
+}
+
+int ReplierOptions::getSendHighWaterMark() const noexcept
+{
+    return pImpl->mOptions.getSendHighWaterMark();
 }
 
 /// Options
@@ -164,9 +179,7 @@ void ReplierOptions::setPollingTimeOut(
     pImpl->mOptions.setPollingTimeOut(pollingInterval);
 }
 
-/*
 std::chrono::milliseconds ReplierOptions::getPollingTimeOut() const noexcept
 {
     return pImpl->mOptions.getPollingTimeOut();
 }
-*/

@@ -2,6 +2,7 @@
 #define UMPS_PROXY_SERVICES_COMMAND_REPLIER_PROCESS_HPP
 #include <memory>
 #include <chrono>
+#include <functional>
 #include "umps/modules/process.hpp"
 namespace UMPS
 {
@@ -17,8 +18,13 @@ namespace UMPS
  {
   class Context;
  }
+ namespace MessageFormats
+ {
+  class IMessage;
+ }
  namespace ProxyServices::Command
  {
+  class ModuleDetails;
   class ReplierOptions;
   class Replier;
  }
@@ -49,9 +55,11 @@ public:
     /// @name Step 1: Initialization
     /// @{
 
-    /// @brief Initializes the process options.
-    /// @param[in] options            The replier process options.
-    /// @throws std::invalid_argument if \c conection->isInitialized() is false.
+    /// @brief Initializes the replier process.
+    /// @param[in] options  The replier process options.
+    /// @throws std::invalid_argument if the module details or connection
+    ///         address is not set.
+    /// @throws std::runtime_error if the replier process cannot be created.
     void initialize(const ReplierOptions &options);
     /// @result True indicates the publisher process is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
@@ -89,17 +97,24 @@ private:
 };
 /// @brief Creates a replier process from options in the initialization file.
 /// @param[in] requestor  The connection information requestor.
-/// @param[in] iniFile    The initialization file.
-/// @param[in] section    The section of the initialization file with the
-///                       heartbeat options.
-/// @param[in] context    The ZeroMQ context.
-/// @param[in] logger     The application's logger.
+/// @param[in] iniFile        The initialization file.
+/// @param[in] moduleDetails  The module details.
+/// @param[in] section        The section of the initialization file with the
+///                           module registry options.
+/// @param[in] context        The ZeroMQ context.
+/// @param[in] logger         The application's logger.
 /// @result On successful exit, this is a module registry process that is
 ///         connected and ready to reply to remote module interaction 
 ///         commands.
+/// @throws std::invalid_argument if the module name in moduleDetails is not
+///         set, the initialization file does not exist.
+/// @thrwos std::runtime_error if the replier process cannot be created.
 /// @ingroup UMPS_ProxyServices_Command
 std::unique_ptr<ReplierProcess>
     createReplierProcess(const UMPS::Services::ConnectionInformation::Requestor &requestor,
+                         const ModuleDetails &moduleDetails,
+                         const std::function<std::unique_ptr<UMPS::MessageFormats::IMessage>
+                                 (const std::string &messageType, const void *data, size_t length)> &callback,
                          const std::string &iniFile,
                          const std::string &section = "ModuleRegistry",
                          std::shared_ptr<UMPS::Messaging::Context> context = nullptr,
