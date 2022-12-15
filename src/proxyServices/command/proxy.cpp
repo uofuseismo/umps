@@ -275,7 +275,7 @@ public:
         // Handle context
         if (frontendContext == nullptr)
         {
-            mFrontendContext = std::make_shared<UMPS::Messaging::Context>(1);
+            mFrontendContext = std::make_shared<UMPS::Messaging::Context> (1);
         }
         else
         {
@@ -283,7 +283,7 @@ public:
         }
         if (backendContext == nullptr)
         {
-            mBackendContext = std::make_shared<UMPS::Messaging::Context>(1);
+            mBackendContext = std::make_shared<UMPS::Messaging::Context> (1);
         }
         else
         {
