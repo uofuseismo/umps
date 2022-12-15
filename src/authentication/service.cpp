@@ -28,34 +28,6 @@ using namespace UMPS::Authentication;
 class Service::ServiceImpl
 {
 public:
-    /*
-    /// C'tor 
-    ServiceImpl(std::shared_ptr<zmq::context_t> context,
-                std::shared_ptr<UMPS::Logging::ILog> logger,
-                std::shared_ptr<IAuthenticator> authenticator,
-                int) :
-        mContext(context),
-        mLogger(logger),
-        mAuthenticator(authenticator),
-        mDeprecatedContext(true)
-    {
-        if (logger == nullptr)
-        {
-            mLogger = std::make_shared<UMPS::Logging::StandardOut> (); 
-        }
-        if (context == nullptr)
-        {
-            mContext = std::make_shared<zmq::context_t> (1);
-        }
-        if (authenticator == nullptr)
-        {
-            mAuthenticator = std::make_shared<Grasslands> (mLogger);
-        }
-        mPipe = std::make_unique<zmq::socket_t> (*mContext,
-                                                 zmq::socket_type::pair);
-        makeEndPointName();
-    }
-    */
     ServiceImpl(const std::shared_ptr<UMPS::Messaging::Context> &context,
                 const std::shared_ptr<UMPS::Logging::ILog> &logger,
                 const std::shared_ptr<IAuthenticator> &authenticator) :
@@ -116,10 +88,8 @@ public:
     std::unique_ptr<zmq::socket_t> mPipe{nullptr};
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::shared_ptr<IAuthenticator> mAuthenticator{nullptr};
-    //std::thread mThread;
     std::string mEndPoint;
-    std::chrono::milliseconds mPollTimeOutMS{-1};
-    //bool mHaveThread{false};
+    const std::chrono::milliseconds mPollTimeOutMS{-1};
     bool mHavePipe{false};
     bool mRunning{false};
 };
@@ -219,6 +189,7 @@ void Service::start()
     while (keepRunning)
     {
         keepRunning = isRunning();
+        // We'll wait `forever' since the API can send a TERMINATE message. 
         pImpl->mLogger->debug("Waiting for message...");
         zmq::poll(items, nPollItems, pImpl->mPollTimeOutMS);
         //pImpl->mLogger->debug("Message received!");
