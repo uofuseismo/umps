@@ -334,7 +334,7 @@ public:
         contextPtr = reinterpret_cast<zmq::context_t *>
                      (mBackendContext->getContext());
         mBackend = std::make_unique<zmq::socket_t> (*contextPtr,
-                                                    zmq::socket_type::dealer);
+                                                    zmq::socket_type::router);
         // Make the authenticators
         mFrontendAuthenticatorService
             = std::make_unique<UAuth::Service>
@@ -1000,7 +1000,7 @@ public:
         router.setSecurityLevel(securityLevel);
         router.setConnectOrBind(UCI::ConnectOrBind::Connect);
 
-        UCI::SocketDetails::Dealer dealer;
+        UCI::SocketDetails::Router dealer;
         dealer.setAddress(mBackendAddress);
         dealer.setSecurityLevel(securityLevel);
         dealer.setConnectOrBind(UCI::ConnectOrBind::Connect);

@@ -104,8 +104,9 @@ struct Modules
         mProxyBroadcasts;
     std::map<std::string, std::unique_ptr<UMPS::ProxyServices::Proxy>>
         mProxyServices;
-    std::unique_ptr<UCI::Service> mConnectionInformation;
-    std::unique_ptr<UMPS::ProxyServices::Command::Proxy> mModuleRegistry;
+    std::unique_ptr<UCI::Service> mConnectionInformation{nullptr};
+    std::unique_ptr<UMPS::ProxyServices::Command::Proxy>
+       mModuleRegistry{nullptr};
 };
 
 ProgramOptions parseIniFile(const std::string &iniFile);
@@ -414,18 +415,19 @@ int main(int argc, char *argv[])
     UMPS::Logging::DailyFile moduleRegistryLogger;
     moduleRegistryLogger.initialize("ModuleRegistry",
                                     moduleRegistryLogFileName,
-                                    UMPS::Logging::Level::Info,
+                                    UMPS::Logging::Level::Debug,//Info,
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> moduleRegistryLoggerPtr
         = std::make_shared<UMPS::Logging::DailyFile> (moduleRegistryLogger);
     auto moduleRegistry
         = std::make_unique<UMPS::ProxyServices::Command::Proxy>
-          (moduleRegistryLoggerPtr, adminAuthenticator, readOnlyAuthenticator);
+          (moduleRegistryLoggerPtr, readOnlyAuthenticator, readOnlyAuthenticator);
     auto serviceKey = "ProxyServices::" + moduleRegistry->getName();
     moduleRegistry->initialize(options.mModuleRegistryOptions);
+    modules.mModuleRegistry = std::move(moduleRegistry);
     modules.mConnectionInformation->addConnection(
-        moduleRegistry->getConnectionDetails());
-    moduleRegistry->start();
+        modules.mModuleRegistry->getConnectionDetails());
+    modules.mModuleRegistry->start();
     // Start the proxy broadcasts
     for (const auto &proxyOptions : options.mProxyBroadcastOptions)
     {
@@ -597,12 +599,13 @@ int main(int argc, char *argv[])
                 std::cout << std::endl;
             }
 
-            if (!modules.mProxyServices.empty() || moduleRegistry->isRunning())
+            if (!modules.mProxyServices.empty() ||
+                 modules.mModuleRegistry->isRunning())
             {
                 std::cout << "ProxyServices:" << std::endl;
-                if (moduleRegistry->isRunning())
+                if (modules.mModuleRegistry->isRunning())
                 {
-                    printService(*moduleRegistry);
+                    printService(*modules.mModuleRegistry);
                 }
                 for (const auto &service : modules.mProxyServices)
                 {
@@ -620,7 +623,7 @@ int main(int argc, char *argv[])
     processManager.stop();
     // Shut down the modules under remote management
     std::cout << "Stopping the module registry..." << std::endl;
-    moduleRegistry->stop(); 
+    modules.mModuleRegistry->stop(); 
     // Shut down the services
     //std::cout << "Stopping the authenticator..." << std::endl;
     //authenticatorService.stop();
