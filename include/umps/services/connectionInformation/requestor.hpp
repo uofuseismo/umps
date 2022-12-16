@@ -124,6 +124,16 @@ public:
     [[nodiscard]] SocketDetails::Dealer getProxyServiceBackendDetails(const std::string &name) const; 
     /// @}
 
+    /// @name Query Module Registry (Router-Router)
+    /// @{
+
+    /// @brief Gets the socket details to which servers will connect.
+    /// @param[in] name  The name of the proxy service.
+    /// @throws std::runtime_error if the proxy service name does not exist
+    ///         or the \c isInitialized() is false.
+    [[nodiscard]] SocketDetails::Router getModuleRegistryBackendDetails(const std::string &name) const;
+    /// @}
+
     /// @name Destructors
     /// @{
 

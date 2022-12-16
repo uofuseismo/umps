@@ -16,7 +16,7 @@
 #include "umps/messaging/routerDealer/replyOptions.hpp"
 #include "umps/services/connectionInformation/requestor.hpp"
 #include "umps/services/connectionInformation/requestorOptions.hpp"
-#include "umps/services/connectionInformation/socketDetails/dealer.hpp"
+#include "umps/services/connectionInformation/socketDetails/router.hpp"
 #include "private/isEmpty.hpp"
 
 using namespace UMPS::ProxyServices::Command;
@@ -245,7 +245,7 @@ UMPS::ProxyServices::Command::createReplierProcess(
     if (address.empty())
     {
         address
-            = requestor.getProxyServiceBackendDetails(service).getAddress();
+            = requestor.getModuleRegistryBackendDetails(service).getAddress();
     }
     auto zapOptions = requestor.getZAPOptions();
     replierOptions.setAddress(address);

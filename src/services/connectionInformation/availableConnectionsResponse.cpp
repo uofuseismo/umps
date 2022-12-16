@@ -429,6 +429,35 @@ Details objectToDetails(const nlohmann::json &obj)
             backendSocket.setMinimumUserPrivileges(backendPrivileges);
             proxy.setSocketPair(std::pair(frontendSocket, backendSocket));
         }
+        else if (frontendSocketType == SocketType::Router &&
+                 backendSocketType  == SocketType::Router)
+        {
+            SocketDetails::Router frontendSocket;
+            SocketDetails::Router  backendSocket;
+            auto frontendAddress = obj["FrontendAddress"];
+            auto frontendLevel = static_cast<UAuth::SecurityLevel>
+                                 (obj["FrontendSecurityLevel"].get<int> ());
+            auto frontendCorb = static_cast<ConnectOrBind> 
+                                (obj["FrontendConnectOrBind"].get<int> ());
+            auto frontendPrivileges = static_cast<UAuth::UserPrivileges>
+                                 (obj["FrontendMinimumPrivileges"].get<int> ());
+            frontendSocket.setAddress(frontendAddress);
+            frontendSocket.setSecurityLevel(frontendLevel);
+            frontendSocket.setConnectOrBind(frontendCorb);
+            frontendSocket.setMinimumUserPrivileges(frontendPrivileges);
+            auto backendAddress = obj["BackendAddress"];
+            auto backendLevel = static_cast<UAuth::SecurityLevel>
+                                (obj["BackendSecurityLevel"].get<int> ());
+            auto backendCorb = static_cast<ConnectOrBind> 
+                               (obj["BackendConnectOrBind"].get<int> ());
+            auto backendPrivileges = static_cast<UAuth::UserPrivileges>
+                                 (obj["BackendMinimumPrivileges"].get<int> ());
+            backendSocket.setAddress(backendAddress); 
+            backendSocket.setSecurityLevel(backendLevel);
+            backendSocket.setConnectOrBind(backendCorb);
+            backendSocket.setMinimumUserPrivileges(backendPrivileges);
+            proxy.setSocketPair(std::pair(frontendSocket, backendSocket));
+        }
         else
         {
             throw std::runtime_error("Unhandled frontend/backend pair");

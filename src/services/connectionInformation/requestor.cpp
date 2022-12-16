@@ -211,6 +211,25 @@ Requestor::getProxyServiceBackendDetails(const std::string &name) const
     throw std::runtime_error("No details found for: " + name);
 }
 
+SocketDetails::Router
+Requestor::getModuleRegistryBackendDetails(const std::string &name) const
+{
+    if (isEmpty(name))
+    {
+        throw std::invalid_argument("Proxy service name is empty");
+    }
+    auto connectionDetails = getAllConnectionDetails();
+    for (const auto &connectionDetail : connectionDetails)
+    {
+        if (connectionDetail.getName() == name)
+        {
+            auto proxySocketDetails = connectionDetail.getProxySocketDetails();
+            return proxySocketDetails.getRouterBackend();
+        }
+    }
+    throw std::runtime_error("No details found for: " + name);
+}
+
 /// The requestor options
 RequestorOptions Requestor::getRequestorOptions() const
 {
