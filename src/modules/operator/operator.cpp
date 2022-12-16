@@ -421,7 +421,7 @@ int main(int argc, char *argv[])
         = std::make_shared<UMPS::Logging::DailyFile> (moduleRegistryLogger);
     auto moduleRegistry
         = std::make_unique<UMPS::ProxyServices::Command::Proxy>
-          (moduleRegistryLoggerPtr, readOnlyAuthenticator, readOnlyAuthenticator);
+          (moduleRegistryLoggerPtr);//, readOnlyAuthenticator);//, readOnlyAuthenticator);
     auto serviceKey = "ProxyServices::" + moduleRegistry->getName();
     moduleRegistry->initialize(options.mModuleRegistryOptions);
     modules.mModuleRegistry = std::move(moduleRegistry);

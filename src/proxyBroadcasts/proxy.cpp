@@ -108,7 +108,7 @@ public:
                 = std::make_shared<UAuth::Grasslands> (mLogger);
         }
         else
-        {   
+        {
             mFrontendAuthenticator = frontendAuthenticator;
         }
         if (backendAuthenticator == nullptr)

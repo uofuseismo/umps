@@ -945,10 +945,12 @@ public:
         }
         else
         {
-            mFrontendAuthenticatorThread = std::thread(&UAuth::Service::start,
-                                               &*mFrontendAuthenticatorService);
-            mBackendAuthenticatorThread = std::thread(&UAuth::Service::start,
-                                               &*mBackendAuthenticatorService);
+            mFrontendAuthenticatorThread
+                = std::thread(&UAuth::Service::start,
+                              &*mFrontendAuthenticatorService);
+            mBackendAuthenticatorThread
+                = std::thread(&UAuth::Service::start,
+                              &*mBackendAuthenticatorService);
         }
         // Give authenticators a chance to start then start proxy.  Otherwise,
         // a sneaky person can connect pre-authentication.
@@ -1109,19 +1111,19 @@ Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger) :
 }
 
 Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
-                         std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
+             std::shared_ptr<UAuth::IAuthenticator> &authenticator) :
     pImpl(std::make_unique<ProxyImpl> (nullptr, logger, authenticator))
 {
 }
 
 Proxy::Proxy(std::shared_ptr<UMPS::Logging::ILog> &logger,
-                         std::shared_ptr<UAuth::IAuthenticator> &frontendAuthenticator,
-                         std::shared_ptr<UAuth::IAuthenticator> &backendAuthenticator) :
+             std::shared_ptr<UAuth::IAuthenticator> &frontendAuthenticator,
+             std::shared_ptr<UAuth::IAuthenticator> &backendAuthenticator) :
     pImpl(std::make_unique<ProxyImpl> (nullptr,
-                                             nullptr,
-                                             logger,
-                                             frontendAuthenticator,
-                                             backendAuthenticator))
+                                       nullptr,
+                                       logger,
+                                       frontendAuthenticator,
+                                       backendAuthenticator))
 {
 }
 
