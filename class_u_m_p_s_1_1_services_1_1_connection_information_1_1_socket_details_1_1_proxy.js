@@ -10,6 +10,7 @@ var class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1
     [ "getDealerBackend", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#ae47a1fa51415781009ae4b6829f89d6b", null ],
     [ "getFrontendAddress", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a81908e70f733b44388dd8617552dca98", null ],
     [ "getFrontendSocketType", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#ad0440cf711d1e9c07256af46240c8667", null ],
+    [ "getRouterBackend", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a817ee60b3fd853ff45ca3152227e9269", null ],
     [ "getRouterFrontend", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#ae1f64c455754cb2924d7de90cefada4f", null ],
     [ "getXPublisherBackend", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#ab92ff7eef5542947f7eba51b4dc660bb", null ],
     [ "getXSubscriberFrontend", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#acc821ba66c744145f2b504b1f8de0ca8", null ],
@@ -17,5 +18,6 @@ var class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1
     [ "operator=", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a7fbc1e5825974953ab6d859e2c965837", null ],
     [ "operator=", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#ac846ae6f35f6e11b50f31bb207999a51", null ],
     [ "setSocketPair", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a714632dd564165083b742431898f8ea0", null ],
+    [ "setSocketPair", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a8cf632b21b788b2a9eb4f95edfb7ef4b", null ],
     [ "setSocketPair", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a989c2979a47b2b23b99b1086422d16a8", null ]
 ];

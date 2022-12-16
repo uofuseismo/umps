@@ -1,5 +1,7 @@
 var NAVTREEINDEX11 =
 {
+"proxy_broadcasts_2pick_2subscriber_8hpp_source.html":[5,0,0,0,6,1,2],
+"proxy_broadcasts_2pick_2subscriber_options_8hpp_source.html":[5,0,0,0,6,1,3],
 "proxy_broadcasts_2proxy_8hpp_source.html":[5,0,0,0,6,2],
 "proxy_broadcasts_2proxy_options_8hpp_source.html":[5,0,0,0,6,3],
 "proxy_services_2command_2module_details_8hpp_source.html":[5,0,0,0,7,0,2],
