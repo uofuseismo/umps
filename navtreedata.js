@@ -78,7 +78,7 @@ var NAVTREEINDEX =
 "class_u_m_p_s_1_1_services_1_1_command_1_1_service.html#a3ac79b872b7e08b705a795844f1e3197",
 "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a81908e70f733b44388dd8617552dca98",
 "class_u_m_p_s_1_1_services_1_1_module_registry_1_1_service.html#a9d51d5680419707e64ccf752ad2bc8a6",
-"proxy_broadcasts_2pick_2publisher_options_8hpp_source.html"
+"proxy_broadcasts_2pick_2publisher_8hpp_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
