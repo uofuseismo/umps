@@ -779,6 +779,7 @@ public:
         pingMessage.addstr(request.toMessage());
         try
         {
+            mLogger->debug("Sending ping message to: " + address);
             pingMessage.send(*mBackend);
         }
         catch (...)
@@ -798,6 +799,7 @@ public:
         terminateMessage.addstr(request.toMessage());
         try
         {
+            mLogger->info("Sending terminate message to: " + address); 
             terminateMessage.send(*mBackend);
         }
         catch (...)
