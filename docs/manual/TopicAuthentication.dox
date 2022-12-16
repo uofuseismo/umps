@@ -88,15 +88,11 @@ A script to help you create a public/private key pair might look like
     chmod 644 ${public_key}
     chmod 600 ${private_key}
 
-Additionally, you must install your public key on the machine running uOperator.  This is done in two ways 
+Additionally, you (or your system administrator) must install your public key on the machine running uOperator.  This is done by
 
    1. Connecting to the machine running uOperator.  This actually requires you to have login credentials on this machine.
-   2. Login as the user running uOperator.
-   3. Copy your **public** key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed.  Check the operator initialization file.
-
-or
-
-   1. Complain to your system administrator.
+   2. Logging in as the user running uOperator.
+   3. Copying your **public** key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator.  This information should be in the uOperator initialization file.
 
 */
 
@@ -114,7 +110,7 @@ Users details are specified in a JSON file.  For example, let's add user Bob.  T
          "name" : "Bob",
          "email" : "bob@university.edu", 
          "password" : null,
-         "public_key" : "bobsPublicKey.txt",
+         "publickey_file" : "bobsPublicKey.txt",
          "privileges" : "read_write"
     }
 
@@ -130,7 +126,7 @@ After the fact, we may wish to allow Bob to use the Woodhouse security protocol 
          "name" : "Bob",
          "email" : "bob@university.edu", 
          "password" : "bobsPassword",
-         "public_key" : "bobsPublicKey.txt",
+         "publickey_file" : "bobsPublicKey.txt",
          "privileges" : "read_only"
     }
 

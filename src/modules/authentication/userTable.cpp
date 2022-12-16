@@ -15,18 +15,18 @@ namespace UAuth = UMPS::Authentication;
 
 enum class Job
 {
-    NONE = 0,
-    ADD = 1,
-    UPDATE = 2,
-    DELETE = 3
+    None = 0,
+    Add = 1,
+    Update = 2,
+    Delete = 3
 };
 
 struct ProgramOptions
 {
     std::string mUserTable;
     std::string mJSONFile;
-    Job mJob = Job::NONE;
-    int mError = 0;
+    Job mJob{Job::None};
+    int mError{0};
 };
 
 ProgramOptions parseCommandLineOptions(int argc, char *argv[]);
@@ -150,17 +150,17 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     // 
-    if (options.mJob == Job::ADD)
+    if (options.mJob == Job::Add)
     {
         std::cout << "Attempting to add: " << std::endl << user << std::endl;
         authenticator.addUser(user);
     }
-    else if (options.mJob == Job::UPDATE)
+    else if (options.mJob == Job::Update)
     {
         std::cout << "Attempting to update: " << std::endl << user << std::endl;
         authenticator.updateUser(user);
     }
-    else if (options.mJob == Job::DELETE)
+    else if (options.mJob == Job::Delete)
     {
         std::cout << "Attempting to delete: " << std::endl << user << std::endl;
         authenticator.deleteUser(user);
@@ -293,27 +293,27 @@ Command options are as follows)"""");
     if (vm.count("add"))
     {
         options.mJSONFile = vm["add"].as<std::string> ();
-        options.mJob = Job::ADD; 
+        options.mJob = Job::Add; 
     }
     else if (vm.count("update"))
     {
         options.mJSONFile = vm["update"].as<std::string> ();
-        options.mJob = Job::UPDATE;
+        options.mJob = Job::Update;
     }
     else if (vm.count("delete"))
     {
         options.mJSONFile = vm["delete"].as<std::string> ();
-        options.mJob = Job::DELETE;
+        options.mJob = Job::Delete;
     }
     else
     {
         std::cerr << "No action specified" << std::endl;
-        options.mJob = Job::NONE;
+        options.mJob = Job::None;
         options.mError = 1;
         return options;
     }
     // Ensure the user's JSON file exists
-    if (options.mJob != Job::NONE)
+    if (options.mJob != Job::None)
     {
         if (!std::filesystem::exists(options.mJSONFile))
         {
