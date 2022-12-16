@@ -9,6 +9,7 @@ var class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor =
     [ "Requestor", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a41154c1a3e6a5ca3f3f92c14d3a88b8d", null ],
     [ "disconnect", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a2e82910a75dca961198bbde418a4e961", null ],
     [ "getAllConnectionDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#ab2b5b8dd3dfe7e897923fd30bf38b8e5", null ],
+    [ "getModuleRegistryBackendDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a1570c6a3c3a2a9d5264ea8447df4b8f0", null ],
     [ "getProxyBroadcastBackendDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#ae2e732595e50bb715a1e75de8c78b47c", null ],
     [ "getProxyBroadcastFrontendDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a97684d99b495b574f1a1af29fb9b74ae", null ],
     [ "getProxyServiceBackendDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a366a2aee0edba2fa695246dad085ceec", null ],

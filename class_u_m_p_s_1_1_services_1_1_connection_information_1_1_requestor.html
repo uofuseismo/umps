@@ -164,6 +164,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a366a2aee0edba2fa695246dad085ceec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_dealer.html">SocketDetails::Dealer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a366a2aee0edba2fa695246dad085ceec">getProxyServiceBackendDetails</a> (const std::string &amp;name) const</td></tr>
 <tr class="memdesc:a366a2aee0edba2fa695246dad085ceec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the socket details to which servers will connect.  <a href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a366a2aee0edba2fa695246dad085ceec">More...</a><br /></td></tr>
 <tr class="separator:a366a2aee0edba2fa695246dad085ceec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Query Module Registry (Router-Router)</div></td></tr>
+<tr class="memitem:a1570c6a3c3a2a9d5264ea8447df4b8f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_router.html">SocketDetails::Router</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a1570c6a3c3a2a9d5264ea8447df4b8f0">getModuleRegistryBackendDetails</a> (const std::string &amp;name) const</td></tr>
+<tr class="memdesc:a1570c6a3c3a2a9d5264ea8447df4b8f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the socket details to which servers will connect.  <a href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a1570c6a3c3a2a9d5264ea8447df4b8f0">More...</a><br /></td></tr>
+<tr class="separator:a1570c6a3c3a2a9d5264ea8447df4b8f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:a2e82910a75dca961198bbde418a4e961"><td class="memItemLeft" align="right" valign="top"><a id="a2e82910a75dca961198bbde418a4e961"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#a2e82910a75dca961198bbde418a4e961">disconnect</a> ()</td></tr>
@@ -267,6 +271,38 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#aebe045fe7d728991e0b6a234128e7d3e">isInitialized()</a></code> is false. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1570c6a3c3a2a9d5264ea8447df4b8f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1570c6a3c3a2a9d5264ea8447df4b8f0">&#9670;&nbsp;</a></span>getModuleRegistryBackendDetails()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_router.html">SocketDetails::Router</a> UMPS::Services::ConnectionInformation::Requestor::getModuleRegistryBackendDetails </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the socket details to which servers will connect. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>The name of the proxy service. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>if the proxy service name does not exist or the <code><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html#aebe045fe7d728991e0b6a234128e7d3e">isInitialized()</a></code> is false. </td></tr>
   </table>
   </dd>
 </dl>
@@ -545,7 +581,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>ConnectionInformation</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_requestor.html">Requestor</a></li>
-    <li class="footer">Generated on Fri Dec 16 2022 00:18:27 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Dec 16 2022 00:37:14 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
