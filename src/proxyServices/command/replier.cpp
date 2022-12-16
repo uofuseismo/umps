@@ -1,4 +1,3 @@
-#include <iostream>
 #include <thread>
 #include <utility>
 #include "umps/proxyServices/command/replier.hpp"
@@ -289,7 +288,6 @@ void Replier::initialize(const ReplierOptions &options)
     request.setRegistrationType(RegistrationType::Register);
     pImpl->send(request); // Send my request
     // Wait (up to 5 seconds) for a registration response.
-std::cout << "registering module..." << std::endl;
     auto receiveTimeOut = socketOptions.getReceiveTimeOut();
     pImpl->mSocket->set(zmq::sockopt::rcvtimeo, REGISTRATION_TIME);
     auto replyMessage = pImpl->receive(); // Wait for a reply

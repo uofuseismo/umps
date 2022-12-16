@@ -1,4 +1,3 @@
-#include <iostream>
 #include <array>
 #include <string>
 #include <set>
@@ -1150,6 +1149,10 @@ void Proxy::initialize(const ProxyOptions &options)
     // Disconnect from old connections
     pImpl->disconnectFrontend();
     pImpl->disconnectBackend();
+    // Create the ZAP options
+    auto zapOptions = pImpl->mOptions.getZAPOptions();
+    zapOptions.setSocketOptions(&*pImpl->mFrontend);
+    zapOptions.setSocketOptions(&*pImpl->mBackend);
     // Connect
     pImpl->bindBackend();
     pImpl->bindFrontend();
