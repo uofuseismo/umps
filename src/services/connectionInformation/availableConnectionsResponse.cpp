@@ -186,6 +186,19 @@ nlohmann::json detailsToJSONObject(const Details &detail)
             obj["BackendMinimumPrivileges"]
                 = static_cast<int> (socket.getMinimumUserPrivileges());
         }
+        else if (backendType == SocketType::Router)
+        {
+            auto socket = proxy.getRouterBackend(); 
+            obj["BackendAddress"] = socket.getAddress();
+            obj["BackendSocketType"]
+                = static_cast<int> (socket.getSocketType());
+            obj["BackendConnectOrBind"]
+                = static_cast<int> (socket.getConnectOrBind());
+            obj["BackendSecurityLevel"]
+                = static_cast<int> (socket.getSecurityLevel());
+            obj["BackendMinimumPrivileges"]
+                = static_cast<int> (socket.getMinimumUserPrivileges());
+        }
         else
         {
             throw std::runtime_error("Unhandled backend");
