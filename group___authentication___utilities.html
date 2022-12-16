@@ -148,13 +148,10 @@ uKeyPair --publickey ${public_key} --privatekey ${private_key} --keyname 'keys f
 chmod 700 ${destination}
 chmod 644 ${public_key}
 chmod 600 ${private_key}
-</pre><p> Additionally, you must install your public key on the machine running uOperator. This is done in two ways<ol type="1">
+</pre><p> Additionally, you (or your system administrator) must install your public key on the machine running uOperator. This is done by<ol type="1">
 <li>Connecting to the machine running uOperator. This actually requires you to have login credentials on this machine.</li>
-<li>Login as the user running uOperator.</li>
-<li>Copy your <b>public</b> key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed. Check the operator initialization file.</li>
-</ol>
-or<ol type="1">
-<li>Complain to your system administrator. </li>
+<li>Logging in as the user running uOperator.</li>
+<li>Copying your <b>public</b> key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator. This information should be in the uOperator initialization file. </li>
 </ol>
 </div>
 
@@ -163,7 +160,7 @@ or<ol type="1">
      "name" : "Bob",
      "email" : "bob@university.edu", 
      "password" : null,
-     "public_key" : "bobsPublicKey.txt",
+     "publickey_file" : "bobsPublicKey.txt",
      "privileges" : "read_write"
 }
 </pre><p> At a minimum, we must provide a username and password as these two fields will ultimately constitute a unique user. Additionally, we are providing requisite information for Grasslands, Strawhouse, or Stonehouse authentication; Woodhouse is a username and password verification and the password is not being provided. Generating the public key, bobsPublicKey.txt, is described in <a class="el" href="group___authentication___utilities.html">Generating Key Pairs</a>. Lastly, we note the privileges are "read_write" which will be sufficient for most users. Other choices include "read_only" or "admin" where "read_only" users are typically only interested in subscribing to a data feed and "admin" privileges should be reserved for very special users. <br  />
@@ -172,7 +169,7 @@ To add Bob, we do the following on the uOperator host machine </p><pre class="fr
      "name" : "Bob",
      "email" : "bob@university.edu", 
      "password" : "bobsPassword",
-     "public_key" : "bobsPublicKey.txt",
+     "publickey_file" : "bobsPublicKey.txt",
      "privileges" : "read_only"
 }
 </pre><p> We then update this information with </p><pre class="fragment">uUserTable --update bobUpdate.json
@@ -188,7 +185,7 @@ SELECT * FROM user WHERE user = "Bob" AND email = "bob@university.edu";
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Dec 16 2022 16:53:24 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Dec 16 2022 17:48:52 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
