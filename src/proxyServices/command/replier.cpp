@@ -1,3 +1,4 @@
+#include <iostream>
 #include <thread>
 #include <utility>
 #include "umps/proxyServices/command/replier.hpp"
@@ -134,9 +135,10 @@ public:
                     // message and attempted to process it.
                     try
                     {
-                        auto response = mCallback(terminateRequestMessageType,
-                                               terminateRequestContents.data(),
-                                               terminateRequestContents.size());
+                        auto response
+                            = mCallback(terminateRequestMessageType,
+                                        terminateRequestContents.data(),
+                                        terminateRequestContents.size());
                         if (response == nullptr)
                         {
                             mLogger->error("Callback didnt process terminate");
@@ -210,6 +212,36 @@ public:
         } // End loop
         mLogger->debug("Reply poll loop finished");
     }
+    /// Register the replier
+    void registerReplier()
+    {
+        // Attempt to register the module
+        mLogger->debug("Registering module...");
+        RegistrationRequest request;
+        request.setModuleDetails(mModuleDetails);
+        request.setRegistrationType(RegistrationType::Register);
+        send(request); // Send my request
+        // Cache the receive time out (milliseconds)
+        auto receiveTimeOut = mSocket->get(zmq::sockopt::rcvtimeo);
+        // Wait (up to 5 seconds) for a registration response.
+        mSocket->set(zmq::sockopt::rcvtimeo, REGISTRATION_TIME);
+        auto replyMessage = receive(); // Wait for a reply
+        // Restore the receive time out
+        mSocket->set(zmq::sockopt::rcvtimeo, receiveTimeOut);
+        if (replyMessage == nullptr)
+        {
+            throw std::runtime_error("Registration request timed-out");
+        }   
+        auto response
+            = UMF::static_unique_pointer_cast<RegistrationResponse>
+              (std::move(replyMessage));
+        if (response->getReturnCode() != RegistrationReturnCode::Success)
+        {
+            throw std::runtime_error("Failed to register module");
+        }
+        mRegistered = true;
+        mLogger->debug("Module successfully registered!");
+    }
     UMPS::MessageFormats::Messages mMessageFormats;
     ReplierOptions mOptions;
     ModuleDetails mModuleDetails;
@@ -263,7 +295,7 @@ void Replier::initialize(const ReplierOptions &options)
         throw std::invalid_argument("Callback not set");
     }
     auto replyOptions = options.getOptions();
-    auto moduleDetails = options.getModuleDetails();
+    pImpl->mModuleDetails = options.getModuleDetails();
     UMPS::Messaging::SocketOptions socketOptions;
     socketOptions.setAddress(replyOptions.getAddress());
     socketOptions.setZAPOptions(replyOptions.getZAPOptions());
@@ -282,9 +314,11 @@ void Replier::initialize(const ReplierOptions &options)
     pImpl->mOptions = options;
     pImpl->mLogger->debug("Module successfully connected!");
     // Attempt to register the module
+//    pImpl->registerReplier();
+/*
     pImpl->mLogger->debug("Registering module...");
     RegistrationRequest request;
-    request.setModuleDetails(moduleDetails);
+    request.setModuleDetails(pImpl->mModuleDetails);
     request.setRegistrationType(RegistrationType::Register);
     pImpl->send(request); // Send my request
     // Wait (up to 5 seconds) for a registration response.
@@ -304,21 +338,31 @@ void Replier::initialize(const ReplierOptions &options)
     {
         throw std::runtime_error("Failed to register module");
     }
-    pImpl->mModuleDetails = moduleDetails;
     pImpl->mRegistered = true;
+*/
     pImpl->mLogger->debug("Module successfully registered!");
 }
 
 /// Initialized
 bool Replier::isInitialized() const noexcept
 {
-    return pImpl->isConnected() && pImpl->mRegistered;
+    return pImpl->isConnected();// && pImpl->mRegistered;
 }
 
 /// Start
 void Replier::start()
 {
-    if (!isInitialized()){throw std::runtime_error("Replier not initialized");}
+    if (!pImpl->isConnected())
+    {
+        throw std::runtime_error("Replier not connected");
+    }
+    if (!pImpl->mRegistered)
+    {
+        pImpl->registerReplier();
+    }
+#ifndef NDEBUG
+    assert(pImpl->mRegistered);
+#endif
     pImpl->start();
 }
 
@@ -330,7 +374,8 @@ void Replier::stop()
     pImpl->stop();
     std::this_thread::sleep_for(std::chrono::milliseconds {100});
     // Deregister the module
-    if (pImpl->isConnected() && pImpl->mModuleDetails.haveName())
+    if (pImpl->isConnected() && pImpl->mModuleDetails.haveName() &&
+        pImpl->mRegistered)
     {
         pImpl->mLogger->debug("Deregistering module...");
         // Create deregistration request
@@ -367,10 +412,13 @@ void Replier::stop()
             if (!gotDeregistrationResponse)
             {
                 pImpl->mLogger->warn("Deregistration request timed-out");
+                // This will have to get sorted out if we attemp to re-register
+                pImpl->mRegistered = false;
             }
             else
             {
                 pImpl->mLogger->debug("Module deregistered!");
+                pImpl->mRegistered = false;
             }
         }
         catch (const std::exception &e)

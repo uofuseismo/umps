@@ -1,3 +1,4 @@
+#include <iostream>
 #include <array>
 #include <string>
 #include <set>
@@ -851,14 +852,15 @@ public:
         {
             if (!mModulesMap.contains(moduleDetails))
             {
-                mLogger->debug("Registering: "
-                             + workerAddress);
+                mLogger->info("Registering: " + workerAddress);
                 mModulesMap.insert(std::pair{workerAddress,
                                              ::Module(moduleDetails,
                                              mOptions.getPingIntervals())});
             } 
             else
             {
+                mLogger->info("Not regestering: " + workerAddress
+                            + " because it already exists");
                 registrationResponse.setReturnCode(
                     RegistrationReturnCode::Exists);
             }
@@ -866,7 +868,7 @@ public:
         else // De-register
         {
             // Whether it exists or not this is a success
-            mLogger->debug("Deregistering: " + workerAddress);
+            mLogger->info("Deregistering: " + workerAddress);
             mModulesMap.erase(workerAddress);
         }
         // Create a reply and send it

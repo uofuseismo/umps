@@ -415,13 +415,13 @@ int main(int argc, char *argv[])
     UMPS::Logging::DailyFile moduleRegistryLogger;
     moduleRegistryLogger.initialize("ModuleRegistry",
                                     moduleRegistryLogFileName,
-                                    UMPS::Logging::Level::Debug,//Info,
+                                    UMPS::Logging::Level::Info,
                                     hour, minute);
     std::shared_ptr<UMPS::Logging::ILog> moduleRegistryLoggerPtr
         = std::make_shared<UMPS::Logging::DailyFile> (moduleRegistryLogger);
     auto moduleRegistry
         = std::make_unique<UMPS::ProxyServices::Command::Proxy>
-          (moduleRegistryLoggerPtr);//, readOnlyAuthenticator);//, readOnlyAuthenticator);
+          (moduleRegistryLoggerPtr, adminAuthenticator, readOnlyAuthenticator);
     auto serviceKey = "ProxyServices::" + moduleRegistry->getName();
     moduleRegistry->initialize(options.mModuleRegistryOptions);
     modules.mModuleRegistry = std::move(moduleRegistry);
