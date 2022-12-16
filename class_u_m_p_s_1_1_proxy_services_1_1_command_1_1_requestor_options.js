@@ -10,5 +10,6 @@ var class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options =
     [ "operator=", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html#afb1bd700b70cbc89f4e6d0f6ffd976d5", null ],
     [ "operator=", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html#ade5c6103a463ef30c5bbb8eec6d1137a", null ],
     [ "setAddress", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html#a1213758d8ca1ebce4006e864da2c9601", null ],
-    [ "setReceiveTimeOut", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html#a493560340198f9d832e299863d4c0cdc", null ]
+    [ "setReceiveTimeOut", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html#a493560340198f9d832e299863d4c0cdc", null ],
+    [ "setZAPOptions", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html#afd7fedbde95935e6bb064e30450ebe72", null ]
 ];
