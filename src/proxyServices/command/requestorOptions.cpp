@@ -4,6 +4,7 @@
 #include <filesystem>
 #include "umps/proxyServices/command/requestorOptions.hpp"
 #include "umps/messaging/requestRouter/requestOptions.hpp"
+#include "umps/authentication/zapOptions.hpp"
 
 using namespace UMPS::ProxyServices::Command;
 
@@ -87,4 +88,11 @@ RequestorOptions::getOptions() const
 {
     if (!haveAddress()){throw std::runtime_error("Address not set");}
     return pImpl->mOptions;
+}
+
+/// ZAP options
+void RequestorOptions::setZAPOptions(
+    const UMPS::Authentication::ZAPOptions &options) noexcept
+{
+    pImpl->mOptions.setZAPOptions(options);
 }

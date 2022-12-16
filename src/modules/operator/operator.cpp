@@ -669,11 +669,18 @@ int main(int argc, char *argv[])
 std::string parseCommandLineOptions(int argc, char *argv[])
 {
     std::string iniFile;
-    boost::program_options::options_description desc("Allowed options");
+    boost::program_options::options_description desc(R"""(
+The uOperator is the essential hub in the hub-and-spoke UMPS architecture.
+It is the passthrough by which all other modules communicate.  Example usage
+is
+
+    uOperator --ini=operator.ini
+
+Allowed options)""");
     desc.add_options()
-        ("help", "produce help message")
+        ("help", "Produces this help message")
         ("ini",  boost::program_options::value<std::string> (),
-                 "Defines the initialization file for this module");
+                 "The initialization file for this executable");
     boost::program_options::variables_map vm;
     boost::program_options::store(
         boost::program_options::parse_command_line(argc, argv, desc), vm);

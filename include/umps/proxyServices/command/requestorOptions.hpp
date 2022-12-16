@@ -2,9 +2,16 @@
 #define UMPS_PROXY_SERVICES_COMMAND_REQUESTOR_OPTIONS_HPP
 #include <memory>
 #include <chrono>
-namespace UMPS::Messaging::RequestRouter
+namespace UMPS
 {
- class RequestOptions;
+ namespace Authentication
+ {
+  class ZAPOptions;
+ }
+ namespace Messaging::RequestRouter
+ {
+  class RequestOptions;
+ }
 }
 namespace UMPS::ProxyServices::Command
 {
@@ -55,6 +62,8 @@ public:
     /// @name Optional Parameters
     /// @{
 
+    /// @brief Sets the ZeroMQ authentication options.
+    void setZAPOptions(const UMPS::Authentication::ZAPOptions &options) noexcept;
     /// @brief Sets the time out for receiving replies from the local module.
     /// @param[in] timeOut  The receive time out.  If this is negative then
     ///                     this program will hang indefinitely until the

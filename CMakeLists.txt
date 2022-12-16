@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(UMPS VERSION 0.1.0 LANGUAGES CXX)
+project(UMPS VERSION 0.2.0 LANGUAGES CXX)
 enable_testing()
 
 # Some options
@@ -187,19 +187,6 @@ target_include_directories(umps
                            PRIVATE ${SQLite3_INCLUDE_DIRS}
                            PRIVATE Boost::program_options
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/umps>)
-#if (${BUILD_TBB})
-#    target_include_directories(umps PRIVATE ${TBB_INCLUDE_DIR})
-#    target_link_libraries(umps PRIVATE ${TBB_LIBRARY})
-#endif()
-#if (${BUILD_EW})
-#    target_include_directories(umps PRIVATE ${EARTHWORM_INCLUDE_DIR})
-#    target_link_libraries(umps PRIVATE ${EARTHWORM_UTILITY_LIBRARY} ${EARTHWORM_MT_LIBRARY})
-#    target_compile_definitions(umps PRIVATE WITH_EARTHWORM=1)
-#    if (${BUILD_MSEED})
-#       target_include_directories(umps PRIVATE ${MINISEED_INCLUDE_DIR})
-#       target_link_libraries(umps PRIVATE ${MINISEED_LIBRARY})
-#    endif()
-#endif()
 
 ##########################################################################################
 #                                         Modules                                        #
@@ -245,18 +232,17 @@ target_include_directories(uCommand
                            PRIVATE Boost::program_options)
 target_link_libraries(uCommand PRIVATE Boost::program_options umps)
 
-#if (${BUILD_EW})
-#    add_executable(broadcastWaveRing src/modules/broadcasts/waveRing.cpp)
-#    set_target_properties(broadcastWaveRing PROPERTIES
-#                          CXX_STANDARD 20
-#                          CXX_STANDARD_REQUIRED YES 
-#                          CXX_EXTENSIONS NO) 
-#    target_include_directories(broadcastWaveRing
-#                               PRIVATE ${CMAKE_SOURCE_DIR}/include
-#                               PRIVATE Boost::program_options)
-#
-#    target_link_libraries(broadcastWaveRing PRIVATE umps Boost::program_options Threads::Threads)
-#endif()
+add_executable(uRemoteCommand src/modules/uRemoteCommand.cpp)
+set_target_properties(uRemoteCommand PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+target_include_directories(uRemoteCommand
+                           PRIVATE ${CMAKE_SOURCE_DIR}/include
+                           PRIVATE Boost::program_options)
+target_link_libraries(uRemoteCommand PRIVATE Boost::program_options umps)
+
+
 
 ##########################################################################################
 #                                      Python Wrapping                                   #
