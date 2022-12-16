@@ -31,8 +31,8 @@ public:
     SocketDetails::XSubscriber mXSubscriber;
     UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
     UAuth::UserPrivileges mUserPrivileges{UAuth::UserPrivileges::ReadOnly};
-    SocketType mSocketType = SocketType::Unknown;
-    bool mHaveConnectionType = false;
+    SocketType mSocketType{SocketType::Unknown};
+    bool mHaveConnectionType{false};
 };
 
 /// C'tor

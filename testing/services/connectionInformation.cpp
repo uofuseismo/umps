@@ -134,6 +134,19 @@ TEST(ConnectionInformation, SocketDetails)
     EXPECT_EQ(dealerCopy.getAddress(), backEnd);
     EXPECT_EQ(dealerCopy.getSocketType(), SocketType::Dealer);
     EXPECT_EQ(dealerCopy.getConnectOrBind(), ConnectOrBind::Connect);
+
+    EXPECT_NO_THROW(proxy.setSocketPair(std::pair(router, router)));
+    EXPECT_EQ(proxy.getSocketType(), SocketType::Proxy);
+    EXPECT_EQ(proxy.getFrontendSocketType(), SocketType::Router);
+    EXPECT_EQ(proxy.getBackendSocketType(),  SocketType::Router);
+    routerCopy = proxy.getRouterFrontend();
+    EXPECT_EQ(routerCopy.getAddress(), frontEnd);
+    EXPECT_EQ(routerCopy.getSocketType(), SocketType::Router);
+    EXPECT_EQ(routerCopy.getConnectOrBind(), ConnectOrBind::Connect);
+    routerCopy = proxy.getRouterBackend();
+    EXPECT_EQ(routerCopy.getAddress(), frontEnd);
+    EXPECT_EQ(routerCopy.getSocketType(), SocketType::Router);
+    EXPECT_EQ(routerCopy.getConnectOrBind(), ConnectOrBind::Connect);
 }
 
 TEST(ConnectionInformation, Details)

@@ -12,9 +12,10 @@ class Proxy::ProxyImpl
 public:
     std::pair<XSubscriber, XPublisher> mXSubXPubSocketPair;
     std::pair<Router, Dealer> mRouterDealerSocketPair;
-    UCI::SocketType mFrontendSocket = UCI::SocketType::Unknown;
-    UCI::SocketType mBackendSocket = UCI::SocketType::Unknown;
-    bool mHavePair = false;
+    std::pair<Router, Router> mRouterRouterSocketPair;
+    UCI::SocketType mFrontendSocket{UCI::SocketType::Unknown};
+    UCI::SocketType mBackendSocket{UCI::SocketType::Unknown};
+    bool mHavePair{false};
 };
 
 /// C'tor
@@ -81,15 +82,31 @@ void Proxy::setSocketPair(const std::pair<Router, Dealer> &socketPair)
 {
     if (!socketPair.first.haveAddress())
     {
-        throw std::invalid_argument("router address not set");
+        throw std::invalid_argument("Router address not set");
     }   
     if (!socketPair.second.haveAddress())
     {
-        throw std::invalid_argument("dealer address not set");
+        throw std::invalid_argument("Dealer address not set");
     }
     pImpl->mRouterDealerSocketPair = socketPair;
     pImpl->mFrontendSocket = socketPair.first.getSocketType();
     pImpl->mBackendSocket = socketPair.second.getSocketType();
+    pImpl->mHavePair = true;
+}
+
+void Proxy::setSocketPair(const std::pair<Router, Router> &socketPair)
+{
+    if (!socketPair.first.haveAddress())
+    {   
+        throw std::invalid_argument("Router frontend address not set");
+    }   
+    if (!socketPair.second.haveAddress())
+    {
+        throw std::invalid_argument("Router backend address not set");
+    }
+    pImpl->mRouterRouterSocketPair = socketPair;
+    pImpl->mFrontendSocket = socketPair.first.getSocketType();
+    pImpl->mBackendSocket  = socketPair.second.getSocketType();
     pImpl->mHavePair = true;
 }
 
@@ -130,7 +147,14 @@ Router Proxy::getRouterFrontend() const
     {
         throw std::invalid_argument("Frontend not ROUTER");
     }
-    return pImpl->mRouterDealerSocketPair.first;
+    if (getBackendSocketType() == UCI::SocketType::Dealer)
+    {
+        return pImpl->mRouterDealerSocketPair.first;
+    }
+    else
+    {
+        return pImpl->mRouterRouterSocketPair.first;
+    }
 }
 
 /// Backend sockets
@@ -150,6 +174,15 @@ Dealer Proxy::getDealerBackend() const
         throw std::invalid_argument("Backend not DEALER");
     }
     return pImpl->mRouterDealerSocketPair.second;
+}
+
+Router Proxy::getRouterBackend() const
+{
+    if (getBackendSocketType() != UCI::SocketType::Router)
+    {
+        throw std::invalid_argument("Backend not ROUTER");
+    }
+    return pImpl->mRouterRouterSocketPair.second;
 }
 
 /// Socket type
@@ -185,6 +218,10 @@ std::string Proxy::getBackendAddress() const
     else if (getBackendSocketType() == UCI::SocketType::Dealer)
     {
         return getDealerBackend().getAddress();
+    }
+    else if (getBackendSocketType() == UCI::SocketType::Router)
+    {
+        return getRouterBackend().getAddress();
     }
     else
     {

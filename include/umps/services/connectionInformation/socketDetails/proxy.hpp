@@ -51,20 +51,27 @@ public:
     /// @name Socket Types
     /// @{
 
-    /// @brief Sets the socket xpub/xsub pair for this proxy.
+    /// @brief Sets the xpub/xsub socket pair for this proxy.
     /// @param[in] socketPair  socketPair.first is the frontend (where data
     ///                        comes in) and socketPair.second is the backend
     ///                        (where data goes out).  
     /// @throws std::invalid_argument if socketPair.first or
     ///         socketPair.second does not have an address.
     void setSocketPair(const std::pair<XSubscriber, XPublisher> &socketPair);
-    /// @brief Sets the socket router/dealer pair for this proxy.
+    /// @brief Sets the router/dealer socket pair for this proxy.
     /// @param[in] socketPair  socketPair.first is the frontend (where
     ///                        requests come in) and socketPair.second is the
     ///                        backend (where requests are processed).
     /// @throws std::invalid_argument if socketPair.first or
     ///         socketPair.second does not have an address.
     void setSocketPair(const std::pair<Router, Dealer> &socketPair);
+    /// @brief Sets the router/router socket pair for this proxy.
+    /// @param[in] socketPair  socketPair.first is the frontend (where
+    ///                        requests come in) and socketPair.second is the
+    ///                        backend (where requests are processed).
+    /// @throws std::invalid_argument if socketPair.first or
+    ///         socketPair.second does not have an address.
+    void setSocketPair(const std::pair<Router, Router> &socketPair);
 
     /// @result True indicates that the socket pair was set.
     [[nodiscard]] bool haveSocketPair() const noexcept;
@@ -79,9 +86,11 @@ public:
     /// @result The socket information for the frontend.
     [[nodiscard]] Router getRouterFrontend() const;
     /// @result The socket information for the backend.
-    [[nodiscard]] XPublisher  getXPublisherBackend() const;
+    [[nodiscard]] XPublisher getXPublisherBackend() const;
     /// @result The socket information for the backend.
     [[nodiscard]] Dealer getDealerBackend() const;
+    /// @result The socket informatino for the backend.
+    [[nodiscard]] Router getRouterBackend() const;
 
     /// @result The address of the frontend socket.
     /// @throws std::runtime_error if \c haveSocketPair() is false.
