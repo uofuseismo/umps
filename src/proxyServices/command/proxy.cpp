@@ -731,7 +731,9 @@ public:
             bool waitForMoreResponses{true};
             while (waitForMoreResponses)
             {
-                zmq::poll(&items[0], nPollItems, mPollTimeOut);
+                // It can take a bit for a module to shut down
+                zmq::poll(&items[0], nPollItems,
+                          std::chrono::milliseconds {5000}); //mPollTimeOut);
                 if (items[1].revents & ZMQ_POLLIN)
                 {
                     try

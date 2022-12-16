@@ -135,6 +135,7 @@ public:
                     // message and attempted to process it.
                     try
                     {
+                        mLogger->debug("Private terminate request received");
                         auto response
                             = mCallback(terminateRequestMessageType,
                                         terminateRequestContents.data(),
@@ -157,6 +158,7 @@ public:
                         reply.addstr(response->getMessageType());
                         reply.addstr(response->toMessage());
                         reply.send(*mSocket);
+                        mLogger->debug("Private terminate response sent");
                     }
                     catch (const std::exception &e)
                     {
