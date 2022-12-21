@@ -122,9 +122,9 @@ Modules</h2></td></tr>
 <p>Programs for interacting adding/updating/removing users from the users table and generating key-pairs. </p>
 
 
-<h3><a id="TopicAuthentication_Keypairs"></a>Generating Key Pairs</h3><div class="textblock">For users using the Stonehouse security model, you will have to generate a public/private keypair. A standalone program for this activity is uKeyPair. You can get an overview of the program </p><pre class="fragment"> uKeyPair --help
-</pre><p> However, you probably want to jump right in. So let's make an example </p><pre class="fragment"> uKeyPair --publickey examplePublicKey.txt --privatekey examplePrivateKey.txt --keyname 'keys for uOperator@example server'
-</pre><p> Here, you are specifying the public and private key file names. Additionally, the keyname argument is a little reminder for yourself should ever read see these files and wonder - to which machine does this key pair actually help me connect? This program should generate your public key (examplePublicKey.txt) and your private key (exmaplePrivateKey.txt). You should also check the permissions on these files to ensure that the public key is read/write/executable by you and only readable by others (644) whereas the private key is only read/write/executable (600) by you.Normally, these files should be installed into </p><pre class="fragment"> mv examplePublicKey.txt  ${HOME}/.local/share/UMPS/keys
+<h3><a id="TopicAuthentication_Keypairs"></a>Generating Key Pairs</h3><div class="textblock">For users using the Stonehouse security model, you will have to generate a public/private keypair. A standalone program for this activity is uKeyPair. You can get an overview of the program <pre class="fragment"> uKeyPair --help
+</pre> However, you probably want to jump right in. So let's make an example <pre class="fragment"> uKeyPair --publickey examplePublicKey.txt --privatekey examplePrivateKey.txt --keyname 'keys for uOperator@example server'
+</pre> Here, you are specifying the public and private key file names. Additionally, the keyname argument is a little reminder for yourself should ever read see these files and wonder - to which machine does this key pair actually help me connect? This program should generate your public key (examplePublicKey.txt) and your private key (exmaplePrivateKey.txt). You should also check the permissions on these files to ensure that the public key is read/write/executable by you and only readable by others (644) whereas the private key is only read/write/executable (600) by you. Normally, these files should be installed into <pre class="fragment"> mv examplePublicKey.txt  ${HOME}/.local/share/UMPS/keys
  mv examplePrivateKey.txt ${HOME}/.local/share/UMPS/keys
 </pre><p> A script to help you create a public/private key pair might look like </p><pre class="fragment">#!/usr/bin/bash
 # Name of the key pair.  Pick something better in real life.
@@ -155,29 +155,29 @@ chmod 600 ${private_key}
 </ol>
 </div>
 
-<h3><a id="TopicAuthentication_UserTable"></a>User Table</h3><div class="textblock">Provided you are performing authentication, on the machine that will run the uOperator you must also create a users table. A command line utility for interacting with this table is uUserTable program. An overview of what this program does is obtained with </p><pre class="fragment"> uUserTable --help
-</pre><p> Users details are specified in a JSON file. For example, let's add user Bob. The corresponding JSON file, bob.json, looks like </p><pre class="fragment">{
+<h3><a id="TopicAuthentication_UserTable"></a>User Table</h3><div class="textblock">Provided you are performing authentication, on the machine that will run the uOperator you must also create a users table. A command line utility for interacting with this table is uUserTable program. An overview of what this program does is obtained with <pre class="fragment"> uUserTable --help
+</pre> Users details are specified in a JSON file. For example, let's add user Bob. The corresponding JSON file, bob.json, looks like <pre class="fragment">{
      "name" : "Bob",
      "email" : "bob@university.edu", 
      "password" : null,
      "publickey_file" : "bobsPublicKey.txt",
      "privileges" : "read_write"
 }
-</pre><p> At a minimum, we must provide a username and password as these two fields will ultimately constitute a unique user. Additionally, we are providing requisite information for Grasslands, Strawhouse, or Stonehouse authentication; Woodhouse is a username and password verification and the password is not being provided. Generating the public key, bobsPublicKey.txt, is described in <a class="el" href="group___authentication___utilities.html">Generating Key Pairs</a>. Lastly, we note the privileges are "read_write" which will be sufficient for most users. Other choices include "read_only" or "admin" where "read_only" users are typically only interested in subscribing to a data feed and "admin" privileges should be reserved for very special users. <br  />
-To add Bob, we do the following on the uOperator host machine </p><pre class="fragment">uUserTable --add bob.json
-</pre><p> After the fact, we may wish to allow Bob to use the Woodhouse security protocol but downgrade his privileges to read-only. In this case, we can update his details with a new JSON file, bobUpdate.json, </p><pre class="fragment">{   
+</pre> At a minimum, we must provide a username and password as these two fields will ultimately constitute a unique user. Additionally, we are providing requisite information for Grasslands, Strawhouse, or Stonehouse authentication; Woodhouse is a username and password verification and the password is not being provided. Generating the public key, bobsPublicKey.txt, is described in <a class="el" href="group___authentication___utilities.html">Generating Key Pairs</a>. Lastly, we note the privileges are "read_write" which will be sufficient for most users. Other choices include "read_only" or "admin" where "read_only" users are typically only interested in subscribing to a data feed and "admin" privileges should be reserved for very special users. <br  />
+ To add Bob, we do the following on the uOperator host machine <pre class="fragment">uUserTable --add bob.json
+</pre> After the fact, we may wish to allow Bob to use the Woodhouse security protocol but downgrade his privileges to read-only. In this case, we can update his details with a new JSON file, bobUpdate.json, <pre class="fragment">{   
      "name" : "Bob",
      "email" : "bob@university.edu", 
      "password" : "bobsPassword",
      "publickey_file" : "bobsPublicKey.txt",
      "privileges" : "read_only"
 }
-</pre><p> We then update this information with </p><pre class="fragment">uUserTable --update bobUpdate.json
-</pre><p> After some time, Bob may be moving onto greener pastures. In this case, we delete Bob using the following JSON file, bobDelete.json </p><pre class="fragment">{
+</pre> We then update this information with <pre class="fragment">uUserTable --update bobUpdate.json
+</pre> After some time, Bob may be moving onto greener pastures. In this case, we delete Bob using the following JSON file, bobDelete.json <pre class="fragment">{
      "name" : "Bob",
      "email" : "bob@university.edu"
 }
-</pre><p> Lastly, you can check your work </p><pre class="fragment">sqlite3 ${HOME}/.local/share/UMPS/tables/user.sqlite3
+</pre> Lastly, you can check your work <pre class="fragment">sqlite3 ${HOME}/.local/share/UMPS/tables/user.sqlite3
 SELECT * FROM user WHERE user = "Bob" AND email = "bob@university.edu";
 .quit
 </pre><p> where I have implicitly been writing to the default user's table located in ${HOME}/.local/share/UMPS/tables on a Linux system. </div></div><!-- contents -->
@@ -185,7 +185,7 @@ SELECT * FROM user WHERE user = "Bob" AND email = "bob@university.edu";
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Dec 21 2022 21:51:30 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Dec 21 2022 22:17:53 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
