@@ -132,18 +132,18 @@ Classes</h2></td></tr>
 
 <h3><a id="TopicMessaging_PubSub_PubSub"></a>Publisher Subscriber</h3><div class="textblock"><h1><a class="anchor" id="Topic_Messaging_PubSub_Overview"></a>
 Overview</h1>
-<p>This is the most naive messaging strategy available in UMPS. All that happens are that messages are sent from a producer to a consumer. This pattern exists for educational and testing purposes and should not be used in production code.</p>
+<p>This is the most naive messaging strategy available in UMPS. All that happens are that messages are sent from a producer to a consumer. This pattern exists for educational and testing purposes and should not be used in production code. </p>
 <h2><a class="anchor" id="TopicMessaging_PubSub_Example"></a>
 An Example:</h2>
-<p>In this example, let us define a simple publisher that sends a handful of text messages to a subscriber.</p>
+<p>In this example, let us define a simple publisher that sends a handful of text messages to a subscriber. </p>
 <h2><a class="anchor" id="TopicMessaging_PubSub_ExamplePublisher"></a>
 The Publisher:</h2>
 <p>The important points are that the publisher <em>binds</em> to an endpoint, defines a message to send, then sends the message in a non-blocking way. Note, the publisher does not care whether or not the subscriber receives the messages. <br  />
-</p>
+ </p>
 <div class="fragment"></div><!-- fragment --><h2><a class="anchor" id="TopicMessaging_PubSub_ExampleSubscriber"></a>
 The Subscriber:</h2>
 <p>The important points are that the subscriber <em>connects</em> to an endpoint, receives a pre-agreed upon number of messages, and returns. It is important to consider the blocking behavior of the subscriber. If the default is to block (wait) indefinitely a message is received then in this example the program may hang. For this reason, we actually connect the subscriber to the publisher before the publisher is created. You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket. <br  />
-</p>
+ </p>
 <div class="fragment"></div><!-- fragment --><h2><a class="anchor" id="TopicMessaging_PubSub_ExampleDriver"></a>
 The Driver:</h2>
 <p>Here is the example driver code that launches this example. We create two threads - a publisher and a subscriber. The subscriber connects first then will block until a message is received. The publisher is then started after waiting some time. This mitigates the slow joiner problem. <br  />
@@ -153,7 +153,7 @@ The Driver:</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Dec 21 2022 22:17:53 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Dec 21 2022 22:52:30 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

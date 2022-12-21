@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['request_2dreply_20patterns_1309',['Request-Reply Patterns',['../group___messaging_patterns___req_rep.html',1,'']]],
-  ['request_2drouter_1310',['Request-Router',['../group___messaging_patterns___req_rep___request_router.html',1,'']]],
-  ['router_2ddealer_1311',['Router-Dealer',['../group___messaging_patterns___req_rep___router_dealer.html',1,'']]]
+  ['process_20base_20class_1307',['Process Base Class',['../group___modules___processes_base_class.html',1,'']]],
+  ['provided_20loggers_1308',['Provided Loggers',['../group___logging___loggers.html',1,'']]],
+  ['publisher_2dsubscriber_1309',['Publisher-Subscriber',['../group___messaging_patterns___pub_sub___pub_sub.html',1,'']]],
+  ['publisher_2dsubscriber_20patterns_1310',['Publisher-Subscriber Patterns',['../group___messaging_patterns___pub_sub.html',1,'']]]
 ];

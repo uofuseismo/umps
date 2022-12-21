@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['process_20base_20class_1305',['Process Base Class',['../group___modules___processes_base_class.html',1,'']]],
-  ['provided_20loggers_1306',['Provided Loggers',['../group___logging___loggers.html',1,'']]],
-  ['publisher_2dsubscriber_1307',['Publisher-Subscriber',['../group___messaging_patterns___pub_sub___pub_sub.html',1,'']]],
-  ['publisher_2dsubscriber_20patterns_1308',['Publisher-Subscriber Patterns',['../group___messaging_patterns___pub_sub.html',1,'']]]
+  ['message_20formats_1302',['Message Formats',['../group___messages___message_formats.html',1,'']]],
+  ['messages_1303',['Messages',['../group___messages__chapter.html',1,'']]],
+  ['messaging_20patterns_20_20_3cbr_3e_1304',['Messaging Patterns  &lt;br&gt;',['../group___messaging_patterns__chapter.html',1,'']]],
+  ['module_20base_20class_1305',['Module Base Class',['../group___modules___module_base_class.html',1,'']]],
+  ['modules_1306',['Modules',['../group___modules__chapter.html',1,'']]]
 ];

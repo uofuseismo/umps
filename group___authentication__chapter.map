@@ -4,5 +4,6 @@
 <area shape="rect" id="node3" href="$group___authentication___service.html" title="Authentication services are run by the uOperator. Whenever a connection is formed,..." alt="" coords="215,104,385,129"/>
 <area shape="rect" id="node4" href="$group___authentication___security_levels.html" title="Defines the various supported security levels in UMPS." alt="" coords="239,153,361,179"/>
 <area shape="rect" id="node5" href="$group___authentication___z_a_p.html" title="Options for the interacting with the ZeroMQ authentication protocol." alt="" coords="213,203,387,243"/>
-<area shape="rect" id="node6" title=" " alt="" coords="5,104,165,129"/>
+<area shape="rect" id="node6" href="$group___authentication___introduction.html" title=" " alt="" coords="250,268,350,293"/>
+<area shape="rect" id="node7" title=" " alt="" coords="5,129,165,155"/>
 </map>

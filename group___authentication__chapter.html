@@ -108,12 +108,15 @@ Collaboration diagram for Authentication &lt;br&gt;:</div>
 <area shape="rect" href="group___authentication___service.html" title="Authentication services are run by the uOperator. Whenever a connection is formed,..." alt="" coords="215,104,385,129"/>
 <area shape="rect" href="group___authentication___security_levels.html" title="Defines the various supported security levels in UMPS." alt="" coords="239,153,361,179"/>
 <area shape="rect" href="group___authentication___z_a_p.html" title="Options for the interacting with the ZeroMQ authentication protocol." alt="" coords="213,203,387,243"/>
-<area shape="rect" title=" " alt="" coords="5,104,165,129"/>
+<area shape="rect" href="group___authentication___introduction.html" title=" " alt="" coords="250,268,350,293"/>
+<area shape="rect" title=" " alt="" coords="5,129,165,155"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
+<tr class="memitem:group___authentication___introduction"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___authentication___introduction.html">Introduction</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group___authentication___security_levels"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___authentication___security_levels.html">Security Levels</a></td></tr>
 <tr class="memdesc:group___authentication___security_levels"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the various supported security levels in UMPS. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,57 +134,12 @@ Modules</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-
-
-<h3><a id="TopicAuthentication"></a>Authentication</h3><div class="textblock">This section details the concept of authentication in UMPS. The reason it exists is somewhat fortuitous. Soon after UMPS development commenced the University of Utah announced some pretty stringent, new security rules to prevent deparments from getting ransom-wared. As a result, the first major diversion in UMPS was validating it could withstand an external security audit. This does not however mean you need to understand the authentication mechanisms since the default UMPS behavior is to be completely open. If that's okay for your project then go to another section. <br  />
-<br  />
-We break the documentation into three main components based on your job function. <ol type="1">
-<li>Since most users will be interested in connection to the uOperator. All typical users need to know is know how a bit about <a class="el" href="group___authentication___z_a_p.html">ZeroMQ Authentication Protocol</a> and, possibly, where to get the uOperator's public key.</li>
-<li>A smaller subset of users will be system administrators. SysAds need to understand how to interact with the <a class="el" href="group___authentication___utilities___user_table.html">User Table</a> (i.e., add, generate, and remove credentials).</li>
-<li>Lastly, a strange few may want to read the uOperator source code. Those sadists will have to understand how an <a class="el" href="group___authentication___authenticator.html">Authenticator</a> works.</li>
-</ol>
-You're still here. Okay, in general, there are five <a class="el" href="group___authentication___security_levels.html">Security Levels</a> which, in ZeroMQ parlance, are <ul>
-<li>Grasslands<ul>
-<li>This is the default setting. In Grasslands all connections are open. If you are running a private network and are satisfied with the castle-and-moat pattern then you can stop reading.</li>
-</ul>
-</li>
-<li>Strawhouse<ul>
-<li>Connections to uOperator will be validated based on IP addresses. This is a good first step but a minimally competent attacker can easily spoof an IP.</li>
-</ul>
-</li>
-<li>Woodhouse<ul>
-<li>Connections to uOperator will have their IP validated <b>and</b> their username/password validated. This is a slow process and, since at the time of writing, the passwords are not encrypted the credentials can be stolen while on the wire. Also, comparing a password with a salted password stored in a database is an expensive and slow activity. To prove this to yourself, try logging out and in of your computer.</li>
-</ul>
-</li>
-<li>Stonehouse<ul>
-<li>Connections to uOperator will have their IP validated <b>and</b> their public/private key validated. Not only is this fast it is very secure since the public keys are encrypted by ZeroMQ. Plus, the encryption is a throw-away which means, even if someone breaks it, they can't use it again. Loosely speaking, you generate a private/public keypair, install your public key on the server, and copy the server's public key to your machine.</li>
-</ul>
-</li>
-<li>Ironhouse<ul>
-<li>This is easy because it isn't implemented. But this requires the client to authenticate on the server and the server to authenticate on the client.</li>
-</ul>
-</li>
-</ul>
-It is important to note a ZeroMQ limitation - uOperator will have <b>only</b> one security level for all connections. Despite the fact that there is only one security level, it is not true that all message proxies should be available to all users. Consequently, UMPS has a notion of <a class="el" href="group___authentication___user_privileges.html">User Privileges</a> which are<ul>
-<li>Read-Only<ul>
-<li>All users have this privilege. Basically, it means that they can subscribe to broadcasts. This is great for the users that just want to see a some data feeds. Such users would typically be writing user interfaces or external data monitoring tools.</li>
-</ul>
-</li>
-<li>Read-Write<ul>
-<li>Any actual user of the system should have read-write access. They can read from and write to broadcasts as well as use services.</li>
-</ul>
-</li>
-<li>Administrator<ul>
-<li>Administrator-level users can do everything read-write users can do. However, there are a few special messaging utilities that allow for remote module interaction that only administrator-level users can utilize. </li>
-</ul>
-</li>
-</ul>
-</div></div><!-- contents -->
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Dec 21 2022 22:17:53 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Dec 21 2022 22:52:30 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
