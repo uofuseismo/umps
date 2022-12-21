@@ -5,7 +5,7 @@ namespace UMPS::Services::ConnectionInformation
 {
 /// @brief Defines the connection type.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Applications_Operator
+/// @ingroup Applications_uOperator
 enum class ConnectionType
 {
     Service,   /*!< The connection is to a service.  This will be a 
@@ -24,7 +24,7 @@ enum class ConnectOrBind
 ///        types than what is enumerated here.  These are simply the patterns
 ///        exposed in UMPS.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Applications_Operator
+/// @ingroup Applications_uOperator
 enum class SocketType
 {
     Unknown,     /*!< The socket type is not specified. */

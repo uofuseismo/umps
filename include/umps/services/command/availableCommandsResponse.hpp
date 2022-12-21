@@ -7,6 +7,7 @@ namespace UMPS::Services::Command
 /// @class AvailableCommandsResponse "AvailableCommandsResponse.hpp" "umps/messageFormats/availableCommandsResponse.hpp"
 /// @brief The available text-based interactive program commands.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class AvailableCommandsResponse : public UMPS::MessageFormats::IMessage
 {
 public:

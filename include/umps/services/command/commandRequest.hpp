@@ -7,6 +7,7 @@ namespace UMPS::Services::Command
 /// @class CommandRequest commandRequest.hpp "umps/services/command/commandRequest.hpp"
 /// @brief Issues a text-based command to the application.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class CommandRequest : public UMPS::MessageFormats::IMessage
 {
 public:

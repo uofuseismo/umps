@@ -18,7 +18,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @class RequestorOptions "requestorOptions.hpp" "umps/services/connectionInformation/requestorOptions.hpp"
 /// @brief This defines the options for the connection information client.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Applications_Operator
+/// @ingroup Applications_uOperator
 class RequestorOptions
 {
 public:

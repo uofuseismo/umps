@@ -7,7 +7,7 @@ namespace UMPS::ProxyServices::Command
 /// @class ModuleDetails moduleDetails.hpp "umps/proxyServices/command/moduleDetails.hpp"
 /// @brief Defines the module properties.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup UMPS_ProxyServices_Command
+/// @ingroup Applications_uRemoteCommand
 class ModuleDetails
 {
 public:

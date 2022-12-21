@@ -35,7 +35,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @brief This defines the requestor that interacts with the connection
 ///        information service.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Applications_Operator
+/// @ingroup Applications_uOperator
 class Requestor
 {
 public:

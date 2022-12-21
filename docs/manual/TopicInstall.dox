@@ -1,8 +1,9 @@
 namespace UMPS
 {
 /*!
-\page TopicInstall Installation
+\page Installation
 \ingroup Install_chapter
+\section TopicInstall Installation
 
 This page outlines strategies for building UMPS from source.  The details for these steps can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
 

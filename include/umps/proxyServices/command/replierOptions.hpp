@@ -29,7 +29,7 @@ namespace UMPS::ProxyServices::Command
 /// @brief Defines the options for the thread managing remote activity to
 ///        respond.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup UMPS_ProxyServices_Command
+/// @ingroup Applications_uRemoteCommand
 class ReplierOptions
 {
 public:
@@ -138,12 +138,13 @@ public:
 
     /// @brief Sets the polling interval for the process that communicates with
     ///        the module registry.
-    /// @param[in] timeOut  The polling timeout.  After this time the module
-    ///                     registry polling process can check other things,
-    ///                     like if the program is shutting down.  This must
-    ///                     be a balance between being too short which
-    ///                     unnecessarily chews cycles and being too long so
-    ///                     as to make this utility unresponsive.
+    /// @param[in] pollingInterval  The polling timeout.  After this time the
+    ///                             module registry polling process can check
+    ///                             other things, like if the program is
+    ///                             shutting down.  This must be a balance
+    ///                             between being too short which unnecessarily
+    ///                             chews cycles and being too long so as to
+    ///                             make this utility unresponsive.
     /// @throws std::invalid_argument if the polling interval is negative.
     void setPollingTimeOut(const std::chrono::milliseconds &pollingInterval);
     /// @result The polling interval.

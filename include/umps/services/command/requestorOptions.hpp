@@ -12,6 +12,7 @@ namespace UMPS::Services::Command
 /// @brief This sets the parameters for the utility that will allow users to 
 ///        interact locally with a program.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class RequestorOptions
 {
 public:

@@ -12,6 +12,7 @@ namespace UMPS::Services::Command
 /// @brief This is for interacting with the underlying SQLite3 database that
 ///        keeps track of the locally running modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class ModuleTable
 {
 public:

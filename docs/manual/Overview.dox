@@ -1,7 +1,7 @@
 namespace UMPS
 {
-
-/** \mainpage notitle
+/*!
+\mainpage notitle
 
 This is the API documentation for <a href="https://uofuseismo.github.io/umps/modules.html">UMPS</a>.
 

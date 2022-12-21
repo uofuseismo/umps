@@ -8,6 +8,7 @@ namespace UMPS::Services::Command
 /// @class CommandResponse commandResponse.hpp "umps/services/command/commandResponse.hpp"
 /// @brief The response from a text-based command.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class CommandResponse : public UMPS::MessageFormats::IMessage
 {
 public:

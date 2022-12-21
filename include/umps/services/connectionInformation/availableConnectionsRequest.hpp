@@ -8,7 +8,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @brief This class requests the connection information for all avialable
 ///        connections - which includes services, broadcasts, etc.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Applications_Operator
+/// @ingroup Applications_uOperator
 class AvailableConnectionsRequest : public UMPS::MessageFormats::IMessage
 {
 public:

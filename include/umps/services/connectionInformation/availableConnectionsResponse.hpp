@@ -14,7 +14,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @brief This class provides the connection information to for all
 ///        available connections - e.g., broadcasts, services, etc.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup Applications_Operator
+/// @ingroup Applications_uOperator
 class AvailableConnectionsResponse : public UMPS::MessageFormats::IMessage
 {
 public:

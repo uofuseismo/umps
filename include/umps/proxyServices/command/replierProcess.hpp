@@ -31,10 +31,10 @@ namespace UMPS
 }
 namespace UMPS::ProxyServices::Command
 {
-/// @class "umps/proxyServices/command/replierProcess.hpp"
+/// @class ReplierPRocess "replierPRocess.hpp" "umps/proxyServices/command/replierProcess.hpp"
 /// @brief This process will respond to remote module interaction messages.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup UMPS_ProxyServices_Command
+/// @ingroup Applications_uRemoteCommand
 class ReplierProcess : public UMPS::Modules::IProcess
 {
 public:

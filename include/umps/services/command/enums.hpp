@@ -4,6 +4,7 @@
 namespace UMPS::Services::Command
 {
 /// @brief Defines the application's status.
+/// @ingroup Applications_uLocalCommand
 enum class ApplicationStatus : int 
 {
     Running = 0,     /*!< This indicates the application is running. */
@@ -11,6 +12,7 @@ enum class ApplicationStatus : int
     Unknown = 2      /*!< This indicates the application's status is unknown. */
 };
 /// @brief The service's return code for a command request.
+/// @ingroup Applications_uLocalCommand
 enum class CommandReturnCode
 {
     Success = 0,         /*!< Indicates the command was successful. */

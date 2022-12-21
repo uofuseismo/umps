@@ -7,6 +7,7 @@ namespace UMPS::Services::Command
 /// @class TerminateRequest commandRequest.hpp "umps/services/command/commandRequest.hpp"
 /// @brief Issues a command to terminate the application.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class TerminateRequest : public UMPS::MessageFormats::IMessage
 {
 public:

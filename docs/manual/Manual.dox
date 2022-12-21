@@ -1,10 +1,8 @@
-
 // This file strutures pages and modules into a convenient hierarchical structure.
+namespace UMPS
+{
 
-namespace UMPS {
-
-
-/** \page index Overview */
+/** \page \index Overview */
 
 
 /** \defgroup Messages_chapter Messages */
@@ -98,11 +96,15 @@ namespace UMPS {
     \ingroup Modules_chapter */
 
 /** \defgroup Applications_chapter Applications */
-/** \defgroup Applications_Operator uOperator
+/** \defgroup Applications_uOperator uOperator
     \brief The critical message relay hub in the hub and spoke architecture.
     \ingroup Applications_chapter */
-/** \defgroup Applications_LocalCommand uCommand
+/** \defgroup Applications_uLocalCommand uCommand
     \brief Allows users to interact with locally running modules.
     \ingroup Applications_chapter */
+/** \defgroup Applications_uRemoteCommand uRemoteCommand
+    \brief Allows privileged users to interact with remotely running modules.
+    \ingroup Applications_chapter */
+
 
 }

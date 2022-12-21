@@ -28,7 +28,7 @@ enum class RegistrationType : int
 /// @class RegistrationRequest registrationRequest.hpp "umps/proxyServices/command/registrationRequest.hpp"
 /// @brief Allows servers to request becoming a registered modules.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-/// @ingroup UMPS_ProxyServices_Command
+/// @ingroup Applications_uRemoteCommand
 class RegistrationRequest : public UMPS::MessageFormats::IMessage
 {
 public:

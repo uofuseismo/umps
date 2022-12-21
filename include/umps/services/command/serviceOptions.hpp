@@ -16,6 +16,7 @@ namespace UMPS::Services::Command
 /// @class ServiceOptions "serviceOptions.hpp" "umps/services/command/serviceOptions.hpp"
 /// @brief This class allows a background application to interact with a user.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class ServiceOptions
 {
 public:

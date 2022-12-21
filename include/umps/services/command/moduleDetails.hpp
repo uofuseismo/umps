@@ -7,6 +7,7 @@ namespace UMPS::Services::Command
 /// @class ModuleDetails "moduleDetails.hpp" "umps/services/command/moduleDetails.hpp"
 /// @brief Defines the locally running module properties.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class ModuleDetails
 {
 public:

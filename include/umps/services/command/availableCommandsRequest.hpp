@@ -7,6 +7,7 @@ namespace UMPS::Services::Command
 /// @class AvailableCommandsRequest "availableCommandsRequest.hpp" "umps/messageFormats/availableCommandsRequest.hpp"
 /// @brief Requests the text-based interactive program commands.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class AvailableCommandsRequest : public UMPS::MessageFormats::IMessage
 {
 public:

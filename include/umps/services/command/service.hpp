@@ -34,6 +34,7 @@ namespace UMPS::Services::Command
 ///          for the IPC file then directly make requests to the application
 ///          via the underlying request-router.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class Service : public UMPS::Services::IService
 {
 public:

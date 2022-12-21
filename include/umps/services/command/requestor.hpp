@@ -30,6 +30,7 @@ namespace UMPS::Services::Command
 ///        communicate must be running and have opened an IPC reply service
 ///        from which to receive requests.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class Requestor
 {
 public:

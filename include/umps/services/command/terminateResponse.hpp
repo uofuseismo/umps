@@ -4,17 +4,10 @@
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::Command
 {
-/// @brief The service's return code for a terminate request.
-//enum class TerminateReturnCode
-//{
-//    Success = 0,         /*!< Indicates the command was successful. */
-//    InvalidCommand = 1,  /*!< The command is invalid. */
-//    ApplicationError = 2 /*!< The terminate request is valid but the
-//                              application could not process the request. */
-//};
 /// @class TerminateResponse terminateResponse.hpp "umps/services/command/quitResponse.hpp"
 /// @brief A request to terminate the application.
 /// @copyright Ben Baker (University of Utah) distributed under the MIT license.
+/// @ingroup Applications_uLocalCommand
 class TerminateResponse : public UMPS::MessageFormats::IMessage
 {
 public:

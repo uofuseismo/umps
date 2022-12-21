@@ -1,12 +1,9 @@
 namespace UMPS
 {
 /*!
-\page TopicApplications Applications
-\ingroup Applications_chapter
 
-In this chapter we describe some standalone applications available in UMPS.  
-
-\subsection uOperator
+\page TopicApplications_uOperator uOperator
+\ingroup Applications_uOperator
 
 <p>
 The UMPS Operator (uOperator) is the essential service in UMPS.  uOperator's purpose is to overcome the challenge of discovering peers on our network by making a centralized message relay.  Essentially, uOperator is a look-up service; you specify who you would like to communicate with and it provides the connection details.  
@@ -87,5 +84,48 @@ name=EventBroadcast
 
 Some things to note:
 
+    - a
+    - b
+    - c
+
+asdf
+
+*/
+
+/*!
+\page TopicApplications_uLocalCommand uCommand
+\ingroup Applications_uLocalCommand
+
+This utility is for interacting with modules running on the local machine.  The idea is to allow the user to interact with a daemon process.  It can be run 
+
+    uCommand
+
+You will then enter a prompt that allows you to list locally running modules and, optionally, connect.  For example,
+
+    list
+
+may return something like
+
+    LocallyRunningModule1
+    LocallyRunningModule2
+
+To connect to "LocallyRunningModule2"
+
+    connect LocallyRunningModule2
+
+To disconnect you would then type
+
+    hangup 
+
+Note, the locally running application may have a `quit' command.  Issuing this command will cause the locally running application to self-terminate and cause uCommand to hangup.
+
+*/
+
+/*!
+\page TopicApplications_uRemoteCommand uRemoteCommand
+\ingroup Applications_uRemoteCommand
+
+This utility is for interacting with modules running on other machines.  The idea is to allow a privileged user to interact with a daemon process on another computer.  The catch here is that a remote module must be registered.  This means handing over some autonamy to UMPS.
+ 
 */
 }

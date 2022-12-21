@@ -39,7 +39,7 @@ namespace UMPS::Services::ConnectionInformation
 /// @class Service service.hpp "umps/services/connectionInformation/service.hpp"
 /// @brief Implements the server-side connection information service.
 /// @copyright Ben Baker (Univeristy of Utah) distributed under the MIT license.
-/// @ingroup Applications_Operator
+/// @ingroup Applications_uOperator
 class Service : public UMPS::Services::IService
 {
 public:
