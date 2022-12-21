@@ -8,19 +8,19 @@ namespace UMPS
 This section details the concept of authentication in UMPS.  The reason it exists is somewhat fortuitous.  Soon after UMPS development commenced the University of Utah announced some pretty stringent, new security rules to prevent deparments from getting ransom-wared.  As a result, the first major diversion in UMPS was validating it could withstand an external security audit.  This does not however mean you need to understand the authentication mechanisms since the default UMPS behavior is to be completely open.  If that's okay for your project then go to another section.
 </p>
 
-<br>
-<br>
+<br><br>
 
+<p>
 We break the documentation into three main components based on your job function.
+</p>
 
    1. Since most users will be interested in connection to the uOperator.  All typical users need to know is know how a bit about \ref Authentication_ZAP and, possibly, where to get the uOperator's public key.
    2. A smaller subset of users will be system administrators.  SysAds need to understand how to interact with the \ref Authentication_Utilities_UserTable (i.e., add, generate, and remove credentials).
    3. Lastly, a strange few may want to read the uOperator source code.  Those sadists will have to understand how an \ref Authentication_Authenticator works.
 
-<br>
-<br>
-
+<p>
 You're still here.  Okay, in general, there are five \ref Authentication_SecurityLevels which, in ZeroMQ parlance, are
+</p>
 
    - Grasslands
        -  This is the default setting.  In Grasslands all connections are open.  If you are running a private network and are satisfied with the castle-and-moat pattern then you can stop reading.
@@ -48,17 +48,25 @@ It is important to note a ZeroMQ limitation - uOperator will have **only** one s
 \page TopicAuthentication_Keypairs Generating Key Pairs
 \ingroup Authentication_Utilities
 
+<p>
 For users using the Stonehouse security model, you will have to generate a public/private keypair.  A standalone program for this activity is uKeyPair.  You can get an overview of the program 
+</p>
 
      uKeyPair --help
 
+<p>
 However, you probably want to jump right in.  So let's make an example
+</p>
 
      uKeyPair --publickey examplePublicKey.txt --privatekey examplePrivateKey.txt --keyname 'keys for uOperator@example server'
 
+<p>
 Here, you are specifying the public and private key file names.  Additionally, the keyname argument is a little reminder for yourself should ever read see these files and wonder - to which machine does this key pair actually help me connect?  This program should generate your public key (examplePublicKey.txt) and your private key (exmaplePrivateKey.txt).  You should also check the permissions on these files to ensure that the public key is read/write/executable by you and only readable by others (644) whereas the private key is only read/write/executable (600) by you.
+</p>
 
+<p>
 Normally, these files should be installed into
+</p>
 
      mv examplePublicKey.txt  ${HOME}/.local/share/UMPS/keys
      mv examplePrivateKey.txt ${HOME}/.local/share/UMPS/keys
@@ -100,11 +108,15 @@ Additionally, you (or your system administrator) must install your public key on
 \page TopicAuthentication_UserTable User Table
 \ingroup Authentication_Utilities
 
+<p>
 Provided you are performing authentication, on the machine that will run the uOperator you must also create a users table.  A command line utility for interacting with this table is uUserTable program.  An overview of what this program does is obtained with 
+</p>
 
      uUserTable --help
 
+<p>
 Users details are specified in a JSON file.  For example, let's add user Bob.  The corresponding JSON file, bob.json, looks like
+</p>
 
     {
          "name" : "Bob",
@@ -114,13 +126,19 @@ Users details are specified in a JSON file.  For example, let's add user Bob.  T
          "privileges" : "read_write"
     }
 
+<p>
 At a minimum, we must provide a username and password as these two fields will ultimately constitute a unique user.  Additionally, we are providing requisite information for Grasslands, Strawhouse, or Stonehouse authentication; Woodhouse is a username and password verification and the password is not being provided.  Generating the public key, bobsPublicKey.txt, is described in \ref TopicAuthentication_Keypairs.  Lastly, we note the privileges are "read_write" which will be sufficient for most users.  Other choices include "read_only" or "admin" where "read_only" users are typically only interested in subscribing to a data feed and "admin" privileges should be reserved for very special users.  
+</p>
 
+<p>
 To add Bob, we do the following on the uOperator host machine
+</p>
 
     uUserTable --add bob.json
 
+<p>
 After the fact, we may wish to allow Bob to use the Woodhouse security protocol but downgrade his privileges to read-only.  In this case, we can update his details with a new JSON file, bobUpdate.json,
+</p>
 
     {   
          "name" : "Bob",
@@ -130,18 +148,24 @@ After the fact, we may wish to allow Bob to use the Woodhouse security protocol 
          "privileges" : "read_only"
     }
 
+<p>
 We then update this information with
+</p>
 
     uUserTable --update bobUpdate.json
 
+<p>
 After some time, Bob may be moving onto greener pastures.  In this case, we delete Bob using the following JSON file, bobDelete.json
+</p>
 
     {
          "name" : "Bob",
          "email" : "bob@university.edu"
     }
 
+<p>
 Lastly, you can check your work 
+</p>
 
     sqlite3 ${HOME}/.local/share/UMPS/tables/user.sqlite3
     SELECT * FROM user WHERE user = "Bob" AND email = "bob@university.edu";
