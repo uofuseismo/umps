@@ -2,7 +2,7 @@
 namespace UMPS
 {
 
-/** \page \index Overview */
+/** \page index Overview */
 
 
 /** \defgroup Messages_chapter Messages */
@@ -17,6 +17,7 @@ namespace UMPS
 
 /** \defgroup MessagingPatterns_chapter Messaging Patterns  */
 /** \defgroup MessagingPatterns_Introduction Introduction
+    \brief \brief Introduction to the messaging patterns section.
     \ingroup MessagingPatterns_chapter */
 /** \defgroup MessagingPatterns_Context Context
     \brief A context is like a thread used by ZeroMQ to send and receive messages.
@@ -51,6 +52,7 @@ namespace UMPS
 
 /** \defgroup Authentication_chapter Authentication  */
 /** \defgroup Authentication_Introduction Introduction 
+    \brief Introduction to the authentication section.
     \ingroup Authentication_chapter */
 /** \defgroup Authentication_SecurityLevels Security Levels
     \brief Defines the various supported security levels in UMPS.
@@ -81,6 +83,9 @@ namespace UMPS
     \ingroup  Authentication_Utilities_UserTable */
 
 /** \defgroup Logging_chapter Logging */
+/** \defgroup Logging_Introduction Introduction
+    \brief Introduction to the logging section.
+    \ingroup Logging_chapter */
 /** \defgroup Logging_BaseClass Logging Base Class
     \brief For those wishing to make their own loggers.
     \ingroup Logging_chapter */
