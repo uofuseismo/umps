@@ -2,7 +2,7 @@ namespace UMPS
 {
 /*!
 \page TopicAuthentication Authentication
-\ingroup Authentication_chapter
+\ingroup Authentication_Introduction
 
 <p>
 This section details the concept of authentication in UMPS.  The reason it exists is somewhat fortuitous.  Soon after UMPS development commenced the University of Utah announced some pretty stringent, new security rules to prevent deparments from getting ransom-wared.  As a result, the first major diversion in UMPS was validating it could withstand an external security audit.  This does not however mean you need to understand the authentication mechanisms since the default UMPS behavior is to be completely open.  If that's okay for your project then go to another section.

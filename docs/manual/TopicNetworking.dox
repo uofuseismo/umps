@@ -1,7 +1,7 @@
 namespace UMPS
 {
-/** \page TopicNetworking Networking Tips
-
+/*!
+\page TopicNetworking Networking Tips
 
 \section TopicNetworking_Tips Networking Tips
 
@@ -48,7 +48,6 @@ Sometimes it will be necessary to restart the service.  This can be done as foll
 systemctl stop firewalld 
 systemctl start firewalld 
 \endcode
-
 
 */
 }
