@@ -25,16 +25,17 @@
 var NAVTREE =
 [
   [ "UMPS", "index.html", [
-    [ "Overview", "index.html", [
+    [ "Overview", "_0cindex.html", [
       [ "Overview", "group___authentication___certificate.html#Topic_Authentication_Certificate_Overview", null ]
     ] ],
-    [ "Installation", "_topic_install.html", [
+    [ "Installation", "_installation.html", [
+      [ "Installation", "_installation.html#TopicInstall", [
+        [ "Operating Systems", "_installation.html#TopicInstall_OS", null ],
+        [ "Prerequisites", "_installation.html#TopicInstall_Prerequisites", null ],
+        [ "Compiling", "_installation.html#TopicInstall_Compiling", null ],
+        [ "Generating the Documentation", "_installation.html#TopicInstall_Documentation", null ]
+      ] ],
       [ "Overview", "group___messaging_patterns___pub_sub___pub_sub.html#Topic_Messaging_PubSub_Overview", [
-        [ "uOperator", "group___applications__chapter.html#uOperator", null ],
-        [ "Operating Systems", "_topic_install.html#TopicInstall_OS", null ],
-        [ "Prerequisites", "_topic_install.html#TopicInstall_Prerequisites", null ],
-        [ "Compiling", "_topic_install.html#TopicInstall_Compiling", null ],
-        [ "Generating the Documentation", "_topic_install.html#TopicInstall_Documentation", null ],
         [ "An Example:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_Example", null ],
         [ "The Publisher:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_ExamplePublisher", null ],
         [ "The Subscriber:", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_ExampleSubscriber", null ],
@@ -67,18 +68,18 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_topic_install.html",
-"class_u_m_p_s_1_1_logging_1_1_standard_out.html#ad8662470c0678e854f8f0c20a6707e7f",
-"class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router_options.html#a239ac950b679b194e889689bb7b022dc",
-"class_u_m_p_s_1_1_modules_1_1_i_module.html#a2d1191424ff5f7234b5c8076d748d5c8",
-"class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber.html#a601c013a7818aa9e33836129ca2c93b9",
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process.html#a5fa220ac878681c93a0dd160f1c190a4",
-"class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_service.html#a9e00175a173ae5dca6e832dd54c5201c",
-"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_request.html#a7f962cb309d881796f419a80e89bd7d0",
-"class_u_m_p_s_1_1_services_1_1_command_1_1_service.html#a20da9e98bb9d23137d6165984d425232",
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a817ee60b3fd853ff45ca3152227e9269",
-"class_u_m_p_s_1_1_services_1_1_module_registry_1_1_service.html#a95f9484d7f7ec93f1b46a53f42cca148",
-"proxy_broadcasts_2heartbeat_2subscriber_options_8hpp_source.html"
+"_0cindex.html",
+"class_u_m_p_s_1_1_logging_1_1_standard_out.html#a7839dc06738e08ec2c9788001575ba62",
+"class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router_options.html",
+"class_u_m_p_s_1_1_modules_1_1_i_module.html#a05f60154a16b25cd042e3634f074897b",
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber.html#a311594e46b2849e9b270d5034ca95160",
+"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process.html#a4eb8e7d340a5ed5a8e789c220ee75818",
+"class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_service.html#a5d296af63041bcf3e8d753e77023c37c",
+"class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_request.html#a3e878990d8b1f9563bea676fbd879413",
+"class_u_m_p_s_1_1_services_1_1_command_1_1_service.html#a0d38a4b4fb4c180c1e3cd0b6261e8f08",
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html#a714632dd564165083b742431898f8ea0",
+"class_u_m_p_s_1_1_services_1_1_module_registry_1_1_service.html#a791d7494df4889679d19eb45759efc4e",
+"pages.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

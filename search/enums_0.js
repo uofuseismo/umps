@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['connectiontype_1253',['ConnectionType',['../group___applications___operator.html#gad45ef6550bebe768224ea36e6bba31fe',1,'UMPS::Services::ConnectionInformation']]]
+  ['applicationstatus_1257',['ApplicationStatus',['../group___applications__u_local_command.html#ga62264eeeb27c82b2d3cdff99045a504e',1,'UMPS::Services::Command']]]
 ];

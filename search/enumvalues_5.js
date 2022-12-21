@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['proxy_1268',['Proxy',['../group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67af56ec2ab97d604832d90f6394e3f341f',1,'UMPS::Services::ConnectionInformation']]],
-  ['publisher_1269',['Publisher',['../group___applications___operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1',1,'UMPS::Services::ConnectionInformation']]]
+  ['notrunning_1274',['NotRunning',['../group___applications__u_local_command.html#gga62264eeeb27c82b2d3cdff99045a504eae457ff7a83d0a8681fa483f898788515',1,'UMPS::Services::Command']]]
 ];

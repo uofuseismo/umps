@@ -24,7 +24,7 @@
 <area shape="rect" id="node23" href="$class_u_m_p_s_1_1_services_1_1_command_1_1_command_request.html" title="Issues a text&#45;based command to the application." alt="" coords="273,1408,472,1449"/>
 <area shape="rect" id="node24" href="$class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html" title="The response from a text&#45;based command." alt="" coords="273,1473,472,1515"/>
 <area shape="rect" id="node25" href="$class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_request.html" title="Issues a command to terminate the application." alt="" coords="273,1539,472,1580"/>
-<area shape="rect" id="node26" href="$class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html" title="The service&#39;s return code for a terminate request." alt="" coords="273,1604,472,1645"/>
+<area shape="rect" id="node26" href="$class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html" title="A request to terminate the application." alt="" coords="273,1604,472,1645"/>
 <area shape="rect" id="node27" href="$class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_request.html" title="This class requests the connection information for all avialable connections &#45; which includes service..." alt="" coords="249,1670,496,1726"/>
 <area shape="rect" id="node28" href="$class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html" title="This class provides the connection information to for all available connections &#45; e...." alt="" coords="249,1750,496,1806"/>
 <area shape="rect" id="node29" href="$class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registered_modules_request.html" title="Requests the list of modules registered with UMPS." alt="" coords="256,1831,489,1872"/>

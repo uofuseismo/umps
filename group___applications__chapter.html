@@ -103,107 +103,32 @@ Collaboration diagram for Applications:</div>
 <div class="dyncontent">
 <div class="center"><img src="group___applications__chapter.png" border="0" usemap="#agroup______applications____chapter" alt=""/></div>
 <map name="agroup______applications____chapter" id="agroup______applications____chapter">
-<area shape="rect" href="group___applications___operator.html" title="The critical message relay hub in the hub and spoke architecture." alt="" coords="161,5,248,31"/>
-<area shape="rect" href="group___applications___local_command.html" title="Allows users to interact with locally running modules." alt="" coords="156,55,253,80"/>
-<area shape="rect" title=" " alt="" coords="5,31,108,56"/>
+<area shape="rect" href="group___applications__u_local_command.html" title="Allows users to interact with locally running modules." alt="" coords="181,5,279,31"/>
+<area shape="rect" href="group___applications__u_remote_command.html" title="Allows privileged users to interact with remotely running modules." alt="" coords="156,55,304,80"/>
+<area shape="rect" href="group___applications__u_operator.html" title="The critical message relay hub in the hub and spoke architecture." alt="" coords="187,104,273,129"/>
+<area shape="rect" title=" " alt="" coords="5,55,108,80"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group___applications___operator"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___applications___operator.html">uOperator</a></td></tr>
-<tr class="memdesc:group___applications___operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">The critical message relay hub in the hub and spoke architecture. <br /></td></tr>
+<tr class="memitem:group___applications__u_operator"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___applications__u_operator.html">uOperator</a></td></tr>
+<tr class="memdesc:group___applications__u_operator"><td class="mdescLeft">&#160;</td><td class="mdescRight">The critical message relay hub in the hub and spoke architecture. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___applications___local_command"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___applications___local_command.html">uCommand</a></td></tr>
-<tr class="memdesc:group___applications___local_command"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows users to interact with locally running modules. <br /></td></tr>
+<tr class="memitem:group___applications__u_local_command"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___applications__u_local_command.html">uCommand</a></td></tr>
+<tr class="memdesc:group___applications__u_local_command"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows users to interact with locally running modules. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:group___applications__u_remote_command"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___applications__u_remote_command.html">uRemoteCommand</a></td></tr>
+<tr class="memdesc:group___applications__u_remote_command"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows privileged users to interact with remotely running modules. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-
-
-<h3><a id="TopicApplications"></a>Applications</h3><div class="textblock">In this chapter we describe some standalone applications available in UMPS. <br  />
-<h2><a class="anchor" id="uOperator"></a>
-uOperator</h2>
-<p>The UMPS Operator (uOperator) is the essential service in UMPS. uOperator's purpose is to overcome the challenge of discovering peers on our network by making a centralized message relay. Essentially, uOperator is a look-up service; you specify who you would like to communicate with and it provides the connection details. <br  />
- </p>
-<p><br  />
-<br  />
-</p>
-<p>For example, the below figure we consider a custom application in the below figure. Here, the application calls a scalable location service named EventLocator and writes the located events to a broadcast named EventBroadcast.</p>
-<div class="image">
-<img src="exampleApplication.jpg" alt="" width="300cm"/>
-<div class="caption">
-An example location application.</div></div>
-<p><br  />
-<br  />
-</p>
-<p>The natural question is how does your application know which IP addresses to which to connect? The first option is fairly straightforward; hardcode the requisite addresses for the EventBroadcast and EventLocator in a configuration file. It does not require much imagination to see how this will become unwieldy. Another option is to simply blast through every open port on a network and play 20 questions in an effort to figure out what communication occurs through this port. This is not the most efficient strategy. The solution we adopt is to simply make a central service that knows the IP addresses for various communication types. Consequently, to use UMPS you must</p>
-<ol type="1">
-<li>Draw your communication architecture and provide names to message patterns.</li>
-<li>Let your external applications know one IP address (the address of the uOperator) and the names of the broadcasts and services it needs to communicate with.</li>
-</ol>
-<p>Basically, that's it. Some more details will come through when looking at a generic uOperator initialization file.</p>
-<div class="fragment"><div class="line">[uOperator]</div>
-<div class="line"><span class="preprocessor"># The directory to which module log files will be written.</span></div>
-<div class="line">logFileDirectory = logs</div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor"># The server&#39;s (IP) address.  For TCP connections we will append port numbers to this</span></div>
-<div class="line"><span class="preprocessor"># base address.  For example: 127.0.0.1:8080 (see openPortBlockStart)</span></div>
-<div class="line">address = 127.0.0.1</div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor">#</span></div>
-<div class="line"><span class="preprocessor"># Open ports.  Typically we will want a block of ports to be open so that </span></div>
-<div class="line"><span class="preprocessor"># we can open as many broadcasts/services as necessary for the application.</span></div>
-<div class="line"><span class="preprocessor"># The ports begin at the given port beginning and end (inclusively) on the</span></div>
-<div class="line"><span class="preprocessor"># ended ports.  There must be at least 3 ports open:</span></div>
-<div class="line"><span class="preprocessor">#   (a) 1 port to allow access the connection information</span></div>
-<div class="line"><span class="preprocessor">#   (b) 1 port to which to publish heartbeats</span></div>
-<div class="line"><span class="preprocessor">#   (c) 1 port from which to read heartbeat subscriptions</span></div>
-<div class="line">openPortBlockStart = 8080</div>
-<div class="line">openPortBlockEnd   = 8090</div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor"># This defines the security level for all communication.</span></div>
-<div class="line"><span class="preprocessor"># 0 -&gt; Grasslands   There is no security.</span></div>
-<div class="line"><span class="preprocessor"># 1 -&gt; Strawhouse   IP addresses are checked against a blacklist.</span></div>
-<div class="line"><span class="preprocessor"># 2 -&gt; Woodhouse    IP addresses are checked against a blacklist and</span></div>
-<div class="line"><span class="preprocessor">#                   users must provide a user/name and password.</span></div>
-<div class="line"><span class="preprocessor"># 3 -&gt; Stonehouse   IP addresses are checked against a blacklist and</span></div>
-<div class="line"><span class="preprocessor">#                   users must provided a public key.  Users must also</span></div>
-<div class="line"><span class="preprocessor">#                   specify a private key.</span></div>
-<div class="line"><span class="preprocessor"># 4 -&gt; Ironhouse    Currently unsupported.  But in this model IP addreses</span></div>
-<div class="line"><span class="preprocessor">#                   are checked against a blacklist, users must provide a</span></div>
-<div class="line"><span class="preprocessor">#                   public key, and the server public key must then be</span></div>
-<div class="line"><span class="preprocessor">#                   authenticated by the user.</span></div>
-<div class="line">securityLevel = 0</div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor"># User table for any security level above 0</span></div>
-<div class="line">userTable=/home/USER/.local/share/UMPS/tables/user.sqlite3</div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor"># The server&#39;s public key and private keypair.  This is necessary for the</span></div>
-<div class="line"><span class="preprocessor"># stonehouse server since uOperator will be a connection authenticator.</span></div>
-<div class="line">serverPublicKeyFile=/home/USER/.local/share/UMPS/keys/serverPublicKey.txt</div>
-<div class="line">serverPrivateKeyFile=/home/USER/.local/share/UMPS/keys/serverPrivateKey.txt</div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor">################################################################################</span></div>
-<div class="line"><span class="preprocessor">#                                Proxy Services                                #</span></div>
-<div class="line"><span class="preprocessor">################################################################################</span></div>
-<div class="line"><span class="preprocessor"># Overview:</span></div>
-<div class="line"><span class="preprocessor"># Proxy services are scalable request/reply mechanisms.</span></div>
-<div class="line">[ProxyServices:EventLocator]</div>
-<div class="line">name=EventLocator</div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor">################################################################################</span></div>
-<div class="line"><span class="preprocessor">#                               Proxy Broadcasts                               #</span></div>
-<div class="line"><span class="preprocessor">################################################################################</span></div>
-<div class="line">[ProxyServices:EventBroadcast]</div>
-<div class="line">name=EventBroadcast</div>
-</div><!-- fragment --><p>Some things to note: </p>
-</div></div><!-- contents -->
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Dec 16 2022 22:44:18 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Dec 21 2022 21:51:30 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

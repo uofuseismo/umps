@@ -2,9 +2,6 @@ var annotated_dup =
 [
     [ "UMPS", null, [
       [ "Authentication", null, [
-        [ "uOperator", "group___applications__chapter.html#uOperator", [
-          [ "uOperator", "group___applications__chapter.html#uOperator", null ]
-        ] ],
         [ "Certificate", null, [
           [ "Keys", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_keys.html", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_keys" ],
           [ "UserNameAndPassword", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_user_name_and_password.html", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_user_name_and_password" ]
@@ -189,7 +186,7 @@ var annotated_dup =
     [ "Level", "class_level.html", null ],
     [ "Proxy", "class_proxy.html", null ],
     [ "RegistrationReturnCode", "class_registration_return_code.html", null ],
+    [ "ReplierPRocess", "class_replier_p_rocess.html", null ],
     [ "SecurityLevel", "class_security_level.html", null ],
-    [ "umps", "classumps.html", null ],
     [ "UserPrivileges", "class_user_privileges.html", null ]
 ];
