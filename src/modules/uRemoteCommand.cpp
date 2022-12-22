@@ -18,18 +18,18 @@
 #include "umps/proxyServices/command/requestor.hpp"
 #include "umps/proxyServices/command/availableModulesResponse.hpp"
 #include "umps/proxyServices/command/moduleDetails.hpp"
-/*
 #include "umps/services/command/availableCommandsResponse.hpp"
 #include "umps/services/command/commandRequest.hpp"
 #include "umps/services/command/commandResponse.hpp"
-#include "umps/services/command/moduleTable.hpp"
+#include "umps/services/command/terminateResponse.hpp"
+/*
 #include "umps/services/command/moduleDetails.hpp"
-#include "umps/services/command/requestor.hpp"
 */
 /*
 #include "umps/services/command/requestorOptions.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 */
+#define DASHES "-----------------------------------------------------"
 namespace UCI = UMPS::Services::ConnectionInformation;
 namespace UAuth = UMPS::Authentication;
 
@@ -174,13 +174,125 @@ std::cout << programOptions.mFrontendAddress << std::endl;
 #ifndef NDEBUG
     assert(requestor.isInitialized());
 #endif
-    auto modules = requestor.getAvailableModules();
-    if (modules)
-    {
-        for (const auto &module : *modules)
+    while (true)
+    {   
+        std::string command;
+        std::cout << "uRemoteCommand$ ";
+        std::cin >> std::ws;
+        std::getline(std::cin, command);
+        if (command == "quit")
         {
-            std::cout << module <<std::endl;
+            break;
         }
+        else if (command == "list")
+        {
+            auto modules = requestor.getAvailableModules();
+            if (modules)
+            {
+                for (const auto &module : *modules)
+                {
+                    std::cout << module <<std::endl;
+                }
+            }
+        }
+        else if (command.find("connect") == 0)
+        {
+            auto modules = requestor.getAvailableModules();
+            // Get the module name
+            std::vector<std::string> splitCommand;
+            boost::split(splitCommand, command, ::isspace);
+            if (splitCommand.size() != 2)
+            {
+                std::cerr << "Appropriate usage is: connect [ModuleName]"
+                          << std::endl;
+                continue;
+            }
+            auto moduleName = splitCommand.at(1);
+            // Is the module name in the list?
+            bool lMatch{false};
+            for (const auto &module : *modules)
+            {
+                if (moduleName == module.getName()){lMatch = true;}
+            }
+            if (!lMatch)
+            {
+                std::cerr << "Module: " << moduleName
+                          << " does not exist." << std::endl;
+                continue;
+            }
+            try
+            {
+               auto commands = requestor.getCommands(moduleName);
+               std::cout << commands->getCommands() << std::endl;
+               std::cout << DASHES << std::endl;
+            }
+            catch (const std::exception &e)
+            {
+               logger->error(e.what());
+            }
+            std::cout << DASHES << std::endl;
+            std::cout << "To terminate session use: hangup" << std::endl;
+            bool maintainConnection{true};
+            while (maintainConnection)
+            {
+                std::cout << moduleName << "$ ";
+                std::cin >> std::ws;
+                std::getline(std::cin, command);
+                if (command == "hangup")
+                {
+                    std::cout << "Hanging up on " << moduleName << std::endl;
+                    maintainConnection = false;
+                }
+                else if (command == "quit")
+                {
+                    namespace USCommand = UMPS::Services::Command;
+                    maintainConnection = false;
+                    auto response = requestor.issueTerminateCommand(moduleName);
+                    if (response->getReturnCode() !=
+                        USCommand::TerminateResponse::ReturnCode::Success)
+                    {
+                        std::cerr << "Error terminating: " << moduleName
+                                  << std::endl;
+                    }
+                }
+                else
+                {
+                    UMPS::Services::Command::CommandRequest commandRequest;
+                    commandRequest.setCommand(command);
+                    try
+                    {
+                        auto response = requestor.issueCommand(moduleName,
+                                                               commandRequest);
+                        std::cout << response->getResponse() << std::endl;
+                        if (command == "quit"){maintainConnection = false;}
+                    }
+                    catch (const std::exception &e)
+                    {
+                        logger->error(e.what());
+                        maintainConnection = false;
+                    }
+                }
+            }
+
+            std::cout << DASHES << std::endl;
+        }
+        else
+        {
+            if (command != "help")
+            {
+                std::cout << "Unhandled command: " << command << std::endl;
+            }
+            std::cout << "Options:" << std::endl;
+            std::cout << "   help                  Prints this message."
+                      << std::endl;
+            std::cout << "   list                  Lists the running modules."
+                      << std::endl;
+            std::cout << "   connect [ModuleName]  Connects to the module."
+                      << std::endl;
+            std::cout << "   quit                  Exits this application."
+                      << std::endl;
+        }
+        std::cout << std::endl;
     }
     return EXIT_SUCCESS;
 }

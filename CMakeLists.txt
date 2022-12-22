@@ -222,15 +222,15 @@ target_include_directories(uUserTable
                            PRIVATE Boost::program_options)
 target_link_libraries(uUserTable PRIVATE Boost::program_options umps)
 
-add_executable(uCommand src/modules/uCommand.cpp)
-set_target_properties(uCommand PROPERTIES
+add_executable(uLocalCommand src/modules/uLocalCommand.cpp)
+set_target_properties(uLocalCommand PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
-target_include_directories(uCommand
+target_include_directories(uLocalCommand
                            PRIVATE ${CMAKE_SOURCE_DIR}/include
                            PRIVATE Boost::program_options)
-target_link_libraries(uCommand PRIVATE Boost::program_options umps)
+target_link_libraries(uLocalCommand PRIVATE Boost::program_options umps)
 
 add_executable(uRemoteCommand src/modules/uRemoteCommand.cpp)
 set_target_properties(uRemoteCommand PROPERTIES
@@ -241,8 +241,6 @@ target_include_directories(uRemoteCommand
                            PRIVATE ${CMAKE_SOURCE_DIR}/include
                            PRIVATE Boost::program_options)
 target_link_libraries(uRemoteCommand PRIVATE Boost::program_options umps)
-
-
 
 ##########################################################################################
 #                                      Python Wrapping                                   #
@@ -374,14 +372,15 @@ write_basic_package_version_file(
     #INSTALL_DESTINATION cmake
     #"${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 #)
+set(EXECUTABLES uOperator uKeyPair uUserTable uLocalCommand uRemoteCommand)
 if (WRAP_PYTHON)
-   install(TARGETS umps umpspy umps_python
+   install(TARGETS umps umpspy umps_python uLocalCommand ${EXECUTABLES}
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 else()
-   install(TARGETS umps
+   install(TARGETS umps ${EXECUTABLES}
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

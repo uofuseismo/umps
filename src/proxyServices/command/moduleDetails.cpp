@@ -189,6 +189,9 @@ UMPS::ProxyServices::Command::operator<<(std::ostream &os,
         result << "  Name: Undefined" << std::endl;
     }
     result << "  Executable: " << details.getExecutableName() << std::endl;
+    auto machine = details.getMachine();
+    if (machine.empty()){machine = "Unknown";}
+    result << "  Machine: " << machine << std::endl;
     result << "  Process Identifier: "
            << details.getProcessIdentifier() << std::endl;
     result << "  Parent Process Identifier: "

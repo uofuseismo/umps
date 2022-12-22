@@ -14,15 +14,18 @@
 #include "umps/services/command/requestorOptions.hpp"
 #include "umps/services/command/terminateResponse.hpp"
 
+namespace USCommand = UMPS::Services::Command;
+
+#define DASHES "-----------------------------------------------------"
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
     std::shared_ptr<UMPS::Logging::ILog> logger
         = std::make_shared<UMPS::Logging::StandardOut> ();
     auto context = std::make_shared<UMPS::Messaging::Context> (1);
-    std::unique_ptr<UMPS::Services::Command::Requestor> requestor{nullptr};
-    UMPS::Services::Command::ModuleTable moduleTable;
-    std::vector<UMPS::Services::Command::ModuleDetails> allModules;
+    std::unique_ptr<USCommand::Requestor> requestor{nullptr};
+    USCommand::ModuleTable moduleTable;
+    std::vector<USCommand::ModuleDetails> allModules;
     try
     {
         moduleTable.openReadOnly();
@@ -35,7 +38,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
     while (true)
     {
         std::string command;
-        std::cout << "uCommand$";
+        std::cout << "uLocalCommand$ ";
         std::cin >> std::ws;
         std::getline(std::cin, command);
         if (command == "quit")
@@ -55,10 +58,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
             allModules = moduleTable.queryAllModules();
             // Get the module name
             std::vector<std::string> splitCommand;
-            boost::split(splitCommand, command, ::isspace);//any_of(std::is_space" "));
+            boost::split(splitCommand, command, ::isspace);
             if (splitCommand.size() != 2)
             {
-                std::cerr << "Appropriate usage is: connect [ModuleName]" << std::endl;
+                std::cerr << "Appropriate usage is: connect [ModuleName]"
+                          << std::endl;
                 continue;
             }
             auto moduleName = splitCommand.at(1);
@@ -78,15 +82,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 continue;
             } 
             // Now connect
-            UMPS::Services::Command::RequestorOptions requestorOptions;
+            USCommand::RequestorOptions requestorOptions;
             requestorOptions.setModuleName(moduleName);
-            requestor
-                = std::make_unique<UMPS::Services::Command::Requestor>
-                  (context, logger);
+            USCommand::Requestor requestor(context, logger);
             bool maintainConnection = true;
             try
             {
-                requestor->initialize(requestorOptions);    
+                requestor.initialize(requestorOptions);    
             }
             catch (const std::exception &e)
             {
@@ -94,11 +96,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 maintainConnection = false;
             }
             // Now begin interactive loop
-            std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse>
-                commands{nullptr};
+            std::unique_ptr<USCommand::AvailableCommandsResponse>
+                 commands{nullptr};
             try
             {
-                commands = requestor->getCommands();
+                commands = requestor.getCommands();
                 std::cout << commands->getCommands() << std::endl;
             }
             catch (const std::exception &e)
@@ -107,12 +109,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 maintainConnection = false;
             }
             // Connection established - interact with program
-            std::cout << "-----------------------------------------------------"
-                      << std::endl;
+            std::cout << DASHES << std::endl;
             std::cout << "To terminate session use: hangup" << std::endl;
             while (maintainConnection)
             {
-                std::cout << moduleName << "$";
+                std::cout << moduleName << "$ ";
                 std::cin >> std::ws;
                 std::getline(std::cin, command);
                 if (command == "hangup")
@@ -123,9 +124,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 else if (command == "quit")
                 {
                     maintainConnection = false;
-                    auto response = requestor->issueTerminateCommand();
+                    auto response = requestor.issueTerminateCommand();
                     if (response->getReturnCode() !=
-                        UMPS::Services::Command::TerminateResponse::ReturnCode::Success)
+                        USCommand::TerminateResponse::ReturnCode::Success)
                     {
                         std::cerr << "Error terminating: " << moduleName
                                   << std::endl;
@@ -133,16 +134,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 }
                 else
                 {
-                    UMPS::Services::Command::CommandRequest commandRequest;
+                    USCommand::CommandRequest commandRequest;
                     commandRequest.setCommand(command);
                     try
                     {
-                        auto response = requestor->issueCommand(commandRequest); 
+                        auto response = requestor.issueCommand(commandRequest); 
                         std::cout << response->getResponse() << std::endl;
-                        if (command == "quit")
-                        {
-                            maintainConnection = false;
-                        }
+                        if (command == "quit"){maintainConnection = false;}
                     }
                     catch (const std::exception &e)
                     {
@@ -151,8 +149,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                     }
                 }
             } 
-            std::cout << "-----------------------------------------------------"
-                      << std::endl;
+            std::cout << DASHES << std::endl;
         }
         else
         {
@@ -161,10 +158,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
                 std::cout << "Unhandled command: " << command << std::endl;
             }
             std::cout << "Options:" << std::endl;
-            std::cout << "   help                  Prints this message." << std::endl;
-            std::cout << "   list                  Lists the running modules." << std::endl;
-            std::cout << "   connect [ModuleName]  Connects to the module." << std::endl;
-            std::cout << "   quit                  Exits this application." << std::endl;
+            std::cout << "   help                  Prints this message."
+                      << std::endl;
+            std::cout << "   list                  Lists the running modules."
+                       << std::endl;
+            std::cout << "   connect [ModuleName]  Connects to the module."
+                      << std::endl;
+            std::cout << "   quit                  Exits this application."
+                      << std::endl;
         }
         std::cout << std::endl;
     }
