@@ -10,6 +10,7 @@ namespace UMPS::Services::Command
 class ModuleDetails
 {
 public:
+    /// @brief Defines the application's status as running/not-running/undefined.
     enum class ApplicationStatus : int 
     {
         Running = 0,     /*!< This indicates the application is running. */
