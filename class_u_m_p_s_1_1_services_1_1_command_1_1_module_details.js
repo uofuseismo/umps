@@ -1,5 +1,10 @@
 var class_u_m_p_s_1_1_services_1_1_command_1_1_module_details =
 [
+    [ "ApplicationStatus", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65", [
+      [ "Running", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65a5bda814c4aedb126839228f1a3d92f09", null ],
+      [ "NotRunning", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65ae457ff7a83d0a8681fa483f898788515", null ],
+      [ "Unknown", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65a88183b946cc5f0e8c96b2e66e1c74a7e", null ]
+    ] ],
     [ "ModuleDetails", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ae0219fb935372ba3d789c4db01f3416e", null ],
     [ "ModuleDetails", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ab014c7f546db9ece682663d3357de6e4", null ],
     [ "ModuleDetails", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a4ce68e1b15e8a1e98c30463eccf0f028", null ],

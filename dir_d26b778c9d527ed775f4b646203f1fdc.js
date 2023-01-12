@@ -4,7 +4,6 @@ var dir_d26b778c9d527ed775f4b646203f1fdc =
     [ "availableCommandsResponse.hpp", "available_commands_response_8hpp_source.html", null ],
     [ "commandRequest.hpp", "command_request_8hpp_source.html", null ],
     [ "commandResponse.hpp", "command_response_8hpp_source.html", null ],
-    [ "enums.hpp", "services_2command_2enums_8hpp_source.html", null ],
     [ "moduleDetails.hpp", "services_2command_2module_details_8hpp_source.html", null ],
     [ "moduleTable.hpp", "module_table_8hpp_source.html", null ],
     [ "requestor.hpp", "services_2command_2requestor_8hpp_source.html", null ],

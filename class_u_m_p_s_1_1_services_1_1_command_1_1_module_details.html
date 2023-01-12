@@ -93,6 +93,7 @@ $(document).ready(function(){initNavTree('class_u_m_p_s_1_1_services_1_1_command
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -105,6 +106,14 @@ $(document).ready(function(){initNavTree('class_u_m_p_s_1_1_services_1_1_command
 
 <p><code>#include &quot;<a class="el" href="services_2command_2module_details_8hpp_source.html">umps/services/command/moduleDetails.hpp</a>&quot;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a880e8592ac738a82dc14bd8bccf65f65"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65">ApplicationStatus</a> : int { <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65a5bda814c4aedb126839228f1a3d92f09">Running</a> = 0
+, <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65ae457ff7a83d0a8681fa483f898788515">NotRunning</a> = 1
+, <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a> = 2
+ }</td></tr>
+<tr class="separator:a880e8592ac738a82dc14bd8bccf65f65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a75e515ec4c87d2215ddb2e0ed7865743"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a75e515ec4c87d2215ddb2e0ed7865743">getIPCFileName</a> () const</td></tr>
@@ -134,10 +143,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9fb1b2a43e193bd5d5f8280b1b8ec402"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43372202c1865b2c7284cb5efc2c7874"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a43372202c1865b2c7284cb5efc2c7874">getProcessIdentifier</a> () const noexcept</td></tr>
 <tr class="separator:a43372202c1865b2c7284cb5efc2c7874"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9eabac323aa3186e84d24d9a6afc3e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#af9eabac323aa3186e84d24d9a6afc3e5">setApplicationStatus</a> (<a class="el" href="group___applications__u_local_command.html#ga62264eeeb27c82b2d3cdff99045a504e">ApplicationStatus</a> status) noexcept</td></tr>
+<tr class="memitem:af9eabac323aa3186e84d24d9a6afc3e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#af9eabac323aa3186e84d24d9a6afc3e5">setApplicationStatus</a> (<a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65">ApplicationStatus</a> status) noexcept</td></tr>
 <tr class="memdesc:af9eabac323aa3186e84d24d9a6afc3e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the application's status.  <a href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#af9eabac323aa3186e84d24d9a6afc3e5">More...</a><br /></td></tr>
 <tr class="separator:af9eabac323aa3186e84d24d9a6afc3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab49acd2c4c59acb698bb4ea5e93b99e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___applications__u_local_command.html#ga62264eeeb27c82b2d3cdff99045a504e">ApplicationStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ab49acd2c4c59acb698bb4ea5e93b99e0">getApplicationStatus</a> () const noexcept</td></tr>
+<tr class="memitem:ab49acd2c4c59acb698bb4ea5e93b99e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65">ApplicationStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ab49acd2c4c59acb698bb4ea5e93b99e0">getApplicationStatus</a> () const noexcept</td></tr>
 <tr class="separator:ab49acd2c4c59acb698bb4ea5e93b99e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac08c2ae59cd9d49aa10ecdf9e2d033c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ac08c2ae59cd9d49aa10ecdf9e2d033c3">setIPCDirectory</a> (const std::string &amp;directory)</td></tr>
 <tr class="memdesc:ac08c2ae59cd9d49aa10ecdf9e2d033c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the directory where the IPC files will exist.  <a href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ac08c2ae59cd9d49aa10ecdf9e2d033c3">More...</a><br /></td></tr>
@@ -164,7 +173,38 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines the locally running module properties. </p>
 <dl class="section copyright"><dt>Copyright</dt><dd>Ben Baker (University of Utah) distributed under the MIT license. </dd></dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a880e8592ac738a82dc14bd8bccf65f65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a880e8592ac738a82dc14bd8bccf65f65">&#9670;&nbsp;</a></span>ApplicationStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65">UMPS::Services::Command::ModuleDetails::ApplicationStatus</a> : int</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a880e8592ac738a82dc14bd8bccf65f65a5bda814c4aedb126839228f1a3d92f09"></a>Running&#160;</td><td class="fielddoc"><p>This indicates the application is running. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a880e8592ac738a82dc14bd8bccf65f65ae457ff7a83d0a8681fa483f898788515"></a>NotRunning&#160;</td><td class="fielddoc"><p>This indicates the application is not running. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a880e8592ac738a82dc14bd8bccf65f65a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown&#160;</td><td class="fielddoc"><p>This indicates the application's status is unknown. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ab014c7f546db9ece682663d3357de6e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab014c7f546db9ece682663d3357de6e4">&#9670;&nbsp;</a></span>ModuleDetails() <span class="overload">[1/2]</span></h2>
 
@@ -236,7 +276,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___applications__u_local_command.html#ga62264eeeb27c82b2d3cdff99045a504e">ApplicationStatus</a> UMPS::Services::Command::ModuleDetails::getApplicationStatus </td>
+          <td class="memname"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65">ApplicationStatus</a> UMPS::Services::Command::ModuleDetails::getApplicationStatus </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -452,7 +492,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">void UMPS::Services::Command::ModuleDetails::setApplicationStatus </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group___applications__u_local_command.html#ga62264eeeb27c82b2d3cdff99045a504e">ApplicationStatus</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65">ApplicationStatus</a>&#160;</td>
           <td class="paramname"><em>status</em></td><td>)</td>
           <td></td>
         </tr>
@@ -575,7 +615,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Services</b></li><li class="navelem"><b>Command</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html">ModuleDetails</a></li>
-    <li class="footer">Generated on Fri Jan 6 2023 22:34:31 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Jan 12 2023 15:48:36 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

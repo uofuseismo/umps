@@ -54,6 +54,11 @@ var group___applications__u_local_command =
       [ "toMessage", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_request.html#a4695eb58ba6a4b50627970dac5366ba9", null ]
     ] ],
     [ "CommandResponse", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html", [
+      [ "ReturnCode", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2df4afd9bfeb48387452bfaa24511a89", [
+        [ "Success", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2df4afd9bfeb48387452bfaa24511a89a505a83f220c02df2f85c3810cd9ceb38", null ],
+        [ "InvalidCommand", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2df4afd9bfeb48387452bfaa24511a89ae01b8763e8076df4395e3fa649286e67", null ],
+        [ "ApplicationError", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2df4afd9bfeb48387452bfaa24511a89ad4c92f7460b5934462ca4e4639453b9d", null ]
+      ] ],
       [ "CommandResponse", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a271c44fe920566b8a038c6742f0b19e8", null ],
       [ "CommandResponse", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2d00728449e5b188c288b99a6ca8a16a", null ],
       [ "CommandResponse", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a8333dd3e7c2b19eae8ffc70c821d63c7", null ],
@@ -66,16 +71,21 @@ var group___applications__u_local_command =
       [ "getMessageType", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#aa5b322abfe0eb14c6f79a55fc6e8918d", null ],
       [ "getMessageVersion", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2127768a7eafe189496937f5662d4f71", null ],
       [ "getResponse", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#af05ff85b61be89ff9ff6478eeeafc0c2", null ],
-      [ "getReturnCode", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#af15aa13267d10f213a07be1967e65f6d", null ],
+      [ "getReturnCode", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a0c53bc82ebb0077cd50e5f8941e68729", null ],
       [ "haveResponse", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a7dd4d5994e857c0268b4c91853463e19", null ],
       [ "haveReturnCode", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a917d70d72d2697face3ed052cdd4eefd", null ],
       [ "operator=", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2c5925a64bcb730cdb62dc229919b707", null ],
       [ "operator=", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a906d9c1b2b97ac5cfbd29733db1dc17c", null ],
       [ "setResponse", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#adbd68320ae3daa88bf8579f8f5a6f8ea", null ],
-      [ "setReturnCode", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a4544d6ad9fd7e2b663751173985f56fb", null ],
+      [ "setReturnCode", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a3b32fed6850fcfcb700c5f4682621bdc", null ],
       [ "toMessage", "class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#ac230b9616c5aaa59ef4a1e07eb1220d1", null ]
     ] ],
     [ "ModuleDetails", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html", [
+      [ "ApplicationStatus", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65", [
+        [ "Running", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65a5bda814c4aedb126839228f1a3d92f09", null ],
+        [ "NotRunning", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65ae457ff7a83d0a8681fa483f898788515", null ],
+        [ "Unknown", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a880e8592ac738a82dc14bd8bccf65f65a88183b946cc5f0e8c96b2e66e1c74a7e", null ]
+      ] ],
       [ "ModuleDetails", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ae0219fb935372ba3d789c4db01f3416e", null ],
       [ "ModuleDetails", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#ab014c7f546db9ece682663d3357de6e4", null ],
       [ "ModuleDetails", "class_u_m_p_s_1_1_services_1_1_command_1_1_module_details.html#a4ce68e1b15e8a1e98c30463eccf0f028", null ],
@@ -227,15 +237,5 @@ var group___applications__u_local_command =
       [ "setReturnCode", "class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html#a76cb22aeaa38b32cd54c039fe3c12362", null ],
       [ "toMessage", "class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html#a16f8f3c5478303a24e1deceec7a7b17f", null ]
     ] ],
-    [ "uCommand", "group___applications__u_local_command.html#TopicApplications_uLocalCommand", null ],
-    [ "ApplicationStatus", "group___applications__u_local_command.html#ga62264eeeb27c82b2d3cdff99045a504e", [
-      [ "Running", "group___applications__u_local_command.html#gga62264eeeb27c82b2d3cdff99045a504ea5bda814c4aedb126839228f1a3d92f09", null ],
-      [ "NotRunning", "group___applications__u_local_command.html#gga62264eeeb27c82b2d3cdff99045a504eae457ff7a83d0a8681fa483f898788515", null ],
-      [ "Unknown", "group___applications__u_local_command.html#gga62264eeeb27c82b2d3cdff99045a504ea88183b946cc5f0e8c96b2e66e1c74a7e", null ]
-    ] ],
-    [ "CommandReturnCode", "group___applications__u_local_command.html#gad29e7f7a8a3a6ae29c97a45e712215b7", [
-      [ "Success", "group___applications__u_local_command.html#ggad29e7f7a8a3a6ae29c97a45e712215b7a505a83f220c02df2f85c3810cd9ceb38", null ],
-      [ "InvalidCommand", "group___applications__u_local_command.html#ggad29e7f7a8a3a6ae29c97a45e712215b7ae01b8763e8076df4395e3fa649286e67", null ],
-      [ "ApplicationError", "group___applications__u_local_command.html#ggad29e7f7a8a3a6ae29c97a45e712215b7ad4c92f7460b5934462ca4e4639453b9d", null ]
-    ] ]
+    [ "uCommand", "group___applications__u_local_command.html#TopicApplications_uLocalCommand", null ]
 ];
