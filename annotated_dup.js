@@ -27,8 +27,7 @@ var annotated_dup =
         [ "IMessage", "class_u_m_p_s_1_1_message_formats_1_1_i_message.html", "class_u_m_p_s_1_1_message_formats_1_1_i_message" ],
         [ "Messages", "class_u_m_p_s_1_1_message_formats_1_1_messages.html", "class_u_m_p_s_1_1_message_formats_1_1_messages" ],
         [ "Pick", "class_u_m_p_s_1_1_message_formats_1_1_pick.html", "class_u_m_p_s_1_1_message_formats_1_1_pick" ],
-        [ "Text", "class_u_m_p_s_1_1_message_formats_1_1_text.html", "class_u_m_p_s_1_1_message_formats_1_1_text" ],
-        [ "DataPacket", "class_u_m_p_s_1_1_message_formats_1_1_data_packet.html", null ]
+        [ "Text", "class_u_m_p_s_1_1_message_formats_1_1_text.html", "class_u_m_p_s_1_1_message_formats_1_1_text" ]
       ] ],
       [ "Messaging", null, [
         [ "PublisherSubscriber", null, [
@@ -66,9 +65,6 @@ var annotated_dup =
         [ "ProcessManager", "class_u_m_p_s_1_1_modules_1_1_process_manager.html", "class_u_m_p_s_1_1_modules_1_1_process_manager" ]
       ] ],
       [ "ProxyBroadcasts", null, [
-        [ "DataPacket", null, [
-          [ "SubscriberOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_data_packet_1_1_subscriber_options.html", null ]
-        ] ],
         [ "Heartbeat", null, [
           [ "Proxy", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy" ],
           [ "ProxyOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy_options" ],
@@ -103,36 +99,6 @@ var annotated_dup =
           [ "ReplierProcess", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process" ],
           [ "Requestor", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor" ],
           [ "RequestorOptions", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor_options" ]
-        ] ],
-        [ "Incrementer", null, [
-          [ "Counter", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_counter.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_counter" ],
-          [ "IncrementRequest", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_increment_request.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_increment_request" ],
-          [ "IncrementResponse", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_increment_response.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_increment_response" ],
-          [ "ItemsRequest", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_items_request.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_items_request" ],
-          [ "ItemsResponse", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_items_response.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_items_response" ],
-          [ "Options", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_options" ],
-          [ "Replier", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_replier.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_replier" ],
-          [ "ReplierOptions", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_replier_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_replier_options" ],
-          [ "Requestor", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_requestor.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_requestor" ],
-          [ "RequestorOptions", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_requestor_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_requestor_options" ],
-          [ "Service", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_service.html", "class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_service" ]
-        ] ],
-        [ "PacketCache", null, [
-          [ "BulkDataRequest", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_bulk_data_request.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_bulk_data_request" ],
-          [ "DataResponse", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_data_response.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_data_response" ],
-          [ "BulkDataResponse", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_bulk_data_response.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_bulk_data_response" ],
-          [ "CappedCollection", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_capped_collection.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_capped_collection" ],
-          [ "CircularBuffer", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_circular_buffer.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_circular_buffer" ],
-          [ "DataRequest", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_data_request.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_data_request" ],
-          [ "Replier", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_replier.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_replier" ],
-          [ "ReplierOptions", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_replier_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_replier_options" ],
-          [ "Requestor", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_requestor.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_requestor" ],
-          [ "RequestorOptions", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_requestor_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_requestor_options" ],
-          [ "SensorRequest", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_request.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_request" ],
-          [ "SensorResponse", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_response.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_sensor_response" ],
-          [ "Service", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_service.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_service" ],
-          [ "WigginsInterpolator", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_wiggins_interpolator.html", "class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_wiggins_interpolator" ],
-          [ "InterpolatedSignal", "struct_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_interpolated_signal.html", "struct_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_interpolated_signal" ]
         ] ],
         [ "Proxy", "class_u_m_p_s_1_1_proxy_services_1_1_proxy.html", "class_u_m_p_s_1_1_proxy_services_1_1_proxy" ],
         [ "ProxyOptions", "class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html", "class_u_m_p_s_1_1_proxy_services_1_1_proxy_options" ]

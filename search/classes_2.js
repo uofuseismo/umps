@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['cappedcollection_629',['CappedCollection',['../class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_capped_collection.html',1,'UMPS::ProxyServices::PacketCache']]],
-  ['circularbuffer_630',['CircularBuffer',['../class_u_m_p_s_1_1_proxy_services_1_1_packet_cache_1_1_circular_buffer.html',1,'UMPS::ProxyServices::PacketCache']]],
-  ['commandrequest_631',['CommandRequest',['../class_u_m_p_s_1_1_services_1_1_command_1_1_command_request.html',1,'UMPS::Services::Command']]],
-  ['commandresponse_632',['CommandResponse',['../class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html',1,'UMPS::Services::Command']]],
-  ['context_633',['Context',['../class_u_m_p_s_1_1_messaging_1_1_context.html',1,'UMPS::Messaging']]],
-  ['counter_634',['Counter',['../class_u_m_p_s_1_1_proxy_services_1_1_incrementer_1_1_counter.html',1,'UMPS::ProxyServices::Incrementer']]]
+  ['dailyfile_539',['DailyFile',['../class_u_m_p_s_1_1_logging_1_1_daily_file.html',1,'UMPS::Logging']]],
+  ['dealer_540',['Dealer',['../class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_dealer.html',1,'UMPS::Services::ConnectionInformation::SocketDetails']]],
+  ['details_541',['Details',['../class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html',1,'UMPS::Services::ConnectionInformation']]]
 ];

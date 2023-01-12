@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['terminaterequest_698',['TerminateRequest',['../class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_request.html',1,'UMPS::Services::Command']]],
-  ['terminateresponse_699',['TerminateResponse',['../class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html',1,'UMPS::Services::Command']]],
-  ['text_700',['Text',['../class_u_m_p_s_1_1_message_formats_1_1_text.html',1,'UMPS::MessageFormats']]]
+  ['xpublisher_597',['XPublisher',['../class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html',1,'UMPS::Services::ConnectionInformation::SocketDetails']]],
+  ['xsubscriber_598',['XSubscriber',['../class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_subscriber.html',1,'UMPS::Services::ConnectionInformation::SocketDetails']]]
 ];

@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['user_701',['User',['../class_u_m_p_s_1_1_authentication_1_1_user.html',1,'UMPS::Authentication']]],
-  ['usernameandpassword_702',['UserNameAndPassword',['../class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_user_name_and_password.html',1,'UMPS::Authentication::Certificate']]],
-  ['userprivileges_703',['UserPrivileges',['../class_user_privileges.html',1,'']]]
+  ['zapoptions_599',['ZAPOptions',['../class_u_m_p_s_1_1_authentication_1_1_z_a_p_options.html',1,'UMPS::Authentication']]]
 ];

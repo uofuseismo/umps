@@ -1,4 +1,0 @@
-<map id="UMPS::ProxyServices::Incrementer::ItemsRequest" name="UMPS::ProxyServices::Incrementer::ItemsRequest">
-<area shape="rect" id="node1" title="To identify items (picks, events, origins, amplitudes, etc.) in the processing pipeline we must assig..." alt="" coords="5,95,212,136"/>
-<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_message_formats_1_1_i_message.html" title="An abstract base class defining the base requirements a message format must satisfy." alt="" coords="19,5,198,47"/>
-</map>
