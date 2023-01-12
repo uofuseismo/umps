@@ -111,14 +111,6 @@ set(MODULES_LIBSRC
     #src/services/moduleRegistry/service.cpp
     src/proxyBroadcasts/proxy.cpp
     src/proxyBroadcasts/proxyOptions.cpp
-    #src/proxyBroadcasts/dataPacket/proxy.cpp
-    #src/proxyBroadcasts/dataPacket/proxyOptions.cpp
-    #src/proxyBroadcasts/dataPacket/publisher.cpp
-    #src/proxyBroadcasts/dataPacket/publisherOptions.cpp
-    #src/proxyBroadcasts/dataPacket/subscriber.cpp
-    #src/proxyBroadcasts/dataPacket/subscriberOptions.cpp
-    #src/proxyBroadcasts/heartbeat/proxy.cpp
-    #src/proxyBroadcasts/heartbeat/proxyOptions.cpp
     src/proxyBroadcasts/heartbeat/publisher.cpp
     src/proxyBroadcasts/heartbeat/publisherOptions.cpp
     src/proxyBroadcasts/heartbeat/publisherProcessOptions.cpp
@@ -144,30 +136,7 @@ set(MODULES_LIBSRC
     src/proxyServices/command/replier.cpp
     src/proxyServices/command/replierOptions.cpp
     src/proxyServices/command/replierProcess.cpp
-    #src/proxyServices/packetCache/bulkDataRequest.cpp
-    #src/proxyServices/packetCache/bulkDataResponse.cpp
-    #src/proxyServices/packetCache/circularBuffer.cpp
-    #src/proxyServices/packetCache/cappedCollection.cpp
-    #src/proxyServices/packetCache/dataRequest.cpp
-    #src/proxyServices/packetCache/dataResponse.cpp
-    #src/proxyServices/packetCache/wigginsInterpolator.cpp
-    ##src/proxyServices/packetCache/proxy.cpp
-    ##src/proxyServices/packetCache/proxyOptions.cpp
-    #src/proxyServices/packetCache/sensorRequest.cpp
-    #src/proxyServices/packetCache/sensorResponse.cpp
-    #src/proxyServices/packetCache/service.cpp
-    #src/proxyServices/packetCache/replier.cpp
-    #src/proxyServices/packetCache/replierOptions.cpp
-    #src/proxyServices/packetCache/requestor.cpp
-    #src/proxyServices/packetCache/requestorOptions.cpp
     src/modules/operator/readZAPOptions.cpp)
-#if (${BUILD_EW})
-#   set(EARTHWORM_SRC 
-#       src/earthworm/traceBuf2.cpp
-#       src/earthworm/waveRing.cpp
-#       src/logging/logit.cpp
-#       )
-#endif()
 
 set(BUILD_SHARED_LIBS YES)
 add_library(umps ${VERSION_SRC} ${LOGGING_SRC} ${MESSAGING_SRC}
@@ -295,14 +264,11 @@ set(TEST_SRC
     testing/main.cpp
     testing/messageFormats/messages.cpp
     testing/messageFormats/heartbeat.cpp
-    #testing/messageFormats/pick.cpp
     testing/messageFormats/failure.cpp
     testing/messageFormats/text.cpp
     testing/messageFormats/heartbeat.cpp
     testing/broadcasts/proxyOptions.cpp
-    #testing/broadcasts/dataPacket.cpp
     testing/broadcasts/heartbeat.cpp
-    #testing/broadcasts/pick.cpp
     testing/services/proxyOptions.cpp
     testing/services/command.cpp
     testing/services/connectionInformation.cpp
