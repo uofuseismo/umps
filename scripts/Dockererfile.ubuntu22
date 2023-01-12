@@ -53,8 +53,8 @@ RUN apt-get update &&\
     make &&\
     make install &&\ 
     cd ../ &&\
-    rm libsodium-1.0.18.tar.gz &&\
-    rm -rf libsodium-1.0.18 &&\
+    rm libsodium-1.0.18-stable.tar.gz &&\
+    rm -rf libsodium-stable &&\
     wget https://github.com/zeromq/libzmq/releases/download/v4.3.4/zeromq-4.3.4.tar.gz &&\
     tar -xvf zeromq-4.3.4.tar.gz &&\
     cd zeromq-4.3.4 &&\
