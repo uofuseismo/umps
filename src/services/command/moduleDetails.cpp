@@ -34,7 +34,8 @@ public:
         = std::filesystem::path{std::string{std::getenv("HOME")}}
         / std::filesystem::path{".local/share/UMPS/ipc"};
     int64_t mProcessIdentifier{0};
-    ApplicationStatus mApplicationStatus{ApplicationStatus::Unknown};
+    ModuleDetails::ApplicationStatus
+        mApplicationStatus{ModuleDetails::ApplicationStatus::Unknown};
 };
 
 /// C'tor
@@ -115,12 +116,13 @@ int64_t ModuleDetails::getProcessIdentifier() const noexcept
 
 /// App status
 void ModuleDetails::setApplicationStatus(
-    const ApplicationStatus status) noexcept
+    const ModuleDetails::ApplicationStatus status) noexcept
 {
     pImpl->mApplicationStatus = status;
 }
 
-ApplicationStatus ModuleDetails::getApplicationStatus() const noexcept
+ModuleDetails::ApplicationStatus
+ModuleDetails::getApplicationStatus() const noexcept
 {
     return pImpl->mApplicationStatus;
 }

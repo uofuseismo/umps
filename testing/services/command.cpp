@@ -113,12 +113,14 @@ TEST(Command, ProxyOptions)
 
 TEST(Command, ModuleDetails)
 {
-    UMPS::Services::Command::ModuleDetails details;
+    namespace USC = UMPS::Services::Command;
+    USC::ModuleDetails details;
     const std::string moduleName{"testModule"};
     const std::string directory{"./a/b/c"};
     const std::string ipcFile{"./a/b/c/testModule.ipc"};
     const int64_t processIdentifier{430};
-    const ApplicationStatus applicationStatus{ApplicationStatus::Running};
+    const USC::ModuleDetails::ApplicationStatus
+        applicationStatus{USC::ModuleDetails::ApplicationStatus::Running};
 
     details.setName(moduleName);
     details.setIPCDirectory(directory);
@@ -223,7 +225,8 @@ TEST(Command, CommandResponse)
 {
     CommandResponse response;
     const std::string responseString{"howdy"};
-    const CommandReturnCode returnCode = CommandReturnCode::InvalidCommand;
+    const CommandResponse::ReturnCode returnCode
+        = CommandResponse::ReturnCode::InvalidCommand;
     EXPECT_NO_THROW(response.setResponse(responseString));
     response.setReturnCode(returnCode);
 
@@ -436,6 +439,7 @@ TEST(Command, ReplierOptions)
 
 TEST(Command, ModuleTable)
 {
+    namespace USC = UMPS::Services::Command;
     ModuleTable table;
     std::string tableName{"localModuleTable.sqlite3"};
     bool createIfDoesNotExist = true;
@@ -444,17 +448,20 @@ TEST(Command, ModuleTable)
     const std::string moduleName1{"testModule"};
     const std::string ipcDirectory1{"./"};
     const int64_t processIdentifier1{829};
-    const ApplicationStatus applicationStatus1{ApplicationStatus::Running};
+    const USC::ModuleDetails::ApplicationStatus
+         applicationStatus1{USC::ModuleDetails::ApplicationStatus::Running};
 
     const std::string moduleName2{"anotherTestModule"};
     const std::string ipcDirectory2{"./"};
     const int64_t processIdentifier2{19392};
-    const ApplicationStatus applicationStatus2{ApplicationStatus::Running};
+    const USC::ModuleDetails::ApplicationStatus
+         applicationStatus2{USC::ModuleDetails::ApplicationStatus::Running};
 
     const std::string moduleName3{"anotherTestModule"};
     const std::string ipcDirectory3{"./"};
     const int64_t processIdentifier3{processIdentifier1 + processIdentifier2};
-    const ApplicationStatus applicationStatus3{ApplicationStatus::Unknown};
+    const USC::ModuleDetails::ApplicationStatus
+         applicationStatus3{USC::ModuleDetails::ApplicationStatus::Unknown};
 
     std::vector<UMPS::Services::Command::ModuleDetails> allModulesRef;
     UMPS::Services::Command::ModuleDetails details1;

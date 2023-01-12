@@ -25,7 +25,8 @@ ModuleDetails rowToDetails(sqlite3_stmt *result)
     details.setName(moduleName);
     details.setProcessIdentifier(id);
     details.setIPCDirectory(path);
-    details.setApplicationStatus(static_cast<ApplicationStatus> (status));
+    details.setApplicationStatus(
+        static_cast<ModuleDetails::ApplicationStatus> (status));
     return details;
 }
 

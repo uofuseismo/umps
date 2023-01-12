@@ -2,7 +2,6 @@
 #define UMPS_SERVICES_COMMAND_COMMAND_RESPONSE_HPP
 #include <memory>
 #include "umps/messageFormats/message.hpp"
-#include "umps/services/command/enums.hpp"
 namespace UMPS::Services::Command
 {
 /// @class CommandResponse commandResponse.hpp "umps/services/command/commandResponse.hpp"
@@ -11,6 +10,14 @@ namespace UMPS::Services::Command
 /// @ingroup Applications_uLocalCommand
 class CommandResponse : public UMPS::MessageFormats::IMessage
 {
+public:
+    /// @brief The service's return code for a command request.
+    enum class ReturnCode
+    {
+        Success = 0,         /*!< Indicates the command was successful. */
+        InvalidCommand = 1,  /*!< Indicates the command was invalid. */
+        ApplicationError = 2 /*!< The code is valid but the application threw an error. */
+    };
 public:
     /// @name Constructors
     /// @{
@@ -43,9 +50,9 @@ public:
 
     /// @brief Sets the return code.
     /// @param[in] code  The return code.
-    void setReturnCode(CommandReturnCode code) noexcept;
+    void setReturnCode(ReturnCode code) noexcept;
     /// @result The return code.
-    [[nodiscard]] CommandReturnCode getReturnCode() const;
+    [[nodiscard]] ReturnCode getReturnCode() const;
     /// @result True indicates the return code is set.
     [[nodiscard]] bool haveReturnCode() const noexcept;
     /// @}

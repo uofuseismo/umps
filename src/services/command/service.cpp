@@ -180,7 +180,8 @@ void Service::initialize(const ServiceOptions &options)
     moduleDetails.setName(options.getModuleName());
     //moduleDetails.setProcessIdentifier() // Rely on default
     moduleDetails.setIPCDirectory(options.getIPCDirectory());
-    moduleDetails.setApplicationStatus(ApplicationStatus::Running);
+    moduleDetails.setApplicationStatus(
+        ModuleDetails::ApplicationStatus::Running);
     pImpl->mModuleDetails = moduleDetails;
     // Done
     pImpl->mInitialized = true;

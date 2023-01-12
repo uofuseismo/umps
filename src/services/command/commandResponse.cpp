@@ -30,7 +30,8 @@ CommandResponse objectToCommands(const nlohmann::json &obj)
     }
     response.setResponse(obj["Response"]);
     response.setReturnCode(
-        static_cast<CommandReturnCode> (obj["ReturnCode"].get<int> ()));
+        static_cast<CommandResponse::ReturnCode> (
+            obj["ReturnCode"].get<int> ()));
     return response;
 }
 
@@ -55,7 +56,7 @@ class CommandResponse::CommandResponseImpl
 {
 public:
     std::string mResponse;
-    CommandReturnCode mReturnCode;
+    CommandResponse::ReturnCode mReturnCode;
     bool mHaveResponse{false};
     bool mHaveReturnCode{false};
 };
@@ -157,13 +158,14 @@ bool CommandResponse::haveResponse() const noexcept
 }
 
 /// Return code 
-void CommandResponse::setReturnCode(const CommandReturnCode code) noexcept
+void CommandResponse::setReturnCode(
+    const CommandResponse::ReturnCode code) noexcept
 {
     pImpl->mReturnCode = code;
     pImpl->mHaveReturnCode = true;
 }
 
-CommandReturnCode CommandResponse::getReturnCode() const
+CommandResponse::ReturnCode CommandResponse::getReturnCode() const
 {
     if (!haveReturnCode()){throw std::runtime_error("Return code not set");}
     return pImpl->mReturnCode;

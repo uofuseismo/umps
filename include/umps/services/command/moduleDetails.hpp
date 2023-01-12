@@ -1,7 +1,6 @@
 #ifndef UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
 #define UMPS_SERVICES_COMMAND_MODULE_DETAILS_HPP
 #include <memory>
-#include "umps/services/command/enums.hpp"
 namespace UMPS::Services::Command
 {
 /// @class ModuleDetails "moduleDetails.hpp" "umps/services/command/moduleDetails.hpp"
@@ -10,6 +9,13 @@ namespace UMPS::Services::Command
 /// @ingroup Applications_uLocalCommand
 class ModuleDetails
 {
+public:
+    enum class ApplicationStatus : int 
+    {
+        Running = 0,     /*!< This indicates the application is running. */
+        NotRunning = 1,  /*!< This indicates the application is not running. */
+        Unknown = 2      /*!< This indicates the application's status is unknown. */
+    };
 public:
     /// @name Constructors
     /// @{
