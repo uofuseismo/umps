@@ -84,9 +84,9 @@ public:
     ///         // Main thread configures authorization service
     ///         auth.whitelist(addresses); // Allow some addresses
     ///         auth.blacklist(addresses); // Deny some addresses
-    ///         .
-    ///         .
-    ///         .
+    ///         // Your 
+    ///         // Application
+    ///         // Code
     ///         auth.stop(); // Main thread stops service
     ///         t.join(); // Thread t returns
     void start();

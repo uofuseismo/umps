@@ -4,9 +4,7 @@ namespace UMPS
 
 /** \page index Overview */
 
-
 /** \defgroup Messages_chapter Messages */
-
 /** \defgroup Messages_BaseClass Abstract Message Base Class
     \brief The most important class for those who wish to make their own messages.
     \ingroup Messages_chapter */
@@ -17,18 +15,20 @@ namespace UMPS
 
 /** \defgroup MessagingPatterns_chapter Messaging Patterns  */
 /** \defgroup MessagingPatterns_Introduction Introduction
-    \brief \brief Introduction to the messaging patterns section.
+    \brief Messaging patterns enabled by UMPS.
     \ingroup MessagingPatterns_chapter */
 /** \defgroup MessagingPatterns_Context Context
     \brief A context is like a thread used by ZeroMQ to send and receive messages.
     \ingroup MessagingPatterns_chapter */
-
 /** \defgroup MessagingPatterns_PubSub Publisher-Subscriber Patterns
-    \ingroup MessagingPatterns_chapter
-    \defgroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
-    \ingroup MessagingPatterns_PubSub
-    \defgroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
+    \ingroup MessagingPatterns_chapter */
+/** \defgroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
+    \brief The simplest communication mechanism which is included for pedagogical purposes only.  Here, one consumer receives messages from one producer.
     \ingroup MessagingPatterns_PubSub */
+/** \defgroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
+    \brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
+    \ingroup MessagingPatterns_PubSub */
+
 
 /** \defgroup MessagingPatterns_ReqRep Request-Reply Patterns
     \ingroup MessagingPatterns_chapter 
@@ -37,16 +37,10 @@ namespace UMPS
     \defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
     \ingroup MessagingPatterns_ReqRep */
 
-/** \addtogroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
-    \brief The simplest communication mechanism which is included for pedagogical purposes only.  Here, one consumer receives messages from one producer.
-    \ingroup MessagingPatterns_PubSub */
-/** \addtogroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
-    \brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
-    \ingroup MessagingPatterns_PubSub */
-/** \addtogroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
+/** \defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
     \brief A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers.  This will lead to highly scalable services.
     \ingroup MessagingPatterns_ReqRep */
-/** \addtogroup MessagingPatterns_ReqRep_RequestRouter Request-Router
+/** \defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
     \brief Individual clients submit requests to an asynchronous server.
     \ingroup MessagingPatterns_ReqRep */
 

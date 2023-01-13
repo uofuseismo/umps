@@ -1,13 +1,20 @@
 namespace UMPS
 {
 /*!
-\page Installation
-\ingroup Install_chapter
-\section TopicInstall Installation
+\page TopicInstallation_page Installation Page
+\section TopicInstallation Installation Section Outline
 
-This page outlines strategies for building UMPS from source.  The details for these steps can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
+This section outlines strategies compiling the software and initial configurations to allow connections.  The topics are:
+- \link TopicInstall_OS Supported Operating Systems \endlink
+- \link TopicInstall_Prerequisites Software Prerequisites \endlink
+- \link TopicInstall_Compiling Compiling \endlink
+- \link TopicInstall_ConnectionPrepare_IP Obtained the uOperator IP Address \endlink
+- \link TopicInstall_ConnectionPrepare_Networking Configuring Networking Rules \endlink
+- \link TopicInstall_ConnectionPrepare_Security Initializing Authentication \endlink
+- \link TopicInstall_ConnectionPrepare Preparing to Connect \endlink
+- \link TopicInstall_Documentation Generating the Documentation \endlink
 
-\subsection TopicInstall_OS Operating Systems
+\subsection TopicInstall_OS Supported Operating Systems
 
 Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  While I anticipate that there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and using the latest LLVM compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and send create a merge request when you get things working.
 
@@ -33,7 +40,7 @@ Additionally, you may wish to get pybind11 and Doxygen to build the Python wrapp
   - <a href="https://github.com/pybind/pybind11">pybind11</a> for generating Python wrappers.
   - <a href="https://www.doxygen.nl/index.html">Doxygen</a> for generating the documentation.
 
-After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.  
+After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.  Strategies for compiling these libraries can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
 
 
 \subsection TopicInstall_Compiling Compiling
@@ -64,10 +71,10 @@ For those wishing to also generate the Python bindings, the following script may
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}
     cmake .. \
-    -DCMAKE_CXX_COMPILER=${CXX} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER=${CXX} \
     -DCMAKE_CXX_FLAGS="-Wall" \
+    -Dpybind11_DIR=${HOME}/anaconda3/lib/python3.8/site-packages/pybind11/share/cmake/pybind11 \
     -DWRAP_PYTHON=ON \
     -DPYTHON_EXECUTABLE=${HOME}/anaconda3/bin/python \
     -DPYTHON_LIBRARIES=${HOME}/anaconda3/lib/libpython3.8.so
@@ -87,9 +94,66 @@ And install
 
 which may require sudo privileges. 
 
-\subsection TopicInstall_Documentation Generating the Documentation
+\section TopicInstall_ConnectionPrepare Preparing to Connect
+\ingroup TopicInstallation
 
-In this instance, you would descend into the docs path
+This section provides a high-level overview of the prerequisites for allowing machines to connect to one-another on a network.  These are initialization steps and, if done correctly, need only be done once in the setting up of UMPS.
+
+\subsection TopicInstall_ConnectionPrepare_IP Obtaining the uOperator's IP Address
+
+All modules will need to know the IP address of the machine running the uOperator.  However, it can be surpisingly difficult to determine an IP address.  One strategy is to use
+
+\code
+ip addr show | grep inet
+\endcode
+
+on the machine running the uOperator.  In this case, you **should not** select the localhost's address (e.g., 127.0.0.1).  Note, this may require a working knowledge of your subnetworks to select the correct option. 
+
+\subsection TopicInstall_ConnectionPrepare_Networking Configuring Networking Rules
+
+You may run into issues beyond the scope of UMPS that pertain to firewalls.  One useful document is presented by <a href="https://www.ibm.com/docs/en/spectrum-scale/4.2.2?topic=firewall-examples-how-open-ports">IBM</a>.  Likewise, the following examples, which may require super user privileges, may be of use.  Since I primarily work on Ubuntu your mileage may vary.
+
+With regards to the machine's firewall, a useful networking tool for Linux is firewalld.  It can be installed as follows:
+
+\code
+apt-get install firewalld
+\endcode
+
+UMPS will attempt to make ports specific to communication topics.  For this reason you may want to open a range of ports.  For example, 100 ports ranging from 5000 to 5100 may be permanently opened as follows:
+
+\code
+firewall-cmd --permanent --add-port 5000-5100/tcp
+firewall-cmd --reload
+\endcode
+
+You can then check if this was successful
+
+\code
+firewall-cmd --list-ports
+\endcode
+
+Sometimes it will be necessary to restart the firewalld service.  This can be done as follows:
+
+\code
+systemctl stop firewalld
+systemctl start firewalld
+\endcode
+
+\subsection TopicInstall_ConnectionPrepare_Security Initializing Authentication 
+
+For those wishing to use \link TopicAuthentication authentication \endlink, after compiling and installing UMPS you must create users and swap credentials.  The algorithm for setting up key-pairs is as follows:
+
+   1. Generate an admin-level \link TopicAuthentication_UserTable public/private keypair \endlink on the machine that will run the uOperator.
+   2. Generate a read/write or read-only \link TopicAuthentication_UserTable public/private keypairs \endlink on the other machines.  
+   3. Perform the key-swap by first copying this machine's public key to the server running the uOperator and copy the uOperator machine's public key to this machine.
+   4. Create the \link TopicAuthentication_UserTable user's table \endlink on the uOperator machine.
+
+You can easily modify the above algorithm to use passwords.  In this case, all you need to do is create a user.json on the machine running uOperator with the password information detailed.  However, passwords are slow to authenticate and can be read off-the-wire by someone spying network traffic.
+
+\section TopicInstall_Documentation Generating the Documentation
+\ingroup TopicInstallation
+
+To generate the <a href="https://www.doxygen.nl/index.html">Doxygen</a> documentation displayed at the UMPS <a href="https://uofuseismo.github.io/umps/">github pages</a> site, you would descend into the docs path and do the following
 
     cd docs
     mkdir docs_build
@@ -99,6 +163,5 @@ In this instance, you would descend into the docs path
     firefox html/index.html
 
 A word to the wise: DO NOT touch docs/Doxyfile.gh or docs/html.  These exist for the benefit of github pages.
-
 */
 }

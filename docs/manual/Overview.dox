@@ -5,7 +5,7 @@ namespace UMPS
 
 This is the API documentation for <a href="https://uofuseismo.github.io/umps/modules.html">UMPS</a>.
 
-For those looking to build from source, read the \link TopicInstall install \endlink document.
+For those looking to build from source, read the \link TopicInstallation install \endlink document.
 
 Initial examples demonstrating UMPS usage are found at .
 

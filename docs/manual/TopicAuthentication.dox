@@ -75,7 +75,7 @@ A script to help you create a public/private key pair might look like
 
     #!/usr/bin/bash
     # Name of the key pair.  Pick something better in real life.
-    key_name=example
+    key_name=$(hostname)-${USER}
     # The destination to install the keys.  This is the recommended location
     # but another sensible directory is ~/.ssh/
     destination=${HOME}/.local/share/UMPS/keys
@@ -96,11 +96,20 @@ A script to help you create a public/private key pair might look like
     chmod 644 ${public_key}
     chmod 600 ${private_key}
 
-Additionally, you (or your system administrator) must install your public key on the machine running uOperator.  This is done by
+Next, you must perform the actual key exchange.  The algorithm is as follows:
 
-   1. Connecting to the machine running uOperator.  This actually requires you to have login credentials on this machine.
-   2. Logging in as the user running uOperator.
-   3. Copying your **public** key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator.  This information should be in the uOperator initialization file.
+   1. Connect to the machine running uOperator.  Note, this actually requires you to have login credentials on this machine.
+   2. Switching users to the user running uOperator.
+   3. Copy your **public** key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator.  This information should be in the uOperator initialization file.
+   4. Download a copy of the the uOperator's **public** key from ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator.
+
+As a specific example, you (or your system administrator) may install your public key on the uOperator machine using
+
+    scp ${HOME}/.local/share/UMPS/keys/THIS_SERVERS_PUBLIC_KEY.txt UOPERATOR_USER@UOPERATOR_SERVER:${HOME}/.local/share/UMPS/keys/
+
+and obtain the uOperator's public key for this machine using
+
+    scp UOPERATOR_USER@UOPERATOR_SERVER:${HOME}/.local/share/UMPS/keys/UOPERATOR_PUBLIC_KEY.txt ${HOME}/.local/share/UMPS/keys/
 
 */
 
@@ -178,7 +187,8 @@ where I have implicitly been writing to the default user's table located in ${HO
 /*!
 \page TopicAuthentication_Certficiate Certificates
 \ingroup Authentication_Certificate
-\section Topic_Authentication_Certificate_Overview Overview
+
+Authentication
 
 */
 
