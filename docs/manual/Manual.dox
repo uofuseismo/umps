@@ -15,7 +15,7 @@ namespace UMPS
     \ingroup Messages_chapter */
 
 
-/** \defgroup MessagingPatterns_chapter Messaging Patterns  */
+/** \defgroup MessagingPatterns_chapter Messaging Patterns */
 /** \defgroup MessagingPatterns_Introduction Introduction
     \brief Messaging patterns enabled by UMPS.
     \ingroup MessagingPatterns_chapter */
@@ -46,7 +46,7 @@ namespace UMPS
     \brief Individual clients submit requests to an asynchronous server.
     \ingroup MessagingPatterns_ReqRep */
 
-/** \defgroup Authentication_chapter Authentication  */
+/** \defgroup Authentication_chapter Authentication */
 /** \defgroup Authentication_Introduction Introduction 
     \brief Introduction to the authentication section.
     \ingroup Authentication_chapter */
