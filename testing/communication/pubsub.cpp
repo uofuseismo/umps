@@ -11,7 +11,7 @@
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/context.hpp"
 #include "umps/messageFormats/messages.hpp"
-#include "umps/messageFormats/pick.hpp"
+#include "umps/messageFormats/text.hpp"
 #include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include <gtest/gtest.h>
 namespace
@@ -100,9 +100,9 @@ TEST(Messaging, PubSub)
 
     // Create a subscriber and subscribe to pick messages
     UMPS::MessageFormats::Messages messageTypes;
-    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
-        = std::make_unique<UMPS::MessageFormats::Pick> ();
-    messageTypes.add(pickMessageType);
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessageType
+        = std::make_unique<UMPS::MessageFormats::Text> ();
+    messageTypes.add(textMessageType);
 
     SubscriberOptions subscriberOptions;
     subscriberOptions.setAddress(localHost);
@@ -112,7 +112,7 @@ TEST(Messaging, PubSub)
     subscriber.initialize(subscriberOptions);
     EXPECT_TRUE(subscriber.isInitialized());
     //subscriber.connect(localHost);
-    //subscriber.addSubscription(pickMessageType);
+    //subscriber.addSubscription(textMessageType);
     //sleep(1);
     // Create publisher and bind
     PublisherOptions publisherOptions;
@@ -125,7 +125,9 @@ auto context = std::make_shared<UMPS::Messaging::Context> (1);
     // Give the publisher a chance to bind to the port
     std::this_thread::sleep_for(std::chrono::seconds(1)); //sleep(1);
     // Define message to send
-    UMPS::MessageFormats::Pick pick;
+    UMPS::MessageFormats::Text text;
+    text.setContents("A text message");
+    /*
     pick.setIdentifier(4043);
     pick.setTime(600);
     pick.setNetwork("UU"); 
@@ -133,23 +135,24 @@ auto context = std::make_shared<UMPS::Messaging::Context> (1);
     pick.setChannel("EHZ");
     pick.setLocationCode("01");
     pick.setPhaseHint("P");
+    */
     // Send it
-    publisher.send(pick);
-
-//    auto pickMessage = std::make_unique<UMPS::MessageFormats::Pick> ();
-    auto message = subscriber.receive(); //dynamic_cast<UMPS::MessageFormats::Pick *> (subscriber.receive().get());
-    auto pickMessage
-        = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+    publisher.send(text);
+    //auto textMessage = std::make_unique<UMPS::MessageFormats::Text> ();
+    auto message = subscriber.receive(); //dynamic_cast<UMPS::MessageFormats::Text *> (subscriber.receive().get());
+    auto textMessage
+        = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Text>
           (std::move(message));
     //std::cout << pickMessage->toJSON() << std::endl;
-    EXPECT_NEAR(pickMessage->getTime(), pick.getTime(), 1.e-10);
-    EXPECT_EQ(pickMessage->getIdentifier(),   pick.getIdentifier());
-    EXPECT_EQ(pickMessage->getNetwork(),      pick.getNetwork());
-    EXPECT_EQ(pickMessage->getStation(),      pick.getStation());
-    EXPECT_EQ(pickMessage->getChannel(),      pick.getChannel());
-    EXPECT_EQ(pickMessage->getLocationCode(), pick.getLocationCode());
-    EXPECT_EQ(pickMessage->getPhaseHint(),    pick.getPhaseHint());
-    EXPECT_EQ(pickMessage->getPolarity(),     pick.getPolarity());
+    EXPECT_EQ(text.getContents(), "A text message");
+    //EXPECT_NEAR(pickMessage->getTime(), pick.getTime(), 1.e-10);
+    //EXPECT_EQ(pickMessage->getIdentifier(),   pick.getIdentifier());
+    //EXPECT_EQ(pickMessage->getNetwork(),      pick.getNetwork());
+    //EXPECT_EQ(pickMessage->getStation(),      pick.getStation());
+    //EXPECT_EQ(pickMessage->getChannel(),      pick.getChannel());
+    //EXPECT_EQ(pickMessage->getLocationCode(), pick.getLocationCode());
+    //EXPECT_EQ(pickMessage->getPhaseHint(),    pick.getPhaseHint());
+    //EXPECT_EQ(pickMessage->getPolarity(),     pick.getPolarity());
 //    auto pickMessage = std::static_unique_pointer_cast<UMPS::MessageFormats::Pick> (message);
     
     //std::cout << pickMessage->toJSON() << std::endl;

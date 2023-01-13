@@ -36,7 +36,7 @@ set(MESSAGE_FORMAT_SRC
     src/messageFormats/message.cpp
     src/messageFormats/messages.cpp
     #src/messageFormats/dataPacket.cpp
-    src/messageFormats/pick.cpp
+    #src/messageFormats/pick.cpp
     src/messageFormats/text.cpp)
 set(MESSAGING_SRC
     src/authentication/authenticator.cpp
@@ -118,10 +118,10 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
     src/proxyBroadcasts/heartbeat/status.cpp
-    src/proxyBroadcasts/pick/publisher.cpp
-    src/proxyBroadcasts/pick/publisherOptions.cpp
-    src/proxyBroadcasts/pick/subscriber.cpp
-    src/proxyBroadcasts/pick/subscriberOptions.cpp
+    #src/proxyBroadcasts/pick/publisher.cpp
+    #src/proxyBroadcasts/pick/publisherOptions.cpp
+    #src/proxyBroadcasts/pick/subscriber.cpp
+    #src/proxyBroadcasts/pick/subscriberOptions.cpp
     src/proxyServices/proxy.cpp
     src/proxyServices/proxyOptions.cpp
     src/proxyServices/command/availableModulesRequest.cpp

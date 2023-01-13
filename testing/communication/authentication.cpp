@@ -13,7 +13,7 @@
 #include "umps/messaging/publisherSubscriber/subscriber.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messageFormats/messages.hpp"
-#include "umps/messageFormats/pick.hpp"
+#include "umps/messageFormats/text.hpp"
 #include "umps/logging/standardOut.hpp"
 #include "umps/messageFormats/staticUniquePointerCast.hpp"
 #include "private/authentication/checkIP.hpp"
@@ -283,17 +283,11 @@ TEST(Messaging, SQLite3Authenticator)
 }
 */
 
-UMPS::MessageFormats::Pick makePickMessage() noexcept
+UMPS::MessageFormats::Text makeTextMessage() noexcept
 {
-    UMPS::MessageFormats::Pick pick;
-    pick.setIdentifier(4043);
-    pick.setTime(600);
-    pick.setNetwork("UU"); 
-    pick.setStation("NOQ");
-    pick.setChannel("EHZ");
-    pick.setLocationCode("01");
-    pick.setPhaseHint("P");
-    return pick;
+    UMPS::MessageFormats::Text text;
+    text.setContents("An example text message");
+    return text;
 }
 
 void pub(//std::shared_ptr<zmq::context_t> context,
@@ -317,11 +311,11 @@ void pub(//std::shared_ptr<zmq::context_t> context,
     //publisher.bind("tcp://*:5555", serverCertificate); //  Stonehouse
     std::this_thread::sleep_for(std::chrono::seconds(1));
     // Define message to send
-    auto pick = makePickMessage();
+    auto text = makeTextMessage();
     // Send it
     std::this_thread::sleep_for(std::chrono::seconds(1));
     //std::cout << "sending..." << std::endl;
-    publisher.send(pick);
+    publisher.send(text);
 }
 
 void sub(const UAuth::Certificate::Keys serverCertificate)
@@ -336,10 +330,10 @@ void sub(const UAuth::Certificate::Keys serverCertificate)
     UAuth::ZAPOptions zapOptions;
     zapOptions.setStonehouseClient(serverCertificate, clientCertificate);
    
-    std::unique_ptr<UMPS::MessageFormats::IMessage> pickMessageType
-        = std::make_unique<UMPS::MessageFormats::Pick> (); 
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessageType
+        = std::make_unique<UMPS::MessageFormats::Text> (); 
     UMPS::MessageFormats::Messages messageTypes;
-    messageTypes.add(pickMessageType);
+    messageTypes.add(textMessageType);
 
     UMPS::Messaging::PublisherSubscriber::SubscriberOptions options;
     options.setAddress("tcp://127.0.0.1:5555");
@@ -358,11 +352,13 @@ void sub(const UAuth::Certificate::Keys serverCertificate)
     //std::cout << "done" << std::endl;
 
     //std::this_thread::sleep_for(std::chrono::seconds(3));
-    auto pickMessage
-        = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Pick>
+    auto textMessage
+        = UMF::static_unique_pointer_cast<UMPS::MessageFormats::Text>
           (std::move(message));
     //std::cout << pickMessage->toJSON() << std::endl;
-    auto pick = makePickMessage();
+    auto text = makeTextMessage();
+    EXPECT_EQ(textMessage->getContents(), text.getContents());
+/*
     EXPECT_NEAR(pickMessage->getTime(), pick.getTime(), 1.e-10);
     EXPECT_EQ(pickMessage->getIdentifier(),   pick.getIdentifier());
     EXPECT_EQ(pickMessage->getNetwork(),      pick.getNetwork());
@@ -371,7 +367,7 @@ void sub(const UAuth::Certificate::Keys serverCertificate)
     EXPECT_EQ(pickMessage->getLocationCode(), pick.getLocationCode());
     EXPECT_EQ(pickMessage->getPhaseHint(),    pick.getPhaseHint());
     EXPECT_EQ(pickMessage->getPolarity(),     pick.getPolarity());
-
+*/
 }
 
 TEST(Messaging, Authenticator)
