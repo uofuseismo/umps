@@ -26,7 +26,6 @@ var annotated_dup =
         [ "Failure", "class_u_m_p_s_1_1_message_formats_1_1_failure.html", "class_u_m_p_s_1_1_message_formats_1_1_failure" ],
         [ "IMessage", "class_u_m_p_s_1_1_message_formats_1_1_i_message.html", "class_u_m_p_s_1_1_message_formats_1_1_i_message" ],
         [ "Messages", "class_u_m_p_s_1_1_message_formats_1_1_messages.html", "class_u_m_p_s_1_1_message_formats_1_1_messages" ],
-        [ "Pick", "class_u_m_p_s_1_1_message_formats_1_1_pick.html", "class_u_m_p_s_1_1_message_formats_1_1_pick" ],
         [ "Text", "class_u_m_p_s_1_1_message_formats_1_1_text.html", "class_u_m_p_s_1_1_message_formats_1_1_text" ]
       ] ],
       [ "Messaging", null, [

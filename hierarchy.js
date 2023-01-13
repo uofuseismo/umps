@@ -16,7 +16,6 @@ var hierarchy =
     [ "UMPS::MessageFormats::IMessage", "class_u_m_p_s_1_1_message_formats_1_1_i_message.html", [
       [ "UMPS::Authentication::User", "class_u_m_p_s_1_1_authentication_1_1_user.html", null ],
       [ "UMPS::MessageFormats::Failure", "class_u_m_p_s_1_1_message_formats_1_1_failure.html", null ],
-      [ "UMPS::MessageFormats::Pick", "class_u_m_p_s_1_1_message_formats_1_1_pick.html", null ],
       [ "UMPS::MessageFormats::Text", "class_u_m_p_s_1_1_message_formats_1_1_text.html", null ],
       [ "UMPS::ProxyBroadcasts::Heartbeat::Status", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_status.html", null ],
       [ "UMPS::ProxyServices::Command::AvailableModulesRequest", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_request.html", null ],

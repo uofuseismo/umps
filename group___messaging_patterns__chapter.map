@@ -1,6 +1,6 @@
-<map id="Messaging Patterns &#160;&lt;br&gt;" name="Messaging Patterns &#160;&lt;br&gt;">
+<map id="Messaging Patterns" name="Messaging Patterns">
 <area shape="rect" id="node1" href="$group___messaging_patterns___req_rep.html" title=" " alt="" coords="203,5,377,31"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,73,155,113"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,80,155,105"/>
 <area shape="rect" id="node3" href="$group___messaging_patterns___introduction.html" title="Messaging patterns enabled by UMPS." alt="" coords="240,55,340,80"/>
 <area shape="rect" id="node4" href="$group___messaging_patterns___context.html" title="A context is like a thread used by ZeroMQ to send and receive messages." alt="" coords="253,104,327,129"/>
 <area shape="rect" id="node5" href="$group___messaging_patterns___pub_sub.html" title=" " alt="" coords="213,154,367,194"/>

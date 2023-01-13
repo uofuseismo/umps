@@ -2,5 +2,5 @@
 <area shape="rect" id="node1" title=" " alt="" coords="203,31,377,56"/>
 <area shape="rect" id="node3" href="$group___messaging_patterns___req_rep___request_router.html" title="Individual clients submit requests to an asynchronous server." alt="" coords="425,5,548,31"/>
 <area shape="rect" id="node4" href="$group___messaging_patterns___req_rep___router_dealer.html" title="A fully asynchronous request&#45;reply mechanism whereby multiple clients submit requests that are proces..." alt="" coords="430,55,543,80"/>
-<area shape="rect" id="node2" href="$group___messaging_patterns__chapter.html" title=" " alt="" coords="5,23,155,63"/>
+<area shape="rect" id="node2" href="$group___messaging_patterns__chapter.html" title=" " alt="" coords="5,31,155,56"/>
 </map>

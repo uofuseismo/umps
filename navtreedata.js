@@ -47,8 +47,7 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ]
+        [ "Enumerations", "functions_enum.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -61,14 +60,13 @@ var NAVTREEINDEX =
 [
 "_topic_installation_page.html",
 "class_u_m_p_s_1_1_logging_1_1_standard_out.html#afa4fd217c42b3da46a90097d40e144cc",
-"class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router_options.html#a4e684dbbe9944679f27be8305b395c31",
-"class_u_m_p_s_1_1_modules_1_1_i_module.html#a4588965aac310944170596647e54261d",
-"class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber.html#ad0f136d6fbdc17f1cd8a8397a977e043",
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_replier_process.html#ae12f58a367d0140b324b8d31a5fe891b",
-"class_u_m_p_s_1_1_services_1_1_command_1_1_service_options.html#aecc68bbfb735698ae2c3487c9886dffa",
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_reply.html#a09a46f02a6cd775f0ffbadb7e2039152",
-"context_8hpp_source.html",
-"static_unique_pointer_cast_8hpp_source.html"
+"class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#a4e30b7191621eedf5c273d4a9c7f8c0a",
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy.html#a98b508f4e97d6f74612702389df0212c",
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_proxy_options.html#aeadf03501f443ba0af819e2d9b8f50d2",
+"class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html#a250d6cdb3473a9a04adf9e5f4eed42fd",
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_request.html#ab382f2f855d5c27271d9c4e7dfebf28f",
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_subscriber.html#a31b1033dd93db9879d99cae7163cf7e9",
+"functions_func_q.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
