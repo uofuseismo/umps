@@ -2,5 +2,5 @@ var group___messaging_patterns___pub_sub =
 [
     [ "Publisher-Subscriber", "group___messaging_patterns___pub_sub___pub_sub.html", "group___messaging_patterns___pub_sub___pub_sub" ],
     [ "Extended Publisher-Subscriber", "group___messaging_patterns___pub_sub___x_pub_x_sub.html", "group___messaging_patterns___pub_sub___x_pub_x_sub" ],
-    [ "Publisher Subscriber", "group___messaging_patterns___pub_sub.html#TopicMessaging_PubSub", null ]
+    [ "Publisher Subscriber", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub", null ]
 ];

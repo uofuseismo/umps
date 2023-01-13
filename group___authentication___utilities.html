@@ -128,7 +128,7 @@ Modules</h2></td></tr>
  mv examplePrivateKey.txt ${HOME}/.local/share/UMPS/keys
 </pre><p> A script to help you create a public/private key pair might look like </p><pre class="fragment">#!/usr/bin/bash
 # Name of the key pair.  Pick something better in real life.
-key_name=example
+key_name=$(hostname)-${USER}
 # The destination to install the keys.  This is the recommended location
 # but another sensible directory is ~/.ssh/
 destination=${HOME}/.local/share/UMPS/keys
@@ -148,12 +148,15 @@ uKeyPair --publickey ${public_key} --privatekey ${private_key} --keyname 'keys f
 chmod 700 ${destination}
 chmod 644 ${public_key}
 chmod 600 ${private_key}
-</pre><p> Additionally, you (or your system administrator) must install your public key on the machine running uOperator. This is done by<ol type="1">
-<li>Connecting to the machine running uOperator. This actually requires you to have login credentials on this machine.</li>
-<li>Logging in as the user running uOperator.</li>
-<li>Copying your <b>public</b> key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator. This information should be in the uOperator initialization file. </li>
+</pre><p> Next, you must perform the actual key exchange. The algorithm is as follows:<ol type="1">
+<li>Connect to the machine running uOperator. Note, this actually requires you to have login credentials on this machine.</li>
+<li>Switching users to the user running uOperator.</li>
+<li>Copy your <b>public</b> key to ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator. This information should be in the uOperator initialization file.</li>
+<li>Download a copy of the the uOperator's <b>public</b> key from ${HOME}/.local/share/UMPS/keys or wherever public keys are installed on the machine running the uOperator.</li>
 </ol>
-</div>
+As a specific example, you (or your system administrator) may install your public key on the uOperator machine using </p><pre class="fragment">scp ${HOME}/.local/share/UMPS/keys/THIS_SERVERS_PUBLIC_KEY.txt UOPERATOR_USER@UOPERATOR_SERVER:${HOME}/.local/share/UMPS/keys/
+</pre><p> and obtain the uOperator's public key for this machine using </p><pre class="fragment">scp UOPERATOR_USER@UOPERATOR_SERVER:${HOME}/.local/share/UMPS/keys/UOPERATOR_PUBLIC_KEY.txt ${HOME}/.local/share/UMPS/keys/
+</pre> </div>
 
 <h3><a id="TopicAuthentication_UserTable"></a>User Table</h3><div class="textblock">Provided you are performing authentication, on the machine that will run the uOperator you must also create a users table. A command line utility for interacting with this table is uUserTable program. An overview of what this program does is obtained with <pre class="fragment"> uUserTable --help
 </pre> Users details are specified in a JSON file. For example, let's add user Bob. The corresponding JSON file, bob.json, looks like <pre class="fragment">{
@@ -185,7 +188,7 @@ SELECT * FROM user WHERE user = "Bob" AND email = "bob@university.edu";
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jan 12 2023 19:28:13 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Jan 13 2023 00:28:04 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

@@ -44,7 +44,7 @@ var group___authentication___certificate =
       [ "setPassword", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_user_name_and_password.html#a9102913859433c55e7b77abc6ab9128b", null ],
       [ "setUserName", "class_u_m_p_s_1_1_authentication_1_1_certificate_1_1_user_name_and_password.html#aa8a908847263065c07acd9c9f831b8bc", null ]
     ] ],
-    [ "Certificates", "group___authentication___certificate.html#TopicAuthentication_Certficiate", "group___authentication___certificate_TopicAuthentication_Certficiate_dup" ],
+    [ "Certificates", "group___authentication___certificate.html#TopicAuthentication_Certficiate", null ],
     [ "HashLevel", "group___authentication___certificate.html#ga3bd61c8da7b8ef26568213061daafb92", [
       [ "Interactive", "group___authentication___certificate.html#gga3bd61c8da7b8ef26568213061daafb92a24b9b8c0634a40138e76b2fb86894698", null ],
       [ "Moderate", "group___authentication___certificate.html#gga3bd61c8da7b8ef26568213061daafb92a1eb79d43dbb97d5ceb3c157fdb27fa60", null ],

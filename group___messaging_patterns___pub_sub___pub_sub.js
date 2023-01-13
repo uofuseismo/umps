@@ -73,6 +73,5 @@ var group___messaging_patterns___pub_sub___pub_sub =
       [ "setReceiveHighWaterMark", "class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a84d2acfb517a491653e35765a63de14b", null ],
       [ "setReceiveTimeOut", "class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#a1f56fc0b085bd9df6c7b5d26aefe31c2", null ],
       [ "setZAPOptions", "class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber_options.html#ac795a4a77c03598b53a82721aeda2f57", null ]
-    ] ],
-    [ "Publisher Subscriber", "group___messaging_patterns___pub_sub___pub_sub.html#TopicMessaging_PubSub_PubSub", "group___messaging_patterns___pub_sub___pub_sub_TopicMessaging_PubSub_PubSub_dup" ]
+    ] ]
 ];

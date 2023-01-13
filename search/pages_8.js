@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['request_20reply_1134',['Request Reply',['../group___messaging_patterns___req_rep.html',1,'']]]
+  ['publisher_20subscriber_1133',['Publisher Subscriber',['../group___messaging_patterns___pub_sub.html',1,'']]]
 ];

@@ -122,12 +122,31 @@ Modules</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 
 
-<h3><a id="TopicMessaging_PubSub"></a>Publisher Subscriber</h3><div class="textblock">This pattern can be thought of as listening to the radio. The radio (publisher) will broadcast its content. The listener (subscriber) will then tune-in to hear the content. This conceptually simple pattern provides excellent one-to-many scalability. However, the subscriber will miss all content if it is not connected to the data feed. One caveat is that communication is a one-way street in that the publisher broadcasts and the subscriber listens. If your use-case requires the subscriber send information to the publisher then this messaging pattern will not work. </div></div><!-- contents -->
+<h3><a id="TopicMessagingPatterns_PubSub"></a>Publisher Subscriber</h3><div class="textblock">This pattern can be thought of as listening to the radio. The radio (publisher) will broadcast its content. The listener (subscriber) will then tune-in to hear the content. This conceptually simple pattern provides excellent one-to-many scalability. However, the subscriber will miss all content if it is not connected to the data feed. One caveat is that communication is a one-way street in that the publisher broadcasts and the subscriber listens. If your use-case requires the subscriber send information to the publisher then this messaging pattern will not work. <h2><a class="anchor" id="TopicMessagingPatterns_PubSub_Overview"></a>
+Pub-Sub Messaging Overview</h2>
+<p>This is the most naive messaging strategy available in UMPS. All that happens are that messages are sent from a producer to a consumer. This pattern exists for educational and testing purposes and should not be used in production code. </p>
+<h2><a class="anchor" id="TopicMessagingPatterns_PubSub_Example"></a>
+An Example:</h2>
+<p>ingroup Topic_Messaging_PubSub_Overview</p>
+<p>In this example, let us define a simple publisher that sends a handful of text messages to a subscriber. </p>
+<h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExamplePublisher"></a>
+The Publisher:</h2>
+<p>The important points are that the publisher <em>binds</em> to an endpoint, defines a message to send, then sends the message in a non-blocking way. Note, the publisher does not care whether or not the subscriber receives the messages. <br  />
+ </p>
+<div class="fragment"></div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleSubscriber"></a>
+The Subscriber:</h2>
+<p>The important points are that the subscriber <em>connects</em> to an endpoint, receives a pre-agreed upon number of messages, and returns. It is important to consider the blocking behavior of the subscriber. If the default is to block (wait) indefinitely a message is received then in this example the program may hang. For this reason, we actually connect the subscriber to the publisher before the publisher is created. You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket. <br  />
+ </p>
+<div class="fragment"></div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleDriver"></a>
+The Driver:</h2>
+<p>Here is the example driver code that launches this example. We create two threads - a publisher and a subscriber. The subscriber connects first then will block until a message is received. The publisher is then started after waiting some time. This mitigates the slow joiner problem. <br  />
+ </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jan 12 2023 19:28:13 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Jan 13 2023 00:28:04 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
