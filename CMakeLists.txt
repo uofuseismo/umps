@@ -8,6 +8,8 @@ option(WRAP_PYTHON "Compile the Python bindings" OFF)
 # Ensure we have necessary packages 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 include(CheckCXXCompilerFlag)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(Boost COMPONENTS program_options REQUIRED)
@@ -15,10 +17,9 @@ find_package(cppzmq REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
-#find_package(Doxygen)
 add_compile_definitions(UMPS_SRC)
 
-set(FindZeroMQ_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
+set(FindZeroMQ_DIR ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
 find_package(FindZeroMQ REQUIRED)
 
 # Versioning information

@@ -112,7 +112,7 @@ std::string Text::getContents() const noexcept
 ///  Convert message
 std::string Text::toMessage() const
 {
-    return toCBORMessage(*this);
+    return ::toCBORMessage(*this);
 }
 
 void Text::fromMessage(const std::string &message)
@@ -124,7 +124,7 @@ void Text::fromMessage(const std::string &message)
 void Text::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
-    *this = fromCBORMessage(message, length);
+    *this = ::fromCBORMessage(message, length);
 }
 
 /// Copy this class

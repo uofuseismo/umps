@@ -113,7 +113,7 @@ std::string Failure::getDetails() const noexcept
 ///  Convert message
 std::string Failure::toMessage() const
 {
-    return toCBORMessage(*this);
+    return ::toCBORMessage(*this);
 }
 
 void Failure::fromMessage(const std::string &message)
@@ -125,7 +125,7 @@ void Failure::fromMessage(const std::string &message)
 void Failure::fromMessage(const char *messageIn, const size_t length)
 {
     auto message = reinterpret_cast<const uint8_t *> (messageIn);
-    *this = fromCBORMessage(message, length);
+    *this = ::fromCBORMessage(message, length);
 }
 
 /// Copy this class
