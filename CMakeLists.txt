@@ -8,7 +8,7 @@ option(WRAP_PYTHON "Compile the Python bindings" OFF)
 # Ensure we have necessary packages 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 include(CheckCXXCompilerFlag)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+#list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)
@@ -17,10 +17,9 @@ find_package(cppzmq REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
+find_package(ZeroMQ REQUIRED)
+find_package(cppzmq REQUIRED)
 add_compile_definitions(UMPS_SRC)
-
-set(FindZeroMQ_DIR ${CMAKE_MODULE_PATH}) #${CMAKE_SOURCE_DIR}/cmake)
-find_package(FindZeroMQ REQUIRED)
 
 # Versioning information
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
@@ -147,8 +146,9 @@ set_target_properties(umps PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
+message("dynamic linking " ${cppzmq_LIBRARY})
 target_link_libraries(umps
-                      PUBLIC cppzmq Threads::Threads
+                      PUBLIC libzmq Threads::Threads
                       PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json ${SQLite3_LIBRARIES})
 target_include_directories(umps
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
