@@ -863,7 +863,7 @@ public:
             } 
             else
             {
-                mLogger->info("Not regestering: " + workerAddress
+                mLogger->info("Not registering: " + workerAddress
                             + " because it already exists");
                 registrationResponse.setReturnCode(
                     RegistrationReturnCode::Exists);
