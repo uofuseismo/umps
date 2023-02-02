@@ -474,6 +474,23 @@ void ModuleTable::open(const std::string &fileName,
                                       + " does not exist");
         }
     }
+    else
+    {
+        // Make sure directory exists
+        std::filesystem::path filePath(fileName);
+        auto parentPath = filePath.parent_path();
+        if (!parentPath.empty())
+        {
+            if (!std::filesystem::exists(parentPath))
+            {
+                if (!std::filesystem::create_directories(parentPath))
+                {
+                     throw std::runtime_error("Failed to create directory: "
+                                            + std::string{parentPath});
+                }
+            }
+        }
+    }
     auto error = pImpl->open(fileName, createIfDoesNotExist);
     if (error != 0)
     {
