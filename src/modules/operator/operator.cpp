@@ -347,10 +347,10 @@ int main(int argc, char *argv[])
     auto authenticatorLogFileName = options.mLogDirectory
                                   + "/" + "authenticator.log";
     auto authenticationLogger
-        = createLogger("Authenticator",
-                       authenticatorLogFileName,
-                       UMPS::Logging::Level::Info, // Always log
-                       hour, minute);
+        = ::createLogger("Authenticator",
+                         authenticatorLogFileName,
+                         UMPS::Logging::Level::Info, // Always log
+                         hour, minute);
     std::shared_ptr<UAuth::IAuthenticator> authenticator;
     std::shared_ptr<UAuth::IAuthenticator> adminAuthenticator{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> readOnlyAuthenticator{nullptr};
@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
     auto moduleRegistryLogFileName = options.mLogDirectory + "/" 
                                    + "moduleRegistry.log";
     auto moduleRegistryLogger
-        = ::createLogger("ConnectionInformation",
+        = ::createLogger("ModuleRegistry",
                          moduleRegistryLogFileName,
                          UMPS::Logging::Level::Info, // Always log
                          hour, minute);
