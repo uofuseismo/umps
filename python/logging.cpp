@@ -86,10 +86,12 @@ std::shared_ptr<UMPS::Logging::ILog> StandardOut::getSharedPointer()
 DailyFile::DailyFile() = default;
 
 /// Copy c'tor
+/*
 DailyFile::DailyFile(const DailyFile &logger)
 {
     *this = logger;
 }
+*/
 
 /// Move c'tor
 DailyFile::DailyFile(DailyFile &&logger) noexcept
@@ -101,7 +103,7 @@ DailyFile::DailyFile(DailyFile &&logger) noexcept
 DailyFile::~DailyFile() = default;
 
 /// Copy assignment
-DailyFile& DailyFile::operator=(const DailyFile &) = default;
+//DailyFile& DailyFile::operator=(const DailyFile &) = default;
 
 /// Move assignment
 DailyFile& DailyFile::operator=(DailyFile &&) noexcept = default;
@@ -145,12 +147,14 @@ UMPS::Logging::Level DailyFile::getLevel() const noexcept
 }
 
 /// Make instance
+/*
 std::shared_ptr<UMPS::Logging::ILog> DailyFile::getSharedPointer()
 {
     std::shared_ptr<UMPS::Logging::ILog> result
        =  std::make_shared<UMPS::Logging::DailyFile> (mLogger);
     return result;
 }
+*/
 
 ///--------------------------------------------------------------------------///
 ///                               Initialization                             ///

@@ -18,6 +18,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/algorithm/string.hpp>
 #include <filesystem>
+#include <spdlog/spdlog.h>
 #include "umps/authentication/grasslands.hpp"
 #include "umps/authentication/sqlite3Authenticator.hpp"
 #include "umps/authentication/service.hpp"
@@ -76,6 +77,23 @@ namespace UCI = UMPS::Services::ConnectionInformation;
 {
     return std::string{MODULE_NAME} + "$";
 }
+
+/// @result The logger for a component of this application.
+std::shared_ptr<UMPS::Logging::ILog>
+    createLogger(const std::string &moduleName,
+                 const std::string &logFileName,
+                 const UMPS::Logging::Level verbosity = UMPS::Logging::Level::Info,
+                 const int hour = 0, const int minute = 0)
+{
+    auto logger = std::make_shared<UMPS::Logging::DailyFile> (); 
+    logger->initialize(moduleName,
+                       logFileName,
+                       verbosity,
+                       hour, minute);
+    logger->info("Starting logging for " + moduleName);
+    return logger;
+}
+
 
 struct ProgramOptions
 {
@@ -319,6 +337,8 @@ int main(int argc, char *argv[])
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    // Loggers are all multi-threaded so this is okay
+    spdlog::flush_every(std::chrono::seconds {1});
     // Create the authenticator.  Both authenticators will typically say a
     // connection has been established and not much more.
     std::cout << "Initializing connectionInformation service..." << std::endl;
@@ -326,13 +346,11 @@ int main(int argc, char *argv[])
     constexpr int minute = 0;
     auto authenticatorLogFileName = options.mLogDirectory
                                   + "/" + "authenticator.log";
-    UMPS::Logging::DailyFile authenticationLogger;
-    authenticationLogger.initialize("Authenticator",
-                                    authenticatorLogFileName,
-                                    UMPS::Logging::Level::Info, // Always log
-                                    hour, minute);
-    std::shared_ptr<UMPS::Logging::ILog> authenticationLoggerPtr 
-        = std::make_shared<UMPS::Logging::DailyFile> (authenticationLogger);
+    auto authenticationLogger
+        = createLogger("Authenticator",
+                       authenticatorLogFileName,
+                       UMPS::Logging::Level::Info, // Always log
+                       hour, minute);
     std::shared_ptr<UAuth::IAuthenticator> authenticator;
     std::shared_ptr<UAuth::IAuthenticator> adminAuthenticator{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> readOnlyAuthenticator{nullptr};
@@ -342,20 +360,20 @@ int main(int argc, char *argv[])
     {
         std::cout << "Creating grasslands authenticator..." << std::endl;
         authenticator
-            = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
+            = std::make_shared<UAuth::Grasslands> (authenticationLogger);
         adminAuthenticator
-            = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
+            = std::make_shared<UAuth::Grasslands> (authenticationLogger);
         readOnlyAuthenticator
-            = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
+            = std::make_shared<UAuth::Grasslands> (authenticationLogger);
         readWriteAuthenticator
-            = std::make_shared<UAuth::Grasslands> (authenticationLoggerPtr);
+            = std::make_shared<UAuth::Grasslands> (authenticationLogger);
     }
     else
     {
         std::cout << "Creating SQLite3 authenticator..." << std::endl;
         auto sqlite3
             = std::make_shared<UAuth::SQLite3Authenticator>
-              (authenticationLoggerPtr, UAuth::UserPrivileges::ReadOnly);
+              (authenticationLogger, UAuth::UserPrivileges::ReadOnly);
         try
         {
             constexpr bool createIfDoesNotExist = false;
@@ -371,16 +389,16 @@ int main(int argc, char *argv[])
 
         auto admin
             = std::make_shared<UAuth::SQLite3Authenticator>
-                     (authenticationLoggerPtr,
+                     (authenticationLogger,
                       UAuth::UserPrivileges::Administrator);
         admin->openUsersTable(options.mUserTable, false);
         auto readOnly
             = std::make_shared<UAuth::SQLite3Authenticator>
-                     (authenticationLoggerPtr, UAuth::UserPrivileges::ReadOnly);
+                     (authenticationLogger, UAuth::UserPrivileges::ReadOnly);
         readOnly->openUsersTable(options.mUserTable, false);
         auto readWrite
             = std::make_shared<UAuth::SQLite3Authenticator>
-                    (authenticationLoggerPtr, UAuth::UserPrivileges::ReadWrite);
+                    (authenticationLogger, UAuth::UserPrivileges::ReadWrite);
         readWrite->openUsersTable(options.mUserTable, false);
         adminAuthenticator = admin;
         readOnlyAuthenticator = readOnly;
@@ -390,38 +408,33 @@ int main(int argc, char *argv[])
     Modules modules;
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
                                           + "connectionInformation.log";
-    UMPS::Logging::DailyFile connectionInformationLogger;
     // Enforce at least info-level logging.  
     auto connectionInformationVerbosity = options.mVerbosity;
     if (connectionInformationVerbosity < UMPS::Logging::Level::Info)
     {
         connectionInformationVerbosity = UMPS::Logging::Level::Info;
     }
-    connectionInformationLogger.initialize("ConnectionInformation",
-                                           connectionInformationLogFileName,
-                                           connectionInformationVerbosity,
-                                           hour, minute);
-    std::shared_ptr<UMPS::Logging::ILog> connectionInformationLoggerPtr
-        = std::make_shared<UMPS::Logging::DailyFile>
-          (connectionInformationLogger);
+    auto connectionInformationLogger
+        = ::createLogger("ConnectionInformation",
+                         connectionInformationLogFileName,
+                         connectionInformationVerbosity,
+                         hour, minute);
     auto connectionInformation
         = std::make_unique<UCI::Service>
-          (connectionInformationLoggerPtr, authenticator);
+          (connectionInformationLogger, authenticator);
     connectionInformation->initialize(options.mConnectionInformationOptions);
     modules.mConnectionInformation = std::move(connectionInformation);
     // Initialize the module registry service
     auto moduleRegistryLogFileName = options.mLogDirectory + "/" 
                                    + "moduleRegistry.log";
-    UMPS::Logging::DailyFile moduleRegistryLogger;
-    moduleRegistryLogger.initialize("ModuleRegistry",
-                                    moduleRegistryLogFileName,
-                                    UMPS::Logging::Level::Info,
-                                    hour, minute);
-    std::shared_ptr<UMPS::Logging::ILog> moduleRegistryLoggerPtr
-        = std::make_shared<UMPS::Logging::DailyFile> (moduleRegistryLogger);
+    auto moduleRegistryLogger
+        = ::createLogger("ConnectionInformation",
+                         moduleRegistryLogFileName,
+                         UMPS::Logging::Level::Info, // Always log
+                         hour, minute);
     auto moduleRegistry
         = std::make_unique<UMPS::ProxyServices::Command::Proxy>
-          (moduleRegistryLoggerPtr, adminAuthenticator, readOnlyAuthenticator);
+          (moduleRegistryLogger, adminAuthenticator, readOnlyAuthenticator);
     auto serviceKey = "ProxyServices::" + moduleRegistry->getName();
     moduleRegistry->initialize(options.mModuleRegistryOptions);
     modules.mModuleRegistry = std::move(moduleRegistry);
@@ -435,14 +448,11 @@ int main(int argc, char *argv[])
         std::cout << "Starting " << moduleName
                   << " proxy broadcast" << std::endl;
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
-        UMPS::Logging::DailyFile logger; 
-        logger.initialize(moduleName, logFileName,
-                          options.mVerbosity, hour, minute);
-        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-            = std::make_shared<UMPS::Logging::DailyFile> (logger);
+        auto logger = ::createLogger(moduleName, logFileName,
+                                     options.mVerbosity, hour, minute);
         auto proxyBroadcast
             = std::make_unique<UMPS::ProxyBroadcasts::Proxy>
-              (loggerPtr, readWriteAuthenticator, readOnlyAuthenticator);
+              (logger, readWriteAuthenticator, readOnlyAuthenticator);
         proxyBroadcast->initialize(proxyOptions); 
         auto broadcastKey = "ProxyBroadcasts::" + moduleName;
         modules.mProxyBroadcasts.insert(std::pair(broadcastKey,
@@ -465,14 +475,11 @@ int main(int argc, char *argv[])
         std::cout << "Starting " << moduleName
                   << " proxy service" << std::endl;
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
-        UMPS::Logging::DailyFile logger;
-        logger.initialize(moduleName, logFileName,
-                          options.mVerbosity, hour, minute);
-        std::shared_ptr<UMPS::Logging::ILog> loggerPtr
-            = std::make_shared<UMPS::Logging::DailyFile> (logger);
+        auto logger = ::createLogger(moduleName, logFileName,
+                                     options.mVerbosity, hour, minute);
         auto proxyService
             = std::make_unique<UMPS::ProxyServices::Proxy>
-              (loggerPtr, authenticator);
+              (logger, authenticator);
         proxyService->initialize(proxyOptions);
         auto serviceKey = "ProxyServices::" + moduleName;
         modules.mProxyServices.insert(std::pair(serviceKey,
@@ -505,7 +512,7 @@ int main(int argc, char *argv[])
     // Create my processes
     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Slow joiner
     UMPS::Modules::ProcessManager
-        processManager(connectionInformationLoggerPtr);
+        processManager(connectionInformationLogger);
     try
     {
         auto processContext = std::make_shared<UMPS::Messaging::Context> (1);
@@ -518,7 +525,7 @@ int main(int argc, char *argv[])
         requestorOptions.setZAPOptions(options.mZAPOptions);
         auto uOperator
             = std::make_shared<UCI::Requestor> (processContext,
-                                                connectionInformationLoggerPtr);
+                                                connectionInformationLogger);
         uOperator->initialize(requestorOptions);
         */
 
@@ -538,13 +545,13 @@ int main(int argc, char *argv[])
         heartbeatPublisherOptions.setZAPOptions(options.mZAPOptions);
         auto heartbeatPublisher
             = std::make_unique<UMPS::ProxyBroadcasts::Heartbeat::Publisher>
-              (processContext, connectionInformationLoggerPtr);
+              (processContext, connectionInformationLogger);
         heartbeatPublisher->initialize(heartbeatPublisherOptions);
 
         UHB::PublisherProcessOptions heartbeatPublisherProcessOptions; 
         auto heartbeatProcess
             = std::make_unique<UMPS::ProxyBroadcasts::Heartbeat::PublisherProcess>
-              (connectionInformationLoggerPtr);
+              (connectionInformationLogger);
         heartbeatProcess->initialize(heartbeatPublisherProcessOptions,
                                      std::move(heartbeatPublisher));
         processManager.insert(std::move(heartbeatProcess));

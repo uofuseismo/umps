@@ -1,4 +1,8 @@
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <condition_variable>
 #include <string>
 #include <filesystem>
 #include <spdlog/spdlog.h>
@@ -40,8 +44,38 @@ spdlog::level::level_enum levelToLevel(const Level level)
 class DailyFile::DailyFileImpl
 {
 public:
-    std::shared_ptr<spdlog::logger> mLogger = nullptr;
-    Level mLevel = Level::INFO;
+/*
+    ~DailFileImpl()
+    {
+        stop();
+    }
+    void stop()
+    {
+        setRunning(false);
+        if (mFlushingThread.joinable()){mFlushingThread.join();}
+    }
+    void start()
+    {
+        stop();
+    }
+    void periodicallyFlush( )
+    {
+        while (keepRunning())
+        {
+            std::unique_lock<std::mutex> lock(mMutex);
+            dataCondition.wait(lock, []{return 
+            lock.unlock();
+        }
+    }
+    void setRunning(const bool keepRunning) noexcept
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        mKeepRunning = keepRunning;
+    }
+*/
+    std::shared_ptr<spdlog::logger> mLogger{nullptr};
+    Level mLevel{Level::INFO};
+    //bool mKeepRunning{false};
 };
 
 /// C'tor
@@ -89,9 +123,9 @@ Level DailyFile::getLevel() const noexcept
 
 /// Initialize the logger
 void DailyFile::initialize(const std::string &loggerName,
-                        const std::string &fileName,
-                        const Level level,
-                        const int hour, const int minute)
+                           const std::string &fileName,
+                           const Level level,
+                           const int hour, const int minute)
 {
     // Check the inputs
     if (hour < 0 || hour > 23)

@@ -76,7 +76,7 @@ public:
     /// @brief Issue a debug message.
     void debug(const std::string &message);
     /// @result A shared pointer to the underlying logger.
-    [[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getSharedPointer() override final;
+    //[[nodiscard]] std::shared_ptr<UMPS::Logging::ILog> getSharedPointer() override final;
     /// @brief Destructor.
     ~DailyFile() override;
     DailyFile& operator=(const DailyFile &); 

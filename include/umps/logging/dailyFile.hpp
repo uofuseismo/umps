@@ -31,7 +31,7 @@ public:
     /// @brief Copy assignment operator.
     /// @param[in] logger   The logging class to copy to this.
     /// @result A deep copy of the logger class.
-    DailyFile &operator=(const DailyFile &logger); 
+    DailyFile &operator=(const DailyFile &logger);
     /// @brief Move assignment operator.
     /// @param[in,out] logger  The logging class whose memory will be moved to
     ///                        this.  On exit, logger's behavior is undefined.
