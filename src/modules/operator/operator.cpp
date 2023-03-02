@@ -338,12 +338,18 @@ class Operator : public UMPS::Modules::IProcess
 {
 public:
     Operator(const std::string &moduleName,
+             std::shared_ptr<Modules> &modules,
              std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mModules(modules),
         mLogger(logger)
     {
         if (mLogger == nullptr)
         {   
             mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
+        }
+        if (mModules == nullptr)
+        {
+            throw std::invalid_argument("Modules is NULL");
         }
         mLocalCommand
             = std::make_unique<UMPS::Services::Command::Service> (mLogger);
@@ -436,6 +442,25 @@ public:
             {
                 mLogger->error("Failed to unpack commands request");
             }
+            return response.clone();
+        }
+        else if (messageType == terminateRequest.getMessageType())
+        {
+            USC::TerminateResponse response;
+            try
+            {
+                terminateRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack terminate request");
+                response.setReturnCode(
+                    USC::TerminateResponse::ReturnCode::InvalidCommand);
+                return response.clone();
+            }
+            issueStopCommand();
+            response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
             return response.clone();
         }
         else if (messageType == commandRequest.getMessageType())
@@ -534,7 +559,7 @@ public:
         return failureResponse.clone();
     } 
     mutable std::mutex mMutex;
-    std::unique_ptr<Modules> mModules;
+    std::shared_ptr<Modules> mModules;
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service>
          mLocalCommand{nullptr};
@@ -573,11 +598,17 @@ int main(int argc, char *argv[])
     }
     // Loggers are all multi-threaded so this is okay
     spdlog::flush_every(std::chrono::seconds {1});
+    // Create logger for application
+    constexpr int hour = 0; 
+    constexpr int minute = 0; 
+    auto uOperatorLogFileName = options.mLogDirectory + "/uOperator.log";
+    auto uOperatorLogger = ::createLogger("uOperator",
+                                          uOperatorLogFileName,
+                                          options.mVerbosity,
+                                          hour, minute);
     // Create the authenticator.  Both authenticators will typically say a
     // connection has been established and not much more.
-    std::cout << "Initializing connectionInformation service..." << std::endl;
-    constexpr int hour = 0;
-    constexpr int minute = 0;
+    uOperatorLogger->info("Initializing connectionInformation service...");
     auto authenticatorLogFileName = options.mLogDirectory
                                   + "/" + "authenticator.log";
     auto authenticationLogger
@@ -592,7 +623,7 @@ int main(int argc, char *argv[])
     if (options.mZAPOptions.getSecurityLevel() ==
         UAuth::SecurityLevel::Grasslands)
     {
-        std::cout << "Creating grasslands authenticator..." << std::endl;
+        uOperatorLogger->info("Creating grasslands authenticator...");
         authenticator
             = std::make_shared<UAuth::Grasslands> (authenticationLogger);
         adminAuthenticator
@@ -604,7 +635,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        std::cout << "Creating SQLite3 authenticator..." << std::endl;
+        uOperatorLogger->info("Creating SQLite3 authenticator...");
         auto sqlite3
             = std::make_shared<UAuth::SQLite3Authenticator>
               (authenticationLogger, UAuth::UserPrivileges::ReadOnly);
@@ -639,7 +670,7 @@ int main(int argc, char *argv[])
         readWriteAuthenticator = readWrite;  
     }
     // Initialize the main connection information service
-    auto modules = std::make_unique<Modules> ();
+    auto modules = std::make_shared<Modules> ();
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
                                           + "connectionInformation.log";
     // Enforce at least info-level logging.  
@@ -679,8 +710,8 @@ int main(int argc, char *argv[])
     for (const auto &proxyOptions : options.mProxyBroadcastOptions)
     {
         auto moduleName = proxyOptions.getName();
-        std::cout << "Starting " << moduleName
-                  << " proxy broadcast" << std::endl;
+        uOperatorLogger->info("Starting " + moduleName
+                            + " proxy broadcast");
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
         auto logger = ::createLogger(moduleName, logFileName,
                                      options.mVerbosity, hour, minute);
@@ -706,8 +737,7 @@ int main(int argc, char *argv[])
     for (const auto &proxyOptions : options.mProxyServiceOptions)
     {
         auto moduleName = proxyOptions.getName();
-        std::cout << "Starting " << moduleName
-                  << " proxy service" << std::endl;
+        uOperatorLogger->info("Starting " + moduleName + " proxy service");
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
         auto logger = ::createLogger(moduleName, logFileName,
                                      options.mVerbosity, hour, minute);
@@ -729,18 +759,16 @@ int main(int argc, char *argv[])
             std::cerr << e.what() << std::endl;
         }
     }
-    // Start the services
-
     // Start the connection service information 
-    std::cout << "Starting connection information service..." << std::endl;
+    uOperatorLogger->info("Starting connection information service...");
     try
     {
         modules->mConnectionInformation->start();
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Failed to initialize connection information service"
-                  << std::endl;
+        uOperatorLogger->error(
+            "Failed to initialize connection information service");
         return EXIT_FAILURE;
     }
     // Create my processes
@@ -791,17 +819,50 @@ int main(int argc, char *argv[])
                                      std::move(heartbeatPublisher));
         processManager.insert(std::move(heartbeatProcess));
 
-        // Create the remote registry
-
-        // Lastly, start them up
-        processManager.start(); 
+        // Operator process
+        auto operatorProcess
+            = std::make_unique<Operator> (MODULE_NAME,
+                                          modules,
+                                          uOperatorLogger);
+        // TODO: Create the remote registry
+/*
+        auto callbackFunction = std::bind(&Operator::commandCallback,
+                                          &*broadcastProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+        auto remoteReplier
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+        processManager.insert(std::move(remoteReplier));
+*/
+        processManager.insert(std::move(operatorProcess));
     }
     catch (const std::exception &e)
     {
         std::cerr << "Failed to create processes: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    
+    // Start the modules
+    uOperatorLogger->info("Starting processes...");
+    try
+    {
+        processManager.start();
+    }
+    catch (const std::exception &e)
+    {
+        uOperatorLogger->error(e.what());
+        return EXIT_FAILURE;
+    }
+/*
     // Main program loop
     while (true)
     {
@@ -865,27 +926,29 @@ int main(int argc, char *argv[])
 //        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     processManager.stop();
+*/
+    // The main thread waits and, when requested, sends a stop to all processes
+    uOperatorLogger->info("Starting main thread...");
+    processManager.handleMainThread();
     // Shut down the modules under remote management
-    std::cout << "Stopping the module registry..." << std::endl;
+    uOperatorLogger->info("Stopping the module registry...");
     modules->mModuleRegistry->stop(); 
     // Shut down the services
-    //std::cout << "Stopping the authenticator..." << std::endl;
-    //authenticatorService.stop();
-    std::cout << "Stopping the proxy broadcasts..." << std::endl;
+    uOperatorLogger->info("Stopping the proxy broadcasts...");
     for (auto &broadcast : modules->mProxyBroadcasts)
     {
         modules->mConnectionInformation->removeConnection(
             broadcast.second->getName());
         broadcast.second->stop();
     } 
-    std::cout << "Stopping the proxy services..." << std::endl;
+    uOperatorLogger->info("Stopping the proxy services...");
     for (auto &service : modules->mProxyServices)
     {
         modules->mConnectionInformation->removeConnection(
             service.second->getName());
         service.second->stop();
     }
-    std::cout << "Stopping the services..." << std::endl;
+    uOperatorLogger->info("Stopping the services...");
     for (auto &service : modules->mServices)
     {
         modules->mConnectionInformation->removeConnection(
@@ -894,15 +957,10 @@ int main(int argc, char *argv[])
     }
     //if (modules->mDataPacketBroadcast){modules->mDataPacketBroadcast->stop();}
     //if (modules->mHeartbeatBroadcast){modules->mHeartbeatBroadcast->stop();}
-    std::cout << "Stopping the connection information service..." << std::endl;
+    uOperatorLogger->info("Stopping the connection information service...");
     modules->mConnectionInformation->stop();
-    // Join the threads
-/*
-    for (auto &thread : threads)
-    {
-        if (thread.joinable()){thread.join();}
-    }
-*/
+    // Done
+    uOperatorLogger->info("Exiting...");
     return EXIT_SUCCESS;
 }
 
