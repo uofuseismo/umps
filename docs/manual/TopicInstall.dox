@@ -4,11 +4,11 @@ namespace UMPS
 \page TopicInstallation_page Installation Page
 \section TopicInstallation Installation Section Outline
 
-This section outlines strategies compiling the software and initial configurations to allow connections.  The topics are:
+Broadly, this section outlines strategies for compiling the software as well as initial configurations to allow connections.  Specifically, the topics in this section are:
 - \link TopicInstall_OS Supported Operating Systems \endlink
 - \link TopicInstall_Prerequisites Software Prerequisites \endlink
 - \link TopicInstall_Compiling Compiling \endlink
-- \link TopicInstall_ConnectionPrepare_IP Obtained the uOperator IP Address \endlink
+- \link TopicInstall_ConnectionPrepare_IP Obtaining the uOperator IP Address \endlink
 - \link TopicInstall_ConnectionPrepare_Networking Configuring Networking Rules \endlink
 - \link TopicInstall_ConnectionPrepare_Security Initializing Authentication \endlink
 - \link TopicInstall_ConnectionPrepare Preparing to Connect \endlink
@@ -16,7 +16,7 @@ This section outlines strategies compiling the software and initial configuratio
 
 \subsection TopicInstall_OS Supported Operating Systems
 
-Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  While I anticipate that there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and using the latest LLVM compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and send create a merge request when you get things working.
+Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  While I anticipate that other flavors of <a href="https://ubuntu.com/">Ubuntu</a> will work just fine, I do, however, anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and utilizing the latest <a href="https://llvm.org/">LLVM</a> compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and create a merge request when you get things working.
 
 \subsection TopicInstall_Prerequisites Prerequisites
 
@@ -35,12 +35,14 @@ An important consideration in UMPS is performance.  For this reason we rely on c
   - <a href="https://github.com/nlohmann/json">nlohmann</a> which is a header-only JSON and CBOR (de)serializing utility.
   - <a href="https://github.com/google/googletest">GTest</a> for unit testing.
 
-Additionally, you may wish to get pybind11 and Doxygen to build the Python wrappers and documentation
+Additionally, you may want to build the Python wrappers and generate this documentation.  In that case, you will need:
 
   - <a href="https://github.com/pybind/pybind11">pybind11</a> for generating Python wrappers.
   - <a href="https://www.doxygen.nl/index.html">Doxygen</a> for generating the documentation.
 
-After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.  Strategies for compiling these libraries can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
+Strategies for compiling these libraries can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
+
+After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.
 
 
 \subsection TopicInstall_Compiling Compiling
@@ -74,17 +76,17 @@ For those wishing to also generate the Python bindings, the following script may
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER=${CXX} \
     -DCMAKE_CXX_FLAGS="-Wall" \
-    -Dpybind11_DIR=${HOME}/anaconda3/lib/python3.8/site-packages/pybind11/share/cmake/pybind11 \
+    -Dpybind11_DIR=${HOME}/anaconda3/lib/python3.9/site-packages/pybind11/share/cmake/pybind11 \
     -DWRAP_PYTHON=ON \
     -DPYTHON_EXECUTABLE=${HOME}/anaconda3/bin/python \
-    -DPYTHON_LIBRARIES=${HOME}/anaconda3/lib/libpython3.8.so
+    -DPYTHON_LIBRARIES=${HOME}/anaconda3/lib/libpython3.9.so
 
-Upon a successful CMake configuration, you would then descend into the appropriate directory, 
+Upon a successful CMake configuration, you then descend into the appropriate directory, e.g.,
 
     cd clang_build
     make
 
-With any luck the code will successfully compile.  You can then test it 
+After a successful compilation you can run the tests to ensure it is working
 
     make test
 
@@ -92,34 +94,34 @@ And install
 
     make install
 
-which may require sudo privileges. 
+Note that installation may require sudo privileges. 
 
 \section TopicInstall_ConnectionPrepare Preparing to Connect
 \ingroup TopicInstallation
 
-This section provides a high-level overview of the prerequisites for allowing machines to connect to one-another on a network.  These are initialization steps and, if done correctly, need only be done once in the setting up of UMPS.
+This section provides a high-level overview of the prerequisites for allowing machines to connect to one-another on a network.  These are initialization steps that, if done correctly, need only be done once in the setting up of UMPS.
 
 \subsection TopicInstall_ConnectionPrepare_IP Obtaining the uOperator's IP Address
 
-All modules will need to know the IP address of the machine running the uOperator.  However, it can be surpisingly difficult to determine an IP address.  One strategy is to use
+All modules will need to know the IP address of the machine running the uOperator.  However, it can be surpisingly difficult to determine an IP address and may require a working knowledge of your subnetworks.  One strategy is to use
 
 \code
 ip addr show | grep inet
 \endcode
 
-on the machine running the uOperator.  In this case, you **should not** select the localhost's address (e.g., 127.0.0.1).  Note, this may require a working knowledge of your subnetworks to select the correct option. 
+on the machine running the uOperator.  My only advice after running this command is that, you should **not** select the localhost's address (e.g., 127.0.0.1).
 
 \subsection TopicInstall_ConnectionPrepare_Networking Configuring Networking Rules
 
-You may run into issues beyond the scope of UMPS that pertain to firewalls.  One useful document is presented by <a href="https://www.ibm.com/docs/en/spectrum-scale/4.2.2?topic=firewall-examples-how-open-ports">IBM</a>.  Likewise, the following examples, which may require super user privileges, may be of use.  Since I primarily work on Ubuntu your mileage may vary.
+You may run into issues beyond the scope of UMPS that pertain to firewalls.  One useful document is presented by <a href="https://www.ibm.com/docs/en/spectrum-scale/4.2.2?topic=firewall-examples-how-open-ports">IBM</a>.  As such, the following examples, which may require super user privileges, may be of use.
 
-With regards to the machine's firewall, a useful networking tool for Linux is firewalld.  It can be installed as follows:
+With regards to the machine's firewall, a useful networking tool for Linux is <a href="https://firewalld.org/">firewalld</a>.  It can be installed as follows:
 
 \code
 apt-get install firewalld
 \endcode
 
-UMPS will attempt to make ports specific to communication topics.  For this reason you may want to open a range of ports.  For example, 100 ports ranging from 5000 to 5100 may be permanently opened as follows:
+Since UMPS will attempt to make ports specific to communication topics you may have to open a range of ports.  For example, 100 ports ranging from 5000 to 5100 may be permanently opened as follows:
 
 \code
 firewall-cmd --permanent --add-port 5000-5100/tcp
@@ -141,14 +143,14 @@ systemctl start firewalld
 
 \subsection TopicInstall_ConnectionPrepare_Security Initializing Authentication 
 
-For those wishing to use \link TopicAuthentication authentication \endlink, after compiling and installing UMPS you must create users and swap credentials.  The algorithm for setting up key-pairs is as follows:
+For those wishing to use \link TopicAuthentication authentication \endlink, after compiling and installing UMPS you must create users and exchanging credentials.  The algorithm for setting up key-pairs is as follows:
 
    1. Generate an admin-level \link TopicAuthentication_UserTable public/private keypair \endlink on the machine that will run the uOperator.
-   2. Generate a read/write or read-only \link TopicAuthentication_UserTable public/private keypairs \endlink on the other machines.  
-   3. Perform the key-swap by first copying this machine's public key to the server running the uOperator and copy the uOperator machine's public key to this machine.
+   2. Generate a read/write or read-only \link TopicAuthentication_UserTable public/private keypair \endlink on the client machine.
+   3. Perform the key-swap by first copying the client machine's public key to the server running the uOperator.  Then copy the uOperator machine's public key to this client machine.
    4. Create the \link TopicAuthentication_UserTable user's table \endlink on the uOperator machine.
 
-You can easily modify the above algorithm to use passwords.  In this case, all you need to do is create a user.json on the machine running uOperator with the password information detailed.  However, passwords are slow to authenticate and can be read off-the-wire by someone spying network traffic.
+You can easily modify the above algorithm to use passwords.  In this case, all you need to do is create a user.json file with the password information on the machine running uOperator.  However, I do not recommend this approach since passwords are slow to authenticate and can be read off-the-wire by someone sniffing network traffic.
 
 \section TopicInstall_Documentation Generating the Documentation
 \ingroup TopicInstallation
@@ -162,6 +164,7 @@ To generate the <a href="https://www.doxygen.nl/index.html">Doxygen</a> document
     make docs
     firefox html/index.html
 
-A word to the wise: DO NOT touch docs/Doxyfile.gh or docs/html.  These exist for the benefit of github pages.
+As parting note **DO NOT** touch docs/Doxyfile.gh or docs/html directory.  These exist for the benefit of github pages.
+
 */
 }
