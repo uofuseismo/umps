@@ -20,9 +20,7 @@ Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  
 
 \subsection TopicInstall_Prerequisites Prerequisites
 
-<p>
 An important consideration in UMPS is performance.  For this reason we rely on compiled languages.  To build the core package from source you need to satisfy the following dependencies:
-</p>
 
   - C++20
   - <a href="https://cmake.org/">CMake</a> v3.16 or greater for generation of Makefiles.
@@ -43,7 +41,6 @@ Additionally, you may want to build the Python wrappers and generate this docume
 Strategies for compiling these libraries can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.
 
 After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.
-
 
 \subsection TopicInstall_Compiling Compiling
 

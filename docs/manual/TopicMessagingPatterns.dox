@@ -26,21 +26,21 @@ For those who wish to continue, we recommend reading the <a href="https://zguide
 This pattern can be thought of as listening to the radio. The radio (publisher) will broadcast its content. The listener (subscriber) will then tune-in to hear the content. This conceptually simple pattern provides excellent one-to-many scalability. However, the subscriber will miss all content if it is not connected to the data feed. One caveat is that communication is a one-way street in that the publisher broadcasts and the subscriber listens. If your use-case requires the subscriber send information to the publisher then this messaging pattern will not work.
 </p>
 
-\subsection TopicMessagingPatterns_PubSub_Overview Pub-Sub Messaging Overview
+\section TopicMessagingPatterns_PubSub_Overview Pub-Sub Messaging Overview
 \ingroup MessagingPatterns_PubSub_PubSub
 
 <p>
 This is the most naive messaging strategy available in UMPS.  All that happens are that messages are sent from a producer to a consumer.  This pattern exists for educational and testing purposes and should not be used in production code.
 </p>
 
-\subsection TopicMessagingPatterns_PubSub_Example An Example:
-// ingroup Topic_Messaging_PubSub_Overview
+\section TopicMessagingPatterns_PubSub_Example An Example:
+\ingroup TopicMessagingPatterns_PubSub
  
 <p>
 In this example, let us define a simple publisher that sends a handful of text messages to a subscriber.
 </p>
 
-\subsection TopicMessagingPatterns_PubSub_ExamplePublisher The Publisher:
+\section TopicMessagingPatterns_PubSub_ExamplePublisher The Publisher:
 \ingroup Topic_Messaging_PubSub_Overview
 
 <p>
@@ -49,7 +49,7 @@ The important points are that the publisher \em binds to an endpoint, defines a 
 
 \include pubSub/publisher.cpp
 
-\subsection TopicMessagingPatterns_PubSub_ExampleSubscriber The Subscriber:
+\section TopicMessagingPatterns_PubSub_ExampleSubscriber The Subscriber:
 \ingroup Topic_Messaging_PubSub_Overview
 
 <p>
@@ -58,7 +58,7 @@ The important points are that the subscriber \em connects to an endpoint, receiv
 
 \include pubSub/subscriber.cpp
 
-\subsection TopicMessagingPatterns_PubSub_ExampleDriver The Driver:
+\section TopicMessagingPatterns_PubSub_ExampleDriver The Driver:
 \ingroup MessagingPatterns_PubSub_PubSub
 
 <p>
