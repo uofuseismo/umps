@@ -34,6 +34,8 @@
 #include "umps/services/command/commandResponse.hpp"
 #include "umps/services/command/service.hpp"
 #include "umps/services/command/serviceOptions.hpp"
+#include "umps/services/command/terminateRequest.hpp"
+#include "umps/services/command/terminateResponse.hpp"
 #include "umps/services/connectionInformation/serviceOptions.hpp"
 #include "umps/services/connectionInformation/service.hpp"
 #include "umps/services/connectionInformation/details.hpp"
@@ -55,6 +57,7 @@
 #include "umps/proxyServices/command/proxy.hpp"
 #include "umps/proxyServices/command/proxyOptions.hpp"
 #include "umps/logging/dailyFile.hpp"
+#include "umps/logging/standardOut.hpp"
 
 #define MODULE_NAME "uOperator"
 
@@ -130,8 +133,96 @@ struct Modules
 ProgramOptions parseIniFile(const std::string &iniFile);
 std::string parseCommandLineOptions(int argc, char *argv[]);
 
+[[nodiscard]] std::string serviceToString(
+    const UMPS::Services::IService &service)
+{
+    std::string result;
+    try
+    {
+        result = "Service: "
+               + service.getName()
+               + " available at: "
+               + service.getRequestAddress() + "\n";
+    }
+    catch (const std::exception &e)
+    {
+        result = std::string{e.what()};
+    }
+    return result; 
+}
+
+[[nodiscard]] std::string serviceToString(
+    const UMPS::ProxyServices::Command::Proxy &proxy)
+{
+    std::string result;
+    try
+    {
+        auto details = proxy.getConnectionDetails();
+        auto socketInfo = details.getProxySocketDetails();
+        result = "ProxyService: "
+               + proxy.getName()
+               + " frontend available at: "
+               + socketInfo.getFrontendAddress()
+               + " and backend available at: "
+               + socketInfo.getBackendAddress() + "\n";
+    }
+    catch (const std::exception &e)
+    {
+        result = std::string{e.what()};
+    }
+    return result;
+}
+
+[[nodiscard]] 
+std::string serviceToString(const UMPS::ProxyServices::Proxy &proxy)
+{
+    std::string result;
+    try
+    {
+        auto details = proxy.getConnectionDetails();
+        auto socketInfo = details.getProxySocketDetails();
+        result = "ProxyService: "
+               + proxy.getName()
+               + " frontend available at: "
+               + socketInfo.getFrontendAddress()
+               + " and backend available at: "
+               + socketInfo.getBackendAddress() + "\n";
+    }
+    catch (const std::exception &e)
+    {
+        result = std::string{e.what()};
+    }
+    return result;
+}
+
+[[nodiscard]]
+std::string broadcastToString(const UMPS::ProxyBroadcasts::Proxy &proxy)
+{
+    std::string result;
+    try  
+    {    
+        auto details = proxy.getConnectionDetails();
+        auto socketInfo = details.getProxySocketDetails();
+        result = "ProxyBroadcast: "
+               + proxy.getName()
+               + " frontend available at: "
+               + socketInfo.getFrontendAddress()
+               + " and backend available at: "
+               + socketInfo.getBackendAddress() + "\n";
+    }    
+    catch (const std::exception &e)  
+    {
+        result = std::string{e.what()};
+    }
+    return result;
+}
+
+
+
 void printService(const UMPS::Services::IService &service)
 {
+    std::cout << serviceToString(service);
+/*
     try
     {
         auto details = service.getConnectionDetails();
@@ -144,10 +235,13 @@ void printService(const UMPS::Services::IService &service)
     {
         std::cerr << e.what() << std::endl;
     }
+*/
 }
 
 void printService(const UMPS::ProxyServices::Command::Proxy &proxy)
 {
+    std::cout << serviceToString(proxy);
+/*
     try
     {
         auto details = proxy.getConnectionDetails();
@@ -162,10 +256,13 @@ void printService(const UMPS::ProxyServices::Command::Proxy &proxy)
     {
         std::cerr << e.what() << std::endl;
     }
+*/
 }
 
 void printService(const UMPS::ProxyServices::Proxy &proxy)
 {
+    std::cout << serviceToString(proxy);
+/*
     try
     {
         auto details = proxy.getConnectionDetails();
@@ -180,10 +277,13 @@ void printService(const UMPS::ProxyServices::Proxy &proxy)
     {   
         std::cerr << e.what() << std::endl;
     }
+*/
 }
 
 void printBroadcast(const UMPS::ProxyBroadcasts::Proxy &proxy)
 {
+    std::cout << broadcastToString(proxy);
+/*
     try 
     {   
         auto details = proxy.getConnectionDetails();
@@ -198,6 +298,7 @@ void printBroadcast(const UMPS::ProxyBroadcasts::Proxy &proxy)
     {   
         std::cerr << e.what() << std::endl;
     }   
+*/
 }
 
 /*
@@ -236,16 +337,48 @@ std::string ipResolver(const std::string &serverName)
 class Operator : public UMPS::Modules::IProcess
 {
 public:
-    Operator() = default;
+    Operator(const std::string &moduleName,
+             std::shared_ptr<Modules> &modules,
+             std::shared_ptr<UMPS::Logging::ILog> &logger) :
+        mModules(modules),
+        mLogger(logger)
+    {
+        if (mLogger == nullptr)
+        {   
+            mLogger = std::make_shared<UMPS::Logging::StandardOut> ();
+        }
+        if (mModules == nullptr)
+        {
+            throw std::invalid_argument("Modules is NULL");
+        }
+        mLocalCommand
+            = std::make_unique<UMPS::Services::Command::Service> (mLogger);
+        UMPS::Services::Command::ServiceOptions localServiceOptions;
+        localServiceOptions.setModuleName(moduleName);
+        localServiceOptions.setCallback(
+            std::bind(&Operator::commandCallback,
+                      this,
+                      std::placeholders::_1,
+                      std::placeholders::_2,
+                      std::placeholders::_3));
+        mLocalCommand->initialize(localServiceOptions);
+        mInitialized = true;
+    } 
     /// Destructor
     ~Operator()
     {
         stop();
     }
+    /// Initialized?
+    [[nodiscard]] bool isInitialized() const noexcept
+    {
+        std::scoped_lock lock(mMutex);
+        return mInitialized;
+    }
     /// @result The module name
     [[nodiscard]] std::string getName() const noexcept override
     {
-        return "Operator";
+        return "uOperator";
     }
     /// @result True indicates this should keep running
     [[nodiscard]] bool keepRunning() const
@@ -263,8 +396,22 @@ public:
     void stop() override
     {   
         setRunning(false);
-    //    if (mBroadcastThread.joinable()){mBroadcastThread.join();}
-    //    if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+        if (mLocalCommand != nullptr)
+        {
+            if (mLocalCommand->isRunning()){mLocalCommand->stop();}
+        }
+    }
+    /// @brief Starts the process.
+    void start() override
+    {
+        stop();
+        if (!isInitialized())
+        {
+            throw std::runtime_error("Class not initialized");
+        }
+        setRunning(true);
+        mLogger->debug("Starting the local command proxy...");
+        mLocalCommand->start();
     }
     /// Running?
     [[nodiscard]] bool isRunning() const noexcept override
@@ -281,6 +428,7 @@ public:
         mLogger->debug("Command request received");
         USC::AvailableCommandsRequest availableCommandsRequest;
         USC::CommandRequest commandRequest;
+        USC::TerminateRequest terminateRequest;
         if (messageType == availableCommandsRequest.getMessageType())
         {
             USC::AvailableCommandsResponse response;
@@ -296,14 +444,125 @@ public:
             }
             return response.clone();
         }
+        else if (messageType == terminateRequest.getMessageType())
+        {
+            USC::TerminateResponse response;
+            try
+            {
+                terminateRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack terminate request");
+                response.setReturnCode(
+                    USC::TerminateResponse::ReturnCode::InvalidCommand);
+                return response.clone();
+            }
+            issueStopCommand();
+            response.setReturnCode(USC::TerminateResponse::ReturnCode::Success);
+            return response.clone();
+        }
+        else if (messageType == commandRequest.getMessageType())
+        {
+            USC::CommandResponse response;
+            try
+            {
+                commandRequest.fromMessage(
+                    static_cast<const char *> (data), length);
+            }
+            catch (const std::exception &e)
+            {
+                mLogger->error("Failed to unpack text request");
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::ApplicationError);
+            }
+            auto command = commandRequest.getCommand();
+            if (command == "quit")
+            {
+                mLogger->debug("Issuing quit command...");
+                issueStopCommand();
+                response.setResponse("Bye!  But next time use the terminate command.");
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::Success);
+            }
+            else if (command == "list")
+            {
+                std::string message{"Connection Information:\n"};
+                message = message
+                        + ::serviceToString(*mModules->mConnectionInformation)
+                        + "\n";
+                if (!mModules->mServices.empty())
+                {
+                    message = message + "Services:\n";
+                    for (const auto &module : mModules->mServices)
+                    {
+                        message = message + ::serviceToString(*module.second);
+                    }
+                    message = message + "\n";
+                }
+                if (!mModules->mProxyBroadcasts.empty())
+                {
+                    message = message + "ProxyBroadcasts:\n";
+                    for (const auto &broadcast : mModules->mProxyBroadcasts)
+                    {
+                        message = message
+                                + ::broadcastToString(*broadcast.second);
+                    }
+                    message = message + "\n";
+                }
+                if (!mModules->mProxyServices.empty() ||
+                     mModules->mModuleRegistry->isRunning())
+                {
+                    message = message + "ProxyServices:\n";
+                    if (mModules->mModuleRegistry->isRunning())
+                    {
+                        message = message
+                                + serviceToString(*mModules->mModuleRegistry);
+                    }
+                    for (const auto &service : mModules->mProxyServices)
+                    {
+                        message = message + serviceToString(*service.second);
+                    }
+                    message = message + "\n";
+                }
+                response.setResponse(message);
+                response.setReturnCode(
+                    USC::CommandResponse::ReturnCode::Success);
+                return response.clone();
+            }
+            else
+            {
+                response.setResponse(getInputOptions());
+                if (command != "help")
+                {
+                    mLogger->debug("Invalid command: " + command);
+                    response.setResponse("Invalid command: " + command);
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::InvalidCommand);
+                }
+                else
+                {
+                    response.setReturnCode(
+                        USC::CommandResponse::ReturnCode::Success);
+                }
+            }
+            return response.clone();
+        }
+        else
+        {
+            mLogger->error("Unhandled message type: " + messageType);
+        }
+        // Return a failure
         UMPS::MessageFormats::Failure failureResponse;
         failureResponse.setDetails("Unhandled message type: " + messageType);
         return failureResponse.clone();
     } 
     mutable std::mutex mMutex;
+    std::shared_ptr<Modules> mModules;
+    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     std::unique_ptr<UMPS::Services::Command::Service>
          mLocalCommand{nullptr};
-    std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     bool mKeepRunning{true};
     bool mInitialized{false};
 };
@@ -339,11 +598,17 @@ int main(int argc, char *argv[])
     }
     // Loggers are all multi-threaded so this is okay
     spdlog::flush_every(std::chrono::seconds {1});
+    // Create logger for application
+    constexpr int hour = 0; 
+    constexpr int minute = 0; 
+    auto uOperatorLogFileName = options.mLogDirectory + "/uOperator.log";
+    auto uOperatorLogger = ::createLogger("uOperator",
+                                          uOperatorLogFileName,
+                                          options.mVerbosity,
+                                          hour, minute);
     // Create the authenticator.  Both authenticators will typically say a
     // connection has been established and not much more.
-    std::cout << "Initializing connectionInformation service..." << std::endl;
-    constexpr int hour = 0;
-    constexpr int minute = 0;
+    uOperatorLogger->info("Initializing connectionInformation service...");
     auto authenticatorLogFileName = options.mLogDirectory
                                   + "/" + "authenticator.log";
     auto authenticationLogger
@@ -358,7 +623,7 @@ int main(int argc, char *argv[])
     if (options.mZAPOptions.getSecurityLevel() ==
         UAuth::SecurityLevel::Grasslands)
     {
-        std::cout << "Creating grasslands authenticator..." << std::endl;
+        uOperatorLogger->info("Creating grasslands authenticator...");
         authenticator
             = std::make_shared<UAuth::Grasslands> (authenticationLogger);
         adminAuthenticator
@@ -370,7 +635,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        std::cout << "Creating SQLite3 authenticator..." << std::endl;
+        uOperatorLogger->info("Creating SQLite3 authenticator...");
         auto sqlite3
             = std::make_shared<UAuth::SQLite3Authenticator>
               (authenticationLogger, UAuth::UserPrivileges::ReadOnly);
@@ -405,7 +670,7 @@ int main(int argc, char *argv[])
         readWriteAuthenticator = readWrite;  
     }
     // Initialize the main connection information service
-    Modules modules;
+    auto modules = std::make_shared<Modules> ();
     auto connectionInformationLogFileName = options.mLogDirectory + "/"
                                           + "connectionInformation.log";
     // Enforce at least info-level logging.  
@@ -423,7 +688,7 @@ int main(int argc, char *argv[])
         = std::make_unique<UCI::Service>
           (connectionInformationLogger, authenticator);
     connectionInformation->initialize(options.mConnectionInformationOptions);
-    modules.mConnectionInformation = std::move(connectionInformation);
+    modules->mConnectionInformation = std::move(connectionInformation);
     // Initialize the module registry service
     auto moduleRegistryLogFileName = options.mLogDirectory + "/" 
                                    + "moduleRegistry.log";
@@ -437,16 +702,16 @@ int main(int argc, char *argv[])
           (moduleRegistryLogger, adminAuthenticator, readOnlyAuthenticator);
     auto serviceKey = "ProxyServices::" + moduleRegistry->getName();
     moduleRegistry->initialize(options.mModuleRegistryOptions);
-    modules.mModuleRegistry = std::move(moduleRegistry);
-    modules.mConnectionInformation->addConnection(
-        modules.mModuleRegistry->getConnectionDetails());
-    modules.mModuleRegistry->start();
+    modules->mModuleRegistry = std::move(moduleRegistry);
+    modules->mConnectionInformation->addConnection(
+        modules->mModuleRegistry->getConnectionDetails());
+    modules->mModuleRegistry->start();
     // Start the proxy broadcasts
     for (const auto &proxyOptions : options.mProxyBroadcastOptions)
     {
         auto moduleName = proxyOptions.getName();
-        std::cout << "Starting " << moduleName
-                  << " proxy broadcast" << std::endl;
+        uOperatorLogger->info("Starting " + moduleName
+                            + " proxy broadcast");
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
         auto logger = ::createLogger(moduleName, logFileName,
                                      options.mVerbosity, hour, minute);
@@ -455,13 +720,13 @@ int main(int argc, char *argv[])
               (logger, readWriteAuthenticator, readOnlyAuthenticator);
         proxyBroadcast->initialize(proxyOptions); 
         auto broadcastKey = "ProxyBroadcasts::" + moduleName;
-        modules.mProxyBroadcasts.insert(std::pair(broadcastKey,
-                                                  std::move(proxyBroadcast)));
+        modules->mProxyBroadcasts.insert(std::pair(broadcastKey,
+                                                   std::move(proxyBroadcast)));
         try
         {
-            modules.mProxyBroadcasts[broadcastKey]->start();
-            modules.mConnectionInformation->addConnection(
-                *modules.mProxyBroadcasts[broadcastKey]);
+            modules->mProxyBroadcasts[broadcastKey]->start();
+            modules->mConnectionInformation->addConnection(
+                *modules->mProxyBroadcasts[broadcastKey]);
         }
         catch (const std::exception &e)
         {
@@ -472,8 +737,7 @@ int main(int argc, char *argv[])
     for (const auto &proxyOptions : options.mProxyServiceOptions)
     {
         auto moduleName = proxyOptions.getName();
-        std::cout << "Starting " << moduleName
-                  << " proxy service" << std::endl;
+        uOperatorLogger->info("Starting " + moduleName + " proxy service");
         auto logFileName = options.mLogDirectory + "/" + moduleName + ".log";
         auto logger = ::createLogger(moduleName, logFileName,
                                      options.mVerbosity, hour, minute);
@@ -482,31 +746,29 @@ int main(int argc, char *argv[])
               (logger, authenticator);
         proxyService->initialize(proxyOptions);
         auto serviceKey = "ProxyServices::" + moduleName;
-        modules.mProxyServices.insert(std::pair(serviceKey,
-                                                std::move(proxyService)));
+        modules->mProxyServices.insert(std::pair(serviceKey,
+                                                 std::move(proxyService)));
         try
         {
-            modules.mProxyServices[serviceKey]->start();
-            modules.mConnectionInformation->addConnection(
-                *modules.mProxyServices[serviceKey]);
+            modules->mProxyServices[serviceKey]->start();
+            modules->mConnectionInformation->addConnection(
+                *modules->mProxyServices[serviceKey]);
         }
         catch (const std::exception &e)
         {
             std::cerr << e.what() << std::endl;
         }
     }
-    // Start the services
-
     // Start the connection service information 
-    std::cout << "Starting connection information service..." << std::endl;
+    uOperatorLogger->info("Starting connection information service...");
     try
     {
-        modules.mConnectionInformation->start();
+        modules->mConnectionInformation->start();
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Failed to initialize connection information service"
-                  << std::endl;
+        uOperatorLogger->error(
+            "Failed to initialize connection information service");
         return EXIT_FAILURE;
     }
     // Create my processes
@@ -529,8 +791,9 @@ int main(int argc, char *argv[])
         uOperator->initialize(requestorOptions);
         */
 
+        // Create the heartbeat
         std::string heartbeatAddress;
-        for (const auto &broadcast : modules.mProxyBroadcasts)
+        for (const auto &broadcast : modules->mProxyBroadcasts)
         {
             auto details = broadcast.second->getConnectionDetails();
             auto socketInfo = details.getProxySocketDetails();
@@ -556,15 +819,50 @@ int main(int argc, char *argv[])
                                      std::move(heartbeatPublisher));
         processManager.insert(std::move(heartbeatProcess));
 
-        // Lastly, start them up
-        processManager.start(); 
+        // Operator process
+        auto operatorProcess
+            = std::make_unique<Operator> (MODULE_NAME,
+                                          modules,
+                                          uOperatorLogger);
+        // TODO: Create the remote registry
+/*
+        auto callbackFunction = std::bind(&Operator::commandCallback,
+                                          &*broadcastProcess,
+                                          std::placeholders::_1,
+                                          std::placeholders::_2,
+                                          std::placeholders::_3);
+        namespace URemoteCommand = UMPS::ProxyServices::Command;
+        URemoteCommand::ModuleDetails moduleDetails;
+        moduleDetails.setName(programOptions.mModuleName);
+        auto remoteReplier
+            = URemoteCommand::createReplierProcess(*uOperator,
+                                                   moduleDetails,
+                                                   callbackFunction,
+                                                   iniFile,
+                                                   "ModuleRegistry",
+                                                   nullptr, // Make new context
+                                                   logger);
+        processManager.insert(std::move(remoteReplier));
+*/
+        processManager.insert(std::move(operatorProcess));
     }
     catch (const std::exception &e)
     {
         std::cerr << "Failed to create processes: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-    
+    // Start the modules
+    uOperatorLogger->info("Starting processes...");
+    try
+    {
+        processManager.start();
+    }
+    catch (const std::exception &e)
+    {
+        uOperatorLogger->error(e.what());
+        return EXIT_FAILURE;
+    }
+/*
     // Main program loop
     while (true)
     {
@@ -583,38 +881,38 @@ int main(int argc, char *argv[])
         else if (command == "list")
         {
             std::cout << "Connection Information:" << std::endl;
-            printService(*modules.mConnectionInformation);
+            printService(*modules->mConnectionInformation);
             std::cout << std::endl;
 
-            if (!modules.mServices.empty())
+            if (!modules->mServices.empty())
             {
                 std::cout << "Services:" << std::endl;
-                for (const auto &module : modules.mServices)
+                for (const auto &module : modules->mServices)
                 {
                     printService(*module.second);
                 }
                 std::cout << std::endl;
             }
 
-            if (!modules.mProxyBroadcasts.empty())
+            if (!modules->mProxyBroadcasts.empty())
             {
                 std::cout << "ProxyBroadcasts:" << std::endl;
-                for (const auto &broadcast : modules.mProxyBroadcasts)
+                for (const auto &broadcast : modules->mProxyBroadcasts)
                 {
                     printBroadcast(*broadcast.second);
                 }
                 std::cout << std::endl;
             }
 
-            if (!modules.mProxyServices.empty() ||
-                 modules.mModuleRegistry->isRunning())
+            if (!modules->mProxyServices.empty() ||
+                 modules->mModuleRegistry->isRunning())
             {
                 std::cout << "ProxyServices:" << std::endl;
-                if (modules.mModuleRegistry->isRunning())
+                if (modules->mModuleRegistry->isRunning())
                 {
-                    printService(*modules.mModuleRegistry);
+                    printService(*modules->mModuleRegistry);
                 }
-                for (const auto &service : modules.mProxyServices)
+                for (const auto &service : modules->mProxyServices)
                 {
                     printService(*service.second);
                 }
@@ -628,44 +926,41 @@ int main(int argc, char *argv[])
 //        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     processManager.stop();
+*/
+    // The main thread waits and, when requested, sends a stop to all processes
+    uOperatorLogger->info("Starting main thread...");
+    processManager.handleMainThread();
     // Shut down the modules under remote management
-    std::cout << "Stopping the module registry..." << std::endl;
-    modules.mModuleRegistry->stop(); 
+    uOperatorLogger->info("Stopping the module registry...");
+    modules->mModuleRegistry->stop(); 
     // Shut down the services
-    //std::cout << "Stopping the authenticator..." << std::endl;
-    //authenticatorService.stop();
-    std::cout << "Stopping the proxy broadcasts..." << std::endl;
-    for (auto &broadcast : modules.mProxyBroadcasts)
+    uOperatorLogger->info("Stopping the proxy broadcasts...");
+    for (auto &broadcast : modules->mProxyBroadcasts)
     {
-        modules.mConnectionInformation->removeConnection(
+        modules->mConnectionInformation->removeConnection(
             broadcast.second->getName());
         broadcast.second->stop();
     } 
-    std::cout << "Stopping the proxy services..." << std::endl;
-    for (auto &service : modules.mProxyServices)
+    uOperatorLogger->info("Stopping the proxy services...");
+    for (auto &service : modules->mProxyServices)
     {
-        modules.mConnectionInformation->removeConnection(
+        modules->mConnectionInformation->removeConnection(
             service.second->getName());
         service.second->stop();
     }
-    std::cout << "Stopping the services..." << std::endl;
-    for (auto &service : modules.mServices)
+    uOperatorLogger->info("Stopping the services...");
+    for (auto &service : modules->mServices)
     {
-        modules.mConnectionInformation->removeConnection(
+        modules->mConnectionInformation->removeConnection(
             service.second->getName());
         service.second->stop();
     }
-    //if (modules.mDataPacketBroadcast){modules.mDataPacketBroadcast->stop();}
-    //if (modules.mHeartbeatBroadcast){modules.mHeartbeatBroadcast->stop();}
-    std::cout << "Stopping the connection information service..." << std::endl;
-    modules.mConnectionInformation->stop();
-    // Join the threads
-/*
-    for (auto &thread : threads)
-    {
-        if (thread.joinable()){thread.join();}
-    }
-*/
+    //if (modules->mDataPacketBroadcast){modules->mDataPacketBroadcast->stop();}
+    //if (modules->mHeartbeatBroadcast){modules->mHeartbeatBroadcast->stop();}
+    uOperatorLogger->info("Stopping the connection information service...");
+    modules->mConnectionInformation->stop();
+    // Done
+    uOperatorLogger->info("Exiting...");
     return EXIT_SUCCESS;
 }
 
