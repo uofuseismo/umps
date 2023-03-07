@@ -1,17 +1,6 @@
 var group___messaging_patterns___req_rep___request_router =
 [
     [ "Request", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_request.html", [
-      [ "Pub-Sub Messaging Overview", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_Overview", null ],
-      [ "An Example:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_Example", null ],
-      [ "The Publisher:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExamplePublisher", null ],
-      [ "The Subscriber:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExampleSubscriber", null ],
-      [ "The Driver:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExampleDriver", [
-        [ "Pub-Sub Messaging Overview", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_Overview", null ],
-        [ "An Example:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_Example", null ],
-        [ "The Publisher:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExamplePublisher", null ],
-        [ "The Subscriber:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExampleSubscriber", null ],
-        [ "The Driver:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExampleDriver", null ]
-      ] ],
       [ "Request", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_request.html#a9d1b4e60c0e9661530db2720c83a9fef", null ],
       [ "Request", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_request.html#a5e1b95afa77bb80dfe7b90550ff25583", null ],
       [ "Request", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_request.html#ab4fe46a184444d0af3cc82d707e82b78", null ],

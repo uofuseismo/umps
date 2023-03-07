@@ -75,12 +75,6 @@ var annotated_dup =
           [ "Subscriber", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_subscriber.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_subscriber" ],
           [ "SubscriberOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_subscriber_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_subscriber_options" ]
         ] ],
-        [ "Pick", null, [
-          [ "Publisher", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_publisher.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_publisher" ],
-          [ "PublisherOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_publisher_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_publisher_options" ],
-          [ "Subscriber", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber" ],
-          [ "SubscriberOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_pick_1_1_subscriber_options" ]
-        ] ],
         [ "Proxy", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_proxy.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_proxy" ],
         [ "ProxyOptions", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_proxy_options.html", "class_u_m_p_s_1_1_proxy_broadcasts_1_1_proxy_options" ]
       ] ],

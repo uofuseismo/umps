@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_router.html" title="Defines how a client would connect to this router socket." alt="" coords="5,5,209,61"/>
+<area shape="rect" id="node1" href="$class_u_m_p_s_1_1_services_1_1_i_service.html" title="This is the abstract base class which defines a service." alt="" coords="5,78,188,105"/>
+<area shape="rect" id="node2" href="$class_u_m_p_s_1_1_services_1_1_command_1_1_service.html" title="This class allows a background application to interact with a user." alt="" coords="253,5,452,47"/>
+<area shape="rect" id="node3" href="$class_u_m_p_s_1_1_services_1_1_connection_information_1_1_service.html" title="Implements the server&#45;side connection information service." alt="" coords="251,71,455,112"/>
+<area shape="rect" id="node4" href="$class_u_m_p_s_1_1_services_1_1_module_registry_1_1_service.html" title="Implements the server&#45;side service for registering modules." alt="" coords="236,136,469,177"/>
 </map>

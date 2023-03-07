@@ -98,11 +98,11 @@ $(document).ready(function(){initNavTree('_topic_installation_page.html',''); in
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="TopicInstallation"></a>
 Installation Section Outline</h1>
-<p>This section outlines strategies compiling the software and initial configurations to allow connections. The topics are:</p><ul>
+<p>Broadly, this section outlines strategies for compiling the software as well as initial configurations to allow connections. Specifically, the topics in this section are:</p><ul>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_OS">Supported Operating Systems </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_Prerequisites">Software Prerequisites </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_Compiling">Compiling </a></li>
-<li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare_IP">Obtained the uOperator IP Address </a></li>
+<li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare_IP">Obtaining the uOperator IP Address </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare_Networking">Configuring Networking Rules </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare_Security">Initializing Authentication </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare">Preparing to Connect </a></li>
@@ -110,10 +110,10 @@ Installation Section Outline</h1>
 </ul>
 <h2><a class="anchor" id="TopicInstall_OS"></a>
 Supported Operating Systems</h2>
-<p>Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22. While I anticipate that there will be no issues for using other flavors of Ubuntu I do anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated. For these circumstances, I recommend installing and using the latest LLVM compiler suite. As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and send create a merge request when you get things working.</p>
+<p>Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22. While I anticipate that other flavors of <a href="https://ubuntu.com/">Ubuntu</a> will work just fine, I do, however, anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated. For these circumstances, I recommend installing and utilizing the latest <a href="https://llvm.org/">LLVM</a> compiler suite. As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and create a merge request when you get things working.</p>
 <h2><a class="anchor" id="TopicInstall_Prerequisites"></a>
 Prerequisites</h2>
-<p>An important consideration in UMPS is performance. For this reason we rely on compiled languages. To build the core package from source you need to satisfy the following dependencies: </p>
+<p>An important consideration in UMPS is performance. For this reason we rely on compiled languages. To build the core package from source you need to satisfy the following dependencies:</p>
 <ul>
 <li>C++20</li>
 <li><a href="https://cmake.org/">CMake</a> v3.16 or greater for generation of Makefiles.</li>
@@ -126,12 +126,13 @@ Prerequisites</h2>
 <li><a href="https://github.com/nlohmann/json">nlohmann</a> which is a header-only JSON and CBOR (de)serializing utility.</li>
 <li><a href="https://github.com/google/googletest">GTest</a> for unit testing.</li>
 </ul>
-<p>Additionally, you may wish to get pybind11 and Doxygen to build the Python wrappers and documentation</p>
+<p>Additionally, you may want to build the Python wrappers and generate this documentation. In that case, you will need:</p>
 <ul>
 <li><a href="https://github.com/pybind/pybind11">pybind11</a> for generating Python wrappers.</li>
 <li><a href="https://www.doxygen.nl/index.html">Doxygen</a> for generating the documentation.</li>
 </ul>
-<p>After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>. Strategies for compiling these libraries can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.</p>
+<p>Strategies for compiling these libraries can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.</p>
+<p>After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.</p>
 <h2><a class="anchor" id="TopicInstall_Compiling"></a>
 Compiling</h2>
 <p>To compile UMPS without Python you may make a script in the root source directory that looks like: </p><pre class="fragment">#!/bin/bash
@@ -158,29 +159,29 @@ cmake .. \
 -DCMAKE_BUILD_TYPE=Release \
 -DCMAKE_CXX_COMPILER=${CXX} \
 -DCMAKE_CXX_FLAGS="-Wall" \
--Dpybind11_DIR=${HOME}/anaconda3/lib/python3.8/site-packages/pybind11/share/cmake/pybind11 \
+-Dpybind11_DIR=${HOME}/anaconda3/lib/python3.9/site-packages/pybind11/share/cmake/pybind11 \
 -DWRAP_PYTHON=ON \
 -DPYTHON_EXECUTABLE=${HOME}/anaconda3/bin/python \
--DPYTHON_LIBRARIES=${HOME}/anaconda3/lib/libpython3.8.so
-</pre><p> Upon a successful CMake configuration, you would then descend into the appropriate directory, </p><pre class="fragment">cd clang_build
+-DPYTHON_LIBRARIES=${HOME}/anaconda3/lib/libpython3.9.so
+</pre><p> Upon a successful CMake configuration, you then descend into the appropriate directory, e.g., </p><pre class="fragment">cd clang_build
 make
-</pre><p> With any luck the code will successfully compile. You can then test it </p><pre class="fragment">make test
+</pre><p> After a successful compilation you can run the tests to ensure it is working </p><pre class="fragment">make test
 </pre><p> And install </p><pre class="fragment">make install
-</pre><p> which may require sudo privileges.</p>
+</pre><p> Note that installation may require sudo privileges.</p>
 <h1><a class="anchor" id="TopicInstall_ConnectionPrepare"></a>
 Preparing to Connect</h1>
-<p>This section provides a high-level overview of the prerequisites for allowing machines to connect to one-another on a network. These are initialization steps and, if done correctly, need only be done once in the setting up of UMPS.</p>
+<p>This section provides a high-level overview of the prerequisites for allowing machines to connect to one-another on a network. These are initialization steps that, if done correctly, need only be done once in the setting up of UMPS.</p>
 <h2><a class="anchor" id="TopicInstall_ConnectionPrepare_IP"></a>
 Obtaining the uOperator's IP Address</h2>
-<p>All modules will need to know the IP address of the machine running the uOperator. However, it can be surpisingly difficult to determine an IP address. One strategy is to use</p>
+<p>All modules will need to know the IP address of the machine running the uOperator. However, it can be surpisingly difficult to determine an IP address and may require a working knowledge of your subnetworks. One strategy is to use</p>
 <div class="fragment"><div class="line">ip addr show | grep inet</div>
-</div><!-- fragment --><p>on the machine running the uOperator. In this case, you <b>should not</b> select the localhost's address (e.g., 127.0.0.1). Note, this may require a working knowledge of your subnetworks to select the correct option.</p>
+</div><!-- fragment --><p>on the machine running the uOperator. My only advice after running this command is that, you should <b>not</b> select the localhost's address (e.g., 127.0.0.1).</p>
 <h2><a class="anchor" id="TopicInstall_ConnectionPrepare_Networking"></a>
 Configuring Networking Rules</h2>
-<p>You may run into issues beyond the scope of UMPS that pertain to firewalls. One useful document is presented by <a href="https://www.ibm.com/docs/en/spectrum-scale/4.2.2?topic=firewall-examples-how-open-ports">IBM</a>. Likewise, the following examples, which may require super user privileges, may be of use. Since I primarily work on Ubuntu your mileage may vary.</p>
-<p>With regards to the machine's firewall, a useful networking tool for Linux is firewalld. It can be installed as follows:</p>
+<p>You may run into issues beyond the scope of UMPS that pertain to firewalls. One useful document is presented by <a href="https://www.ibm.com/docs/en/spectrum-scale/4.2.2?topic=firewall-examples-how-open-ports">IBM</a>. As such, the following examples, which may require super user privileges, may be of use.</p>
+<p>With regards to the machine's firewall, a useful networking tool for Linux is <a href="https://firewalld.org/">firewalld</a>. It can be installed as follows:</p>
 <div class="fragment"><div class="line">apt-get install firewalld</div>
-</div><!-- fragment --><p>UMPS will attempt to make ports specific to communication topics. For this reason you may want to open a range of ports. For example, 100 ports ranging from 5000 to 5100 may be permanently opened as follows:</p>
+</div><!-- fragment --><p>Since UMPS will attempt to make ports specific to communication topics you may have to open a range of ports. For example, 100 ports ranging from 5000 to 5100 may be permanently opened as follows:</p>
 <div class="fragment"><div class="line">firewall-cmd --permanent --add-port 5000-5100/tcp</div>
 <div class="line">firewall-cmd --reload</div>
 </div><!-- fragment --><p>You can then check if this was successful</p>
@@ -190,15 +191,14 @@ Configuring Networking Rules</h2>
 <div class="line">systemctl start firewalld</div>
 </div><!-- fragment --><h2><a class="anchor" id="TopicInstall_ConnectionPrepare_Security"></a>
 Initializing Authentication</h2>
-<p>For those wishing to use <a class="el" href="group___authentication___introduction.html#TopicAuthentication">authentication </a>, after compiling and installing UMPS you must create users and swap credentials. The algorithm for setting up key-pairs is as follows:</p>
+<p>For those wishing to use <a class="el" href="group___authentication___introduction.html#TopicAuthentication">authentication </a>, after compiling and installing UMPS you must create users and exchanging credentials. The algorithm for setting up key-pairs is as follows:</p>
 <ol type="1">
 <li>Generate an admin-level <a class="el" href="group___authentication___utilities.html#TopicAuthentication_UserTable">public/private keypair </a> on the machine that will run the uOperator.</li>
-<li>Generate a read/write or read-only <a class="el" href="group___authentication___utilities.html#TopicAuthentication_UserTable">public/private keypairs </a> on the other machines. <br  />
-</li>
-<li>Perform the key-swap by first copying this machine's public key to the server running the uOperator and copy the uOperator machine's public key to this machine.</li>
+<li>Generate a read/write or read-only <a class="el" href="group___authentication___utilities.html#TopicAuthentication_UserTable">public/private keypair </a> on the client machine.</li>
+<li>Perform the key-swap by first copying the client machine's public key to the server running the uOperator. Then copy the uOperator machine's public key to this client machine.</li>
 <li>Create the <a class="el" href="group___authentication___utilities.html#TopicAuthentication_UserTable">user's table </a> on the uOperator machine.</li>
 </ol>
-<p>You can easily modify the above algorithm to use passwords. In this case, all you need to do is create a user.json on the machine running uOperator with the password information detailed. However, passwords are slow to authenticate and can be read off-the-wire by someone spying network traffic.</p>
+<p>You can easily modify the above algorithm to use passwords. In this case, all you need to do is create a user.json file with the password information on the machine running uOperator. However, I do not recommend this approach since passwords are slow to authenticate and can be read off-the-wire by someone sniffing network traffic.</p>
 <h1><a class="anchor" id="TopicInstall_Documentation"></a>
 Generating the Documentation</h1>
 <p>To generate the <a href="https://www.doxygen.nl/index.html">Doxygen</a> documentation displayed at the UMPS <a href="https://uofuseismo.github.io/umps/">github pages</a> site, you would descend into the docs path and do the following </p><pre class="fragment">cd docs
@@ -207,14 +207,14 @@ cd docs_build
 cmake ..
 make docs
 firefox html/index.html
-</pre><p> A word to the wise: DO NOT touch docs/Doxyfile.gh or docs/html. These exist for the benefit of github pages. </p>
+</pre><p> As parting note <b>DO NOT</b> touch docs/Doxyfile.gh or docs/html directory. These exist for the benefit of github pages. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 2 2023 18:24:43 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Tue Mar 7 2023 00:33:27 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
