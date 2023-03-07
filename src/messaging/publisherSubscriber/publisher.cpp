@@ -71,9 +71,9 @@ public:
     PublisherOptions mOptions;
     UCI::SocketDetails::Publisher mSocketDetails;
     std::string mAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
-    bool mBound = false;
-    bool mInitialized = false;
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    bool mBound{false};
+    bool mInitialized{false};
 };
 
 /// Constructors

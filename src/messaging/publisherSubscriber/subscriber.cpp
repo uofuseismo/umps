@@ -71,9 +71,9 @@ public:
     SubscriberOptions mOptions;
     UCI::SocketDetails::Subscriber mSocketDetails;
     std::string mAddress;
-    UAuth::SecurityLevel mSecurityLevel = UAuth::SecurityLevel::Grasslands;
-    bool mInitialized = false;
-    bool mConnected = false;
+    UAuth::SecurityLevel mSecurityLevel{UAuth::SecurityLevel::Grasslands};
+    bool mInitialized{false};
+    bool mConnected{false};
 };
 
 /// Constructors

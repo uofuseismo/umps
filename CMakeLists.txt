@@ -4,6 +4,7 @@ enable_testing()
 
 # Some options
 option(WRAP_PYTHON "Compile the Python bindings" OFF)
+option(BUILD_EXAMPLES "Compile the examples" OFF)
 
 # Ensure we have necessary packages 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -118,10 +119,6 @@ set(MODULES_LIBSRC
     src/proxyBroadcasts/heartbeat/subscriber.cpp
     src/proxyBroadcasts/heartbeat/subscriberOptions.cpp
     src/proxyBroadcasts/heartbeat/status.cpp
-    #src/proxyBroadcasts/pick/publisher.cpp
-    #src/proxyBroadcasts/pick/publisherOptions.cpp
-    #src/proxyBroadcasts/pick/subscriber.cpp
-    #src/proxyBroadcasts/pick/subscriberOptions.cpp
     src/proxyServices/proxy.cpp
     src/proxyServices/proxyOptions.cpp
     src/proxyServices/command/availableModulesRequest.cpp
@@ -323,7 +320,26 @@ if (${WRAP_PYTHON})
 endif()
 
 ##########################################################################################
-#                                         Installation                                   #
+#                                        Examples                                        #
+##########################################################################################
+if (${BUILD_EXAMPLES})
+   add_executable(pubSubExample
+                  examples/pubSub/main.cpp
+                  examples/pubSub/publisher.cpp
+                  examples/pubSub/subscriber.cpp)
+   set_target_properties(pubSubExample PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO
+                         EXCLUDE_FROM_ALL TRUE)
+   target_link_libraries(pubSubExample PRIVATE umps)
+   target_include_directories(pubSubExample
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+endif()
+
+
+##########################################################################################
+#                                      Installation                                      #
 ##########################################################################################
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
