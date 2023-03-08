@@ -111,7 +111,7 @@ Collaboration diagram for Introduction:</div>
 <p>Introduction to the logging section. </p>
 
 
-<h3><a id="TopicLogging"></a>Logging</h3><div class="textblock">Typically, we cannot stare at a terminal all day and monitor the output. This is not only tedious but it is typically uninteresting since a program is generally working just fine. For this reason, it is important that production code that will run in the background have a logging facility. The logging facilities provided by UMPS build upon <a href="https://github.com/gabime/spdlog">SpdLog</a>. While spdlog has more, we limit logging to four levels: <div class="fragment"><div class="line"><span class="preprocessor">#ifndef UMPS_LOGGING_LEVEL_HPP</span></div>
+<h3><a id="TopicLogging"></a>Logging</h3><div class="textblock">As applications move into production, we cannot be required to stare at a terminal all day so as to monitor the program output. This activity is not only monotonous but it is typically pointless since production applications generally work just fine and therefore have nothing to report. For these reasons, it is important that production code, which will likely run as a daemon process, have a logging facility. The logging facilities provided by UMPS build upon <a href="https://github.com/gabime/spdlog">SpdLog</a>. While SpdLog has more options, we limit our logging to just four levels: <div class="fragment"><div class="line"><span class="preprocessor">#ifndef UMPS_LOGGING_LEVEL_HPP</span></div>
 <div class="line"><span class="preprocessor">#define UMPS_LOGGING_LEVEL_HPP</span></div>
 <div class="line"><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><span class="keyword">namespace </span>UMPS::Logging</div>
@@ -133,12 +133,12 @@ Collaboration diagram for Introduction:</div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclass_level_html"><div class="ttname"><a href="class_level.html">Level</a></div><div class="ttdoc">Defines the logging level.</div></div>
 </div><!-- fragment -->The following describes what type of behavior you should expect from UMPS for a given message<ul>
-<li>error is for error messages. Error messages typically corresond to an UMPS function throwing an error.</li>
-<li>warn is for warning messages. Warning messages typically correspond to UMPS function making a decision and lurching forward.</li>
-<li>info is for information messages. Information messages typically correspond to a successful event that UMPS deems important like a connection being established. This is the default logging level for built-in loggers.</li>
-<li>debug is debugging messages. Debug messages are extraordinarily granular and typically only useful while actively debugging a program.</li>
+<li><em>Error</em> is for error messages. Error messages typically correspond to an UMPS function throwing an error. When UMPS throws an error you will have to deal with it or your application will crash.</li>
+<li><em>Warn</em> is for warning messages. Warning messages typically correspond to UMPS function making a decision and lurching forward. Warnings are not great and should be dealt with in a timely manner.</li>
+<li><em>Info</em> is for information messages. Information messages typically correspond to a successful event that UMPS deems important like a connection being established. Info is the default logging level for the loggers provided by UMPS.</li>
+<li><em>Debug</em> is for debugging messages. Debug messages are extraordinarily granular and typically only useful while actively debugging a program.</li>
 </ul>
-Should you find the built-in loggers insufficient you can of course create your own. In that case you would derive from the ILog base class:<div class="fragment"><div class="line"><span class="preprocessor">#ifndef UMPS_LOGGING_LOG_HPP</span></div>
+Should you find the provided loggers insufficient you can create your own logger. In this case, you will derive from the ILog base class:<div class="fragment"><div class="line"><span class="preprocessor">#ifndef UMPS_LOGGING_LOG_HPP</span></div>
 <div class="line"><span class="preprocessor">#define UMPS_LOGGING_LOG_HPP</span></div>
 <div class="line"><span class="preprocessor">#include &quot;umps/logging/level.hpp&quot;</span></div>
 <div class="line"><span class="keyword">namespace </span>UMPS::Logging</div>
@@ -167,12 +167,12 @@ Should you find the built-in loggers insufficient you can of course create your 
 <li>define an action for an info message.</li>
 <li>define an action for a debug message.</li>
 </ul>
-By using dependency injection in constructors will then enable you to permeate your logger through UMPS. </div></div><!-- contents -->
+By using dependency injection in constructors will then be enable you to permeate your logger through UMPS. </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Mar 7 2023 15:46:43 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 8 2023 14:53:29 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

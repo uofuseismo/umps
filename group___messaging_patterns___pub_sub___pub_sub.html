@@ -128,12 +128,123 @@ Classes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The simplest communication mechanism which is included for pedagogical purposes only. Here, one consumer receives messages from one producer. </p>
-</div><!-- contents -->
+<h1><a class="anchor" id="TopicMessagingPatterns_PubSub_Overview"></a>
+Pub-Sub Messaging Overview</h1>
+<p>This is the most naive messaging strategy available in UMPS. All that happens are that messages are sent from a producer to a consumer. This pattern exists for educational and testing purposes and should not be used in production code. </p>
+<h1><a class="anchor" id="TopicMessagingPatterns_PubSub_Example"></a>
+An Example:</h1>
+<p>In this example, let us define a simple publisher that sends a handful of text messages to a subscriber. </p>
+<h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExamplePublisher"></a>
+The Publisher:</h2>
+<p>The important points are that the publisher <em>binds</em> to an endpoint, defines a message to send, then sends the message in a non-blocking way. Note, the publisher does not care whether or not the subscriber receives the messages. <br  />
+ </p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/publisherSubscriber/publisher.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/publisherSubscriber/publisherOptions.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/text.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;pubsub.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::PublisherSubscriber;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> publisher()</div>
+<div class="line">{</div>
+<div class="line">    PublisherOptions publisherOptions;</div>
+<div class="line">    publisherOptions.setAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>); <span class="comment">// Bind on this address</span></div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">Publisher</a> publisher;</div>
+<div class="line">    publisher.initialize(publisherOptions);</div>
+<div class="line">    <span class="comment">// Wait a bit for the subscriber to connect</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds(750));</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="comment">// Define a message</span></div>
+<div class="line">        <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html">UMPS::MessageFormats::Text</a> textMessage;</div>
+<div class="line">        textMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#af7c8aaccbce613095d7d070b7e2462cb">setContents</a>(<span class="stringliteral">&quot;Message number &quot;</span> + std::to_string(i + 1));</div>
+<div class="line">        <span class="comment">// The message is serialized by the Text class and put on the wire</span></div>
+<div class="line">        <span class="comment">// by ZeroMQ</span></div>
+<div class="line">        publisher.send(textMessage);</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html">UMPS::MessageFormats::Text</a></div><div class="ttdoc">Defines a text-based message. For example, this class would allow you to send the contents of a text ...</div><div class="ttdef"><b>Definition:</b> text.hpp:13</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html_af7c8aaccbce613095d7d070b7e2462cb"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html#af7c8aaccbce613095d7d070b7e2462cb">UMPS::MessageFormats::Text::setContents</a></div><div class="ttdeci">void setContents(const std::string &amp;contents) noexcept</div><div class="ttdoc">Sets the contents of a text message.</div></div>
+<div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">UMPS::Services::ConnectionInformation::SocketType::Publisher</a></div><div class="ttdeci">@ Publisher</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleSubscriber"></a>
+The Subscriber:</h2>
+<p>The important points are that the subscriber <em>connects</em> to an endpoint, receives a pre-agreed upon number of messages, and returns. It is important to consider the blocking behavior of the subscriber. If the default is to block (wait) indefinitely a message is received then in this example the program may hang. For this reason, we actually connect the subscriber to the publisher before the publisher is created. You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket. <br  />
+ </p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/publisherSubscriber/subscriber.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/publisherSubscriber/subscriberOptions.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/text.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/messages.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/staticUniquePointerCast.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;pubsub.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::PublisherSubscriber;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> subscriber()</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Define the message types that the subscriber will receive</span></div>
+<div class="line">    <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a> messageTypes;</div>
+<div class="line">    std::unique_ptr&lt;UMPS::MessageFormats::IMessage&gt; textMessageType</div>
+<div class="line">        = std::make_unique&lt;UMPS::MessageFormats::Text&gt; (); </div>
+<div class="line">    messageTypes.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html#a6ed03361ef900097e8aa9a7d8b258f4b">add</a>(textMessageType);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Define the subscriber options</span></div>
+<div class="line">    SubscriberOptions subscriberOptions;</div>
+<div class="line">    subscriberOptions.setAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>); <span class="comment">// Connect to this address</span></div>
+<div class="line">    subscriberOptions.setMessageTypes(messageTypes); <span class="comment">// Types of messages to get</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Initialize the subscriber</span></div>
+<div class="line">    <a class="code" href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">Subscriber</a> subscriber;</div>
+<div class="line">    subscriber.initialize(subscriberOptions);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Now retrieve messages</span></div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="comment">// The message is read off the wire by ZeroMQ and deserialized</span></div>
+<div class="line">        <span class="comment">// by the Text class.</span></div>
+<div class="line">        <span class="keyword">auto</span> message = subscriber.receive(); <span class="comment">// Blocks until message is received</span></div>
+<div class="line">        <span class="comment">// Convert the message so we can look at the contents</span></div>
+<div class="line">        <span class="keyword">auto</span> textMessage</div>
+<div class="line">            = static_unique_pointer_cast&lt;UMPS::MessageFormats::Text&gt;</div>
+<div class="line">              (std::move(message));</div>
+<div class="line">        std::cout &lt;&lt; textMessage-&gt;<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#a6d5d6552bd82bc54880175427a6fd260">getContents</a>() &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_messages_html"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a></div><div class="ttdoc">This is a container for holding multiple (unique) message formats.</div><div class="ttdef"><b>Definition:</b> messages.hpp:16</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_messages_html_a6ed03361ef900097e8aa9a7d8b258f4b"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_messages.html#a6ed03361ef900097e8aa9a7d8b258f4b">UMPS::MessageFormats::Messages::add</a></div><div class="ttdeci">void add(const std::unique_ptr&lt; IMessage &gt; &amp;message)</div><div class="ttdoc">Add the message type to the container.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html_a6d5d6552bd82bc54880175427a6fd260"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html#a6d5d6552bd82bc54880175427a6fd260">UMPS::MessageFormats::Text::getContents</a></div><div class="ttdeci">std::string getContents() const noexcept</div></div>
+<div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">UMPS::Services::ConnectionInformation::SocketType::Subscriber</a></div><div class="ttdeci">@ Subscriber</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleDriver"></a>
+The Driver:</h2>
+<p>Here is the example driver code that launches this example. We create two threads - a publisher and a subscriber. The subscriber connects first then will block until a message is received. The publisher is then started after waiting some time. This mitigates the slow joiner problem. <br  />
+ </p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;pubsub.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Actually let the subscriber `connect&#39; first</span></div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread = std::thread(subscriber);</div>
+<div class="line">    <span class="comment">// Now create the publisher</span></div>
+<div class="line">    <span class="keyword">auto</span> publisherThread = std::thread(publisher);</div>
+<div class="line">    <span class="comment">// Wait for threads to finish</span></div>
+<div class="line">    subscriberThread.join();</div>
+<div class="line">    publisherThread.join();</div>
+<div class="line">    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Mar 7 2023 15:46:43 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 8 2023 14:53:29 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

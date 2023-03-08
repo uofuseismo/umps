@@ -1,5 +1,5 @@
 <map id="Modules" name="Modules">
-<area shape="rect" id="node1" href="$group___modules___module_base_class.html" title="This is a container for the processes that constitute a program. &lt;&gt;" alt="" coords="131,5,277,31"/>
+<area shape="rect" id="node1" href="$group___modules___module_base_class.html" title="This is a container for the processes that constitute a program." alt="" coords="131,5,277,31"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,31,83,56"/>
 <area shape="rect" id="node3" href="$group___modules___processes_base_class.html" title="Processes are independent components of a program &#45; e.g., heartbeating." alt="" coords="131,55,277,80"/>
 </map>

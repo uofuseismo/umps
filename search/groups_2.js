@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['extended_20publisher_2dsubscriber_1034',['Extended Publisher-Subscriber',['../group___messaging_patterns___pub_sub___x_pub_x_sub.html',1,'']]]
+  ['extended_20publisher_2dsubscriber_1032',['Extended Publisher-Subscriber',['../group___messaging_patterns___pub_sub___x_pub_x_sub.html',1,'']]]
 ];

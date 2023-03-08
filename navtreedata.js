@@ -25,24 +25,20 @@
 var NAVTREE =
 [
   [ "UMPS", "index.html", [
-    [ "Overview", "index.html", null ],
-    [ "Installation Page", "_topic_installation_page.html", [
-      [ "Installation Section Outline", "_topic_installation_page.html#TopicInstallation", [
-        [ "Supported Operating Systems", "_topic_installation_page.html#TopicInstall_OS", null ],
-        [ "Prerequisites", "_topic_installation_page.html#TopicInstall_Prerequisites", null ],
-        [ "Compiling", "_topic_installation_page.html#TopicInstall_Compiling", null ]
+    [ "Overview", "_overview.html", null ],
+    [ "Installation", "_topic_installation_page.html", [
+      [ "Installation Section Outline", "_topic_installation_page.html#TopicInstallation_Outline", null ],
+      [ "Building the Code", "_topic_installation_page.html#TopicInstall_Building", [
+        [ "Supported Operating Systems", "_topic_installation_page.html#TopicInstall_Building_OS", null ],
+        [ "Prerequisites", "_topic_installation_page.html#TopicInstall_Building_Prerequisites", null ],
+        [ "Compiling", "_topic_installation_page.html#TopicInstall_Building_Compiling", null ]
       ] ],
       [ "Preparing to Connect", "_topic_installation_page.html#TopicInstall_ConnectionPrepare", [
         [ "Obtaining the uOperator's IP Address", "_topic_installation_page.html#TopicInstall_ConnectionPrepare_IP", null ],
         [ "Configuring Networking Rules", "_topic_installation_page.html#TopicInstall_ConnectionPrepare_Networking", null ],
         [ "Initializing Authentication", "_topic_installation_page.html#TopicInstall_ConnectionPrepare_Security", null ]
       ] ],
-      [ "Generating the Documentation", "_topic_installation_page.html#TopicInstall_Documentation", null ],
-      [ "Pub-Sub Messaging Overview", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_Overview", null ],
-      [ "An Example:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_Example", null ],
-      [ "The Publisher:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExamplePublisher", null ],
-      [ "The Subscriber:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExampleSubscriber", null ],
-      [ "The Driver:", "group___messaging_patterns___pub_sub.html#TopicMessagingPatterns_PubSub_ExampleDriver", null ]
+      [ "Generating the Documentation", "_topic_installation_page.html#TopicInstall_Documentation", null ]
     ] ],
     [ "Chapters", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
@@ -63,15 +59,15 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_topic_installation_page.html",
-"class_u_m_p_s_1_1_logging_1_1_standard_out.html#afa4fd217c42b3da46a90097d40e144cc",
-"class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#a4e30b7191621eedf5c273d4a9c7f8c0a",
-"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy.html#a98b508f4e97d6f74612702389df0212c",
-"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_module_details.html#ac70677e4ff0f02622f6d0f423d8d6900",
-"class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html",
-"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#aef1087f1f4d0124a685dfe744ac110d9",
-"class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registered_modules_request.html#a7a91b53e13d745e130231597d7f7e4f5",
-"group___authentication___utilities___user_table.html"
+"_overview.html",
+"class_u_m_p_s_1_1_logging_1_1_standard_out.html#ad8662470c0678e854f8f0c20a6707e7f",
+"class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html",
+"class_u_m_p_s_1_1_proxy_broadcasts_1_1_heartbeat_1_1_proxy.html#a74070dab96fc4b8d9ed237bb51740981",
+"class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_module_details.html#a8c685979fc4a57c937fe6b9ba11182dd",
+"class_u_m_p_s_1_1_services_1_1_command_1_1_command_request.html#accd424b8d346a3924671777b12949d3f",
+"class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#ad998fb93d41a8aaeee38e998157f2c9c",
+"class_u_m_p_s_1_1_services_1_1_module_registry_1_1_registered_modules_request.html#a3ffb369fb3e8299e034f2ad311afd14d",
+"group___authentication___utilities.html#TopicAuthentication_Keypairs"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

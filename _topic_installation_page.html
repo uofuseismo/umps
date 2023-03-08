@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>UMPS: Installation Page</title>
+<title>UMPS: Installation</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -93,25 +93,44 @@ $(document).ready(function(){initNavTree('_topic_installation_page.html',''); in
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Installation Page </div>  </div>
+<div class="title">Installation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="TopicInstallation"></a>
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#TopicInstallation_Outline">Installation Section Outline</a></li>
+<li class="level1"><a href="#TopicInstall_Building">Building the Code</a><ul><li class="level2"><a href="#TopicInstall_Building_OS">Supported Operating Systems</a></li>
+<li class="level2"><a href="#TopicInstall_Building_Prerequisites">Prerequisites</a></li>
+<li class="level2"><a href="#TopicInstall_Building_Compiling">Compiling</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#TopicInstall_ConnectionPrepare">Preparing to Connect</a><ul><li class="level2"><a href="#TopicInstall_ConnectionPrepare_IP">Obtaining the uOperator&#39;s IP Address</a></li>
+<li class="level2"><a href="#TopicInstall_ConnectionPrepare_Networking">Configuring Networking Rules</a></li>
+<li class="level2"><a href="#TopicInstall_ConnectionPrepare_Security">Initializing Authentication</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#TopicInstall_Documentation">Generating the Documentation</a></li>
+</ul>
+</div>
+<div class="textblock"><p><a name="a0_installation"></a></p>
+<h1><a class="anchor" id="TopicInstallation_Outline"></a>
 Installation Section Outline</h1>
 <p>Broadly, this section outlines strategies for compiling the software as well as initial configurations to allow connections. Specifically, the topics in this section are:</p><ul>
-<li><a class="el" href="_topic_installation_page.html#TopicInstall_OS">Supported Operating Systems </a></li>
-<li><a class="el" href="_topic_installation_page.html#TopicInstall_Prerequisites">Software Prerequisites </a></li>
-<li><a class="el" href="_topic_installation_page.html#TopicInstall_Compiling">Compiling </a></li>
+<li><a class="el" href="_topic_installation_page.html#TopicInstall_Building_OS">Supported Operating Systems </a></li>
+<li><a class="el" href="_topic_installation_page.html#TopicInstall_Building_Prerequisites">Software Prerequisites </a></li>
+<li><a class="el" href="_topic_installation_page.html#TopicInstall_Building_Compiling">Compiling </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare_IP">Obtaining the uOperator IP Address </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare_Networking">Configuring Networking Rules </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare_Security">Initializing Authentication </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_ConnectionPrepare">Preparing to Connect </a></li>
 <li><a class="el" href="_topic_installation_page.html#TopicInstall_Documentation">Generating the Documentation </a></li>
 </ul>
-<h2><a class="anchor" id="TopicInstall_OS"></a>
+<h1><a class="anchor" id="TopicInstall_Building"></a>
+Building the Code</h1>
+<p>This section provides strategies for obtaining and compiling UMPS. The most recent version of the source is available <a href="https://github.com/uofuseismo/umps">here</a>.</p>
+<h2><a class="anchor" id="TopicInstall_Building_OS"></a>
 Supported Operating Systems</h2>
 <p>Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22. While I anticipate that other flavors of <a href="https://ubuntu.com/">Ubuntu</a> will work just fine, I do, however, anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated. For these circumstances, I recommend installing and utilizing the latest <a href="https://llvm.org/">LLVM</a> compiler suite. As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and create a merge request when you get things working.</p>
-<h2><a class="anchor" id="TopicInstall_Prerequisites"></a>
+<h2><a class="anchor" id="TopicInstall_Building_Prerequisites"></a>
 Prerequisites</h2>
 <p>An important consideration in UMPS is performance. For this reason we rely on compiled languages. To build the core package from source you need to satisfy the following dependencies:</p>
 <ul>
@@ -133,7 +152,7 @@ Prerequisites</h2>
 </ul>
 <p>Strategies for compiling these libraries can be gleaned from this Docker <a href="https://github.com/uofuseismo/umps/blob/main/scripts/Dockererfile.ubuntu22">file</a>.</p>
 <p>After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.</p>
-<h2><a class="anchor" id="TopicInstall_Compiling"></a>
+<h2><a class="anchor" id="TopicInstall_Building_Compiling"></a>
 Compiling</h2>
 <p>To compile UMPS without Python you may make a script in the root source directory that looks like: </p><pre class="fragment">#!/bin/bash
 export CXX=g++
@@ -214,7 +233,7 @@ firefox html/index.html
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Mar 7 2023 15:46:43 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 8 2023 14:53:29 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
