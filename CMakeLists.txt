@@ -335,6 +335,20 @@ if (${BUILD_EXAMPLES})
    target_link_libraries(pubSubExample PRIVATE umps)
    target_include_directories(pubSubExample
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+
+   add_executable(xPubXSubExample
+                  examples/xPubXSub/main.cpp
+                  examples/xPubXSub/proxy.cpp
+                  examples/xPubXSub/publisher.cpp
+                  examples/xPubXSub/subscriber.cpp)
+   set_target_properties(xPubXSubExample PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES 
+                         CXX_EXTENSIONS NO
+                         EXCLUDE_FROM_ALL TRUE)
+   target_link_libraries(xPubXSubExample PRIVATE umps)
+   target_include_directories(xPubXSubExample
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 endif()
 
 
