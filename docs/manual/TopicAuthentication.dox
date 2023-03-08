@@ -1,5 +1,3 @@
-namespace UMPS
-{
 /*!
 \page TopicAuthentication Authentication
 \ingroup Authentication_Introduction
@@ -184,12 +182,3 @@ where I have implicitly been writing to the default user's table located in ${HO
 
 */
 
-/*!
-\page TopicAuthentication_Certficiate Certificates
-\ingroup Authentication_Certificate
-
-Authentication
-
-*/
-
-}

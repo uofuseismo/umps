@@ -1,24 +1,28 @@
-namespace UMPS
-{
 /*!
-\page TopicInstallation_page Installation Page
-\section TopicInstallation Installation Section Outline
+\page TopicInstallation_page Installation
+\addindex installation
+\tableofcontents{html,latex}
+\section TopicInstallation_Outline Installation Section Outline
 
 Broadly, this section outlines strategies for compiling the software as well as initial configurations to allow connections.  Specifically, the topics in this section are:
-- \link TopicInstall_OS Supported Operating Systems \endlink
-- \link TopicInstall_Prerequisites Software Prerequisites \endlink
-- \link TopicInstall_Compiling Compiling \endlink
+- \link TopicInstall_Building_OS Supported Operating Systems \endlink
+- \link TopicInstall_Building_Prerequisites Software Prerequisites \endlink
+- \link TopicInstall_Building_Compiling Compiling \endlink
 - \link TopicInstall_ConnectionPrepare_IP Obtaining the uOperator IP Address \endlink
 - \link TopicInstall_ConnectionPrepare_Networking Configuring Networking Rules \endlink
 - \link TopicInstall_ConnectionPrepare_Security Initializing Authentication \endlink
 - \link TopicInstall_ConnectionPrepare Preparing to Connect \endlink
 - \link TopicInstall_Documentation Generating the Documentation \endlink
 
-\subsection TopicInstall_OS Supported Operating Systems
+\section TopicInstall_Building Building the Code
+
+This section provides strategies for obtaining and compiling UMPS.  The most recent version of the source is available <a href="https://github.com/uofuseismo/umps">here</a>.
+
+\subsection TopicInstall_Building_OS Supported Operating Systems
 
 Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  While I anticipate that other flavors of <a href="https://ubuntu.com/">Ubuntu</a> will work just fine, I do, however, anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and utilizing the latest <a href="https://llvm.org/">LLVM</a> compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and create a merge request when you get things working.
 
-\subsection TopicInstall_Prerequisites Prerequisites
+\subsection TopicInstall_Building_Prerequisites Prerequisites
 
 An important consideration in UMPS is performance.  For this reason we rely on compiled languages.  To build the core package from source you need to satisfy the following dependencies:
 
@@ -42,7 +46,7 @@ Strategies for compiling these libraries can be gleaned from this Docker <a href
 
 After clearing these hurdles you can then download the <a href="https://github.com/uofuseismo/umps">code</a>.
 
-\subsection TopicInstall_Compiling Compiling
+\subsection TopicInstall_Building_Compiling Compiling
 
 To compile UMPS without Python you may make a script in the root source directory that looks like:
 
@@ -164,4 +168,3 @@ To generate the <a href="https://www.doxygen.nl/index.html">Doxygen</a> document
 As parting note **DO NOT** touch docs/Doxyfile.gh or docs/html directory.  These exist for the benefit of github pages.
 
 */
-}

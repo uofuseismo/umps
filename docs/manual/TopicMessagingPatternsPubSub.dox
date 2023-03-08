@@ -1,0 +1,51 @@
+/*!
+\defgroup MessagingPatterns_PubSub Publisher-Subscriber Patterns
+\ingroup MessagingPatterns_chapter
+
+<p>
+This pattern can be thought of as listening to the radio. The radio (publisher) will broadcast its content. The listener (subscriber) will then tune-in to hear the content. This conceptually simple pattern provides excellent one-to-many scalability. However, the subscriber will miss all content if it is not connected to the data feed. One caveat is that communication is a one-way street in that the publisher broadcasts and the subscriber listens. If your use-case requires the subscriber send information to the publisher then this messaging pattern will not work.
+</p>
+
+\defgroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
+\ingroup MessagingPatterns_PubSub
+\brief The simplest communication mechanism which is included for pedagogical purposes only.  Here, one consumer receives messages from one producer.
+
+\section TopicMessagingPatterns_PubSub_Overview Pub-Sub Messaging Overview
+\ingroup MessagingPatterns_PubSub_PubSub
+
+<p>
+This is the most naive messaging strategy available in UMPS.  All that happens are that messages are sent from a producer to a consumer.  This pattern exists for educational and testing purposes and should not be used in production code.
+</p>
+
+\section TopicMessagingPatterns_PubSub_Example An Example:
+\ingroup MessagingPatterns_PubSub_PubSub
+ 
+<p>
+In this example, let us define a simple publisher that sends a handful of text messages to a subscriber.
+</p>
+
+\subsection TopicMessagingPatterns_PubSub_ExamplePublisher The Publisher:
+
+<p>
+The important points are that the publisher \em binds to an endpoint, defines a message to send, then sends the message in a non-blocking way.  Note, the publisher does not care whether or not the subscriber receives the messages.  
+</p>
+
+\include pubSub/publisher.cpp
+
+\subsection TopicMessagingPatterns_PubSub_ExampleSubscriber The Subscriber:
+
+<p>
+The important points are that the subscriber \em connects to an endpoint, receives a pre-agreed upon number of messages, and returns.  It is important to consider the blocking behavior of the subscriber.  If the default is to block (wait) indefinitely a message is received then in this example the program may hang.  For this reason, we actually connect the subscriber to the publisher before the publisher is created.  You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket.  
+</p>
+
+\include pubSub/subscriber.cpp
+
+\subsection TopicMessagingPatterns_PubSub_ExampleDriver The Driver:
+
+<p>
+Here is the example driver code that launches this example.  We create two threads - a publisher and a subscriber.  The subscriber connects first then will block until a message is received.  The publisher is then started after waiting some time.  This mitigates the slow joiner problem.  
+</p>
+
+\include pubSub/main.cpp
+
+*/

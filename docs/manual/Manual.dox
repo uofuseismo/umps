@@ -1,111 +1,100 @@
+/*!
+\page Overview
+
+\defgroup Messages_chapter Messages
+\defgroup Messages_BaseClass Abstract Message Base Class
+\brief The class that allows messages to be created, transmitted, and reconstituted by another machine.
+\ingroup Messages_chapter
+
+\defgroup Messages_MessageFormats Message Formats
+\brief Some message formats provided by UMPS.
+\ingroup Messages_chapter
 
 
-// This file strutures pages and modules into a convenient hierarchical structure.
-namespace UMPS
-{
+\defgroup MessagingPatterns_chapter Messaging Patterns
 
-/** \page index Overview */
+\defgroup MessagingPatterns_Context Context
+\brief A context is like a thread used by ZeroMQ to send and receive messages.
+\ingroup MessagingPatterns_chapter
 
-/** \defgroup Messages_chapter Messages */
-/** \defgroup Messages_BaseClass Abstract Message Base Class
-    \brief The most important class for those who wish to make their own messages.
-    \ingroup Messages_chapter */
-/** \defgroup Messages_MessageFormats Message Formats
-    \brief Some common core message formats in UMPS.
-    \ingroup Messages_chapter */
+\defgroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
+\brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
+\ingroup MessagingPatterns_PubSub
 
+\defgroup MessagingPatterns_ReqRep Request-Reply Patterns
+\ingroup MessagingPatterns_chapter 
+\defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
+\ingroup MessagingPatterns_ReqRep 
+\defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
+\ingroup MessagingPatterns_ReqRep
 
-/** \defgroup MessagingPatterns_chapter Messaging Patterns */
-/** \defgroup MessagingPatterns_Introduction Introduction
-    \brief Messaging patterns enabled by UMPS.
-    \ingroup MessagingPatterns_chapter */
-/** \defgroup MessagingPatterns_Context Context
-    \brief A context is like a thread used by ZeroMQ to send and receive messages.
-    \ingroup MessagingPatterns_chapter */
-/** \defgroup MessagingPatterns_PubSub Publisher-Subscriber Patterns
-    \ingroup MessagingPatterns_chapter */
-/** \defgroup MessagingPatterns_PubSub_PubSub Publisher-Subscriber
-    \brief The simplest communication mechanism which is included for pedagogical purposes only.  Here, one consumer receives messages from one producer.
-    \ingroup MessagingPatterns_PubSub */
-/** \defgroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
-    \brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
-    \ingroup MessagingPatterns_PubSub */
+\defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
+\brief A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers.  This will lead to highly scalable services.
+\ingroup MessagingPatterns_ReqRep
+\defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
+\brief Individual clients submit requests to an asynchronous server.
+\ingroup MessagingPatterns_ReqRep
 
 
-/** \defgroup MessagingPatterns_ReqRep Request-Reply Patterns
-    \ingroup MessagingPatterns_chapter 
-    \defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
-    \ingroup MessagingPatterns_ReqRep 
-    \defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
-    \ingroup MessagingPatterns_ReqRep */
+\defgroup Authentication_chapter Authentication
+\defgroup Authentication_Introduction Introduction 
+\brief Introduction to the authentication section.
+\ingroup Authentication_chapter
+\defgroup Authentication_SecurityLevels Security Levels
+\brief Defines the various supported security levels in UMPS.
+\ingroup Authentication_chapter
+\defgroup Authentication_UserPrivileges User Privileges
+\brief Defines the minimum required user-privileges to access various messaging relays.
+\ingroup Authentication_chapter
+\defgroup Authentication_ZAP ZeroMQ Authentication Protocol
+\brief Options for the interacting with the ZeroMQ authentication protocol.
+\ingroup Authentication_chapter
+\defgroup Authentication_Certificate Cerficates
+\brief The class defining how credentials are stored and how they map to various security levels.
+\ingroup Authentication_ZAP
+\defgroup Authentication_Service Authentication Service
+\brief Authentication services are run by the uOperator.  Whenever a connection is formed, the ZeroMQ will call this service which, in turn, calls the authenticator to validate the connection.
+\ingroup Authentication_chapter
+\defgroup Authentication_Authenticator Authenticator
+\brief The authenticator implements the requisite business logic to validate a connection.  It is called by the service.
+\ingroup Authentication_Service
+\defgroup Authentication_Utilities Utilities
+\brief Programs for interacting adding/updating/removing users from the users table and generating key-pairs.
+\ingroup Authentication_chapter
+\defgroup Authentication_Utilities_UserTable User Table
+\brief On the server, all user credentials are stored in a single database.  This program facilitates interaction with that database.
+\ingroup Authentication_Utilities
+\defgroup Authentication_User User
+\brief This defines a user - who is someone who can be added to the database.
+\ingroup  Authentication_Utilities_UserTable
 
-/** \defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
-    \brief A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers.  This will lead to highly scalable services.
-    \ingroup MessagingPatterns_ReqRep */
-/** \defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
-    \brief Individual clients submit requests to an asynchronous server.
-    \ingroup MessagingPatterns_ReqRep */
+\defgroup Logging_chapter Logging
+\defgroup Logging_Introduction Introduction
+\brief Introduction to the logging section.
+\ingroup Logging_chapter
+\defgroup Logging_BaseClass Logging Base Class
+\brief For those wishing to make their own loggers.
+\ingroup Logging_chapter
+\defgroup Logging_Loggers Provided Loggers
+\brief Useful loggers that ship with UMPS.
+\ingroup Logging_chapter
 
-/** \defgroup Authentication_chapter Authentication */
-/** \defgroup Authentication_Introduction Introduction 
-    \brief Introduction to the authentication section.
-    \ingroup Authentication_chapter */
-/** \defgroup Authentication_SecurityLevels Security Levels
-    \brief Defines the various supported security levels in UMPS.
-    \ingroup Authentication_chapter */
-/** \defgroup Authentication_UserPrivileges User Privileges
-    \brief Defines the minimum required user-privileges to access various messaging relays.
-    \ingroup Authentication_chapter */
-/** \defgroup Authentication_ZAP ZeroMQ Authentication Protocol
-    \brief Options for the interacting with the ZeroMQ authentication protocol.
-    \ingroup Authentication_chapter */
-/** \defgroup Authentication_Certificate Cerficates
-    \brief The class defining how credentials are stored and how they map to various security levels.
-    \ingroup Authentication_ZAP */
-/** \defgroup Authentication_Service Authentication Service
-    \brief Authentication services are run by the uOperator.  Whenever a connection is formed, the ZeroMQ will call this service which, in turn, calls the authenticator to validate the connection.
-    \ingroup Authentication_chapter */
-/** \defgroup Authentication_Authenticator Authenticator
-    \brief The authenticator implements the requisite business logic to validate a connection.  It is called by the service.
-    \ingroup Authentication_Service */
-/** \defgroup Authentication_Utilities Utilities
-    \brief Programs for interacting adding/updating/removing users from the users table and generating key-pairs.
-    \ingroup Authentication_chapter */ 
-/** \defgroup Authentication_Utilities_UserTable User Table
-    \brief On the server, all user credentials are stored in a single database.  This program facilitates interaction with that database.
-    \ingroup Authentication_Utilities */
-/** \defgroup Authentication_User User
-    \brief This defines a user - who is someone who can be added to the database.
-    \ingroup  Authentication_Utilities_UserTable */
+\defgroup Modules_chapter Modules
+\defgroup Modules_ModuleBaseClass Module Base Class
+\brief This is a container for the processes that constitute a program.
+\ingroup Modules_chapter
+\defgroup Modules_ProcessesBaseClass Process Base Class
+\brief Processes are independent components of a program - e.g., heartbeating.
+\ingroup Modules_chapter
 
-/** \defgroup Logging_chapter Logging */
-/** \defgroup Logging_Introduction Introduction
-    \brief Introduction to the logging section.
-    \ingroup Logging_chapter */
-/** \defgroup Logging_BaseClass Logging Base Class
-    \brief For those wishing to make their own loggers.
-    \ingroup Logging_chapter */
-/** \defgroup Logging_Loggers Provided Loggers
-    \brief Useful loggers that ship with UMPS.
-    \ingroup Logging_chapter */
-
-/** \defgroup Modules_chapter Modules */
-/** \defgroup Modules_ModuleBaseClass Module Base Class
-    \brief This is a container for the processes that constitute a program.
-    \ingroup Modules_chapter  */
-/** \defgroup Modules_ProcessesBaseClass Process Base Class
-    \brief Processes are independent components of a program - e.g., heartbeating.
-    \ingroup Modules_chapter */
-
-/** \defgroup Applications_chapter Applications */
-/** \defgroup Applications_uOperator uOperator
-    \brief The critical message relay hub in the hub and spoke architecture.
-    \ingroup Applications_chapter */
-/** \defgroup Applications_uLocalCommand uCommand
-    \brief Allows users to interact with locally running modules.
-    \ingroup Applications_chapter */
-/** \defgroup Applications_uRemoteCommand uRemoteCommand
-    \brief Allows privileged users to interact with remotely running modules.
-    \ingroup Applications_chapter */
-
-}
+\defgroup Applications_chapter Applications
+\defgroup Applications_uOperator uOperator
+\brief The critical message relay hub in the hub and spoke architecture.
+\ingroup Applications_chapter
+\defgroup Applications_uLocalCommand uCommand
+\brief Allows users to interact with locally running modules.
+\ingroup Applications_chapter
+\defgroup Applications_uRemoteCommand uRemoteCommand
+\brief Allows privileged users to interact with remotely running modules.
+\ingroup Applications_chapter
+*/

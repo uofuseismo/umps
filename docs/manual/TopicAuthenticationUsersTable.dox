@@ -1,0 +1,71 @@
+/*!
+\page TopicAuthentication_UsersTable Users Table
+\ingroup Authentication_Utilities
+
+<p>
+Provided you are performing authentication, on the machine that will run the uOperator you must also create a users table.  A command line utility for interacting with this table is uUserTable program.  An overview of what this program does is obtained with 
+</p>
+
+     uUserTable --help
+
+<p>
+Users details are specified in a JSON file.  For example, let's add user Bob.  The corresponding JSON file, bob.json, looks like
+</p>
+
+    {
+         "name" : "Bob",
+         "email" : "bob@university.edu", 
+         "password" : null,
+         "publickey_file" : "bobsPublicKey.txt",
+         "privileges" : "read_write"
+    }
+
+<p>
+At a minimum, we must provide a username and password as these two fields will ultimately constitute a unique user.  Additionally, we are providing requisite information for Grasslands, Strawhouse, or Stonehouse authentication; Woodhouse is a username and password verification and the password is not being provided.  Generating the public key, bobsPublicKey.txt, is described in \ref TopicAuthentication_Keypairs.  Lastly, we note the privileges are "read_write" which will be sufficient for most users.  Other choices include "read_only" or "admin" where "read_only" users are typically only interested in subscribing to a data feed and "admin" privileges should be reserved for very special users.  
+</p>
+
+<p>
+To add Bob, we do the following on the uOperator host machine
+</p>
+
+    uUserTable --add bob.json
+
+<p>
+After the fact, we may wish to allow Bob to use the Woodhouse security protocol but downgrade his privileges to read-only.  In this case, we can update his details with a new JSON file, bobUpdate.json,
+</p>
+
+    {   
+         "name" : "Bob",
+         "email" : "bob@university.edu", 
+         "password" : "bobsPassword",
+         "publickey_file" : "bobsPublicKey.txt",
+         "privileges" : "read_only"
+    }
+
+<p>
+We then update this information with
+</p>
+
+    uUserTable --update bobUpdate.json
+
+<p>
+After some time, Bob may be moving onto greener pastures.  In this case, we delete Bob using the following JSON file, bobDelete.json
+</p>
+
+    {
+         "name" : "Bob",
+         "email" : "bob@university.edu"
+    }
+
+<p>
+Lastly, you can check your work 
+</p>
+
+    sqlite3 ${HOME}/.local/share/UMPS/tables/user.sqlite3
+    SELECT * FROM user WHERE user = "Bob" AND email = "bob@university.edu";
+    .quit
+
+where I have implicitly been writing to the default user's table located in ${HOME}/.local/share/UMPS/tables on a Linux system.
+
+*/
+

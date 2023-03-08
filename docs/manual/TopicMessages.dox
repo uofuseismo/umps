@@ -1,7 +1,5 @@
-namespace UMPS
-{
 /*!
-\page TopicMessages Messages
+\subpage TopicMessages Messages
 \ingroup Messages_chapter
 
 <p>
@@ -49,4 +47,3 @@ Since users will have to implement each method I expound on each item:
 In closing this section, I realize that the IMessage abstract base class seems unusual.  But the IMessage is the key enabling technology that allows you or me to create arbitrary messages, send those messages to and from different computers with UMPS, and, upon receipt of those messages, interact with them as normal classes in our applications.  The upshot is no more arcane Earthworm messages and no more tearing through QuakeML to extract information.  In UMPS, your data structures are the messages.  I hope you grow to appreciate this as you make truly distributed applications that interact through well-defined APIs.
 
 */
-}
