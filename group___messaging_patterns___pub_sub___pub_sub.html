@@ -132,10 +132,10 @@ Classes</h2></td></tr>
 Pub-Sub Messaging Overview</h1>
 <p>This is the most naive messaging strategy available in UMPS. All that happens are that messages are sent from a producer to a consumer. This pattern exists for educational and testing purposes and should not be used in production code. </p>
 <h1><a class="anchor" id="TopicMessagingPatterns_PubSub_Example"></a>
-An Example:</h1>
+An Example</h1>
 <p>In this example, let us define a simple publisher that sends a handful of text messages to a subscriber. </p>
 <h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExamplePublisher"></a>
-The Publisher:</h2>
+The Publisher</h2>
 <p>The important points are that the publisher <em>binds</em> to an endpoint, defines a message to send, then sends the message in a non-blocking way. Note, the publisher does not care whether or not the subscriber receives the messages. <br  />
  </p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -171,7 +171,7 @@ The Publisher:</h2>
 <div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html_af7c8aaccbce613095d7d070b7e2462cb"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html#af7c8aaccbce613095d7d070b7e2462cb">UMPS::MessageFormats::Text::setContents</a></div><div class="ttdeci">void setContents(const std::string &amp;contents) noexcept</div><div class="ttdoc">Sets the contents of a text message.</div></div>
 <div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">UMPS::Services::ConnectionInformation::SocketType::Publisher</a></div><div class="ttdeci">@ Publisher</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleSubscriber"></a>
-The Subscriber:</h2>
+The Subscriber</h2>
 <p>The important points are that the subscriber <em>connects</em> to an endpoint, receives a pre-agreed upon number of messages, and returns. It is important to consider the blocking behavior of the subscriber. If the default is to block (wait) indefinitely a message is received then in this example the program may hang. For this reason, we actually connect the subscriber to the publisher before the publisher is created. You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket. <br  />
  </p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
@@ -220,7 +220,7 @@ The Subscriber:</h2>
 <div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html_a6d5d6552bd82bc54880175427a6fd260"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html#a6d5d6552bd82bc54880175427a6fd260">UMPS::MessageFormats::Text::getContents</a></div><div class="ttdeci">std::string getContents() const noexcept</div></div>
 <div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">UMPS::Services::ConnectionInformation::SocketType::Subscriber</a></div><div class="ttdeci">@ Subscriber</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleDriver"></a>
-The Driver:</h2>
+The Driver</h2>
 <p>Here is the example driver code that launches this example. We create two threads - a publisher and a subscriber. The subscriber connects first then will block until a message is received. The publisher is then started after waiting some time. This mitigates the slow joiner problem. <br  />
  </p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
@@ -243,7 +243,7 @@ The Driver:</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Mar 8 2023 21:31:26 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 00:59:58 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

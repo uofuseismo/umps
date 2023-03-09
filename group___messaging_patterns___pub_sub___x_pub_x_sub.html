@@ -128,12 +128,172 @@ Classes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers. </p>
+<p>Despite its simplicitly the <a class="el" href="group___messaging_patterns___pub_sub___pub_sub.html">Publisher-Subscriber</a> is limited to a single publisher and subscriber. This is insufficient for real applications where we may say have multiple data sources (e.g., UUSS field instruments telemetered to import boxes and data streams from other networks served through <a href="https://ds.iris.edu/ds/nodes/dmc/">IRIS</a>). Moreover, multiple utilities may want to read from these streams. For this reason, we introduce the extended publisher-subscriber or xPub-xSub. As a rule, even if I were considering a single producer and single consumer, I would still implement it as a xPub-xSub pattern because experience dictates that even in well-planned applications more publishers and subscribers always manage to materialize. </p>
+<p><br  />
+ </p><div class="image">
+<img src="xpubxsub.jpg" alt="" width="400cm"/>
+<div class="caption">
+The extended publisher-subscriber pattern or the xPub-xSub.</div></div>
+<p> <br  />
+</p>
+<p>The main difference between this pattern and the basic publisher-subscriber mechanism is the introduction of a middleman; a proxy. The proxy provides a stable end-point to which publishers send data and subscribers retrieve data. In the parlence of ZeroMQ data goes into the proxy's <em>frontend</em> and data goes out the proxy's backend as shown in the following picture. <br  />
+ </p>
+<h1><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Example"></a>
+An Example</h1>
+<p>There really is not much more to this pattern than what you have already seen in the <a class="el" href="group___messaging_patterns___pub_sub___pub_sub.html#TopicMessagingPatterns_PubSub_Example">An Example</a>. Again, we will have a publisher and a subscriber. The addition is simply going to be the proxy.</p>
+<h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Publisher"></a>
+The Publisher</h2>
+<p>The publisher is like the previous pub-sub publisher. However, it <em>connects</em> to the proxy. The verbiabe flows from ZeroMQ where <em>stable</em> endpoints bind to a socket. Hence, UMPS views content producers as ephemeral.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/xPublisherXSubscriber/publisher.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/xPublisherXSubscriber/publisherOptions.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/text.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;xpubxsub.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::XPublisherXSubscriber;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> publisher()</div>
+<div class="line">{</div>
+<div class="line">    PublisherOptions publisherOptions;</div>
+<div class="line">    publisherOptions.setAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>); <span class="comment">// Connect to this address</span></div>
+<div class="line"> </div>
+<div class="line">    <a class="code" href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">Publisher</a> publisher;</div>
+<div class="line">    publisher.initialize(publisherOptions);</div>
+<div class="line">    <span class="comment">// Deal with slow joiner problem</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds(200));</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Send messages</span></div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="comment">// Define a message</span></div>
+<div class="line">        <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html">UMPS::MessageFormats::Text</a> textMessage;</div>
+<div class="line">        textMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#af7c8aaccbce613095d7d070b7e2462cb">setContents</a>(<span class="stringliteral">&quot;Message number &quot;</span> + std::to_string(i + 1));</div>
+<div class="line">        <span class="comment">// The message is serialized by the Text class and put on the wire</span></div>
+<div class="line">        <span class="comment">// by ZeroMQ</span></div>
+<div class="line">        publisher.send(textMessage);</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html">UMPS::MessageFormats::Text</a></div><div class="ttdoc">Defines a text-based message. For example, this class would allow you to send the contents of a text ...</div><div class="ttdef"><b>Definition:</b> text.hpp:13</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html_af7c8aaccbce613095d7d070b7e2462cb"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html#af7c8aaccbce613095d7d070b7e2462cb">UMPS::MessageFormats::Text::setContents</a></div><div class="ttdeci">void setContents(const std::string &amp;contents) noexcept</div><div class="ttdoc">Sets the contents of a text message.</div></div>
+<div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">UMPS::Services::ConnectionInformation::SocketType::Publisher</a></div><div class="ttdeci">@ Publisher</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Subscriber"></a>
+The Subscriber</h2>
+<p>The subscriber is exactly like the pub-sub subscriber. In fact, you can use a pub-sub subscriber to connect to the proxy's backend and things will work.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/publisherSubscriber/subscriber.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/publisherSubscriber/subscriberOptions.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/text.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/messages.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/staticUniquePointerCast.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;xpubxsub.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::PublisherSubscriber;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> subscriber(<span class="keywordtype">int</span> subscriberID)</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Define the message types that the subscriber will receive</span></div>
+<div class="line">    <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a> messageTypes;</div>
+<div class="line">    std::unique_ptr&lt;UMPS::MessageFormats::IMessage&gt; textMessageType</div>
+<div class="line">        = std::make_unique&lt;UMPS::MessageFormats::Text&gt; (); </div>
+<div class="line">    messageTypes.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html#a6ed03361ef900097e8aa9a7d8b258f4b">add</a>(textMessageType);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Define the subscriber options</span></div>
+<div class="line">    SubscriberOptions subscriberOptions;</div>
+<div class="line">    subscriberOptions.setAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5556&quot;</span>); <span class="comment">// Connect to this address</span></div>
+<div class="line">    subscriberOptions.setMessageTypes(messageTypes); <span class="comment">// Types of messages to get</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Initialize the subscriber</span></div>
+<div class="line">    <a class="code" href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">Subscriber</a> subscriber;</div>
+<div class="line">    subscriber.initialize(subscriberOptions);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Now retrieve messages</span></div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="comment">// The message is read off the wire by ZeroMQ and deserialized</span></div>
+<div class="line">        <span class="comment">// by the Text class.</span></div>
+<div class="line">        <span class="keyword">auto</span> message = subscriber.receive(); <span class="comment">// Blocks until message is received</span></div>
+<div class="line">        <span class="comment">// Convert the message so we can look at the contents</span></div>
+<div class="line">        <span class="keyword">auto</span> textMessage</div>
+<div class="line">            = static_unique_pointer_cast&lt;UMPS::MessageFormats::Text&gt;</div>
+<div class="line">              (std::move(message));</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;SubscriberID: &quot;</span> &lt;&lt; subscriberID &lt;&lt; <span class="stringliteral">&quot; received: &quot;</span> </div>
+<div class="line">                  &lt;&lt; textMessage-&gt;<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#a6d5d6552bd82bc54880175427a6fd260">getContents</a>() &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_messages_html"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a></div><div class="ttdoc">This is a container for holding multiple (unique) message formats.</div><div class="ttdef"><b>Definition:</b> messages.hpp:16</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_messages_html_a6ed03361ef900097e8aa9a7d8b258f4b"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_messages.html#a6ed03361ef900097e8aa9a7d8b258f4b">UMPS::MessageFormats::Messages::add</a></div><div class="ttdeci">void add(const std::unique_ptr&lt; IMessage &gt; &amp;message)</div><div class="ttdoc">Add the message type to the container.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_text_html_a6d5d6552bd82bc54880175427a6fd260"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_text.html#a6d5d6552bd82bc54880175427a6fd260">UMPS::MessageFormats::Text::getContents</a></div><div class="ttdeci">std::string getContents() const noexcept</div></div>
+<div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">UMPS::Services::ConnectionInformation::SocketType::Subscriber</a></div><div class="ttdeci">@ Subscriber</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Proxy"></a>
+The Proxy</h2>
+<p>The proxy is a new concept. What this thread does is simply take data from the input port (frontend) and stick it on output port (backend). Imagine a worker who simply takes items from one conveyer belt and puts them on an adjacent conveyer belt. Custom proxies can be made that do refined things such as filter traffic, etc. However, this remarkably simple mechanism seems sufficient for many broadcast applications.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/xPublisherXSubscriber/proxy.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/xPublisherXSubscriber/proxyOptions.hpp&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::XPublisherXSubscriber;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> proxy()</div>
+<div class="line">{</div>
+<div class="line">    ProxyOptions proxyOptions;</div>
+<div class="line">    <span class="comment">// Data flows from frontend to backend</span></div>
+<div class="line">    proxyOptions.setFrontendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>);</div>
+<div class="line">    proxyOptions.setBackendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5556&quot;</span>);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Create the proxy</span></div>
+<div class="line">    <a class="code" href="class_proxy.html">Proxy</a> proxy;</div>
+<div class="line">    proxy.initialize(proxyOptions);</div>
+<div class="line">    <span class="comment">// Run the proxy in a separate thread</span></div>
+<div class="line">    <span class="keyword">auto</span> proxyThread = std::thread(&amp;<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#aa3d422294832c1ad1cb3761ba78b4d88">Proxy::start</a>, &amp;proxy);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Main thread sleeps a bit</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::seconds {3});</div>
+<div class="line">    <span class="comment">// All done - main thread tells the proxy to shut down</span></div>
+<div class="line">    proxy.stop();</div>
+<div class="line">    proxyThread.join();</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_proxy_html"><div class="ttname"><a href="class_proxy.html">Proxy</a></div><div class="ttdoc">This is the intermediary that allows communication between a client and a backend service.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy_html_aa3d422294832c1ad1cb3761ba78b4d88"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#aa3d422294832c1ad1cb3761ba78b4d88">UMPS::Messaging::XPublisherXSubscriber::Proxy::start</a></div><div class="ttdeci">void start()</div><div class="ttdoc">Starts the proxy.</div></div>
+</div><!-- fragment --><p>Notice that the proxy is running as another thread that must be started and stopped. This is because the proxy is supposed to stay up indefinitely. In general, you will not have to explicitly think about this since the uOperator will be responsible for keeping these proxies alive and open. All you will have to do is connect via the extended publisher or extended subscriber.</p>
+<h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_ExampleDriver"></a>
+The Driver</h2>
+<p>Lastly, the driver program is as follows.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;xpubxsub.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Create a proxy thread</span></div>
+<div class="line">    <span class="keyword">auto</span> proxyThread = std::thread(proxy);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Subscribers connect first - so as not to miss messages</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds {500});</div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread1 = std::thread(subscriber, 1);</div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread2 = std::thread(subscriber, 2);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Publisher connects and lets it rip</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds {1000});</div>
+<div class="line">    <span class="keyword">auto</span> publisherThread = std::thread(publisher);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Wait for threads to finish</span></div>
+<div class="line">    proxyThread.join();</div>
+<div class="line">    subscriberThread1.join();</div>
+<div class="line">    subscriberThread2.join();</div>
+<div class="line">    publisherThread.join();</div>
+<div class="line">    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The key addition here over the publisher-subscriber example is the thread that runs the proxy. Additionally, we have added a second subscriber thread simply to demonstrate. It would be a straightforward activity to also add another producer.</p>
+<p>In closing, it should be clear that the xPub-xSub paradigm requires marginally more effort than its naive publisher-subscriber counterpart. However, do not undererestimate the xPub-xSub. At UUSS this is the mechanism by which we move all of our data packets, all of our probability packets, and STA/LTA packets, as well as all of our picks, events, and module heartbeats. And the computational cost on the uOperator hub is small. Long story short, when it comes to scalability you cannot do better than this pattern. </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Mar 8 2023 21:31:26 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 00:59:58 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
