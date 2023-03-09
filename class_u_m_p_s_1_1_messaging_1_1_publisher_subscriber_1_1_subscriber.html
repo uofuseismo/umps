@@ -112,10 +112,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5d544f2a95576d403de3eb97c8ef13b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae88a4a93915cb9f9b0d644366cf6c39"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber.html#aae88a4a93915cb9f9b0d644366cf6c39">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:aae88a4a93915cb9f9b0d644366cf6c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2baba09a6f53ec884830056909f1dfe8"><td class="memItemLeft" align="right" valign="top">UMPS::Authentication::SecurityLevel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber.html#a2baba09a6f53ec884830056909f1dfe8">getSecurityLevel</a> () const noexcept</td></tr>
-<tr class="separator:a2baba09a6f53ec884830056909f1dfe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa20ecea65f7ca4ecdd82456c39b2be4b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber.html#aa20ecea65f7ca4ecdd82456c39b2be4b">getEndPoint</a> () const</td></tr>
-<tr class="separator:aa20ecea65f7ca4ecdd82456c39b2be4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79f024c7ad0d675e8644cbb329824f87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_subscriber.html">Services::ConnectionInformation::SocketDetails::Subscriber</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber.html#a79f024c7ad0d675e8644cbb329824f87">getSocketDetails</a> () const</td></tr>
 <tr class="separator:a79f024c7ad0d675e8644cbb329824f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5caa3baced03e138b1ee74f3792535b"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_message_formats_1_1_i_message.html">MessageFormats::IMessage</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber.html#ad5caa3baced03e138b1ee74f3792535b">receive</a> () const</td></tr>
@@ -286,56 +282,6 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa20ecea65f7ca4ecdd82456c39b2be4b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa20ecea65f7ca4ecdd82456c39b2be4b">&#9670;&nbsp;</a></span>getEndPoint()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string UMPS::Messaging::PublisherSubscriber::Subscriber::getEndPoint </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The socket endpoint. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber.html#aae88a4a93915cb9f9b0d644366cf6c39">isInitialized()</a></code> is true. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a2baba09a6f53ec884830056909f1dfe8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2baba09a6f53ec884830056909f1dfe8">&#9670;&nbsp;</a></span>getSecurityLevel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">UMPS::Authentication::SecurityLevel UMPS::Messaging::PublisherSubscriber::Subscriber::getSecurityLevel </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The security level of the connection. </dd></dl>
-
-</div>
-</div>
 <a id="a79f024c7ad0d675e8644cbb329824f87"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a79f024c7ad0d675e8644cbb329824f87">&#9670;&nbsp;</a></span>getSocketDetails()</h2>
 
@@ -488,7 +434,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Messaging</b></li><li class="navelem"><b>PublisherSubscriber</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_publisher_subscriber_1_1_subscriber.html">Subscriber</a></li>
-    <li class="footer">Generated on Thu Mar 9 2023 17:14:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

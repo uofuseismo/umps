@@ -145,14 +145,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3d2a458c6351aa7869c579c7d829617e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#a3d2a458c6351aa7869c579c7d829617e">initialize</a> (const <a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy_options.html">ProxyOptions</a> &amp;options)</td></tr>
 <tr class="memdesc:a3d2a458c6351aa7869c579c7d829617e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the proxy.  <a href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#a3d2a458c6351aa7869c579c7d829617e">More...</a><br /></td></tr>
 <tr class="separator:a3d2a458c6351aa7869c579c7d829617e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1e3d070e952debf0dc2ea8aa338955b"><td class="memItemLeft" align="right" valign="top">UMPS::Authentication::SecurityLevel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#ad1e3d070e952debf0dc2ea8aa338955b">getSecurityLevel</a> () const noexcept</td></tr>
-<tr class="separator:ad1e3d070e952debf0dc2ea8aa338955b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcd351cbb9846dd529520d24276305f3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#abcd351cbb9846dd529520d24276305f3">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:abcd351cbb9846dd529520d24276305f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d9479889b17b25d1839552a67d9333f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#a3d9479889b17b25d1839552a67d9333f">getFrontendAddress</a> () const</td></tr>
-<tr class="separator:a3d9479889b17b25d1839552a67d9333f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dcca52acde1ee640f5f99c3c6bdc712"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#a3dcca52acde1ee640f5f99c3c6bdc712">getBackendAddress</a> () const</td></tr>
-<tr class="separator:a3dcca52acde1ee640f5f99c3c6bdc712"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c0397cc950f6593dc65ac0167f1d518"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html">Services::ConnectionInformation::SocketDetails::Proxy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#a7c0397cc950f6593dc65ac0167f1d518">getSocketDetails</a> () const</td></tr>
 <tr class="separator:a7c0397cc950f6593dc65ac0167f1d518"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Usage</div></td></tr>
@@ -283,80 +277,6 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3dcca52acde1ee640f5f99c3c6bdc712"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3dcca52acde1ee640f5f99c3c6bdc712">&#9670;&nbsp;</a></span>getBackendAddress()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string UMPS::Messaging::XPublisherXSubscriber::Proxy::getBackendAddress </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The address to which the producers will subscribe. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#abcd351cbb9846dd529520d24276305f3">isInitialized()</a></code> is false. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a3d9479889b17b25d1839552a67d9333f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d9479889b17b25d1839552a67d9333f">&#9670;&nbsp;</a></span>getFrontendAddress()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string UMPS::Messaging::XPublisherXSubscriber::Proxy::getFrontendAddress </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The address to which the consumers will subscribe. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#abcd351cbb9846dd529520d24276305f3">isInitialized()</a></code> is false. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ad1e3d070e952debf0dc2ea8aa338955b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad1e3d070e952debf0dc2ea8aa338955b">&#9670;&nbsp;</a></span>getSecurityLevel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">UMPS::Authentication::SecurityLevel UMPS::Messaging::XPublisherXSubscriber::Proxy::getSecurityLevel </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The security level of the connection. </dd></dl>
-
-</div>
-</div>
 <a id="a7c0397cc950f6593dc65ac0167f1d518"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7c0397cc950f6593dc65ac0167f1d518">&#9670;&nbsp;</a></span>getSocketDetails()</h2>
 
@@ -546,7 +466,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Messaging</b></li><li class="navelem"><b>XPublisherXSubscriber</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html">Proxy</a></li>
-    <li class="footer">Generated on Thu Mar 9 2023 17:14:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

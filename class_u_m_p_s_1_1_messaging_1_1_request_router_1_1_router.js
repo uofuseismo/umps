@@ -7,8 +7,6 @@ var class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router =
     [ "~Router", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#aee6680932fcd748dd11fdea7cee0880b", null ],
     [ "Router", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#af80adbdaf5542f30ddaf15b1c81f249b", null ],
     [ "Router", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a0a807c59f2f08418394152df0c00ad26", null ],
-    [ "getAddress", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#ac73d75d39012d84b48d859814b721f05", null ],
-    [ "getSecurityLevel", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a058e043c4b589ac0454010084d0536e1", null ],
     [ "getSocketDetails", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a91d3984ae4e7ebd4100176fbde349faa", null ],
     [ "initialize", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a6f4f22b36af1df5e533da8671a46ed93", null ],
     [ "isInitialized", "class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#ad1e4c24c078128ce23660b76b5fcff11", null ],

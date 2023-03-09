@@ -146,12 +146,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae2f05d421821e18b70e92c4340b73812"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html#ae2f05d421821e18b70e92c4340b73812">initialize</a> (const <a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher_options.html">PublisherOptions</a> &amp;options)</td></tr>
 <tr class="memdesc:ae2f05d421821e18b70e92c4340b73812"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the publisher.  <a href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html#ae2f05d421821e18b70e92c4340b73812">More...</a><br /></td></tr>
 <tr class="separator:ae2f05d421821e18b70e92c4340b73812"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a667baba101dcd240bda12d2b5398b2a5"><td class="memItemLeft" align="right" valign="top">Authentication::SecurityLevel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html#a667baba101dcd240bda12d2b5398b2a5">getSecurityLevel</a> () const noexcept</td></tr>
-<tr class="separator:a667baba101dcd240bda12d2b5398b2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73625f861eb259227e294990dcdac319"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html#a73625f861eb259227e294990dcdac319">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:a73625f861eb259227e294990dcdac319"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3008e5884e27b0e4f03914790b8927a5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html#a3008e5884e27b0e4f03914790b8927a5">getEndPoint</a> () const</td></tr>
-<tr class="separator:a3008e5884e27b0e4f03914790b8927a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c4b35089b75bf53cfdd8326fb114a85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_x_publisher.html">Services::ConnectionInformation::SocketDetails::XPublisher</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html#a8c4b35089b75bf53cfdd8326fb114a85">getSocketDetails</a> () const</td></tr>
 <tr class="separator:a8c4b35089b75bf53cfdd8326fb114a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
@@ -285,56 +281,6 @@ Public Member Functions</h2></td></tr>
 
 <p>Closes the connection. </p>
 <dl class="section note"><dt>Note</dt><dd>The class will need to be initialized again to restore the connection. </dd></dl>
-
-</div>
-</div>
-<a id="a3008e5884e27b0e4f03914790b8927a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3008e5884e27b0e4f03914790b8927a5">&#9670;&nbsp;</a></span>getEndPoint()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string UMPS::Messaging::XPublisherXSubscriber::Publisher::getEndPoint </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The socket endpoint. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html#a73625f861eb259227e294990dcdac319">isInitialized()</a></code> is true. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a667baba101dcd240bda12d2b5398b2a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a667baba101dcd240bda12d2b5398b2a5">&#9670;&nbsp;</a></span>getSecurityLevel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Authentication::SecurityLevel UMPS::Messaging::XPublisherXSubscriber::Publisher::getSecurityLevel </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The security level of the connection. </dd></dl>
 
 </div>
 </div>
@@ -499,7 +445,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Messaging</b></li><li class="navelem"><b>XPublisherXSubscriber</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html">Publisher</a></li>
-    <li class="footer">Generated on Thu Mar 9 2023 17:14:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

@@ -13,10 +13,8 @@ var class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details =
     [ "getReplySocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a57a28153c8bf39ad06ce88a4300cd00b", null ],
     [ "getRequestSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a2b763bbe508ed0d165987d450646ed62", null ],
     [ "getRouterSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a7e0d321cc5cfadfc3d1bdcb90b62bd75", null ],
-    [ "getSecurityLevel", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#aaea59203c371da97b7090ff5d38d7799", null ],
     [ "getSocketType", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#abd2d784e103143ded4ade18faac725cf", null ],
     [ "getSubscriberSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a31390e7510480b5d47d8df58dea5de06", null ],
-    [ "getUserPrivileges", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a9d17edce82800f9cf2d5e5bf2bb1bab7", null ],
     [ "getXPublisherSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a20653ac23e4b818f202395171892db83", null ],
     [ "getXSubscriberSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#ad998fb93d41a8aaeee38e998157f2c9c", null ],
     [ "haveConnectionType", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#abc5e75e8eeb735e8c7da758d692b2d74", null ],
@@ -25,7 +23,6 @@ var class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details =
     [ "operator=", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a9a46eba8f6629bddb645d974c83e46a6", null ],
     [ "setConnectionType", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a2d495dc43a1c0a2235beff9d2661f87c", null ],
     [ "setName", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#afa035619fdc68ec11f22672cdcdd00b4", null ],
-    [ "setSecurityLevel", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a80cde7cd1af97b0dad2ebaf11a240f3b", null ],
     [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a845e42566160f19b31b798665221d60c", null ],
     [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a0379c8021948543f1347cf626d89c5bd", null ],
     [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a39b42dee0c3f8d570c84ea0b6ab2ad11", null ],
@@ -34,6 +31,5 @@ var class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details =
     [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#aa728debd1262435a8f5c174abe353924", null ],
     [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a320519fe039a9d69862347e44e4ae071", null ],
     [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a581b84a6ec988ac7bc6e5679e9233dfc", null ],
-    [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#ac2293c2fbafc71751a50c937aef30062", null ],
-    [ "setUserPrivileges", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#a025e89a82193bf2c2f6ea46ed2e594d1", null ]
+    [ "setSocketDetails", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_details.html#ac2293c2fbafc71751a50c937aef30062", null ]
 ];

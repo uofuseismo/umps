@@ -99,69 +99,68 @@ $(document).ready(function(){initNavTree('proxy_services_2proxy_8hpp_source.html
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef UMPS_PROXY_SERVICES_PROXY_HPP</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define UMPS_PROXY_SERVICES_PROXY_HPP</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;umps/proxyServices/proxy.hpp&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">namespace </span>UMPS</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;{</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; <span class="keyword">namespace </span>MessageFormats</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; {</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  <span class="keyword">class </span>IMessage;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; }</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; <span class="keyword">namespace </span>Logging</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">class </span>ILog;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; }</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; <span class="keyword">namespace </span>Services::ConnectionInformation</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">class </span>Details;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; }</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; <span class="keyword">namespace </span>ProxyServices</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">class </span>ProxyOptions;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; }</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; <span class="keyword">namespace </span>Authentication</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">class </span>IAuthenticator;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; }</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>UMPS::ProxyServices</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">   39</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;{</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a22420d77f45a7eec758e6f7a8b800349">   46</a></span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a22420d77f45a7eec758e6f7a8b800349">Proxy</a>();</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ada2ca0a93ce5647fb5e93a6043550b5e">   48</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ada2ca0a93ce5647fb5e93a6043550b5e">Proxy</a>(std::shared_ptr&lt;UMPS::Logging::ILog&gt; &amp;logger);</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a5a46518bbabcd209b5c982d4f4a853bc">   50</a></span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a5a46518bbabcd209b5c982d4f4a853bc">Proxy</a>(std::shared_ptr&lt;UMPS::Logging::ILog&gt; &amp;logger,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;          std::shared_ptr&lt;UMPS::Authentication::IAuthenticator&gt; &amp;authenticator);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="comment">//Proxy(std::shared_ptr&lt;UMPS::Logging::ILog&gt; &amp;logger,</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="comment">//      std::shared_ptr&lt;UMPS::Authentication::IAuthenticator&gt; &amp;frontendAuthenticator,</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="comment">//      std::shared_ptr&lt;UMPS::Authentication::IAuthenticator&gt; &amp;backendAuthenticator);</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a936e44d666539d60d058e708a176ce66">   67</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a936e44d666539d60d058e708a176ce66">initialize</a>(<span class="keyword">const</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html">ProxyOptions</a> &amp;options);</div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a275f0d517f938f2892a0fb9e4b7904e4">   69</a></span>&#160;    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a275f0d517f938f2892a0fb9e4b7904e4">isInitialized</a>() const noexcept;</div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a6a59e038ec34a8819b6e1fad6f229013">   71</a></span>&#160;    [[nodiscard]] std::<span class="keywordtype">string</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a6a59e038ec34a8819b6e1fad6f229013">getName</a>() const;</div>
-<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a9a11561d2c07264cbbd486f7c1faa353">   73</a></span>&#160;    [[nodiscard]] Services::ConnectionInformation::Details <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a9a11561d2c07264cbbd486f7c1faa353">getConnectionDetails</a>() const;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ae5085f718466373114995cbf3794cdc5">   81</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ae5085f718466373114995cbf3794cdc5">start</a>();</div>
-<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a221c09c51ba4fcfc3f10a063fad32043">   83</a></span>&#160;    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a221c09c51ba4fcfc3f10a063fad32043">isRunning</a>() const noexcept;</div>
-<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a7c5c6268b92ecab512ee95d748345440">   85</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a7c5c6268b92ecab512ee95d748345440">stop</a>();</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a44e66cf23fb4df9a8284ba3215c7440d">   92</a></span>&#160;    ~<a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>(const <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;proxy) = delete;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>(<a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;&amp;proxy) noexcept = delete;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>&amp; operator=(const <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;proxy) = delete;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>&amp; operator=(<a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;&amp;proxy) noexcept = delete;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;private:</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    class ProxyImpl;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    std::unique_ptr&lt;ProxyImpl&gt; pImpl;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;};</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclass_u_m_p_s_1_1_proxy_services_1_1_proxy_html"><div class="ttname"><a href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">UMPS::ProxyServices::Proxy</a></div><div class="ttdoc">This defines the ROUTER/DEALER proxy. This is an intermediary message layer to which (1) clients send...</div><div class="ttdef"><b>Definition:</b> proxy.hpp:40</div></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="keyword">namespace </span>UMPS</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;{</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; <span class="keyword">namespace </span>MessageFormats</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; {</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  <span class="keyword">class </span>IMessage;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; }</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; <span class="keyword">namespace </span>Logging</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <span class="keyword">class </span>ILog;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; }</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; <span class="keyword">namespace </span>Services::ConnectionInformation</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">class </span>Details;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; }</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; <span class="keyword">namespace </span>ProxyServices</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">class </span>ProxyOptions;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; }</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; <span class="keyword">namespace </span>Authentication</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">class </span>IAuthenticator;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; }</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">namespace </span>UMPS::ProxyServices</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">   38</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a22420d77f45a7eec758e6f7a8b800349">   45</a></span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a22420d77f45a7eec758e6f7a8b800349">Proxy</a>();</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ada2ca0a93ce5647fb5e93a6043550b5e">   47</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ada2ca0a93ce5647fb5e93a6043550b5e">Proxy</a>(std::shared_ptr&lt;UMPS::Logging::ILog&gt; &amp;logger);</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a5a46518bbabcd209b5c982d4f4a853bc">   49</a></span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a5a46518bbabcd209b5c982d4f4a853bc">Proxy</a>(std::shared_ptr&lt;UMPS::Logging::ILog&gt; &amp;logger,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          std::shared_ptr&lt;UMPS::Authentication::IAuthenticator&gt; &amp;authenticator);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">//Proxy(std::shared_ptr&lt;UMPS::Logging::ILog&gt; &amp;logger,</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="comment">//      std::shared_ptr&lt;UMPS::Authentication::IAuthenticator&gt; &amp;frontendAuthenticator,</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="comment">//      std::shared_ptr&lt;UMPS::Authentication::IAuthenticator&gt; &amp;backendAuthenticator);</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a936e44d666539d60d058e708a176ce66">   66</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a936e44d666539d60d058e708a176ce66">initialize</a>(<span class="keyword">const</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy_options.html">ProxyOptions</a> &amp;options);</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a275f0d517f938f2892a0fb9e4b7904e4">   68</a></span>&#160;    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a275f0d517f938f2892a0fb9e4b7904e4">isInitialized</a>() const noexcept;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a6a59e038ec34a8819b6e1fad6f229013">   70</a></span>&#160;    [[nodiscard]] std::<span class="keywordtype">string</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a6a59e038ec34a8819b6e1fad6f229013">getName</a>() const;</div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a9a11561d2c07264cbbd486f7c1faa353">   72</a></span>&#160;    [[nodiscard]] Services::ConnectionInformation::Details <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a9a11561d2c07264cbbd486f7c1faa353">getConnectionDetails</a>() const;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ae5085f718466373114995cbf3794cdc5">   80</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#ae5085f718466373114995cbf3794cdc5">start</a>();</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a221c09c51ba4fcfc3f10a063fad32043">   82</a></span>&#160;    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a221c09c51ba4fcfc3f10a063fad32043">isRunning</a>() const noexcept;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a7c5c6268b92ecab512ee95d748345440">   84</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a7c5c6268b92ecab512ee95d748345440">stop</a>();</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a44e66cf23fb4df9a8284ba3215c7440d">   91</a></span>&#160;    ~<a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>();</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>(const <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;proxy) = delete;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>(<a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;&amp;proxy) noexcept = delete;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>&amp; operator=(const <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;proxy) = delete;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a>&amp; operator=(<a class="code" href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">Proxy</a> &amp;&amp;proxy) noexcept = delete;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;private:</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    class ProxyImpl;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    std::unique_ptr&lt;ProxyImpl&gt; pImpl;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;};</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_proxy_services_1_1_proxy_html"><div class="ttname"><a href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html">UMPS::ProxyServices::Proxy</a></div><div class="ttdoc">This defines the ROUTER/DEALER proxy. This is an intermediary message layer to which (1) clients send...</div><div class="ttdef"><b>Definition:</b> proxy.hpp:39</div></div>
 <div class="ttc" id="aclass_u_m_p_s_1_1_proxy_services_1_1_proxy_html_a221c09c51ba4fcfc3f10a063fad32043"><div class="ttname"><a href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a221c09c51ba4fcfc3f10a063fad32043">UMPS::ProxyServices::Proxy::isRunning</a></div><div class="ttdeci">bool isRunning() const noexcept</div></div>
 <div class="ttc" id="aclass_u_m_p_s_1_1_proxy_services_1_1_proxy_html_a22420d77f45a7eec758e6f7a8b800349"><div class="ttname"><a href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a22420d77f45a7eec758e6f7a8b800349">UMPS::ProxyServices::Proxy::Proxy</a></div><div class="ttdeci">Proxy()</div><div class="ttdoc">Constructs the XPUB/XSUB proxy.</div></div>
 <div class="ttc" id="aclass_u_m_p_s_1_1_proxy_services_1_1_proxy_html_a275f0d517f938f2892a0fb9e4b7904e4"><div class="ttname"><a href="class_u_m_p_s_1_1_proxy_services_1_1_proxy.html#a275f0d517f938f2892a0fb9e4b7904e4">UMPS::ProxyServices::Proxy::isInitialized</a></div><div class="ttdeci">bool isInitialized() const noexcept</div></div>
@@ -179,7 +178,7 @@ $(document).ready(function(){initNavTree('proxy_services_2proxy_8hpp_source.html
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_c591884bd638e2293e54b546c0aa3073.html">umps</a></li><li class="navelem"><a class="el" href="dir_24e3732a2dcb460f60d3c98937d4b0c7.html">proxyServices</a></li><li class="navelem"><b>proxy.hpp</b></li>
-    <li class="footer">Generated on Thu Mar 9 2023 17:14:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

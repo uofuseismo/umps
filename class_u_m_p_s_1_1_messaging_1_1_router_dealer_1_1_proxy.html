@@ -138,8 +138,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad50c13cc832affd8218ce3ca47a71412"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#ad50c13cc832affd8218ce3ca47a71412">initialize</a> (const <a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy_options.html">ProxyOptions</a> &amp;options)</td></tr>
 <tr class="memdesc:ad50c13cc832affd8218ce3ca47a71412"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the proxy.  <a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#ad50c13cc832affd8218ce3ca47a71412">More...</a><br /></td></tr>
 <tr class="separator:ad50c13cc832affd8218ce3ca47a71412"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88f2f2bccbaa363ec5be6a889d64676d"><td class="memItemLeft" align="right" valign="top">Authentication::SecurityLevel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a88f2f2bccbaa363ec5be6a889d64676d">getSecurityLevel</a> () const noexcept</td></tr>
-<tr class="separator:a88f2f2bccbaa363ec5be6a889d64676d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a034ae14b2f7bff6064ee16eb7df49c33"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a034ae14b2f7bff6064ee16eb7df49c33">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:a034ae14b2f7bff6064ee16eb7df49c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63f96ff3cf440f168f2cd10bdb7720c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_proxy.html">Services::ConnectionInformation::SocketDetails::Proxy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a63f96ff3cf440f168f2cd10bdb7720c0">getSocketDetails</a> () const</td></tr>
@@ -232,32 +230,6 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a88f2f2bccbaa363ec5be6a889d64676d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88f2f2bccbaa363ec5be6a889d64676d">&#9670;&nbsp;</a></span>getSecurityLevel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Authentication::SecurityLevel UMPS::Messaging::RouterDealer::Proxy::getSecurityLevel </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The security level of the connection. </dd></dl>
-
-</div>
-</div>
 <a id="a63f96ff3cf440f168f2cd10bdb7720c0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a63f96ff3cf440f168f2cd10bdb7720c0">&#9670;&nbsp;</a></span>getSocketDetails()</h2>
 
@@ -272,20 +244,6 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The address to which the clients will connect. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a034ae14b2f7bff6064ee16eb7df49c33">isInitialized()</a></code> is false. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The address to which the servers will connect. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::invalid_argument</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a034ae14b2f7bff6064ee16eb7df49c33">isInitialized()</a></code> is false. </td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>The details for connecting to this socket. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -442,7 +400,7 @@ Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Messaging</b></li><li class="navelem"><b>RouterDealer</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html">Proxy</a></li>
-    <li class="footer">Generated on Thu Mar 9 2023 17:14:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

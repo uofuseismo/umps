@@ -8,7 +8,6 @@ var group___messaging_patterns___req_rep___router_dealer =
       [ "~Proxy", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a50d1dcb2ec02de8d460d63815acdd35f", null ],
       [ "Proxy", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a7884ecf84b5ad6a61c8ac09fa11c1996", null ],
       [ "Proxy", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#ae47ea7ef60ef76ae8f25ce1391e5a8a3", null ],
-      [ "getSecurityLevel", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a88f2f2bccbaa363ec5be6a889d64676d", null ],
       [ "getSocketDetails", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a63f96ff3cf440f168f2cd10bdb7720c0", null ],
       [ "initialize", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#ad50c13cc832affd8218ce3ca47a71412", null ],
       [ "isInitialized", "class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a034ae14b2f7bff6064ee16eb7df49c33", null ],

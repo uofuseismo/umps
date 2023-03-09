@@ -142,12 +142,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a6f4f22b36af1df5e533da8671a46ed93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a6f4f22b36af1df5e533da8671a46ed93">initialize</a> (const <a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router_options.html">RouterOptions</a> &amp;options)</td></tr>
 <tr class="memdesc:a6f4f22b36af1df5e533da8671a46ed93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the router.  <a href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a6f4f22b36af1df5e533da8671a46ed93">More...</a><br /></td></tr>
 <tr class="separator:a6f4f22b36af1df5e533da8671a46ed93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a058e043c4b589ac0454010084d0536e1"><td class="memItemLeft" align="right" valign="top">UMPS::Authentication::SecurityLevel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a058e043c4b589ac0454010084d0536e1">getSecurityLevel</a> () const noexcept</td></tr>
-<tr class="separator:a058e043c4b589ac0454010084d0536e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1e4c24c078128ce23660b76b5fcff11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#ad1e4c24c078128ce23660b76b5fcff11">isInitialized</a> () const noexcept</td></tr>
 <tr class="separator:ad1e4c24c078128ce23660b76b5fcff11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac73d75d39012d84b48d859814b721f05"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#ac73d75d39012d84b48d859814b721f05">getAddress</a> () const</td></tr>
-<tr class="separator:ac73d75d39012d84b48d859814b721f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91d3984ae4e7ebd4100176fbde349faa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_u_m_p_s_1_1_services_1_1_connection_information_1_1_socket_details_1_1_router.html">Services::ConnectionInformation::SocketDetails::Router</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#a91d3984ae4e7ebd4100176fbde349faa">getSocketDetails</a> () const</td></tr>
 <tr class="separator:a91d3984ae4e7ebd4100176fbde349faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Step 2: Start the Router</div></td></tr>
@@ -241,56 +237,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac73d75d39012d84b48d859814b721f05"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac73d75d39012d84b48d859814b721f05">&#9670;&nbsp;</a></span>getAddress()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string UMPS::Messaging::RequestRouter::Router::getAddress </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Gets the connection string. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html#ad1e4c24c078128ce23660b76b5fcff11">isInitialized()</a></code> is false. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a058e043c4b589ac0454010084d0536e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a058e043c4b589ac0454010084d0536e1">&#9670;&nbsp;</a></span>getSecurityLevel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">UMPS::Authentication::SecurityLevel UMPS::Messaging::RequestRouter::Router::getSecurityLevel </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The security level of the connection. </dd></dl>
-
-</div>
-</div>
 <a id="a91d3984ae4e7ebd4100176fbde349faa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a91d3984ae4e7ebd4100176fbde349faa">&#9670;&nbsp;</a></span>getSocketDetails()</h2>
 
@@ -434,7 +380,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>Messaging</b></li><li class="navelem"><b>RequestRouter</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_messaging_1_1_request_router_1_1_router.html">Router</a></li>
-    <li class="footer">Generated on Thu Mar 9 2023 17:14:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

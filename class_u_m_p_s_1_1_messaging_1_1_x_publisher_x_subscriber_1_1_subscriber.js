@@ -8,7 +8,7 @@ var class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber =
     [ "~Subscriber", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#a27314b45b3eefb6ae9d054a6c5f68200", null ],
     [ "Subscriber", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#ab891e704330501f847369b3ff2e48cfa", null ],
     [ "disconnect", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#a544c34f595a0c868b89604351ba8321a", null ],
-    [ "getSocketDetails", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#a7d74df49ff0efaf1552cf2630d19e8ff", null ],
+    [ "getSocketDetails", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#af7da1ce033b824a70ae3b39bc9ea3ec9", null ],
     [ "initialize", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#a6557a39a8f4bbec4ee3e6a08ef05f050", null ],
     [ "isInitialized", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#a25f77141b8ae8e32470d1a6eb26e215e", null ],
     [ "operator=", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html#a4729afcb25c748207756dc18e44996d4", null ],
