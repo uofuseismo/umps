@@ -128,22 +128,22 @@ Classes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers. </p>
-<p>Despite its simplicitly the <a class="el" href="group___messaging_patterns___pub_sub___pub_sub.html">Publisher-Subscriber</a> is limited to a single publisher and subscriber. This is insufficient for real applications where we may say have multiple data sources (e.g., UUSS field instruments telemetered to import boxes and data streams from other networks served through <a href="https://ds.iris.edu/ds/nodes/dmc/">IRIS</a>). Moreover, multiple utilities may want to read from these streams. For this reason, we introduce the extended publisher-subscriber or xPub-xSub. As a rule, even if I were considering a single producer and single consumer, I would still implement it as a xPub-xSub pattern because experience dictates that even in well-planned applications more publishers and subscribers always manage to materialize. </p>
+<p>Despite its simplicitly the <a class="el" href="group___messaging_patterns___pub_sub___pub_sub.html">Publisher-Subscriber</a> is not sufficient in practice. For real applications, where we may have multiple data sources (e.g., UUSS field instruments telemetered to import boxes and data streams from other networks served through <a href="https://ds.iris.edu/ds/nodes/dmc/">IRIS</a>). Clearly, we will have multiple data publishers. Of course, it is possible to perpetually add a subscriber for each data feed in our applications but this will become cumbersome and difficult to maintain; particularly when a data feed is dropped. What we really want is one-stop shopping. If a subscriber connects to a particular endpoint then it will be able to receive every message in the data feed, i.e., the subscriber need not know the details of every publisher. For this reason, we introduce the extended publisher-subscriber or xPub-xSub. As a rule, even if I were considering a single producer and single consumer application, I would still implement it as a xPub-xSub pattern because experience dictates that even in well-planned applications more publishers always manage to materialize. </p>
 <p><br  />
  </p><div class="image">
 <img src="xpubxsub.jpg" alt="" width="400cm"/>
 <div class="caption">
-The extended publisher-subscriber pattern or the xPub-xSub.</div></div>
+The extended publisher-subscriber (xPub-xSub) pattern. Here four subscribers receive messages from three publishers.</div></div>
 <p> <br  />
 </p>
-<p>The main difference between this pattern and the basic publisher-subscriber mechanism is the introduction of a middleman; a proxy. The proxy provides a stable end-point to which publishers send data and subscribers retrieve data. In the parlence of ZeroMQ data goes into the proxy's <em>frontend</em> and data goes out the proxy's backend as shown in the following picture. <br  />
- </p>
+<p>The technology required to make this happen is to introduce a middleman or <em>proxy</em>. The proxy provides a stable endpoint to which publishers send data and subscribers retrieve data. In the parlence of ZeroMQ data goes into the proxy's <em>frontend</em> and data goes out the proxy's backend. </p>
 <h1><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Example"></a>
 An Example</h1>
-<p>There really is not much more to this pattern than what you have already seen in the <a class="el" href="group___messaging_patterns___pub_sub___pub_sub.html#TopicMessagingPatterns_PubSub_Example">An Example</a>. Again, we will have a publisher and a subscriber. The addition is simply going to be the proxy.</p>
+<p>There really is not much more to this pattern than what you have already seen in the <a class="el" href="group___messaging_patterns___pub_sub___pub_sub.html#TopicMessagingPatterns_PubSub_Example">An Example</a>. In principle, data is again being sent from producers to subscribers. The main differences are that instead of one publisher we will have three, the number of subscribers is increased from three to four, and there is a proxy. <br  />
+</p>
 <h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Publisher"></a>
 The Publisher</h2>
-<p>The publisher is like the previous pub-sub publisher. However, it <em>connects</em> to the proxy. The verbiabe flows from ZeroMQ where <em>stable</em> endpoints bind to a socket. Hence, UMPS views content producers as ephemeral.</p>
+<p>The publisher is like the previous pub-sub publisher. However, it <em>connects</em> to the proxy. In the verbiage of ZeroMQ we <em>bind</em> to <em>stable</em> endpoints. Hence, UMPS views content producers and subscribers as ephemeral and proxies as long-lifetime, stable endpoints. Consequently, your modules will always connect to the uOperator.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;umps/messaging/xPublisherXSubscriber/publisher.hpp&gt;</span></div>
@@ -153,24 +153,24 @@ The Publisher</h2>
 <div class="line"> </div>
 <div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::XPublisherXSubscriber;</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> publisher()</div>
+<div class="line"><span class="keywordtype">void</span> publisher(<span class="keyword">const</span> <span class="keywordtype">int</span> publisherID)</div>
 <div class="line">{</div>
 <div class="line">    PublisherOptions publisherOptions;</div>
 <div class="line">    publisherOptions.setAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>); <span class="comment">// Connect to this address</span></div>
 <div class="line"> </div>
 <div class="line">    <a class="code" href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">Publisher</a> publisher;</div>
 <div class="line">    publisher.initialize(publisherOptions);</div>
-<div class="line">    <span class="comment">// Deal with slow joiner problem</span></div>
+<div class="line">    <span class="comment">// Deal with slow joiner problem.</span></div>
 <div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds(200));</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Send messages</span></div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; N_MESSAGES; ++i)</div>
 <div class="line">    {</div>
-<div class="line">        <span class="comment">// Define a message</span></div>
 <div class="line">        <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html">UMPS::MessageFormats::Text</a> textMessage;</div>
-<div class="line">        textMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#af7c8aaccbce613095d7d070b7e2462cb">setContents</a>(<span class="stringliteral">&quot;Message number &quot;</span> + std::to_string(i + 1));</div>
-<div class="line">        <span class="comment">// The message is serialized by the Text class and put on the wire</span></div>
-<div class="line">        <span class="comment">// by ZeroMQ</span></div>
+<div class="line">        textMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#af7c8aaccbce613095d7d070b7e2462cb">setContents</a>(<span class="stringliteral">&quot;Message number &quot;</span></div>
+<div class="line">                              + std::to_string(i + 1)</div>
+<div class="line">                              + <span class="stringliteral">&quot; from publisher &quot;</span></div>
+<div class="line">                              + std::to_string(publisherID));</div>
 <div class="line">        publisher.send(textMessage);</div>
 <div class="line">    }</div>
 <div class="line">}</div>
@@ -209,7 +209,7 @@ The Subscriber</h2>
 <div class="line">    subscriber.initialize(subscriberOptions);</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Now retrieve messages</span></div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; N_PUBLISHERS*N_MESSAGES; ++i)</div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// The message is read off the wire by ZeroMQ and deserialized</span></div>
 <div class="line">        <span class="comment">// by the Text class.</span></div>
@@ -228,7 +228,7 @@ The Subscriber</h2>
 <div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">UMPS::Services::ConnectionInformation::SocketType::Subscriber</a></div><div class="ttdeci">@ Subscriber</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Proxy"></a>
 The Proxy</h2>
-<p>The proxy is a new concept. What this thread does is simply take data from the input port (frontend) and stick it on output port (backend). Imagine a worker who simply takes items from one conveyer belt and puts them on an adjacent conveyer belt. Custom proxies can be made that do refined things such as filter traffic, etc. However, this remarkably simple mechanism seems sufficient for many broadcast applications.</p>
+<p>The proxy is a new concept. What this thread does is simply take data from the input port (frontend) and stick it on output port (backend). Its a worker whose job is to simply take items from one conveyer belt and put them on an adjacent conveyer belt. Surprisingly, this remarkably simple mechanism seems sufficient for many broadcast applications.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;chrono&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;umps/messaging/xPublisherXSubscriber/proxy.hpp&gt;</span></div>
@@ -240,18 +240,20 @@ The Proxy</h2>
 <div class="line">{</div>
 <div class="line">    ProxyOptions proxyOptions;</div>
 <div class="line">    <span class="comment">// Data flows from frontend to backend</span></div>
-<div class="line">    proxyOptions.setFrontendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>);</div>
-<div class="line">    proxyOptions.setBackendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5556&quot;</span>);</div>
+<div class="line">    proxyOptions.setFrontendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>); <span class="comment">// Publishers connect here</span></div>
+<div class="line">    proxyOptions.setBackendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5556&quot;</span>); <span class="comment">// Subscribers connect here</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Create the proxy</span></div>
 <div class="line">    <a class="code" href="class_proxy.html">Proxy</a> proxy;</div>
 <div class="line">    proxy.initialize(proxyOptions);</div>
+<div class="line"> </div>
 <div class="line">    <span class="comment">// Run the proxy in a separate thread</span></div>
 <div class="line">    <span class="keyword">auto</span> proxyThread = std::thread(&amp;<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html#aa3d422294832c1ad1cb3761ba78b4d88">Proxy::start</a>, &amp;proxy);</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Main thread sleeps a bit</span></div>
 <div class="line">    std::this_thread::sleep_for(std::chrono::seconds {3});</div>
-<div class="line">    <span class="comment">// All done - main thread tells the proxy to shut down</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// The main thread tells the proxy to shut down</span></div>
 <div class="line">    proxy.stop();</div>
 <div class="line">    proxyThread.join();</div>
 <div class="line">}</div>
@@ -260,40 +262,48 @@ The Proxy</h2>
 </div><!-- fragment --><p>Notice that the proxy is running as another thread that must be started and stopped. This is because the proxy is supposed to stay up indefinitely. In general, you will not have to explicitly think about this since the uOperator will be responsible for keeping these proxies alive and open. All you will have to do is connect via the extended publisher or extended subscriber.</p>
 <h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_ExampleDriver"></a>
 The Driver</h2>
-<p>Lastly, the driver program is as follows.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<p>Lastly, the driver code that launches this example. We create seven threads - three publishers and four subscribers. The subscribers connect first then will block until a message is received. Then the publishers are started. Again, this is a brittle code since we are specifying a priori the number of messages. Therefore, the producer code must contend with the slow joiner problem</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;xpubxsub.hpp&quot;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// Create a proxy thread</span></div>
 <div class="line">    <span class="keyword">auto</span> proxyThread = std::thread(proxy);</div>
+<div class="line">    <span class="comment">// Give proxy a moment to get up and running</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds {500});</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Subscribers connect first - so as not to miss messages</span></div>
-<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds {500});</div>
 <div class="line">    <span class="keyword">auto</span> subscriberThread1 = std::thread(subscriber, 1);</div>
 <div class="line">    <span class="keyword">auto</span> subscriberThread2 = std::thread(subscriber, 2);</div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread3 = std::thread(subscriber, 3); </div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread4 = std::thread(subscriber, 4);</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Publisher connects and lets it rip</span></div>
-<div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds {1000});</div>
-<div class="line">    <span class="keyword">auto</span> publisherThread = std::thread(publisher);</div>
+<div class="line">    <span class="keyword">auto</span> publisherThread1 = std::thread(publisher, 1);</div>
+<div class="line">    <span class="keyword">auto</span> publisherThread2 = std::thread(publisher, 2);</div>
+<div class="line">    <span class="keyword">auto</span> publisherThread3 = std::thread(publisher, 3);</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Wait for threads to finish</span></div>
 <div class="line">    proxyThread.join();</div>
 <div class="line">    subscriberThread1.join();</div>
 <div class="line">    subscriberThread2.join();</div>
-<div class="line">    publisherThread.join();</div>
+<div class="line">    subscriberThread3.join();</div>
+<div class="line">    subscriberThread4.join();</div>
+<div class="line">    publisherThread1.join();</div>
+<div class="line">    publisherThread2.join();</div>
+<div class="line">    publisherThread3.join();</div>
 <div class="line">    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
 <div class="line">}</div>
-</div><!-- fragment --><p>The key addition here over the publisher-subscriber example is the thread that runs the proxy. Additionally, we have added a second subscriber thread simply to demonstrate. It would be a straightforward activity to also add another producer.</p>
-<p>In closing, it should be clear that the xPub-xSub paradigm requires marginally more effort than its naive publisher-subscriber counterpart. However, do not undererestimate the xPub-xSub. At UUSS this is the mechanism by which we move all of our data packets, all of our probability packets, and STA/LTA packets, as well as all of our picks, events, and module heartbeats. And the computational cost on the uOperator hub is small. Long story short, when it comes to scalability you cannot do better than this pattern. </p>
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_XPubXSub_Conclusion"></a>
+Summary</h2>
+<p>In closing, it should be clear that the xPub-xSub paradigm requires marginally more effort than its naive publisher-subscriber counterpart. However, do not undererestimate the xPub-xSub. At UUSS this is the mechanism by which we move all of our data packets, all of our probability packets, and STA/LTA packets, as well as all of our picks, events, and module heartbeats. And the computational cost on the uOperator hub is small. Long story short, when it comes to solving the broadcast problem, you will be hard-pressed to find a more flexible and scalable approach than the xPub-xSub. </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 9 2023 00:59:58 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 16:19:30 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

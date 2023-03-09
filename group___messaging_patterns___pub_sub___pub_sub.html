@@ -99,14 +99,14 @@ $(document).ready(function(){initNavTree('group___messaging_patterns___pub_sub__
 </div><!--header-->
 <div class="contents">
 
-<p>The simplest communication mechanism which is included for pedagogical purposes only. Here, one consumer receives messages from one producer.  
+<p>The publisher-subscriber pattern is the simplest communication mechanism. It is included for pedagogical purposes only. Here, multiple consumers receive messages from one producer.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
 Collaboration diagram for Publisher-Subscriber:</div>
 <div class="dyncontent">
 <div class="center"><img src="group___messaging_patterns___pub_sub___pub_sub.png" border="0" usemap="#agroup______messaging__patterns______pub__sub______pub__sub" alt=""/></div>
 <map name="agroup______messaging__patterns______pub__sub______pub__sub" id="agroup______messaging__patterns______pub__sub______pub__sub">
-<area shape="rect" title="The simplest communication mechanism which is included for pedagogical purposes only...." alt="" coords="208,13,363,38"/>
+<area shape="rect" title="The publisher&#45;subscriber pattern is the simplest communication mechanism. It is included for pedagogi..." alt="" coords="208,13,363,38"/>
 <area shape="rect" href="group___messaging_patterns___pub_sub.html" title=" " alt="" coords="5,5,160,45"/>
 </map>
 </div>
@@ -127,17 +127,24 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>The simplest communication mechanism which is included for pedagogical purposes only. Here, one consumer receives messages from one producer. </p>
+<p>The publisher-subscriber pattern is the simplest communication mechanism. It is included for pedagogical purposes only. Here, multiple consumers receive messages from one producer. </p>
 <h1><a class="anchor" id="TopicMessagingPatterns_PubSub_Overview"></a>
 Pub-Sub Messaging Overview</h1>
-<p>This is the most naive messaging strategy available in UMPS. All that happens are that messages are sent from a producer to a consumer. This pattern exists for educational and testing purposes and should not be used in production code. </p>
+<p>This is the most naive messaging strategy available in UMPS. All that happens are that messages are sent from a producer to consumers. This pattern exists for educational and testing purposes and should not be used in production code. </p>
+<p><br  />
+ </p><div class="image">
+<img src="pubsub.jpg" alt="" width="400cm"/>
+<div class="caption">
+The publisher-subscriber pattern. Here, three subscribers receive messages from one publisher.</div></div>
+<p> <br  />
+</p>
+<p>Despite its simplicity the pub-sub pattern is important. From an application standpoint, it is the mechanism that will allow UMPS to distribute data packets, heartbeat messages, pick messages, earthquake messages, etc. This pattern also will allow me to introduce preliminary concepts like the distinction between <em>connecting</em> and <em>binding</em>.</p>
 <h1><a class="anchor" id="TopicMessagingPatterns_PubSub_Example"></a>
 An Example</h1>
-<p>In this example, let us define a simple publisher that sends a handful of text messages to a subscriber. </p>
+<p>In this example, a publisher will send a handful of text messages to three subscribers. </p>
 <h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExamplePublisher"></a>
 The Publisher</h2>
-<p>The important points are that the publisher <em>binds</em> to an endpoint, defines a message to send, then sends the message in a non-blocking way. Note, the publisher does not care whether or not the subscriber receives the messages. <br  />
- </p>
+<p>The important points in this code snippet are that the publisher <em>binds</em> to an endpoint, defines a message to send, then sends the message in a non-blocking way. Notice that the publisher does not care whether or not the subscriber receives the messages. </p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;umps/messaging/publisherSubscriber/publisher.hpp&gt;</span></div>
@@ -157,7 +164,7 @@ The Publisher</h2>
 <div class="line">    <span class="comment">// Wait a bit for the subscriber to connect</span></div>
 <div class="line">    std::this_thread::sleep_for(std::chrono::milliseconds(750));</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; N_MESSAGES; ++i)</div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// Define a message</span></div>
 <div class="line">        <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html">UMPS::MessageFormats::Text</a> textMessage;</div>
@@ -172,7 +179,7 @@ The Publisher</h2>
 <div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a32c73be0cb175da278c8e2af0811b0d1">UMPS::Services::ConnectionInformation::SocketType::Publisher</a></div><div class="ttdeci">@ Publisher</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleSubscriber"></a>
 The Subscriber</h2>
-<p>The important points are that the subscriber <em>connects</em> to an endpoint, receives a pre-agreed upon number of messages, and returns. It is important to consider the blocking behavior of the subscriber. If the default is to block (wait) indefinitely a message is received then in this example the program may hang. For this reason, we actually connect the subscriber to the publisher before the publisher is created. You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket. <br  />
+<p>The important points are that the subscriber <em>connects</em> to an endpoint, receives a pre-agreed upon number of messages, and returns. It is important to consider the blocking (waiting) behavior of the subscriber. If the default is to block indefinitely until a message is received then in this example the program may hang. For this reason, we actually connect the subscriber to the publisher before the publisher is created. You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket. <br  />
  </p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -185,7 +192,7 @@ The Subscriber</h2>
 <div class="line"> </div>
 <div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::PublisherSubscriber;</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> subscriber()</div>
+<div class="line"><span class="keywordtype">void</span> subscriber(<span class="keyword">const</span> <span class="keywordtype">int</span> subscriberID)</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// Define the message types that the subscriber will receive</span></div>
 <div class="line">    <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a> messageTypes;</div>
@@ -203,7 +210,7 @@ The Subscriber</h2>
 <div class="line">    subscriber.initialize(subscriberOptions);</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Now retrieve messages</span></div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 10; ++i)</div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; N_MESSAGES; ++i)</div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// The message is read off the wire by ZeroMQ and deserialized</span></div>
 <div class="line">        <span class="comment">// by the Text class.</span></div>
@@ -212,7 +219,8 @@ The Subscriber</h2>
 <div class="line">        <span class="keyword">auto</span> textMessage</div>
 <div class="line">            = static_unique_pointer_cast&lt;UMPS::MessageFormats::Text&gt;</div>
 <div class="line">              (std::move(message));</div>
-<div class="line">        std::cout &lt;&lt; textMessage-&gt;<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#a6d5d6552bd82bc54880175427a6fd260">getContents</a>() &lt;&lt; std::endl;</div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;SubscriberID: &quot;</span> &lt;&lt; subscriberID</div>
+<div class="line">                  &lt;&lt; <span class="stringliteral">&quot; received: &quot;</span> &lt;&lt; textMessage-&gt;<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_text.html#a6d5d6552bd82bc54880175427a6fd260">getContents</a>() &lt;&lt; std::endl;</div>
 <div class="line">    }</div>
 <div class="line">}</div>
 <div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_messages_html"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a></div><div class="ttdoc">This is a container for holding multiple (unique) message formats.</div><div class="ttdef"><b>Definition:</b> messages.hpp:16</div></div>
@@ -221,29 +229,34 @@ The Subscriber</h2>
 <div class="ttc" id="agroup___applications__u_operator_html_ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81"><div class="ttname"><a href="group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67a992c4a5b4628d8ebf671cf460254ee81">UMPS::Services::ConnectionInformation::SocketType::Subscriber</a></div><div class="ttdeci">@ Subscriber</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_ExampleDriver"></a>
 The Driver</h2>
-<p>Here is the example driver code that launches this example. We create two threads - a publisher and a subscriber. The subscriber connects first then will block until a message is received. The publisher is then started after waiting some time. This mitigates the slow joiner problem. <br  />
- </p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<p>Here is the example driver code that launches this example. We create four threads - a publisher and three subscribers. The subscribers connect first then will block until a message is received. Then the publisher is started. Since this code is brittle, the publisher code pauses after initialization to deal with something called the slow-joiner problem (basically, ZeroMQ has to do some asynchronous work behind the scenes that takes time). In practice, we do not pause since we never send a predefined number of messages in a pub-sub pattern. </p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;pubsub.hpp&quot;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
 <div class="line">{</div>
-<div class="line">    <span class="comment">// Actually let the subscriber `connect&#39; first</span></div>
-<div class="line">    <span class="keyword">auto</span> subscriberThread = std::thread(subscriber);</div>
+<div class="line">    <span class="comment">// Actually let the subscribers `connect&#39; first</span></div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread1 = std::thread(subscriber, 1);</div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread2 = std::thread(subscriber, 2);</div>
+<div class="line">    <span class="keyword">auto</span> subscriberThread3 = std::thread(subscriber, 3);</div>
 <div class="line">    <span class="comment">// Now create the publisher</span></div>
 <div class="line">    <span class="keyword">auto</span> publisherThread = std::thread(publisher);</div>
 <div class="line">    <span class="comment">// Wait for threads to finish</span></div>
-<div class="line">    subscriberThread.join();</div>
+<div class="line">    subscriberThread1.join();</div>
+<div class="line">    subscriberThread2.join();</div>
+<div class="line">    subscriberThread3.join();</div>
 <div class="line">    publisherThread.join();</div>
 <div class="line">    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
 <div class="line">}</div>
-</div><!-- fragment --> </div><!-- contents -->
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_PubSub_Conclusion"></a>
+Summary</h2>
+<p>The pub-sub is a foundational pattern in messaging that is provides a natural solution for handling streaming data. Additionally, the concepts of binding and connecting were introduced. Despite this, the alert reader is likely asking - what if I have multiple producers? The answer to that question is the <a class="el" href="group___messaging_patterns___pub_sub___x_pub_x_sub.html">Extended Publisher-Subscriber</a> pattern. </p>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 9 2023 00:59:58 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Thu Mar 9 2023 16:19:30 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
