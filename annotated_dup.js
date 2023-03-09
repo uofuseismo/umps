@@ -53,7 +53,9 @@ var annotated_dup =
           [ "Proxy", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy.html", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy" ],
           [ "ProxyOptions", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy_options.html", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_proxy_options" ],
           [ "Publisher", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher.html", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher" ],
-          [ "PublisherOptions", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher_options.html", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher_options" ]
+          [ "PublisherOptions", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher_options.html", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_publisher_options" ],
+          [ "Subscriber", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber.html", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber" ],
+          [ "SubscriberOptions", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber_options.html", "class_u_m_p_s_1_1_messaging_1_1_x_publisher_x_subscriber_1_1_subscriber_options" ]
         ] ],
         [ "Context", "class_u_m_p_s_1_1_messaging_1_1_context.html", "class_u_m_p_s_1_1_messaging_1_1_context" ],
         [ "SocketOptions", "class_u_m_p_s_1_1_messaging_1_1_socket_options.html", "class_u_m_p_s_1_1_messaging_1_1_socket_options" ]
