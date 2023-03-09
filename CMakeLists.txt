@@ -67,7 +67,9 @@ set(MESSAGING_SRC
     src/messaging/xPublisherXSubscriber/proxy.cpp
     src/messaging/xPublisherXSubscriber/proxyOptions.cpp
     src/messaging/xPublisherXSubscriber/publisher.cpp
-    src/messaging/xPublisherXSubscriber/publisherOptions.cpp)
+    src/messaging/xPublisherXSubscriber/publisherOptions.cpp
+    src/messaging/xPublisherXSubscriber/subscriber.cpp
+    src/messaging/xPublisherXSubscriber/subscriberOptions.cpp)
 set(MODULES_LIBSRC
     src/modules/process.cpp
     src/modules/processManager.cpp
