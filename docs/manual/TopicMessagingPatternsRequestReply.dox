@@ -1,9 +1,13 @@
 /*!
-\page TopicMessagingPatterns_ReqRep Request Reply
-\ingroup MessagingPatterns_ReqRep
+\defgroup MessagingPatterns_ReqRep Request-Reply Patterns
+\ingroup MessagingPatterns_chapter
 
 <p>
-The request-reply mechanism is extremely important to UMPS and it is one of UMPS's major improvements over existing seismic processing systems.  Suppose, you are running two instances of a detector - say a P and S-detector - on different machines. The P-detector triggers and a pick is made. How then should you give this pick a unique identification? One solution is to make a request from a service whose entire purpose is to provide unique identifiers. This service could be a database or a standalone program. It does not matter. All that matters is the request can be made by both detectors and the request will be fulfilled by the server.
+The request-reply mechanism is one of UMPS's major improvements over existing seismic processing systems.  To see why this is so, suppose you are running two instances of a detector - say a P and S-detector - on different machines.  The P-detector triggers and a pick is made.  How then should you give this pick a unique identifier?  One solution is to make a request from a service whose entire purpose is to provide unique identifiers.  This service could be a database or a standalone program.  It does not matter.  All that matters is the request can be made by both detectors and the request will be fulfilled by the server.
 </p>
+
+<p> 
+To better understand the request-reply mechanism...
+</>
 
 */

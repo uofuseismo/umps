@@ -17,12 +17,6 @@
 \brief A context is like a thread used by ZeroMQ to send and receive messages.
 \ingroup MessagingPatterns_chapter
 
-\defgroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
-\brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
-\ingroup MessagingPatterns_PubSub
-
-\defgroup MessagingPatterns_ReqRep Request-Reply Patterns
-\ingroup MessagingPatterns_chapter 
 \defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
 \ingroup MessagingPatterns_ReqRep 
 \defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer

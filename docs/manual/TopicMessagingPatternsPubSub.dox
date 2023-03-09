@@ -17,14 +17,14 @@ This pattern can be thought of as listening to the radio. The radio (publisher) 
 This is the most naive messaging strategy available in UMPS.  All that happens are that messages are sent from a producer to a consumer.  This pattern exists for educational and testing purposes and should not be used in production code.
 </p>
 
-\section TopicMessagingPatterns_PubSub_Example An Example:
+\section TopicMessagingPatterns_PubSub_Example An Example
 \ingroup MessagingPatterns_PubSub_PubSub
  
 <p>
 In this example, let us define a simple publisher that sends a handful of text messages to a subscriber.
 </p>
 
-\subsection TopicMessagingPatterns_PubSub_ExamplePublisher The Publisher:
+\subsection TopicMessagingPatterns_PubSub_ExamplePublisher The Publisher
 
 <p>
 The important points are that the publisher \em binds to an endpoint, defines a message to send, then sends the message in a non-blocking way.  Note, the publisher does not care whether or not the subscriber receives the messages.  
@@ -32,7 +32,7 @@ The important points are that the publisher \em binds to an endpoint, defines a 
 
 \include pubSub/publisher.cpp
 
-\subsection TopicMessagingPatterns_PubSub_ExampleSubscriber The Subscriber:
+\subsection TopicMessagingPatterns_PubSub_ExampleSubscriber The Subscriber
 
 <p>
 The important points are that the subscriber \em connects to an endpoint, receives a pre-agreed upon number of messages, and returns.  It is important to consider the blocking behavior of the subscriber.  If the default is to block (wait) indefinitely a message is received then in this example the program may hang.  For this reason, we actually connect the subscriber to the publisher before the publisher is created.  You may want to pause for a moment to let that sink in - ZeroMQ allows the subscriber to connect prior to the publisher binding to the socket.  
@@ -40,12 +40,66 @@ The important points are that the subscriber \em connects to an endpoint, receiv
 
 \include pubSub/subscriber.cpp
 
-\subsection TopicMessagingPatterns_PubSub_ExampleDriver The Driver:
+\subsection TopicMessagingPatterns_PubSub_ExampleDriver The Driver
 
 <p>
 Here is the example driver code that launches this example.  We create two threads - a publisher and a subscriber.  The subscriber connects first then will block until a message is received.  The publisher is then started after waiting some time.  This mitigates the slow joiner problem.  
 </p>
 
 \include pubSub/main.cpp
+
+*/
+
+/*!
+\defgroup MessagingPatterns_PubSub_XPubXSub Extended Publisher-Subscriber
+\brief A fully asynchronous publish-subscribe mechanism whereby a forwarder (proxy) relays messages from multiple publishers to multiple subscribers.
+\ingroup MessagingPatterns_PubSub
+
+<p>
+Despite its simplicitly the \ref MessagingPatterns_PubSub_PubSub is limited to a single publisher and subscriber.  This is insufficient for real applications where we may say have multiple data sources (e.g., UUSS field instruments telemetered to import boxes and data streams from other networks served through <a href="https://ds.iris.edu/ds/nodes/dmc/">IRIS</a>).  Moreover, multiple utilities may want to read from these streams.  For this reason, we introduce the extended publisher-subscriber or xPub-xSub.  As a rule, even if I were considering a single producer and single consumer, I would still implement it as a xPub-xSub pattern because experience dictates that even in well-planned applications more publishers and subscribers always manage to materialize.
+</p>
+
+<br>
+\image html xpubxsub.jpg "The extended publisher-subscriber pattern or the xPub-xSub." width=400cm
+<br>
+
+<p>
+The main difference between this pattern and the basic publisher-subscriber mechanism is the introduction of a middleman; a proxy.  The proxy provides a stable end-point to which publishers send data and subscribers retrieve data.  In the parlence of ZeroMQ data goes into the proxy's \em frontend and data goes out the proxy's backend as shown in the following picture.   
+</p>
+
+\section TopicMessagingPatterns_XPubXSub_Example An Example
+\ingroup MessagingPatterns_PubSub_XPubXSub
+
+There really is not much more to this pattern than what you have already seen in the \ref TopicMessagingPatterns_PubSub_Example.  Again, we will have a publisher and a subscriber.  The addition is simply going to be the proxy. 
+
+\subsection TopicMessagingPatterns_XPubXSub_Publisher The Publisher
+
+The publisher is like the previous pub-sub publisher.  However, it \em connects to the proxy.  The verbiabe flows from ZeroMQ where \em stable endpoints bind to a socket.  Hence, UMPS views content producers as ephemeral.
+
+\include xPubXSub/publisher.cpp
+
+\subsection TopicMessagingPatterns_XPubXSub_Subscriber The Subscriber
+
+The subscriber is exactly like the pub-sub subscriber.  In fact, you can use a pub-sub subscriber to connect to the proxy's backend and things will work.
+
+\include xPubXSub/subscriber.cpp
+
+\subsection TopicMessagingPatterns_XPubXSub_Proxy The Proxy
+
+The proxy is a new concept.  What this thread does is simply take data from the input port (frontend) and stick it on output port (backend).  Imagine a worker who simply takes items from one conveyer belt and puts them on an adjacent conveyer belt.  Custom proxies can be made that do refined things such as filter traffic, etc.  However, this remarkably simple mechanism seems sufficient for many broadcast applications. 
+
+\include xPubXSub/proxy.cpp
+
+Notice that the proxy is running as another thread that must be started and stopped.  This is because the proxy is supposed to stay up indefinitely.  In general, you will not have to explicitly think about this since the uOperator will be responsible for keeping these proxies alive and open.  All you will have to do is connect via the extended publisher or extended subscriber.
+
+\subsection TopicMessagingPatterns_XPubXSub_ExampleDriver The Driver
+
+Lastly, the driver program is as follows.
+
+\include xPubXSub/main.cpp
+
+The key addition here over the publisher-subscriber example is the thread that runs the proxy.  Additionally, we have added a second subscriber thread simply to demonstrate.  It would be a straightforward activity to also add another producer.
+
+In closing, it should be clear that the xPub-xSub paradigm requires marginally more effort than its naive publisher-subscriber counterpart.  However, do not undererestimate the xPub-xSub.  At UUSS this is the mechanism by which we move all of our data packets, all of our probability packets, and STA/LTA packets, as well as all of our picks, events, and module heartbeats.  And the computational cost on the uOperator hub is small.  Long story short, when it comes to scalability you cannot do better than this pattern.
 
 */

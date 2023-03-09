@@ -14,7 +14,10 @@ void publisher()
 
     Publisher publisher;
     publisher.initialize(publisherOptions);
- 
+    // Deal with slow joiner problem
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+    // Send messages
     for (int i = 0; i < 10; ++i)
     {
         // Define a message
