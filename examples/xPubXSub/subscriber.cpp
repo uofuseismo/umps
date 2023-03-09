@@ -27,7 +27,7 @@ void subscriber(int subscriberID)
     subscriber.initialize(subscriberOptions);
 
     // Now retrieve messages
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < N_PUBLISHERS*N_MESSAGES; ++i)
     {
         // The message is read off the wire by ZeroMQ and deserialized
         // by the Text class.

@@ -9,7 +9,7 @@
 
 using namespace UMPS::Messaging::PublisherSubscriber;
 
-void subscriber()
+void subscriber(const int subscriberID)
 {
     // Define the message types that the subscriber will receive
     UMPS::MessageFormats::Messages messageTypes;
@@ -27,7 +27,7 @@ void subscriber()
     subscriber.initialize(subscriberOptions);
 
     // Now retrieve messages
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < N_MESSAGES; ++i)
     {
         // The message is read off the wire by ZeroMQ and deserialized
         // by the Text class.
@@ -36,6 +36,7 @@ void subscriber()
         auto textMessage
             = static_unique_pointer_cast<UMPS::MessageFormats::Text>
               (std::move(message));
-        std::cout << textMessage->getContents() << std::endl;
+        std::cout << "SubscriberID: " << subscriberID
+                  << " received: " << textMessage->getContents() << std::endl;
     }
 }
