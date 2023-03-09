@@ -68,8 +68,6 @@ public:
     void initialize(const RequestOptions &options);
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept; 
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result the connection details.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Request getSocketDetails() const;

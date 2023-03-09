@@ -2,7 +2,6 @@
 #define UMPS_MESSAGING_XPUBLISHER_XSUBSCRIBER_PROXY_HPP
 #include <memory>
 #include <string>
-#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -77,17 +76,8 @@ public:
     ///         specified or the topic is not specified.
     /// @throws std::runtime_error if the creation of the proxy fails.
     void initialize(const ProxyOptions &options);
-    /// @result The security level of the connection.
-    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
-
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result The address to which the consumers will subscribe.
-    /// @throws std::invalid_argument if \c isInitialized() is false.
-    [[deprecated]] [[nodiscard]] std::string getFrontendAddress() const;
-    /// @result The address to which the producers will subscribe.
-    /// @throws std::invalid_argument if \c isInitialized() is false.
-    [[deprecated]] [[nodiscard]] std::string getBackendAddress() const;
     /// @result The details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Proxy getSocketDetails() const;

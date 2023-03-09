@@ -1,7 +1,6 @@
 #ifndef UMPS_MESSAGING_PUBLISHER_SUBSCRIBER_PUBLISHER_HPP
 #define UMPS_MESSAGING_PUBLISHER_SUBSCRIBER_PUBLISHER_HPP
 #include <memory>
-#include "umps/authentication/enums.hpp"
 // Forward declarations
 namespace UMPS
 {
@@ -81,11 +80,6 @@ public:
     void initialize(const PublisherOptions &options);
     /// @result True indicates that the subscriber is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
-    /// @result The socket endpoint.
-    /// @throws std::runtime_error if \c isInitialized() is true.
-    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
     /// @result Gets the details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Publisher getSocketDetails() const;

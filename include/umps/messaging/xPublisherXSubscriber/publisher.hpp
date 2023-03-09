@@ -86,13 +86,8 @@ public:
     /// @throws std::invalid_argument the socket addres is not specified.
     /// @throws std::runtime_error if the creation of the publisher fails.
     void initialize(const PublisherOptions &options);
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates the class is initialized.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result The socket endpoint.
-    /// @throws std::runtime_error if \c isInitialized() is true.
-    [[deprecated]] [[nodiscard]] std::string getEndPoint() const;
     /// @result The details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::XPublisher getSocketDetails() const;

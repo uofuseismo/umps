@@ -368,24 +368,6 @@ bool Proxy::isInitialized() const noexcept
     return pImpl->mInitialized;
 }
 
-std::string Proxy::getFrontendAddress() const
-{
-    if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
-    return pImpl->mFrontendAddress;
-}
-
-std::string Proxy::getBackendAddress() const
-{
-    if (!isInitialized()){throw std::runtime_error("Proxy not initialized");}
-    return pImpl->mBackendAddress;
-}
-
-/// Security level
-UAuth::SecurityLevel Proxy::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
-}
-
 /// Destructor
 Proxy::~Proxy() = default;
 

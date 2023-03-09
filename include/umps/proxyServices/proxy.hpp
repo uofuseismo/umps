@@ -1,7 +1,6 @@
 #ifndef UMPS_PROXY_SERVICES_PROXY_HPP
 #define UMPS_PROXY_SERVICES_PROXY_HPP
 #include <memory>
-#include "umps/proxyServices/proxy.hpp"
 namespace UMPS
 {
  namespace MessageFormats

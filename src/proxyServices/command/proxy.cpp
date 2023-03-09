@@ -1024,13 +1024,15 @@ public:
                 mFrontendAuthenticator->getMinimumUserPrivileges());
             dealer.setMinimumUserPrivileges(
                 mBackendAuthenticator->getMinimumUserPrivileges());
+            //router.setSecurityLevel(mFrontendAuthenticator->getSecurityLevel());
+            //dealer.setSecurityLevel(mBackendAuthenticator->getSecurityLevel());
         }
         socketDetails.setSocketPair(std::pair{router, dealer});
         // Set the connection details
         mConnectionDetails.setName(mProxyName);
         mConnectionDetails.setSocketDetails(socketDetails);
         mConnectionDetails.setConnectionType(UCI::ConnectionType::Service);
-        mConnectionDetails.setSecurityLevel(securityLevel);
+        //mConnectionDetails.setSecurityLevel(securityLevel);
     }
     /// @brief Note whether the proxy was started / stopped.
     void setRunning(const bool running)

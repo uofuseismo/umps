@@ -22,7 +22,7 @@ namespace UMPS
  }
  namespace Services::ConnectionInformation::SocketDetails
  {
-  class Subscriber;
+  class XSubscriber;
  }
 }
 namespace UMPS::Messaging::XPublisherXSubscriber
@@ -77,7 +77,7 @@ public:
     [[nodiscard]] bool isInitialized() const noexcept;
     /// @result The details for connecting to this socket.
     /// @throws std::runtime_error if \c isInitialized() is false.
-    [[nodiscard]] Services::ConnectionInformation::SocketDetails::Subscriber getSocketDetails() const;
+    [[nodiscard]] Services::ConnectionInformation::SocketDetails::XSubscriber getSocketDetails() const;
 
     /// @brief Receives a message.
     /// @throws std::invalid_argument if the message cannot be serialized.

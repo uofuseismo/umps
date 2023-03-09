@@ -258,12 +258,6 @@ void Request::disconnect()
 /// Destructor 
 Request::~Request() = default;
 
-/// Security level
-UAuth::SecurityLevel Request::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
-}
-
 /// Connection information
 UCI::SocketDetails::Request Request::getSocketDetails() const
 {

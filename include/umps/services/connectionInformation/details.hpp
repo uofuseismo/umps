@@ -156,18 +156,6 @@ public:
     /// @result True indicates the connection type was set.
     [[nodiscard]] bool haveConnectionType() const noexcept; 
 
-    /// @brief The required privileges to connect.
-    /// @param[in] privileges  The privileges required to connect.
-    [[deprecated]] void setUserPrivileges(UMPS::Authentication::UserPrivileges privileges) noexcept;
-    /// @result The requisite privileges to connect.
-    [[deprecated]] [[nodiscard]] UMPS::Authentication::UserPrivileges getUserPrivileges() const noexcept;
-
-    /// @brief Sets the security level required to establish a connection.
-    /// @param[in] securityLevel  The requisite security level.
-    void setSecurityLevel(UMPS::Authentication::SecurityLevel securityLevel) noexcept;
-    /// @result The security level required to establish a connection.
-    [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
-
     /// @name Destructors
     /// @{
 

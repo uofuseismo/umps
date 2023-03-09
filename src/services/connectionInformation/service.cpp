@@ -261,8 +261,8 @@ void Service::initialize(const ServiceOptions &options)
     pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
     pImpl->mConnectionDetails.setConnectionType(ConnectionType::Service);
-    pImpl->mConnectionDetails.setSecurityLevel(
-        socketDetails.getSecurityLevel());
+    //pImpl->mConnectionDetails.setSecurityLevel(
+    //    socketDetails.getSecurityLevel());
     // Add myself
     pImpl->mConnections.insert(std::pair(getName(),
                                          pImpl->mConnectionDetails));

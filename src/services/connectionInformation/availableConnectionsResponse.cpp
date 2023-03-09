@@ -224,8 +224,8 @@ nlohmann::json detailsToJSONObject(const Details &detail)
     //auto privileges = static_cast<int> (detail.getUserPrivileges());
     //obj["UserPrivileges"] = privileges;
 
-    auto securityLevel = static_cast<int> (detail.getSecurityLevel());
-    obj["SecurityLevel"] = securityLevel;
+    //auto securityLevel = static_cast<int> (detail.getSecurityLevel());
+    //obj["SecurityLevel"] = securityLevel;
 
     return obj;
 }
@@ -484,12 +484,12 @@ Details objectToDetails(const nlohmann::json &obj)
     //                      (obj["UserPrivileges"].get<int> ());
     //    details.setUserPrivileges(privileges);
     //}
-    if (!obj["SecurityLevel"].is_null())
-    {
-        auto security = static_cast<UAuth::SecurityLevel>
-                        (obj["SecurityLevel"].get<int> ());
-        details.setSecurityLevel(security);
-    }
+    //if (!obj["SecurityLevel"].is_null())
+    //{
+    //    auto security = static_cast<UAuth::SecurityLevel>
+    //                    (obj["SecurityLevel"].get<int> ());
+    //    details.setSecurityLevel(security);
+    //}
     return details;
 }
 

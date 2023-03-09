@@ -296,12 +296,18 @@ void Proxy::initialize(const ProxyOptions &parameters)
     }
     frontendDetails.setMinimumUserPrivileges(frontendPrivileges);
     backendDetails.setMinimumUserPrivileges(backendPrivileges);
+
+    auto securityLevel
+        = pImpl->mOptions.getProxyOptions().getZAPOptions().getSecurityLevel();
+    frontendDetails.setSecurityLevel(securityLevel);
+    backendDetails.setSecurityLevel(securityLevel);
+
     proxyDetails.setSocketPair(std::pair(frontendDetails, backendDetails));
 
     pImpl->mConnectionDetails.setSocketDetails(proxyDetails);
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::Broadcast);
-    pImpl->mConnectionDetails.setSecurityLevel(
-        pImpl->mProxy->getSecurityLevel());
+
+    //pImpl->mConnectionDetails.setSecurityLevel(securityLevel);
     pImpl->mInitialized = true;
 }
 

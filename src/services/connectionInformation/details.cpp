@@ -125,6 +125,7 @@ bool Details::haveConnectionString() const noexcept
 }
 */
 
+/*
 /// Security level
 void Details::setSecurityLevel(UAuth::SecurityLevel securityLevel) noexcept
 {
@@ -146,6 +147,7 @@ UAuth::UserPrivileges Details::getUserPrivileges() const noexcept
 {
     return pImpl->mUserPrivileges;
 }
+*/
 
 /// Connection type
 void Details::setConnectionType(const ConnectionType connectionType) noexcept

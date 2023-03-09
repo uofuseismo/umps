@@ -322,22 +322,9 @@ bool Router::isRunning() const noexcept
     return pImpl->isRunning();
 }
 
-/// Security level
-UAuth::SecurityLevel Router::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
-}
-
 void Router::operator()()
 {
     start();
-}
-
-/// Access address
-std::string Router::getAddress() const
-{
-    if (!isInitialized()){throw std::runtime_error("Router not initialized");}
-    return pImpl->mAddress;
 }
 
 /// Connection information

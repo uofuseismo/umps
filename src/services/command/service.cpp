@@ -173,8 +173,8 @@ void Service::initialize(const ServiceOptions &options)
     pImpl->mConnectionDetails.setName(getName());
     pImpl->mConnectionDetails.setSocketDetails(socketDetails);
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::Service);
-    pImpl->mConnectionDetails.setSecurityLevel(
-        socketDetails.getSecurityLevel());
+    //pImpl->mConnectionDetails.setSecurityLevel(
+    //    socketDetails.getSecurityLevel());
     // Local module details
     ModuleDetails moduleDetails;
     moduleDetails.setName(options.getModuleName());

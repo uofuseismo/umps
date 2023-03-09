@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string>
-#include <umps/messaging/publisherSubscriber/subscriber.hpp>
-#include <umps/messaging/publisherSubscriber/subscriberOptions.hpp>
+#include <umps/messaging/xPublisherXSubscriber/subscriber.hpp>
+#include <umps/messaging/xPublisherXSubscriber/subscriberOptions.hpp>
 #include <umps/messageFormats/text.hpp>
 #include <umps/messageFormats/messages.hpp>
 #include <umps/messageFormats/staticUniquePointerCast.hpp>
 #include "xpubxsub.hpp"
 
-using namespace UMPS::Messaging::PublisherSubscriber;
+using namespace UMPS::Messaging::XPublisherXSubscriber;
 
 void subscriber(int subscriberID)
 {

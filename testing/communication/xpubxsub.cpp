@@ -5,9 +5,9 @@
 #include <thread>
 #include <zmq.hpp>
 #include "umps/logging/standardOut.hpp"
-#include "umps/messaging/publisherSubscriber/publisher.hpp"
-#include "umps/messaging/publisherSubscriber/subscriber.hpp"
-#include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
+//#include "umps/messaging/publisherSubscriber/publisher.hpp"
+#include "umps/messaging/xPublisherXSubscriber/subscriber.hpp"
+#include "umps/messaging/xPublisherXSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisher.hpp"
@@ -27,7 +27,7 @@ const std::string frontendAddress = "tcp://127.0.0.1:5555";
 // Faces external network (sub)
 const std::string backendAddress = "tcp://127.0.0.1:5556";
 const uint64_t idBase = 100;
-using namespace UMPS::Messaging::PublisherSubscriber;
+//using namespace UMPS::Messaging::PublisherSubscriber;
 namespace XPubXSub = UMPS::Messaging::XPublisherXSubscriber;
 namespace UAuth = UMPS::Authentication;
 namespace UMF = UMPS::MessageFormats;
@@ -124,10 +124,10 @@ void subscriber()
     UMPS::MessageFormats::Messages messageTypes;
     messageTypes.add(textMessageType);
 
-    UMPS::Messaging::PublisherSubscriber::SubscriberOptions options;
+    XPubXSub::SubscriberOptions options;
     options.setAddress(backendAddress);
     options.setMessageTypes(messageTypes);
-    UMPS::Messaging::PublisherSubscriber::Subscriber subscriber(loggerPtr);
+    XPubXSub::Subscriber subscriber(loggerPtr);
     subscriber.initialize(options);
     //subscriber.connect(backendAddress);
     //subscriber.addSubscription(pickMessageType);

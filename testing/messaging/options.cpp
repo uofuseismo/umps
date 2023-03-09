@@ -2,6 +2,7 @@
 #include "umps/authentication/zapOptions.hpp"
 #include "umps/messaging/socketOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxyOptions.hpp"
+#include "umps/messaging/xPublisherXSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/publisherOptions.hpp"
 #include "umps/messaging/publisherSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/publisherSubscriber/publisherOptions.hpp"
@@ -180,6 +181,41 @@ TEST(Messaging, XPubXSubPublisherOptions)
     options.clear();
     EXPECT_EQ(options.getHighWaterMark(), zero);
     EXPECT_EQ(options.getTimeOut(), negativeOne);
+}
+
+TEST(Messaging, XPubXSubSubscriberOptions)
+{
+    UMPS::MessageFormats::Messages messageTypes;
+    std::unique_ptr<UMPS::MessageFormats::IMessage> textMessage
+        = std::make_unique<UMPS::MessageFormats::Text> ();
+    std::unique_ptr<UMPS::MessageFormats::IMessage> failureMessage
+        = std::make_unique<UMPS::MessageFormats::Failure> ();
+    EXPECT_NO_THROW(messageTypes.add(textMessage));
+    EXPECT_NO_THROW(messageTypes.add(failureMessage));
+    const std::string address = "tcp://127.0.0.1:5555";
+    const int highWaterMark = 120;
+    const std::chrono::milliseconds timeOut{10};
+    const int zero = 0;
+    XPublisherXSubscriber::SubscriberOptions options;
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setMessageTypes(messageTypes));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(highWaterMark));
+    EXPECT_NO_THROW(options.setReceiveTimeOut(timeOut));
+
+    XPublisherXSubscriber::SubscriberOptions optionsCopy(options);
+
+    EXPECT_EQ(optionsCopy.getAddress(), address);
+    EXPECT_EQ(optionsCopy.getReceiveHighWaterMark(), highWaterMark);
+    EXPECT_EQ(optionsCopy.getReceiveTimeOut(), timeOut);
+    EXPECT_TRUE(optionsCopy.haveMessageTypes());
+    auto messagesBack = optionsCopy.getMessageTypes();
+    EXPECT_TRUE(messagesBack.contains(textMessage));
+    EXPECT_TRUE(messagesBack.contains(failureMessage));
+
+    options.clear();
+    EXPECT_EQ(options.getReceiveHighWaterMark(), zero);
+    EXPECT_EQ(options.getReceiveTimeOut(), std::chrono::milliseconds{-1});
+    EXPECT_FALSE(options.haveMessageTypes());
 }
 
 TEST(Messaging, RequestRouterRequestOptions)

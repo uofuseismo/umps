@@ -180,25 +180,12 @@ void Publisher::send(const MessageFormats::IMessage &message)
     pImpl->mPublisher->send(buffer);
 }
 
-/// Security level
-UAuth::SecurityLevel Publisher::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
-}
-
 /// Disconnect
 void Publisher::disconnect()
 {
     pImpl->disconnect();
     pImpl->mInitialized = false;
 } 
-
-/// Endpoint
-std::string Publisher::getEndPoint() const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    return pImpl->mAddress;
-}
 
 /// Socket details
 UCI::SocketDetails::XPublisher Publisher::getSocketDetails() const

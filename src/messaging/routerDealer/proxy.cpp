@@ -406,10 +406,3 @@ UCI::SocketDetails::Proxy Proxy::getSocketDetails() const
     }
     return pImpl->mSocketDetails;
 }
-
-/// Security level
-UAuth::SecurityLevel Proxy::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
-}
-

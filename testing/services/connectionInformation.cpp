@@ -154,7 +154,7 @@ TEST(ConnectionInformation, Details)
     const std::string moduleName = "testModule";
     const std::string connectionString = "tcp://127.0.0.1:8080";
     auto connectionType = ConnectionType::Broadcast;
-    auto securityLevel = UAuth::SecurityLevel::Grasslands;
+    //auto securityLevel{UAuth::SecurityLevel::Grasslands};
     //auto privileges = UAuth::UserPrivileges::ReadWrite;
 
     Details details;
@@ -167,7 +167,7 @@ TEST(ConnectionInformation, Details)
     EXPECT_NO_THROW(details.setSocketDetails(pubSocket));
 
     details.setConnectionType(connectionType);
-    details.setSecurityLevel(securityLevel);
+    //details.setSecurityLevel(securityLevel);
     //details.setUserPrivileges(privileges);
 
  
@@ -175,7 +175,7 @@ TEST(ConnectionInformation, Details)
     EXPECT_EQ(detailsCopy.getName(), moduleName);
     //EXPECT_EQ(detailsCopy.getConnectionString(), connectionString);
     EXPECT_EQ(detailsCopy.getConnectionType(), connectionType);
-    EXPECT_EQ(detailsCopy.getSecurityLevel(), securityLevel);
+    //EXPECT_EQ(detailsCopy.getSecurityLevel(), securityLevel);
     //EXPECT_EQ(detailsCopy.getUserPrivileges(), privileges);
     EXPECT_EQ(detailsCopy.getSocketType(), SocketType::Publisher);
     
@@ -235,7 +235,7 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
         //detail.setConnectionString(connectionStrings[i]);
         detail.setConnectionType(connectionTypes[i]);
         //detail.setUserPrivileges(privileges[i]);
-        detail.setSecurityLevel(securityLevels[i]);
+        //detail.setSecurityLevel(securityLevels[i]);
         detail.setSocketDetails(pubSocket);
         details.push_back(detail);
     }
@@ -266,8 +266,8 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
                   details[i].getConnectionType());
         //EXPECT_EQ(detailsCopy[i].getUserPrivileges(),
         //          details[i].getUserPrivileges());
-        EXPECT_EQ(detailsCopy[i].getSecurityLevel(),
-                  details[i].getSecurityLevel());
+        //EXPECT_EQ(detailsCopy[i].getSecurityLevel(),
+        //          details[i].getSecurityLevel());
     }
 }
 

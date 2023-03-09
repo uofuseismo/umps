@@ -152,8 +152,9 @@ void Proxy::initialize(const ProxyOptions &parameters)
     pImpl->mConnectionDetails.setSocketDetails(
         pImpl->mProxy->getSocketDetails());
     pImpl->mConnectionDetails.setConnectionType(UCI::ConnectionType::Service);
-    pImpl->mConnectionDetails.setSecurityLevel(
-        pImpl->mProxy->getSecurityLevel());
+    //auto securityLevel
+    //     = pImpl->mOptions.getProxyOptions().getZAPOptions().getSecurityLevel();
+    //pImpl->mConnectionDetails.setSecurityLevel(securityLevel);
     pImpl->mInitialized = true;
 }
 

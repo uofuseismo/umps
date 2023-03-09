@@ -170,13 +170,6 @@ bool Publisher::isInitialized() const noexcept
     return pImpl->mInitialized;
 }
 
-/// Endpoint
-std::string Publisher::getEndPoint() const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    return pImpl->mAddress;
-}
-
 /// Send a message
 void Publisher::send(const MessageFormats::IMessage &message)
 {
@@ -199,12 +192,7 @@ void Publisher::send(const MessageFormats::IMessage &message)
     pImpl->mPublisher->send(buffer);
 }
 
-/// Security level
-UAuth::SecurityLevel Publisher::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
-}
-
+/// Socket details
 UCI::SocketDetails::Publisher Publisher::getSocketDetails() const
 {
     if (!isInitialized())

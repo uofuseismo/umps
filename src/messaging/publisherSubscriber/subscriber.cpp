@@ -181,13 +181,6 @@ bool Subscriber::isInitialized() const noexcept
     return pImpl->mInitialized;
 }
 
-/// Endpoint
-std::string Subscriber::getEndPoint() const
-{
-    if (!isInitialized()){throw std::runtime_error("Class not initialized");}
-    return pImpl->mAddress;
-}
-
 /// Disconnect from endpoint
 void Subscriber::disconnect()
 {
@@ -232,12 +225,6 @@ std::unique_ptr<UMPS::MessageFormats::IMessage> Subscriber::receive() const
         throw;
     }
     return result;
-}
-
-/// Security level
-UAuth::SecurityLevel Subscriber::getSecurityLevel() const noexcept
-{
-    return pImpl->mSecurityLevel;
 }
 
 /// Socket details

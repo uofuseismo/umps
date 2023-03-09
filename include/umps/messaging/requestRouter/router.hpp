@@ -65,14 +65,9 @@ public:
     /// @param[in] options   The router options.
     /// @throws std::invalid_argument if the endpoint or callback is not set. 
     void initialize(const RouterOptions &options);
-    /// @result The security level of the connection.
-    [[deprecated]] [[nodiscard]] UMPS::Authentication::SecurityLevel getSecurityLevel() const noexcept;
     /// @result True indicates that the router is bound to an address,
     ///         has a callback, and is ready to receive and process messages.
     [[nodiscard]] bool isInitialized() const noexcept;
-    /// @result Gets the connection string.
-    /// @throws std::runtime_error if \c isInitialized() is false.
-    [[deprecated]] [[nodiscard]] std::string getAddress() const;
     /// @result the connection details.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]] Services::ConnectionInformation::SocketDetails::Router getSocketDetails() const;
