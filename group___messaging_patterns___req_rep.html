@@ -104,30 +104,47 @@ Collaboration diagram for Request-Reply Patterns:</div>
 <div class="center"><img src="group___messaging_patterns___req_rep.png" border="0" usemap="#agroup______messaging__patterns______req__rep" alt=""/></div>
 <map name="agroup______messaging__patterns______req__rep" id="agroup______messaging__patterns______req__rep">
 <area shape="rect" title=" " alt="" coords="203,31,377,56"/>
-<area shape="rect" href="group___messaging_patterns___req_rep___request_router.html" title="Individual clients submit requests to an asynchronous server." alt="" coords="425,5,548,31"/>
-<area shape="rect" href="group___messaging_patterns___req_rep___router_dealer.html" title="A fully asynchronous request&#45;reply mechanism whereby multiple clients submit requests that are proces..." alt="" coords="430,55,543,80"/>
+<area shape="rect" href="group___messaging_patterns___req_rep___request_router.html" title="The request&#45;router combination allows for an asynchronous server that can be utilized by multiple cli..." alt="" coords="425,5,548,31"/>
+<area shape="rect" href="group___messaging_patterns___req_rep___router_dealer.html" title="The router&#45;dealer combination allows for asynchronous clients interacting with asynchronous servers." alt="" coords="430,55,543,80"/>
 <area shape="rect" href="group___messaging_patterns__chapter.html" title=" " alt="" coords="5,31,155,56"/>
 </map>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group___messaging_patterns___req_rep___request_router"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___messaging_patterns___req_rep___request_router.html">Request-Router</a></td></tr>
-<tr class="memdesc:group___messaging_patterns___req_rep___request_router"><td class="mdescLeft">&#160;</td><td class="mdescRight">Individual clients submit requests to an asynchronous server. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group___messaging_patterns___req_rep___router_dealer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___messaging_patterns___req_rep___router_dealer.html">Router-Dealer</a></td></tr>
-<tr class="memdesc:group___messaging_patterns___req_rep___router_dealer"><td class="mdescLeft">&#160;</td><td class="mdescRight">A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers. This will lead to highly scalable services. <br /></td></tr>
+<tr class="memdesc:group___messaging_patterns___req_rep___router_dealer"><td class="mdescLeft">&#160;</td><td class="mdescRight">The router-dealer combination allows for asynchronous clients interacting with asynchronous servers. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:group___messaging_patterns___req_rep___request_router"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___messaging_patterns___req_rep___request_router.html">Request-Router</a></td></tr>
+<tr class="memdesc:group___messaging_patterns___req_rep___request_router"><td class="mdescLeft">&#160;</td><td class="mdescRight">The request-router combination allows for an asynchronous server that can be utilized by multiple clients. <br  />
+ <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>The request-reply mechanism is one of UMPS's major improvements over existing seismic processing systems. To see why this is so, suppose you are running two instances of a detector - say a P and S-detector - on different machines. The P-detector triggers and a pick is made. How then should you give this pick a unique identifier? One solution is to make a request from a service whose entire purpose is to provide unique identifiers. This service could be a database or a standalone program. It does not matter. All that matters is the request can be made by both detectors and the request will be fulfilled by the server. </p>
-<p>To better understand the request-reply mechanism... &lt;/&gt; </p>
+<p>The request-reply mechanism is as its name implies. There will be a client that makes a request to a server. Upon receipt of the request message, the server will perform the desired processing and return the result as a response message. Again, while conceptually simple, it will soon be clear that this pattern can be scaled so that the backend can be buttressed by an arbitrary number of servers so as to meet the demand of an arbitrary number of clients. </p>
+<p>It may not be immediately obvious, but the request-reply mechanism is one of UMPS's major improvements over many existing seismic processing systems. This is because existing systems typically use a conveyer belt approach to processing. In this strategy, the products of one module are broadcast in some way (e.g., a shared memory ring or a message bus) to a downstream module. This strategy is effective when all the processing to be performed is on a <em>single</em> server. In this case, the implicit processing assumption is that a single server can meet the computational demands of all algorithms in aggregrate. Things get messy however when multiple, physical servers are needed to keep up with the requisite processing. <br  />
+ </p>
+<p>The challenge with a pub-sub strategy for distributed computing is the logistical hurdle of deciding which instance of a processing algorithm takes action upon receipt of a message so as not to duplicate work. To the best of my knowledge, the USGS NEIC appears to be pursuing a message-centric solution that leverages <a href="https://kafka.apache.org/">Kafka</a>. In short, Kafka is a database so a processing algorithm can lock a message thereby inhibiting a separate, parallel processing algorithm from performing the same computation for the same data. </p>
+<p>The approach pursued by UMPS is to allow for the creation of RESTful APIs. Processing algorithms are now turned into stateless services that perform the desired calculation to their best of their ability then return a result. The cloud-based implementation would be a serverless function. The upshot is that meeting the computational demand amounts to continually adding hardware to drive an instance of a backend service. The downside is that each service requires the user implement a well-defined API. </p>
+<h1><a class="anchor" id="MessagingPatterns_ReqRep_RequestReply"></a>
+Request-Reply</h1>
+<p>Here, we make clear the idea behind the request-reply pattern. For reasons that will become clear, this pattern is not implemented in UMPS. <br  />
+</p>
+<p><br  />
+ </p><div class="image">
+<img src="reqRep.jpg" alt="" width="100cm"/>
+<div class="caption">
+The request-reply pattern. Here, a single client sends a message to a single server then receives a response.</div></div>
+<p> <br  />
+</p>
+<p>As the figure indicates, this pattern is extremely straightforward. A client connects to a server; presumably the server is the stable endpoint in the architecture. The server idly waits for a message from the client. Upon receipt of that message, the server performs the requisite processing. The response is then returned to the waiting client.</p>
+<p>While straightforward, this implementation is unworkable in practice. This is because the client and server communication is synchronous. For example, if the service takes too long then the client may timeout. The impatient client may then submit a second request. This will break the messaging. Consequently, I have not even bothered implementing this paradigm in UMPS. </p>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Mar 10 2023 21:59:46 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

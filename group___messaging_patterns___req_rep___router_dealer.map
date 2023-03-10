@@ -1,4 +1,4 @@
 <map id="Router&#45;Dealer" name="Router&#45;Dealer">
 <area shape="rect" id="node1" href="$group___messaging_patterns___req_rep.html" title=" " alt="" coords="5,5,180,31"/>
-<area shape="rect" id="node2" title="A fully asynchronous request&#45;reply mechanism whereby multiple clients submit requests that are proces..." alt="" coords="228,5,341,31"/>
+<area shape="rect" id="node2" title="The router&#45;dealer combination allows for asynchronous clients interacting with asynchronous servers." alt="" coords="228,5,341,31"/>
 </map>

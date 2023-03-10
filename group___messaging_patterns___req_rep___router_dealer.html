@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('group___messaging_patterns___req_rep__
 </div><!--header-->
 <div class="contents">
 
-<p>A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers. This will lead to highly scalable services.  
+<p>The router-dealer combination allows for asynchronous clients interacting with asynchronous servers.  
 <a href="#details">More...</a></p>
 <div class="dynheader">
 Collaboration diagram for Router-Dealer:</div>
@@ -107,7 +107,7 @@ Collaboration diagram for Router-Dealer:</div>
 <div class="center"><img src="group___messaging_patterns___req_rep___router_dealer.png" border="0" usemap="#agroup______messaging__patterns______req__rep______router__dealer" alt=""/></div>
 <map name="agroup______messaging__patterns______req__rep______router__dealer" id="agroup______messaging__patterns______req__rep______router__dealer">
 <area shape="rect" href="group___messaging_patterns___req_rep.html" title=" " alt="" coords="5,5,180,31"/>
-<area shape="rect" title="A fully asynchronous request&#45;reply mechanism whereby multiple clients submit requests that are proces..." alt="" coords="228,5,341,31"/>
+<area shape="rect" title="The router&#45;dealer combination allows for asynchronous clients interacting with asynchronous servers." alt="" coords="228,5,341,31"/>
 </map>
 </div>
 <table class="memberdecls">
@@ -133,13 +133,26 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers. This will lead to highly scalable services. </p>
+<p>The router-dealer combination allows for asynchronous clients interacting with asynchronous servers. </p>
+<p>We now quickly overcome the shortcomings of the <a class="el" href="group___messaging_patterns___req_rep.html#MessagingPatterns_ReqRep_RequestReply">Request-Reply</a> pattern. As will be a theme, this is accomplished by introducing a proxy. <br  />
+</p>
+<p><br  />
+ </p><div class="image">
+<img src="routerDealer.jpg" alt="" width="400cm"/>
+<div class="caption">
+The router-dealer pattern. Here, three clients submit requests, which are shepharded from the router frontend to the dealer backend, the requests are sent to a server which responds. The router-dealer then unwinds the request logic and delivers the appropriate response to the appropriate client.</div></div>
+<p> <br  />
+</p>
+<p>The proxy now consists of a router frontend to which clients connect and a dealer backend to which servers connect. The routers can accept an arbitrary number of client connections and the dealers can accept an arbitrary number of server connections. Moreover, the messaging is asynchronous which means the framework can handle multiple non-blocking requests from a client and multiple non-blocking responses from a server. Of course, whether your application's logic can handle that is another thing - but the option is on the table if you want to explore it.</p>
+<p>In more detail, the clients requests are handled using a fair-queuing strategy. The proxy distributes work via the dealer which uses a round-robin load-balancing strategy. When the computational work in requests and backend hardware are approximately equal this is a very good strategy. Though it is possible to implement a custom proxy that performs whatever type of load balancing you desire. The grand irony is even though ZeroMQ would imply no message queues, without about 20 lines of code UMPS provides a light-weight, highly-scalable solution that is leveraged by all of our machine-learning inference algorithms to support real-time and post-processing.</p>
+<h2><a class="anchor" id="TopicMessagingPatterns_RouterDealer_Example"></a>
+An Example</h2>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Mar 9 2023 22:54:34 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Mar 10 2023 21:59:46 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

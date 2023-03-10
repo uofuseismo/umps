@@ -1,6 +1,5 @@
 var NAVTREEINDEX8 =
 {
-"group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67af01d4c0d85ece9b196ab4b8efc16c92b":[2,5,0,8,2],
 "group___applications__u_operator.html#ggae30f32e64f53967cac8d851f01602a67af56ec2ab97d604832d90f6394e3f341f":[2,5,0,8,10],
 "group___applications__u_remote_command.html":[2,5,2],
 "group___applications__u_remote_command.html#TopicApplications_uRemoteCommand":[2,5,2,12],
@@ -39,8 +38,8 @@ var NAVTREEINDEX8 =
 "group___messaging_patterns___pub_sub___pub_sub.html":[2,1,2,0],
 "group___messaging_patterns___pub_sub___x_pub_x_sub.html":[2,1,2,1],
 "group___messaging_patterns___req_rep.html":[2,1,3],
-"group___messaging_patterns___req_rep___request_router.html":[2,1,3,0],
-"group___messaging_patterns___req_rep___router_dealer.html":[2,1,3,1],
+"group___messaging_patterns___req_rep___request_router.html":[2,1,3,1],
+"group___messaging_patterns___req_rep___router_dealer.html":[2,1,3,0],
 "group___messaging_patterns__chapter.html":[2,1],
 "group___modules___module_base_class.html":[2,4,0],
 "group___modules___processes_base_class.html":[2,4,1],
@@ -48,6 +47,7 @@ var NAVTREEINDEX8 =
 "group___modules__chapter.html#TopicModules":[2,4,2],
 "hierarchy.html":[3,2],
 "index.html":[],
+"index.html":[0],
 "keys_8hpp_source.html":[4,0,0,0,0,0,1],
 "level_8hpp_source.html":[4,0,0,0,2,1],
 "log_8hpp_source.html":[4,0,0,0,2,2],

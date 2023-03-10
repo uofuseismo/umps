@@ -1,4 +1,4 @@
 <map id="Request&#45;Router" name="Request&#45;Router">
 <area shape="rect" id="node1" href="$group___messaging_patterns___req_rep.html" title=" " alt="" coords="5,5,180,31"/>
-<area shape="rect" id="node2" title="Individual clients submit requests to an asynchronous server." alt="" coords="228,5,351,31"/>
+<area shape="rect" id="node2" title="The request&#45;router combination allows for an asynchronous server that can be utilized by multiple cli..." alt="" coords="228,5,351,31"/>
 </map>
