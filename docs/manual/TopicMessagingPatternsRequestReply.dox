@@ -3,11 +3,57 @@
 \ingroup MessagingPatterns_chapter
 
 <p>
-The request-reply mechanism is one of UMPS's major improvements over existing seismic processing systems.  To see why this is so, suppose you are running two instances of a detector - say a P and S-detector - on different machines.  The P-detector triggers and a pick is made.  How then should you give this pick a unique identifier?  One solution is to make a request from a service whose entire purpose is to provide unique identifiers.  This service could be a database or a standalone program.  It does not matter.  All that matters is the request can be made by both detectors and the request will be fulfilled by the server.
+The request-reply mechanism is as its name implies.  There will be a client that makes a request to a server.  Upon receipt of the request message, the server will perform the desired processing and return the result as a response message.  Again, while conceptually simple, it will soon be clear that this pattern can be scaled so that the backend can be buttressed by an arbitrary number of servers so as to meet the demand of an arbitrary number of clients.
 </p>
 
-<p> 
-To better understand the request-reply mechanism...
-</>
+<p>
+It may not be immediately obvious, but the request-reply mechanism is one of UMPS's major improvements over many existing seismic processing systems.  This is because existing systems typically use a conveyer belt approach to processing.  In this strategy, the products of one module are broadcast in some way (e.g., a shared memory ring or a message bus) to a downstream module.  This strategy is effective when all the processing to be performed is on a \em single server.  In this case, the implicit processing assumption is that a single server can meet the computational demands of all algorithms in aggregrate.  Things get messy however when multiple, physical servers are needed to keep up with the requisite processing.  
+</p>
+
+<p>
+The challenge with a pub-sub strategy for distributed computing is the logistical hurdle of deciding which instance of a processing algorithm takes action upon receipt of a message so as not to duplicate work.  To the best of my knowledge, the USGS NEIC appears to be pursuing a message-centric solution that leverages <a href="https://kafka.apache.org/">Kafka</a>.  In short, Kafka is a database so a processing algorithm can lock a message thereby inhibiting a separate, parallel processing algorithm from performing the same computation for the same data.
+</p>
+
+<p>
+The approach pursued by UMPS is to allow for the creation of RESTful APIs.  Processing algorithms are now turned into stateless services that perform the desired calculation to their best of their ability then return a result.  The cloud-based implementation would be a serverless function.  The upshot is that meeting the computational demand amounts to continually adding hardware to drive an instance of a backend service.  The downside is that each service requires the user implement a well-defined API.
+</p>
+
+\section MessagingPatterns_ReqRep_RequestReply Request-Reply
+\ingroup MessagingPatterns_ReqRep
+
+Here, we make clear the idea behind the request-reply pattern.  For reasons that will become clear, this pattern is not implemented in UMPS.  
+
+<br>
+\image html reqRep.jpg "The request-reply pattern.  Here, a single client sends a message to a single server then receives a response." width=100cm
+<br>
+
+As the figure indicates, this pattern is extremely straightforward.  A client connects to a server; presumably the server is the stable endpoint in the architecture.  The server idly waits for a message from the client.  Upon receipt of that message, the server performs the requisite processing.  The response is then returned to the waiting client.
+
+While straightforward, this implementation is unworkable in practice.  This is because the client and server communication is synchronous.  For example, if the service takes too long then the client may timeout.  The impatient client may then submit a second request.  This will break the messaging.  Consequently, I have not even bothered implementing this paradigm in UMPS.
+ 
+\defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
+\brief The router-dealer combination allows for asynchronous clients interacting with asynchronous servers.
+\ingroup MessagingPatterns_ReqRep
+
+We now quickly overcome the shortcomings of the \ref MessagingPatterns_ReqRep_RequestReply pattern.  As will be a theme, this is accomplished by introducing a proxy.  
+
+<br>
+\image html routerDealer.jpg "The router-dealer pattern.  Here, three clients submit requests, which are shepharded from the router frontend to the dealer backend, the requests are sent to a server which responds.  The router-dealer then unwinds the request logic and delivers the appropriate response to the appropriate client." width=400cm
+<br>
+
+The proxy now consists of a router frontend to which clients connect and a dealer backend to which servers connect.  The routers can accept an arbitrary number of client connections and the dealers can accept an arbitrary number of server connections.  Moreover, the messaging is asynchronous which means the framework can handle multiple non-blocking requests from a client and multiple non-blocking responses from a server.  Of course, whether your application's logic can handle that is another thing - but the option is on the table if you want to explore it.
+
+In more detail, the clients requests are handled using a fair-queuing strategy.  The proxy distributes work via the dealer which uses a round-robin load-balancing strategy.  When the computational work in requests and backend hardware are approximately equal this is a very good strategy.  Though it is possible to implement a custom proxy that performs whatever type of load balancing you desire.  The grand irony is even though ZeroMQ would imply no message queues, without about 20 lines of code UMPS provides a light-weight, highly-scalable solution that is leveraged by all of our machine-learning inference algorithms to support real-time and post-processing.
+
+\subsection TopicMessagingPatterns_RouterDealer_Example An Example
+
+\defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
+\brief The request-router combination allows for an asynchronous server that can be utilized by multiple clients.  
+\ingroup MessagingPatterns_ReqRep 
+
+\section TopicMessagingPatterns_RouterRouter The Router-Router
+
+Those who are reading closely may wonder how UMPS provides for remote interaction with distributed modules.  The answer is a router-router combination.  This (difficult to implement) pattern allows for point-to-point communication over a network.  At the moment, this pattern is not exposed in UMPS simply because for most applications it is not useful.
+
 
 */
