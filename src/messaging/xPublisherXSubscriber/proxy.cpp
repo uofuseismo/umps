@@ -277,7 +277,7 @@ public:
     std::shared_ptr<UMPS::Messaging::Context> mFrontendContext{nullptr};
     // This context handles communication with the subscribers.
     std::shared_ptr<UMPS::Messaging::Context> mBackendContext{nullptr};
-    // The front is an xSub that faces the internal servers
+    // The frontend is an xSub that faces the internal servers
     std::unique_ptr<zmq::socket_t> mFrontend{nullptr};
     // The backend is an xPub that faces the external clients
     std::unique_ptr<zmq::socket_t> mBackend{nullptr};
