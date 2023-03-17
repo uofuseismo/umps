@@ -616,7 +616,7 @@ int main(int argc, char *argv[])
                          authenticatorLogFileName,
                          UMPS::Logging::Level::Info, // Always log
                          hour, minute);
-    std::shared_ptr<UAuth::IAuthenticator> authenticator;
+    std::shared_ptr<UAuth::IAuthenticator> authenticator{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> adminAuthenticator{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> readOnlyAuthenticator{nullptr};
     std::shared_ptr<UAuth::IAuthenticator> readWriteAuthenticator{nullptr};
@@ -743,7 +743,7 @@ int main(int argc, char *argv[])
                                      options.mVerbosity, hour, minute);
         auto proxyService
             = std::make_unique<UMPS::ProxyServices::Proxy>
-              (logger, authenticator);
+              (logger, readOnlyAuthenticator);
         proxyService->initialize(proxyOptions);
         auto serviceKey = "ProxyServices::" + moduleName;
         modules->mProxyServices.insert(std::pair(serviceKey,
