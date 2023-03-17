@@ -86,7 +86,7 @@ void Request::initialize(const RequestOptions &options)
     UMPS::Messaging::SocketOptions socketOptions;
     socketOptions.setAddress(options.getAddress());
     socketOptions.setMessageFormats(options.getMessageFormats());
-    socketOptions.setZAPOptions(pImpl->mOptions.getZAPOptions());
+    socketOptions.setZAPOptions(options.getZAPOptions());
     socketOptions.setSendHighWaterMark(options.getSendHighWaterMark());
     socketOptions.setReceiveHighWaterMark(options.getReceiveHighWaterMark());
     socketOptions.setSendTimeOut(options.getSendTimeOut());

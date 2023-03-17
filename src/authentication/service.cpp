@@ -149,7 +149,6 @@ void Service::start()
         pImpl->mLogger->warn("Service is running.  Attemping to stop.");
         stop();
     }
-    //zmq::context_t *contextPtr{nullptr};
     auto contextPtr
         = reinterpret_cast<zmq::context_t *> (pImpl->mContext->getContext());
     zmq::socket_t pipe(*contextPtr, zmq::socket_type::pair);
@@ -174,9 +173,6 @@ void Service::start()
     pipe.send(zmq::message_t{}, zmq::send_flags::none);
     pImpl->mLogger->debug("Starting authenticator on endpoint "
                         + pImpl->mEndPoint);
-    //Authenticator authenticator(pImpl->mContext, pImpl->mLogger);
-    //pImpl->mAuthenticator->start(); 
-    //auto zap = pImpl->mAuthenticator->getZapSocket(); 
     const int nPollItems = 2;
     pipe.send(zmq::message_t{}, zmq::send_flags::none); // Signal I'm ready
     zmq::pollitem_t items[] =
