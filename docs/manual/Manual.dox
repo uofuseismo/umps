@@ -1,5 +1,7 @@
+namespace UMPS
+{
 /*!
-\page Overview
+\page index Overview
 
 \defgroup Messages_chapter Messages
 \defgroup Messages_BaseClass Abstract Message Base Class
@@ -16,19 +18,6 @@
 \defgroup MessagingPatterns_Context Context
 \brief A context is like a thread used by ZeroMQ to send and receive messages.
 \ingroup MessagingPatterns_chapter
-
-\defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
-\ingroup MessagingPatterns_ReqRep 
-\defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
-\ingroup MessagingPatterns_ReqRep
-
-\defgroup MessagingPatterns_ReqRep_RouterDealer Router-Dealer
-\brief A fully asynchronous request-reply mechanism whereby multiple clients submit requests that are processed by multiple servers.  This will lead to highly scalable services.
-\ingroup MessagingPatterns_ReqRep
-\defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
-\brief Individual clients submit requests to an asynchronous server.
-\ingroup MessagingPatterns_ReqRep
-
 
 \defgroup Authentication_chapter Authentication
 \defgroup Authentication_Introduction Introduction 
@@ -92,3 +81,4 @@
 \brief Allows privileged users to interact with remotely running modules.
 \ingroup Applications_chapter
 */
+}
