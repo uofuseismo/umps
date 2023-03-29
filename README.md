@@ -10,7 +10,7 @@ Utah Message Passing System is a network-seismology-oriented message passing lib
    2. Addresses the network exploration problem with a hub and spoke model.
    3. Can validate connections.
 
-This software was initially presented in On-premises Integration of Machine Learning Models at UUSS - Distributed Computing and Messaging at the SSA 2022 conference.
+This software was initially presented in On-premises Integration of Machine Learning Models at UUSS - Distributed Computing and Messaging at the SSA 2022 conference and Using the University of Utah Message Passing System to Help Realize Real-Time Machine Learning Modules in Network Operations at the SSA 2023 conference.
 
 # Status
 
