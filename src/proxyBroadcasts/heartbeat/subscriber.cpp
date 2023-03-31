@@ -94,8 +94,22 @@ Subscriber::~Subscriber() = default;
 /// Receive
 std::unique_ptr<Status> Subscriber::receive() const
 {
-    auto status = UMF::static_unique_pointer_cast<Status>
-                  (pImpl->mSubscriber->receive());
-    return status;
+    auto message = pImpl->mSubscriber->receive();
+    if (message != nullptr)
+    {
+        try
+        {
+            return UMF::static_unique_pointer_cast<Status>
+                   (std::move(message));
+        }
+        catch (const std::exception &e)
+        {
+            auto errorMessage
+                = "Failed to unpack heartbeat status.  Failed with "
+                + std::string{e.what()};
+            throw std::runtime_error(errorMessage);
+        }
+    }
+    return nullptr;
 }
 
