@@ -334,7 +334,7 @@ if (${BUILD_EXAMPLES})
                          CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO
                          EXCLUDE_FROM_ALL TRUE)
-   target_link_libraries(pubSubExample PRIVATE umps)
+   target_link_libraries(pubSubExample PRIVATE umps Threads::Threads)
    target_include_directories(pubSubExample
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 
@@ -348,8 +348,22 @@ if (${BUILD_EXAMPLES})
                          CXX_STANDARD_REQUIRED YES 
                          CXX_EXTENSIONS NO
                          EXCLUDE_FROM_ALL TRUE)
-   target_link_libraries(xPubXSubExample PRIVATE umps)
+   target_link_libraries(xPubXSubExample PRIVATE umps Threads::Threads)
    target_include_directories(xPubXSubExample
+                              PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
+
+   add_executable(routerDealerExample
+                  examples/routerDealer/main.cpp
+                  examples/routerDealer/proxy.cpp
+                  examples/routerDealer/server.cpp
+                  examples/routerDealer/client.cpp)
+   set_target_properties(routerDealerExample PROPERTIES
+                         CXX_STANDARD 20
+                         CXX_STANDARD_REQUIRED YES
+                         CXX_EXTENSIONS NO
+                         EXCLUDE_FROM_ALL TRUE)
+   target_link_libraries(routerDealerExample PRIVATE umps Threads::Threads)
+   target_include_directories(routerDealerExample
                               PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>)
 endif()
 

@@ -41,11 +41,31 @@ We now quickly overcome the shortcomings of the \ref MessagingPatterns_ReqRep_Re
 \image html routerDealer.jpg "The router-dealer pattern.  Here, three clients submit requests, which are shepharded from the router frontend to the dealer backend, the requests are sent to a server which responds.  The router-dealer then unwinds the request logic and delivers the appropriate response to the appropriate client." width=400cm
 <br>
 
-The proxy now consists of a router frontend to which clients connect and a dealer backend to which servers connect.  The routers can accept an arbitrary number of client connections and the dealers can accept an arbitrary number of server connections.  Moreover, the messaging is asynchronous which means the framework can handle multiple non-blocking requests from a client and multiple non-blocking responses from a server.  Of course, whether your application's logic can handle that is another thing - but the option is on the table if you want to explore it.
+The proxy now consists of a router frontend to which clients connect and a dealer backend to which servers connect.  The router socket can accept an arbitrary number of client connections and the dealer socket can accept an arbitrary number of server connections.  Moreover, the messaging is asynchronous which means the framework can handle multiple non-blocking requests from a client and multiple non-blocking responses from a server.  Of course, whether your application's logic can handle that is another thing - but the option is on the table if you want to explore it.
 
 In more detail, the clients requests are handled using a fair-queuing strategy.  The proxy distributes work via the dealer which uses a round-robin load-balancing strategy.  When the computational work in requests and backend hardware are approximately equal this is a very good strategy.  Though it is possible to implement a custom proxy that performs whatever type of load balancing you desire.  The grand irony is even though ZeroMQ would imply no message queues, with only about 20 lines of code UMPS provides a light-weight, highly-scalable solution that is leveraged by all of our machine-learning inference algorithms to support real-time and post-processing.
 
 \subsection TopicMessagingPatterns_RouterDealer_Example An Example
+
+In this example, three clients will interact with two servers by way of the router-dealer proxy.
+
+\subsection TopicMessagingPatterns_RouterDealer_Server The Server
+
+The server behaves very much like a simple request-reply backend.  A server connects to the backend, provides UMPS with a processing functions, and responds to requests.  This particular server has been hardened to better deal with invalid messages and processing errors by way of the generic UMPS failure message and try-catch statements.  This is because the server logic must be robust and resilient to error so as not to crash the backend.
+
+\include routerDealer/server.cpp
+
+\subsection TopicMessagingPatterns_RouterDealer_Client The Client
+
+Similarly, the client behaves very much like a simple request-reply client.  It submits a request and waits for a reply.  This particular client has been hardened to deal with different types of failure (invalid request messages, server processing errors, and request time-outs).  Typically, this logic would be embedded in a custom, application-specific client class.
+
+\include routerDealer/client.cpp
+
+\subsection TopicMessagingPatterns_RouterDealer_Proxy The Proxy
+
+The API of the router-dealer proxy behaves very much like the proxy you encountered \ref TopicMessagingPatterns_XPubXSub_Proxy "xPub-xSub section".  However, the behind-the-scenes logic of this proxy is very different from the xPub-xSub proxy.
+
+\include routerDealer/proxy.cpp
 
 \defgroup MessagingPatterns_ReqRep_RequestRouter Request-Router
 \brief The request-router combination allows for an asynchronous server that can be utilized by multiple clients.  

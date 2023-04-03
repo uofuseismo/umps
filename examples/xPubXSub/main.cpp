@@ -1,7 +1,7 @@
 #include <thread>
 #include "xpubxsub.hpp"
 
-int main(int argc, char *argv[])
+int main()
 {
     // Create a proxy thread
     auto proxyThread = std::thread(proxy);

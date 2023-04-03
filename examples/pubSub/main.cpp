@@ -1,7 +1,7 @@
 #include <thread>
 #include "pubsub.hpp"
 
-int main(int argc, char *argv[])
+int main()
 {
     // Actually let the subscribers `connect' first
     auto subscriberThread1 = std::thread(subscriber, 1);
