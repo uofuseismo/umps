@@ -143,16 +143,239 @@ Classes</h2></td></tr>
 The router-dealer pattern. Here, three clients submit requests, which are shepharded from the router frontend to the dealer backend, the requests are sent to a server which responds. The router-dealer then unwinds the request logic and delivers the appropriate response to the appropriate client.</div></div>
 <p> <br  />
 </p>
-<p>The proxy now consists of a router frontend to which clients connect and a dealer backend to which servers connect. The routers can accept an arbitrary number of client connections and the dealers can accept an arbitrary number of server connections. Moreover, the messaging is asynchronous which means the framework can handle multiple non-blocking requests from a client and multiple non-blocking responses from a server. Of course, whether your application's logic can handle that is another thing - but the option is on the table if you want to explore it.</p>
+<p>The proxy now consists of a router frontend to which clients connect and a dealer backend to which servers connect. The router socket can accept an arbitrary number of client connections and the dealer socket can accept an arbitrary number of server connections. Moreover, the messaging is asynchronous which means the framework can handle multiple non-blocking requests from a client and multiple non-blocking responses from a server. Of course, whether your application's logic can handle that is another thing - but the option is on the table if you want to explore it.</p>
 <p>In more detail, the clients requests are handled using a fair-queuing strategy. The proxy distributes work via the dealer which uses a round-robin load-balancing strategy. When the computational work in requests and backend hardware are approximately equal this is a very good strategy. Though it is possible to implement a custom proxy that performs whatever type of load balancing you desire. The grand irony is even though ZeroMQ would imply no message queues, with only about 20 lines of code UMPS provides a light-weight, highly-scalable solution that is leveraged by all of our machine-learning inference algorithms to support real-time and post-processing.</p>
 <h2><a class="anchor" id="TopicMessagingPatterns_RouterDealer_Example"></a>
 An Example</h2>
-</div><!-- contents -->
+<p>In this example, three clients will interact with two servers by way of the router-dealer proxy.</p>
+<h2><a class="anchor" id="TopicMessagingPatterns_RouterDealer_Server"></a>
+The Server</h2>
+<p>The server behaves very much like a simple request-reply backend. A server connects to the backend, provides UMPS with a processing functions, and responds to requests. This particular server has been hardened to better deal with invalid messages and processing errors by way of the generic UMPS failure message and try-catch statements. This is because the server logic must be robust and resilient to error so as not to crash the backend.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/failure.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/routerDealer/reply.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/routerDealer/replyOptions.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;routerDealer.hpp&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;messageTypes.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">namespace</span></div>
+<div class="line">{</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">class </span>MessageProcessor</div>
+<div class="line">{</div>
+<div class="line"><span class="keyword">public</span>:</div>
+<div class="line">    <span class="keyword">explicit</span> MessageProcessor(<span class="keywordtype">int</span> identifier) :</div>
+<div class="line">        mIdentifier(identifier)</div>
+<div class="line">    {</div>
+<div class="line">    }</div>
+<div class="line">    [[nodiscard]]</div>
+<div class="line">    std::unique_ptr&lt;UMPS::MessageFormats::IMessage&gt;</div>
+<div class="line">        process(<span class="keyword">const</span> std::string &amp;messageType,</div>
+<div class="line">                <span class="keyword">const</span> <span class="keywordtype">void</span> *messageContents, <span class="keyword">const</span> <span class="keywordtype">size_t</span> length)</div>
+<div class="line">    {</div>
+<div class="line">        <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_failure.html">UMPS::MessageFormats::Failure</a> failureMessage; </div>
+<div class="line">        <span class="comment">// Handle a request message</span></div>
+<div class="line">        ::RequestMessage request;</div>
+<div class="line">        <span class="keywordflow">if</span> (messageType == request.getMessageType())</div>
+<div class="line">        {</div>
+<div class="line">            ::ReplyMessage response;</div>
+<div class="line">            <span class="comment">// Deserialize the message</span></div>
+<div class="line">            <span class="keywordflow">try</span></div>
+<div class="line">            {</div>
+<div class="line">                request.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#aa0822ff186679a6dff1074a54680bc36">fromMessage</a>(</div>
+<div class="line">                    <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span> (messageContents), length);</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e)</div>
+<div class="line">            {</div>
+<div class="line">                failureMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#a5b61403e51dba0532e3499ba8f1d9e78">setDetails</a>(<span class="stringliteral">&quot;Server &quot;</span></div>
+<div class="line">                                        + std::to_string(mIdentifier)</div>
+<div class="line">                                        + <span class="stringliteral">&quot; failed to deserialize message&quot;</span>);</div>
+<div class="line">                <span class="keywordflow">return</span> failureMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#a03b2045ba7a13bda0077b9d5aba51e21">clone</a>();</div>
+<div class="line">            }</div>
+<div class="line">            <span class="comment">// Process the message and set the result</span></div>
+<div class="line">            mResponses = mResponses + 1</div>
+<div class="line">            response.setContents(<span class="stringliteral">&quot;Server &quot;</span> + std::to_string(mIdentifier)</div>
+<div class="line">                               + <span class="stringliteral">&quot; handling message: &quot;</span> + request.getContents());</div>
+<div class="line">            <span class="comment">// Send the reply back </span></div>
+<div class="line">            <span class="keywordflow">return</span> response.clone();</div>
+<div class="line">        }</div>
+<div class="line">        <span class="comment">// It&#39;s unclear what type of request was received.  Send a generic</span></div>
+<div class="line">        <span class="comment">// failure message back to the client.</span></div>
+<div class="line">        failureMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#a5b61403e51dba0532e3499ba8f1d9e78">setDetails</a>(<span class="stringliteral">&quot;Server &quot;</span> + std::to_string(mIdentifier)</div>
+<div class="line">                                + <span class="stringliteral">&quot; encountered unhandled message type &quot;</span></div>
+<div class="line">                                + messageType); </div>
+<div class="line">        <span class="keywordflow">return</span> failureMessage.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#a03b2045ba7a13bda0077b9d5aba51e21">clone</a>();</div>
+<div class="line">    }</div>
+<div class="line">    [[nodiscard]] <span class="keywordtype">int</span> getNumberOfResponses()<span class="keyword"> const</span></div>
+<div class="line"><span class="keyword">    </span>{</div>
+<div class="line">        <span class="keywordflow">return</span> mResponses;</div>
+<div class="line">    }</div>
+<div class="line"><span class="keyword">private</span>:</div>
+<div class="line">    <span class="keywordtype">int</span> mIdentifier{0};</div>
+<div class="line">    <span class="keywordtype">int</span> mResponses{0};</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> server(<span class="keywordtype">int</span> instance)</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// UMPS will require the backend to have the ability to respond to messages.</span></div>
+<div class="line">    ::MessageProcessor messageProcessor(instance);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Create the replier options</span></div>
+<div class="line">    <a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html">UMPS::Messaging::RouterDealer::ReplyOptions</a> options;</div>
+<div class="line">    options.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a69606052deea1d13bae68e6cc3f98e83">setAddress</a>(<span class="stringliteral">&quot;tcp://127.0.0.1:5556&quot;</span>);</div>
+<div class="line">    options.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a51f47b5095e63efeb893797fb392c740">setCallback</a>(std::bind(&amp;MessageProcessor::process,</div>
+<div class="line">                                  &amp;messageProcessor,</div>
+<div class="line">                                  std::placeholders::_1,</div>
+<div class="line">                                  std::placeholders::_2,</div>
+<div class="line">                                  std::placeholders::_3));</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Initialize the replier service</span></div>
+<div class="line">    <a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html">UMPS::Messaging::RouterDealer::Reply</a> server;</div>
+<div class="line">    server.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#a5beb9b12c804be1f2a76b1e464f8e02b">initialize</a>(options);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Start the server</span></div>
+<div class="line">    <span class="keyword">auto</span> replierThread</div>
+<div class="line">        = std::thread(&amp;<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#a4732bcd357bd2f5a072d4d6ec98062a3">UMPS::Messaging::RouterDealer::Reply::start</a>, &amp;server);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Main thread sleeps for a bit.</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::seconds {2});</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Shut down the replier thread.</span></div>
+<div class="line">    server.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#acad895beb23ef935b90949d42a0bf27b">stop</a>();</div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Server instance &quot;</span> &lt;&lt; instance &lt;&lt; <span class="stringliteral">&quot; handled &quot;</span></div>
+<div class="line">              &lt;&lt; messageProcessor.getNumberOfResponses()</div>
+<div class="line">              &lt;&lt; <span class="stringliteral">&quot; requests&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Join threads</span></div>
+<div class="line">    <span class="keywordflow">if</span> (replierThread.joinable()){replierThread.join();}</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_failure_html"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_failure.html">UMPS::MessageFormats::Failure</a></div><div class="ttdoc">This message is a general failure message. For generalized request-reply mechanisms,...</div><div class="ttdef"><b>Definition:</b> failure.hpp:15</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_failure_html_a03b2045ba7a13bda0077b9d5aba51e21"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#a03b2045ba7a13bda0077b9d5aba51e21">UMPS::MessageFormats::Failure::clone</a></div><div class="ttdeci">std::unique_ptr&lt; UMPS::MessageFormats::IMessage &gt; clone() const final</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_failure_html_a5b61403e51dba0532e3499ba8f1d9e78"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#a5b61403e51dba0532e3499ba8f1d9e78">UMPS::MessageFormats::Failure::setDetails</a></div><div class="ttdeci">void setDetails(const std::string &amp;details) noexcept</div><div class="ttdoc">Sets the details of a failure message.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_failure_html_aa0822ff186679a6dff1074a54680bc36"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_failure.html#aa0822ff186679a6dff1074a54680bc36">UMPS::MessageFormats::Failure::fromMessage</a></div><div class="ttdeci">void fromMessage(const std::string &amp;message) final</div><div class="ttdoc">Creates the class from a message.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_html"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html">UMPS::Messaging::RouterDealer::Reply</a></div><div class="ttdoc">A ZeroMQ reply for use in the router-dealer.</div><div class="ttdef"><b>Definition:</b> reply.hpp:39</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_html_a4732bcd357bd2f5a072d4d6ec98062a3"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#a4732bcd357bd2f5a072d4d6ec98062a3">UMPS::Messaging::RouterDealer::Reply::start</a></div><div class="ttdeci">void start()</div><div class="ttdoc">Starts the reply service. The service will poll on messages from the dealer, process the messages wit...</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_html_a5beb9b12c804be1f2a76b1e464f8e02b"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#a5beb9b12c804be1f2a76b1e464f8e02b">UMPS::Messaging::RouterDealer::Reply::initialize</a></div><div class="ttdeci">void initialize(const ReplyOptions &amp;options)</div><div class="ttdoc">Initializes the reply.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_html_acad895beb23ef935b90949d42a0bf27b"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply.html#acad895beb23ef935b90949d42a0bf27b">UMPS::Messaging::RouterDealer::Reply::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">This will stop the reply service.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options_html"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html">UMPS::Messaging::RouterDealer::ReplyOptions</a></div><div class="ttdoc">Defines the reply socket options.</div><div class="ttdef"><b>Definition:</b> replyOptions.hpp:29</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options_html_a51f47b5095e63efeb893797fb392c740"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a51f47b5095e63efeb893797fb392c740">UMPS::Messaging::RouterDealer::ReplyOptions::setCallback</a></div><div class="ttdeci">void setCallback(const std::function&lt; std::unique_ptr&lt; UMPS::MessageFormats::IMessage &gt;(const std::string &amp;messageType, const void *data, size_t length)&gt; &amp;callback)</div><div class="ttdoc">The callback function is specified by the user to process messages.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options_html_a69606052deea1d13bae68e6cc3f98e83"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_reply_options.html#a69606052deea1d13bae68e6cc3f98e83">UMPS::Messaging::RouterDealer::ReplyOptions::setAddress</a></div><div class="ttdeci">void setAddress(const std::string &amp;address)</div><div class="ttdoc">The address of the dealer to which the service will connect.</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_RouterDealer_Client"></a>
+The Client</h2>
+<p>Similarly, the client behaves very much like a simple request-reply client. It submits a request and waits for a reply. This particular client has been hardened to deal with different types of failure (invalid request messages, server processing errors, and request time-outs). Typically, this logic would be embedded in a custom, application-specific client class.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/failure.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/messages.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/routerDealer/request.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/routerDealer/requestOptions.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messageFormats/staticUniquePointerCast.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;routerDealer.hpp&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;messageTypes.hpp&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> client(<span class="keywordtype">int</span> instance)</div>
+<div class="line">{</div>
+<div class="line">    <span class="comment">// Define the message types that the client will receive</span></div>
+<div class="line">    <a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a> messageTypes;</div>
+<div class="line">    std::unique_ptr&lt;UMPS::MessageFormats::IMessage&gt; replyMessageType</div>
+<div class="line">        = std::make_unique&lt;::ReplyMessage&gt; ();</div>
+<div class="line">    std::unique_ptr&lt;UMPS::MessageFormats::IMessage&gt; failureMessageType</div>
+<div class="line">        = std::make_unique&lt;UMPS::MessageFormats::Failure&gt; (); </div>
+<div class="line">    messageTypes.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html#a6ed03361ef900097e8aa9a7d8b258f4b">add</a>(replyMessageType);</div>
+<div class="line">    messageTypes.<a class="code" href="class_u_m_p_s_1_1_message_formats_1_1_messages.html#a6ed03361ef900097e8aa9a7d8b258f4b">add</a>(failureMessageType);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Define the subscriber options</span></div>
+<div class="line">    <a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html">UMPS::Messaging::RouterDealer::RequestOptions</a> clientOptions;</div>
+<div class="line">    clientOptions.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html#aa5924a8da84b2ca826b694bd8f0a90b7">setAddress</a>(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>); <span class="comment">// Connect to this address</span></div>
+<div class="line">    clientOptions.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html#ac5630a0dbcdcb3d3712954e09cb96159">setReceiveTimeOut</a>(std::chrono::milliseconds {500});</div>
+<div class="line">    clientOptions.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html#a2de25ab69a5dc848d5344853371b3401">setMessageFormats</a>(messageTypes);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Initialize the subscriber</span></div>
+<div class="line">    <a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request.html">UMPS::Messaging::RouterDealer::Request</a> client;</div>
+<div class="line">    client.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request.html#a459806bab6a5e86939d9417863d4b598">initialize</a>(clientOptions);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Process some requests</span></div>
+<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; N_REQUESTS; ++i)</div>
+<div class="line">    {</div>
+<div class="line">        ::RequestMessage request;</div>
+<div class="line">        request.setContents(<span class="stringliteral">&quot;Request from instance &quot;</span></div>
+<div class="line">                          + std::to_string(instance));</div>
+<div class="line">        <span class="keyword">auto</span> reply = client.<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request.html#a0e67e81ac33cb15067f9d66e61954d1e">request</a>(request);</div>
+<div class="line">        <span class="keywordflow">if</span> (reply != <span class="keyword">nullptr</span>)</div>
+<div class="line">        {</div>
+<div class="line">            ::ReplyMessage replyMessage;</div>
+<div class="line">            <span class="keywordflow">if</span> (reply-&gt;getMessageType() == replyMessage.getMessageType())</div>
+<div class="line">            {</div>
+<div class="line">                <span class="keyword">auto</span> replyMessage</div>
+<div class="line">                     = <a class="code" href="group___messages___base_class.html#gaedc434482f71acadf8db4bdd56804edb">UMPS::MessageFormats::static_unique_pointer_cast</a></div>
+<div class="line">                             &lt;::ReplyMessage&gt; (std::move(reply));</div>
+<div class="line">                std::cout &lt;&lt; <span class="stringliteral">&quot;Reply thread &quot;</span> &lt;&lt; instance &lt;&lt; <span class="stringliteral">&quot; received reply: &quot;</span></div>
+<div class="line">                          &lt;&lt; replyMessage-&gt;getContents() &lt;&lt; std::endl;</div>
+<div class="line">            }</div>
+<div class="line">            <span class="keywordflow">else</span></div>
+<div class="line">            {</div>
+<div class="line">                std::cout &lt;&lt; <span class="stringliteral">&quot;Server reply to client &quot;</span> &lt;&lt; instance</div>
+<div class="line">                          &lt;&lt; <span class="stringliteral">&quot; encountered problems.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
+<div class="line">        <span class="keywordflow">else</span></div>
+<div class="line">        {</div>
+<div class="line">            std::cout &lt;&lt; <span class="stringliteral">&quot;Reply to &quot;</span> &lt;&lt; instance &lt;&lt; <span class="stringliteral">&quot; timed out.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_messages_html"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_messages.html">UMPS::MessageFormats::Messages</a></div><div class="ttdoc">This is a container for holding multiple (unique) message formats.</div><div class="ttdef"><b>Definition:</b> messages.hpp:16</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_message_formats_1_1_messages_html_a6ed03361ef900097e8aa9a7d8b258f4b"><div class="ttname"><a href="class_u_m_p_s_1_1_message_formats_1_1_messages.html#a6ed03361ef900097e8aa9a7d8b258f4b">UMPS::MessageFormats::Messages::add</a></div><div class="ttdeci">void add(const std::unique_ptr&lt; IMessage &gt; &amp;message)</div><div class="ttdoc">Add the message type to the container.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_html"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request.html">UMPS::Messaging::RouterDealer::Request</a></div><div class="ttdoc">A ZeroMQ request for use in the router-dealer combination.</div><div class="ttdef"><b>Definition:</b> request.hpp:39</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_html_a0e67e81ac33cb15067f9d66e61954d1e"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request.html#a0e67e81ac33cb15067f9d66e61954d1e">UMPS::Messaging::RouterDealer::Request::request</a></div><div class="ttdeci">std::unique_ptr&lt; UMPS::MessageFormats::IMessage &gt; request(const MessageFormats::IMessage &amp;request)</div><div class="ttdoc">Performs a blocking request of from the router.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_html_a459806bab6a5e86939d9417863d4b598"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request.html#a459806bab6a5e86939d9417863d4b598">UMPS::Messaging::RouterDealer::Request::initialize</a></div><div class="ttdeci">void initialize(const RequestOptions &amp;options)</div><div class="ttdoc">Initializes the request.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options_html"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html">UMPS::Messaging::RouterDealer::RequestOptions</a></div><div class="ttdoc">Defines the request socket options.</div><div class="ttdef"><b>Definition:</b> requestOptions.hpp:25</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options_html_a2de25ab69a5dc848d5344853371b3401"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html#a2de25ab69a5dc848d5344853371b3401">UMPS::Messaging::RouterDealer::RequestOptions::setMessageFormats</a></div><div class="ttdeci">void setMessageFormats(const UMPS::MessageFormats::Messages &amp;messageFormats)</div><div class="ttdoc">Sets the message types to which to subscriber.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options_html_aa5924a8da84b2ca826b694bd8f0a90b7"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html#aa5924a8da84b2ca826b694bd8f0a90b7">UMPS::Messaging::RouterDealer::RequestOptions::setAddress</a></div><div class="ttdeci">void setAddress(const std::string &amp;address)</div><div class="ttdoc">Sets the address of the router to which requests will be submitted and from which replies will be rec...</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options_html_ac5630a0dbcdcb3d3712954e09cb96159"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_request_options.html#ac5630a0dbcdcb3d3712954e09cb96159">UMPS::Messaging::RouterDealer::RequestOptions::setReceiveTimeOut</a></div><div class="ttdeci">void setReceiveTimeOut(const std::chrono::milliseconds &amp;timeOut) noexcept</div></div>
+<div class="ttc" id="agroup___messages___base_class_html_gaedc434482f71acadf8db4bdd56804edb"><div class="ttname"><a href="group___messages___base_class.html#gaedc434482f71acadf8db4bdd56804edb">UMPS::MessageFormats::static_unique_pointer_cast</a></div><div class="ttdeci">std::unique_ptr&lt; TO &gt; static_unique_pointer_cast(std::unique_ptr&lt; FROM &gt; &amp;&amp;old)</div><div class="ttdoc">Converts a unique pointer of one type to a unique pointer of another type.</div><div class="ttdef"><b>Definition:</b> staticUniquePointerCast.hpp:11</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="TopicMessagingPatterns_RouterDealer_Proxy"></a>
+The Proxy</h2>
+<p>The API of the router-dealer proxy behaves very much like the proxy you encountered <a class="el" href="group___messaging_patterns___pub_sub___x_pub_x_sub.html#TopicMessagingPatterns_XPubXSub_Proxy">xPub-xSub section</a>. However, the behind-the-scenes logic of this proxy is very different from the xPub-xSub proxy.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/routerDealer/proxy.hpp&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;umps/messaging/routerDealer/proxyOptions.hpp&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">using namespace </span>UMPS::Messaging::RouterDealer;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> proxy()</div>
+<div class="line">{</div>
+<div class="line">    ProxyOptions proxyOptions;</div>
+<div class="line">    <span class="comment">// Data flows from frontend to backend</span></div>
+<div class="line">    proxyOptions.setFrontendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5555&quot;</span>); <span class="comment">// Clients connect here</span></div>
+<div class="line">    proxyOptions.setBackendAddress(<span class="stringliteral">&quot;tcp://127.0.0.1:5556&quot;</span>); <span class="comment">// Servers connect here</span></div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Create the proxy</span></div>
+<div class="line">    <a class="code" href="class_proxy.html">Proxy</a> proxy;</div>
+<div class="line">    proxy.initialize(proxyOptions);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Run the proxy in a separate thread</span></div>
+<div class="line">    <span class="keyword">auto</span> proxyThread = std::thread(&amp;<a class="code" href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a3ed05066ca13226c9300a7496d3f9a48">Proxy::start</a>, &amp;proxy);</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// Main thread sleeps a bit</span></div>
+<div class="line">    std::this_thread::sleep_for(std::chrono::seconds {3});</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// The main thread tells the proxy to shut down</span></div>
+<div class="line">    proxy.stop();</div>
+<div class="line">    proxyThread.join();</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_proxy_html"><div class="ttname"><a href="class_proxy.html">Proxy</a></div><div class="ttdoc">This is the intermediary that allows communication between a client and a backend service.</div></div>
+<div class="ttc" id="aclass_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy_html_a3ed05066ca13226c9300a7496d3f9a48"><div class="ttname"><a href="class_u_m_p_s_1_1_messaging_1_1_router_dealer_1_1_proxy.html#a3ed05066ca13226c9300a7496d3f9a48">UMPS::Messaging::RouterDealer::Proxy::start</a></div><div class="ttdeci">void start()</div><div class="ttdoc">Starts the proxy.</div></div>
+</div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Mar 31 2023 17:11:52 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Mon Apr 3 2023 17:34:56 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
