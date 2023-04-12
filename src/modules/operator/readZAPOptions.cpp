@@ -39,8 +39,26 @@ UAuth::ZAPOptions readZAPClientOptions(
     else if (securityLevel == UAuth::SecurityLevel::Woodhouse)
     {   
         UAuth::Certificate::UserNameAndPassword credentials;
-        std::string userName{std::getenv("UMPS_USER")};
-        std::string password{std::getenv("UMPS_PASSWORD")}; 
+        std::string userName;
+        const char *userPtr = std::getenv("UMPS_USER");
+        if (userPtr != nullptr) 
+        {
+            if (std::strlen(userPtr) > 0)
+            {
+                userName = std::string {userPtr};
+            }
+        }
+        std::string password;
+        const char *passwordPtr = std::getenv("UMPS_PASSWORD");
+        if (passwordPtr != nullptr)
+        {
+            if (std::strlen(passwordPtr) > 0)
+            {
+                password = std::string {passwordPtr};
+            }
+        }
+        //std::string userName{std::getenv("UMPS_USER")};
+        //std::string password{std::getenv("UMPS_PASSWORD")}; 
         userName = propertyTree.get<std::string> (section + ".clientUserName",
                                                   userName);
         password = propertyTree.get<std::string> (section + ".clientPassword",
