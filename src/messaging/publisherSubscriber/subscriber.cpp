@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
@@ -66,7 +67,6 @@ public:
     UMPS::MessageFormats::Messages mMessageTypes;
     std::shared_ptr<UMPS::Messaging::Context> mContext{nullptr};
     std::unique_ptr<zmq::socket_t> mSubscriber{nullptr};
-    ///std::map<std::string, bool> mEndPoints;
     std::shared_ptr<UMPS::Logging::ILog> mLogger{nullptr};
     SubscriberOptions mOptions;
     UCI::SocketDetails::Subscriber mSocketDetails;
@@ -134,9 +134,9 @@ void Subscriber::initialize(const SubscriberOptions &options)
     auto zapOptions = pImpl->mOptions.getZAPOptions();
     zapOptions.setSocketOptions(&*pImpl->mSubscriber);
     // Set other options
-    auto timeOut = static_cast<int> (options.getReceiveTimeOut().count());
     auto hwm = pImpl->mOptions.getReceiveHighWaterMark();
     if (hwm > 0){pImpl->mSubscriber->set(zmq::sockopt::rcvhwm, hwm);}
+    auto timeOut = static_cast<int> (options.getReceiveTimeOut().count());
     if (timeOut >= 0)
     {
         pImpl->mSubscriber->set(zmq::sockopt::rcvtimeo, timeOut);
@@ -149,8 +149,8 @@ void Subscriber::initialize(const SubscriberOptions &options)
     }
     catch (const std::exception &e)
     {
-        auto errmsg = "Subscriber failed to connect with error: "
-                    + std::string(e.what());
+        auto errmsg = "Subscriber failed to connect to " + address
+                    + " with error: " + std::string(e.what());
         pImpl->mLogger->error(errmsg);
         throw std::runtime_error(errmsg);
     }
