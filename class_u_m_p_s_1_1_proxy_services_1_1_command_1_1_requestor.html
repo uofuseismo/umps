@@ -147,15 +147,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adab06ea8b8f67a1967bd1599a577fa13"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_available_modules_response.html">AvailableModulesResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#adab06ea8b8f67a1967bd1599a577fa13">getAvailableModules</a> () const</td></tr>
 <tr class="memdesc:adab06ea8b8f67a1967bd1599a577fa13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the available registered modules with which to communicate.  <a href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#adab06ea8b8f67a1967bd1599a577fa13">More...</a><br /></td></tr>
 <tr class="separator:adab06ea8b8f67a1967bd1599a577fa13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaea3881eae61c80936dfe02a27a8a252"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_available_commands_response.html">UMPS::Services::Command::AvailableCommandsResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aaea3881eae61c80936dfe02a27a8a252">getCommands</a> (const std::string &amp;moduleName) const</td></tr>
-<tr class="memdesc:aaea3881eae61c80936dfe02a27a8a252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the commands for interacting with this program.  <a href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aaea3881eae61c80936dfe02a27a8a252">More...</a><br /></td></tr>
-<tr class="separator:aaea3881eae61c80936dfe02a27a8a252"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e6ee31d759fdf1b7ba238b3093f1d2e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html">UMPS::Services::Command::CommandResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a8e6ee31d759fdf1b7ba238b3093f1d2e">issueCommand</a> (const std::string &amp;moduleName, const <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_command_request.html">UMPS::Services::Command::CommandRequest</a> &amp;request)</td></tr>
-<tr class="memdesc:a8e6ee31d759fdf1b7ba238b3093f1d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues a command to the program.  <a href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a8e6ee31d759fdf1b7ba238b3093f1d2e">More...</a><br /></td></tr>
+<tr class="memitem:aa4425d9a9b134f61f2a76bd8b2166af6"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_available_commands_response.html">UMPS::Services::Command::AvailableCommandsResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aa4425d9a9b134f61f2a76bd8b2166af6">getCommands</a> (const std::string &amp;moduleName, uint16_t instance=0) const</td></tr>
+<tr class="memdesc:aa4425d9a9b134f61f2a76bd8b2166af6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the commands for interacting with this program.  <a href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aa4425d9a9b134f61f2a76bd8b2166af6">More...</a><br /></td></tr>
+<tr class="separator:aa4425d9a9b134f61f2a76bd8b2166af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a236d744886c3078a4f81c7f7748c4a86"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html">UMPS::Services::Command::CommandResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a236d744886c3078a4f81c7f7748c4a86">issueCommand</a> (const std::string &amp;moduleName, uint16_t instance, const <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_command_request.html">UMPS::Services::Command::CommandRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:a236d744886c3078a4f81c7f7748c4a86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues a command to the program.  <a href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a236d744886c3078a4f81c7f7748c4a86">More...</a><br /></td></tr>
+<tr class="separator:a236d744886c3078a4f81c7f7748c4a86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e6ee31d759fdf1b7ba238b3093f1d2e"><td class="memItemLeft" align="right" valign="top"><a id="a8e6ee31d759fdf1b7ba238b3093f1d2e"></a>
+std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html">UMPS::Services::Command::CommandResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a8e6ee31d759fdf1b7ba238b3093f1d2e">issueCommand</a> (const std::string &amp;moduleName, const <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_command_request.html">UMPS::Services::Command::CommandRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:a8e6ee31d759fdf1b7ba238b3093f1d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues a command to the program with instance 0. <br /></td></tr>
 <tr class="separator:a8e6ee31d759fdf1b7ba238b3093f1d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3aaf9db212335e903306edd203be5e4"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html">UMPS::Services::Command::TerminateResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aa3aaf9db212335e903306edd203be5e4">issueTerminateCommand</a> (const std::string &amp;moduleName) const</td></tr>
-<tr class="memdesc:aa3aaf9db212335e903306edd203be5e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues a remote-termination command to the program.  <a href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aa3aaf9db212335e903306edd203be5e4">More...</a><br /></td></tr>
-<tr class="separator:aa3aaf9db212335e903306edd203be5e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a717c0d1a62d6a28e04e2531dafccc098"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html">UMPS::Services::Command::TerminateResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a717c0d1a62d6a28e04e2531dafccc098">issueTerminateCommand</a> (const std::string &amp;moduleName, const uint16_t instance=0) const</td></tr>
+<tr class="memdesc:a717c0d1a62d6a28e04e2531dafccc098"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issues a remote-termination command to the program.  <a href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a717c0d1a62d6a28e04e2531dafccc098">More...</a><br /></td></tr>
+<tr class="separator:a717c0d1a62d6a28e04e2531dafccc098"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Destructors</div></td></tr>
 <tr class="memitem:a01bbff00ac39a66b7792b26da637028f"><td class="memItemLeft" align="right" valign="top"><a id="a01bbff00ac39a66b7792b26da637028f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a01bbff00ac39a66b7792b26da637028f">disconnect</a> ()</td></tr>
@@ -231,8 +235,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="aaea3881eae61c80936dfe02a27a8a252"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaea3881eae61c80936dfe02a27a8a252">&#9670;&nbsp;</a></span>getCommands()</h2>
+<a id="aa4425d9a9b134f61f2a76bd8b2166af6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4425d9a9b134f61f2a76bd8b2166af6">&#9670;&nbsp;</a></span>getCommands()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -241,8 +245,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="memname">std::unique_ptr&lt;<a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_available_commands_response.html">UMPS::Services::Command::AvailableCommandsResponse</a>&gt; UMPS::ProxyServices::Command::Requestor::getCommands </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>moduleName</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>moduleName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>instance</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -251,6 +265,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">moduleName</td><td>The name of the module from which to get available commands. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">instance</td><td>The instance of the module from which to get available commands. </td></tr>
   </table>
   </dd>
 </dl>
@@ -323,8 +338,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a8e6ee31d759fdf1b7ba238b3093f1d2e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e6ee31d759fdf1b7ba238b3093f1d2e">&#9670;&nbsp;</a></span>issueCommand()</h2>
+<a id="a236d744886c3078a4f81c7f7748c4a86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a236d744886c3078a4f81c7f7748c4a86">&#9670;&nbsp;</a></span>issueCommand()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -334,6 +349,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>moduleName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -353,6 +374,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">moduleName</td><td>The name of the module to which the request will be sent. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">instance</td><td>The module instance. Normally, this is 0. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">request</td><td>The request to issue to the program. </td></tr>
   </table>
   </dd>
@@ -366,8 +388,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="aa3aaf9db212335e903306edd203be5e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3aaf9db212335e903306edd203be5e4">&#9670;&nbsp;</a></span>issueTerminateCommand()</h2>
+<a id="a717c0d1a62d6a28e04e2531dafccc098"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a717c0d1a62d6a28e04e2531dafccc098">&#9670;&nbsp;</a></span>issueTerminateCommand()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -376,13 +398,30 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="memname">std::unique_ptr&lt;<a class="el" href="class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html">UMPS::Services::Command::TerminateResponse</a>&gt; UMPS::ProxyServices::Command::Requestor::issueTerminateCommand </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>moduleName</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>moduleName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>instance</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Issues a remote-termination command to the program. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">moduleName</td><td>The name of the module to which a terminate command will be sent. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">instance</td><td>The instance of the module to which a terminate request will be sent. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname">std::runtime_error</td><td>if <code><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a73e28de8c1b4edfbc2598517b55915d9">isInitialized()</a></code> is false. </td></tr>
@@ -436,7 +475,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>UMPS</b></li><li class="navelem"><b>ProxyServices</b></li><li class="navelem"><b>Command</b></li><li class="navelem"><a class="el" href="class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html">Requestor</a></li>
-    <li class="footer">Generated on Fri Apr 14 2023 19:56:16 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Apr 26 2023 21:40:52 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>

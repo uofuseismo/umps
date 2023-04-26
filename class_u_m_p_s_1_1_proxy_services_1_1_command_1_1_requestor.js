@@ -9,11 +9,12 @@ var class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor =
     [ "Requestor", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a1937db0d5f447b051165e981675abd3a", null ],
     [ "disconnect", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a01bbff00ac39a66b7792b26da637028f", null ],
     [ "getAvailableModules", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#adab06ea8b8f67a1967bd1599a577fa13", null ],
-    [ "getCommands", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aaea3881eae61c80936dfe02a27a8a252", null ],
+    [ "getCommands", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aa4425d9a9b134f61f2a76bd8b2166af6", null ],
     [ "initialize", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#ac6ca8050e0955050e62384a036e1b523", null ],
     [ "isInitialized", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a73e28de8c1b4edfbc2598517b55915d9", null ],
     [ "issueCommand", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a8e6ee31d759fdf1b7ba238b3093f1d2e", null ],
-    [ "issueTerminateCommand", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#aa3aaf9db212335e903306edd203be5e4", null ],
+    [ "issueCommand", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a236d744886c3078a4f81c7f7748c4a86", null ],
+    [ "issueTerminateCommand", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a717c0d1a62d6a28e04e2531dafccc098", null ],
     [ "operator=", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a08ebdaec8aa14b73542ab8665ca4737e", null ],
     [ "operator=", "class_u_m_p_s_1_1_proxy_services_1_1_command_1_1_requestor.html#a3000b8a7a8d86d7243d41aa8fad7398c", null ]
 ];
