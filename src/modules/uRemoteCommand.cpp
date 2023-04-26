@@ -201,13 +201,29 @@ std::cout << programOptions.mFrontendAddress << std::endl;
             // Get the module name
             std::vector<std::string> splitCommand;
             boost::split(splitCommand, command, ::isspace);
-            if (splitCommand.size() != 2)
+            uint16_t instance{0};
+            if (splitCommand.size() < 2 || splitCommand.size() > 4)
             {
-                std::cerr << "Appropriate usage is: connect [ModuleName]"
-                          << std::endl;
+                std::cerr << "Appropriate usage is: "
+                          << "   connect [ModuleName]" << std::endl
+                          << "   connect [ModuleName] [Instance]" << std::endl;
                 continue;
             }
             auto moduleName = splitCommand.at(1);
+            if (splitCommand.size() == 3)
+            {
+                try
+                {
+                    instance
+                        = static_cast<uint16_t> (std::stoi(splitCommand.at(2)));
+                }
+                catch (const std::exception &e)
+                {
+                    instance = 0;
+                    std::cerr << e.what() << std::endl;
+                    continue;
+                }
+            }
             // Is the module name in the list?
             bool lMatch{false};
             for (const auto &module : *modules)
@@ -216,13 +232,17 @@ std::cout << programOptions.mFrontendAddress << std::endl;
             }
             if (!lMatch)
             {
-                std::cerr << "Module: " << moduleName
-                          << " does not exist." << std::endl;
+                std::cerr << "Module: " << moduleName;
+                if (splitCommand.size() == 3)
+                {
+                    std::cerr << " (Instance " << instance << ")";
+                }
+                std::cerr << " does not exist." << std::endl;
                 continue;
             }
             try
             {
-               auto commands = requestor.getCommands(moduleName);
+               auto commands = requestor.getCommands(moduleName, instance);
                std::cout << commands->getCommands() << std::endl;
                std::cout << DASHES << std::endl;
             }
@@ -247,7 +267,8 @@ std::cout << programOptions.mFrontendAddress << std::endl;
                 {
                     namespace USCommand = UMPS::Services::Command;
                     maintainConnection = false;
-                    auto response = requestor.issueTerminateCommand(moduleName);
+                    auto response = requestor.issueTerminateCommand(moduleName,
+                                                                    instance);
                     if (response->getReturnCode() !=
                         USCommand::TerminateResponse::ReturnCode::Success)
                     {
@@ -262,6 +283,7 @@ std::cout << programOptions.mFrontendAddress << std::endl;
                     try
                     {
                         auto response = requestor.issueCommand(moduleName,
+                                                               instance,
                                                                commandRequest);
                         std::cout << response->getResponse() << std::endl;
                         if (command == "quit"){maintainConnection = false;}

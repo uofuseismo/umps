@@ -53,7 +53,8 @@ public:
     /// @brief Sends a message to the router.  But we need to actually tell
     [[nodiscard]] std::unique_ptr<UMPS::MessageFormats::IMessage>
         requestFromModule(const std::string &moduleName,
-                          const UMPS::MessageFormats::IMessage &message)
+                          const UMPS::MessageFormats::IMessage &message,
+                          const uint16_t instance)
     {
         if (moduleName.empty())
         {
@@ -64,10 +65,13 @@ public:
         // We'll use two frames.  The first is, as per usual, the message type,
         // then who I want to talk to.  Basically, I don't want the proxy doing
         // unnecessary (de)serializing of messages to figure this out.
+        std::string sInstance{std::to_string(instance)};
         zmq::const_buffer headerBuffer1{messageType.data(), messageType.size()};
-        zmq::const_buffer headerBuffer2{moduleName.data(), moduleName.size()};
+        zmq::const_buffer headerBuffer2{moduleName.data(),  moduleName.size()};
+        zmq::const_buffer headerBuffer3{sInstance.data(),   sInstance.size()};
         mSocket->send(headerBuffer1, zmq::send_flags::sndmore);
         mSocket->send(headerBuffer2, zmq::send_flags::sndmore);
+        mSocket->send(headerBuffer3, zmq::send_flags::sndmore);
         // Now send the contents
         zmq::const_buffer messageBuffer{messageContents.data(),
                                         messageContents.size()};
@@ -177,7 +181,8 @@ std::unique_ptr<AvailableModulesResponse>
 
 /// Commands
 std::unique_ptr<UCommand::AvailableCommandsResponse>
-    Requestor::getCommands(const std::string &moduleName) const
+    Requestor::getCommands(const std::string &moduleName,
+                           const uint16_t instance) const
 {
     if (!isInitialized())
     {
@@ -186,7 +191,9 @@ std::unique_ptr<UCommand::AvailableCommandsResponse>
     std::unique_ptr<UCommand::AvailableCommandsResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
     UCommand::AvailableCommandsRequest requestMessage;
-    auto message = pImpl->requestFromModule(moduleName, requestMessage);
+    auto message = pImpl->requestFromModule(moduleName,
+                                            requestMessage,
+                                            instance);
     if (message != nullptr)
     {
         if (message->getMessageType() == failureMessage.getMessageType())
@@ -209,13 +216,22 @@ std::unique_ptr<UCommand::CommandResponse>
     Requestor::issueCommand(const std::string &moduleName,
                             const UCommand::CommandRequest &request)
 {
+    constexpr uint16_t instance{0};
+    return issueCommand(moduleName, instance, request);
+}
+
+std::unique_ptr<UCommand::CommandResponse>
+    Requestor::issueCommand(const std::string &moduleName,
+                            const uint16_t instance,
+                            const UCommand::CommandRequest &request)
+{
     if (!isInitialized())
     {   
         throw std::runtime_error("Requestor not initialized");
     }   
     std::unique_ptr<UCommand::CommandResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
-    auto message = pImpl->requestFromModule(moduleName, request);
+    auto message = pImpl->requestFromModule(moduleName, request, instance);
     if (message != nullptr)
     {
         if (message->getMessageType() == failureMessage.getMessageType())
@@ -235,7 +251,8 @@ std::unique_ptr<UCommand::CommandResponse>
 }
 
 std::unique_ptr<UCommand::TerminateResponse>
-    Requestor::issueTerminateCommand(const std::string &moduleName) const
+    Requestor::issueTerminateCommand(const std::string &moduleName,
+                                     const uint16_t instance) const
 {
     if (!isInitialized())
     {
@@ -244,7 +261,9 @@ std::unique_ptr<UCommand::TerminateResponse>
     std::unique_ptr<UCommand::TerminateResponse> result{nullptr};
     UMPS::MessageFormats::Failure failureMessage;
     UCommand::TerminateRequest requestMessage;
-    auto message = pImpl->requestFromModule(moduleName, requestMessage);
+    auto message = pImpl->requestFromModule(moduleName,
+                                            requestMessage,
+                                            instance);
     if (message != nullptr)
     {
         if (message->getMessageType() == failureMessage.getMessageType())

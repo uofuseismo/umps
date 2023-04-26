@@ -126,14 +126,19 @@ public:
     /// @result The backend's address corresponding to this module.
     /// @note If the address is empty then it was not found.
     [[nodiscard]]
-    std::string getAddress(const std::string &moduleName) const noexcept
+    std::string getAddress(const std::string &moduleName,
+                           const uint16_t instance) const noexcept
     {
         std::scoped_lock lock(mMutex);
         for (const auto &m : mModules)
         {
             if (m.second.mDetails.haveName())
             {
-                if (moduleName == m.second.mDetails.getName()){return m.first;}
+                if (moduleName == m.second.mDetails.getName() &&
+                    instance == m.second.mDetails.getInstance())
+                {
+                    return m.first;
+                }
             }
         }
         return "";
@@ -578,19 +583,23 @@ public:
                     }
                     else
                     {
-                        if (messagesReceived.size() != 5)
+                        if (messagesReceived.size() != 6)
                         {
                             throw std::runtime_error(
-                            "Expecting request message of length 5.  Received: "
+                            "Expecting request message of length 6.  Received: "
                           + std::to_string(messagesReceived.size()));
                         }
                         // Which module do they want to talk to?
                         mLogger->debug("Propagating message to backend...");
                         auto moduleName = messagesReceived.at(3).to_string();
+                        auto sInstance  = messagesReceived.at(4).to_string();
+                        auto instance
+                            = static_cast<uint16_t> (std::stoi(sInstance));
                         // Router-router combinations are tricky.  We need to
                         // appropriately handle the routing by hand.  Details
                         // are in https://zguide.zeromq.org/docs/chapter3/
-                        auto workerAddress = mModulesMap.getAddress(moduleName);
+                        auto workerAddress = mModulesMap.getAddress(moduleName,
+                                                                    instance);
                         if (!workerAddress.empty())
                         {
                             zmq::multipart_t moduleRequest;
@@ -605,14 +614,16 @@ public:
                             moduleRequest.addstr("");
                             moduleRequest.addstr(messageType);
                             moduleRequest.push_back(
-                                std::move(messagesReceived.at(4)));
+                                std::move(messagesReceived.at(5)));
                             moduleRequest.send(*mBackend);
                         }
                         else
                         {
                             // Handle invalid request
-                            failureMessage.setDetails("Unknown module: "
-                                                    + moduleName);
+                            failureMessage.setDetails("Unknown Module: "
+                                                    + moduleName 
+                                                    + ", Instance: "
+                                                    + sInstance);
                             lSendError = true;
                         }
                     }

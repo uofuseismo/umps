@@ -90,26 +90,41 @@ public:
     /// @brief Gets the commands for interacting with this program.
     /// @param[in] moduleName  The name of the module from which to get
     ///                        available commands.
+    /// @param[in] instance    The instance of the module from which to
+    ///                        get available commands.
     /// @result A message summarizing the options for interacting with
     ///         this program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]]
     std::unique_ptr<UMPS::Services::Command::AvailableCommandsResponse>
-        getCommands(const std::string &moduleName) const;
+        getCommands(const std::string &moduleName,
+                    uint16_t instance = 0) const;
     /// @brief Issues a command to the program.
     /// @param[in] moduleName The name of the module to which the request will
     ///                       be sent.
+    /// @param[in] instance   The module instance.  Normally, this is 0.
     /// @param[in] request    The request to issue to the program.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]]
     std::unique_ptr<UMPS::Services::Command::CommandResponse>
         issueCommand(const std::string &moduleName,
+                     uint16_t instance,
+                     const UMPS::Services::Command::CommandRequest &request);
+    /// @brief Issues a command to the program with instance 0.
+    [[nodiscard]]
+    std::unique_ptr<UMPS::Services::Command::CommandResponse>
+        issueCommand(const std::string &moduleName,
                      const UMPS::Services::Command::CommandRequest &request);
     /// @brief Issues a remote-termination command to the program.
+    /// @param[in] moduleName  The name of the module to which a terminate
+    ///                        command will be sent.
+    /// @param[in] instance    The instance of the module to which a 
+    ///                        terminate request will be sent.
     /// @throws std::runtime_error if \c isInitialized() is false.
     [[nodiscard]]
     std::unique_ptr<UMPS::Services::Command::TerminateResponse>
-        issueTerminateCommand(const std::string &moduleName) const;
+        issueTerminateCommand(const std::string &moduleName,
+                              const uint16_t instance = 0) const;
     /// @}
      
     /// @name Destructors

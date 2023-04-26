@@ -188,6 +188,7 @@ UMPS::ProxyServices::Command::operator<<(std::ostream &os,
     {
         result << "  Name: Undefined" << std::endl;
     }
+    result << "  Instance: " << details.getInstance() << std::endl;
     result << "  Executable: " << details.getExecutableName() << std::endl;
     auto machine = details.getMachine();
     if (machine.empty()){machine = "Unknown";}
