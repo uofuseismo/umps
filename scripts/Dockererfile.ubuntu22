@@ -24,17 +24,17 @@ RUN apt-get update &&\
     pip3 install numpy &&\
     apt-get install -y libboost-dev &&\
     apt-get install -y libboost-program-options-dev &&\
-    wget https://github.com/gabime/spdlog/archive/refs/tags/v1.11.0.tar.gz &&\
-    tar -xvf v1.11.0.tar.gz &&\
-    cd spdlog-1.11.0/ &&\
+    wget https://github.com/gabime/spdlog/archive/refs/tags/v1.12.0.tar.gz &&\
+    tar -xvf v1.12.0.tar.gz &&\
+    cd spdlog-1.12.0/ &&\
     mkdir build &&\
     cd build &&\
     cmake .. -DCMAKE_BUILD_TYPE=Release -DSPDLOG_BUILD_SHARED=ON &&\
     make &&\
     make install &&\
     cd ../.. &&\
-    rm v1.11.0.tar.gz &&\
-    rm -rf spdlog-1.11.0 &&\
+    rm v1.12.0.tar.gz &&\
+    rm -rf spdlog-1.12.0 &&\
     wget https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz &&\
     tar -xvf release-1.12.1.tar.gz &&\
     cd googletest-release-1.12.1 &&\
@@ -66,17 +66,17 @@ RUN apt-get update &&\
     cd ../../ &&\
     rm zeromq-4.3.4.tar.gz &&\
     rm -rf zeromq-4.3.4 &&\
-    wget https://github.com/zeromq/cppzmq/archive/refs/tags/v4.9.0.tar.gz &&\
-    tar -xvf v4.9.0.tar.gz &&\
-    cd cppzmq-4.9.0 &&\
+    wget https://github.com/zeromq/cppzmq/archive/refs/tags/v4.10.0.tar.gz &&\
+    tar -xvf v4.10.0.tar.gz &&\
+    cd cppzmq-4.10.0 &&\
     mkdir build &&\
     cd build &&\
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-DCATCH_CONFIG_NO_POSIX_SIGNALS" &&\
     make &&\
     make install &&\
     cd ../../ &&\
-    rm v4.9.0.tar.gz &&\
-    rm -rf cppzmq-4.9.0 &&\
+    rm v4.10.0.tar.gz &&\
+    rm -rf cppzmq-4.10.0 &&\
     wget https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz &&\
     tar -xvf v3.11.2.tar.gz &&\
     cd json-3.11.2/ &&\

@@ -1,5 +1,6 @@
 #ifndef UMPS_LOGGING_LOG_HPP
 #define UMPS_LOGGING_LOG_HPP
+#include <string>
 #include "umps/logging/level.hpp"
 namespace UMPS::Logging
 {
