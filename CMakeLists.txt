@@ -9,7 +9,7 @@ option(BUILD_EXAMPLES "Compile the examples" OFF)
 # Ensure we have necessary packages 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 include(CheckCXXCompilerFlag)
-#list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)
@@ -20,6 +20,7 @@ find_package(Threads REQUIRED)
 find_package(nlohmann_json 3.2.0 REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(cppzmq REQUIRED)
+find_package(Sodium REQUIRED)
 add_compile_definitions(UMPS_SRC)
 
 # Versioning information
@@ -148,12 +149,13 @@ set_target_properties(umps PROPERTIES
 message("dynamic linking " ${cppzmq_LIBRARY})
 target_link_libraries(umps
                       PUBLIC libzmq Threads::Threads
-                      PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json ${SQLite3_LIBRARIES})
+                      PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json ${SQLite3_LIBRARIES} ${sodium_LIBRARY_RELEASE})
 target_include_directories(umps
                            PRIVATE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                            PRIVATE spdlog::spdlog
                            PRIVATE ${cppzmq_INCLUDE_DIR}
                            PRIVATE ${SQLite3_INCLUDE_DIRS}
+                           PRIVATE ${sodium_INCLUDE_DIR}
                            PRIVATE Boost::program_options
                            PUBLIC $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/include/umps>)
 
