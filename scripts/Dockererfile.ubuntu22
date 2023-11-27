@@ -49,7 +49,7 @@ RUN apt-get update &&\
     wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.19-stable.tar.gz &&\
     tar -xvf libsodium-1.0.19-stable.tar.gz &&\
     cd libsodium-stable &&\
-    ./configure --prefix=/usr/local &&\
+    ./configure --with-libsodium --prefix=/usr/local &&\
     make &&\
     make install &&\ 
     cd ../ &&\
