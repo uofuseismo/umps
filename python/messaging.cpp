@@ -446,7 +446,7 @@ Optional Properties :
                                "Resets the class.");
     ///---------------------------Publisher----------------------------------///
     pybind11::class_<UMPS::Python::Messaging::PublisherSubscriber::Publisher>
-        pubSubPublisher(pubSubModule, "PublisherOptions");
+        pubSubPublisher(pubSubModule, "Publisher");
     pubSubPublisher.def(pybind11::init<> ());
     pubSubPublisher.def(pybind11::init<UMPS::Python::Messaging::Context &,
                                        UMPS::Python::Logging::ILog &> ());

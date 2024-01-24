@@ -9,7 +9,7 @@ PYBIND11_MODULE(umpspy, m)
 {
     m.attr("__version__") = UMPS_VERSION;
     m.attr("__name__") = "umpspy";
-    m.attr("__doc__") = "A Python interface to the Univeristy of Utah Seismograph Stations Message Passing System (UMPS).";
+    m.attr("__doc__") = "A Python interface to the University of Utah Seismograph Stations Message Passing System (UMPS).";
 
     UMPS::Python::Logging::initialize(m);
     UMPS::Python::Authentication::initialize(m);

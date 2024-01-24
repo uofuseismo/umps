@@ -177,9 +177,12 @@ void UMPS::Python::Logging::initialize(pybind11::module &m)
         .value("Debug",
                UMPS::Logging::Level::Debug,
                "Everything is logged.");
+    // Logging base class
+    pybind11::class_<UMPS::Python::Logging::ILog> (lm, "ILog");
     // Standard out logger
     pybind11::class_<UMPS::Python::Logging::StandardOut,
-                     std::shared_ptr<UMPS::Python::Logging::StandardOut>>
+                     UMPS::Python::Logging::ILog //std::shared_ptr<UMPS::Python::Logging::StandardOut>
+                     >
         stdOut(lm, "StandardOut");
     stdOut.def(pybind11::init<> ());
     stdOut.def(pybind11::init<UMPS::Logging::Level> ());
@@ -212,7 +215,8 @@ Properties :
     // Day logger
     // Standard out logger
     pybind11::class_<UMPS::Python::Logging::DailyFile,
-                     std::shared_ptr<UMPS::Python::Logging::DailyFile>>
+                     UMPS::Python::Logging::ILog //std::shared_ptr<UMPS::Python::Logging::DailyFile>
+                     >
         daily(lm, "DailyFile");
     daily.def(pybind11::init<> ());
     daily.doc() = R""""(
