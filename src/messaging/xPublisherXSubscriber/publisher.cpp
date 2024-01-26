@@ -135,6 +135,7 @@ void Publisher::initialize(const PublisherOptions &options)
     }
     // (Re)establish connection
     auto address = pImpl->mOptions.getAddress();
+    pImpl->mLogger->debug("XPublisher connecting to " + address);
     pImpl->mPublisher->connect(address);
     // Resolve the end point
     pImpl->mAddress = address;
@@ -142,6 +143,7 @@ void Publisher::initialize(const PublisherOptions &options)
         address.find("ipc") != std::string::npos)
     {
         pImpl->mAddress = pImpl->mPublisher->get(zmq::sockopt::last_endpoint);
+        pImpl->mLogger->debug("XPublisher connected to " + pImpl->mAddress);
     }
     pImpl->mConnected = true;
     // Copy some last details

@@ -145,6 +145,7 @@ void Subscriber::initialize(const SubscriberOptions &options)
     auto address = options.getAddress();
     try
     {
+        pImpl->mLogger->debug("Subscriber connecting to " + address);
         pImpl->mSubscriber->connect(address);
     }
     catch (const std::exception &e)
@@ -160,6 +161,7 @@ void Subscriber::initialize(const SubscriberOptions &options)
         address.find("ipc") != std::string::npos)
     {
         pImpl->mAddress = pImpl->mSubscriber->get(zmq::sockopt::last_endpoint);
+        pImpl->mLogger->debug("Subscriber connected to " + pImpl->mAddress);
     }
     pImpl->mConnected = true;
     // Add the subscriptions
@@ -167,6 +169,8 @@ void Subscriber::initialize(const SubscriberOptions &options)
     auto messageTypeMap = pImpl->mMessageTypes.get();
     for (const auto &messageType : messageTypeMap)
     {
+        pImpl->mLogger->debug("Subscriber adding subscription type "
+                             + messageType.first);
         pImpl->mSubscriber->set(zmq::sockopt::subscribe, messageType.first);
     }
     // Set some final details
