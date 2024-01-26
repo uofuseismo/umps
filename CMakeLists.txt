@@ -231,6 +231,8 @@ if (${WRAP_PYTHON})
                #python/services/command.cpp
                python/messaging.cpp
                python/messageFormats.cpp
+               python/services.cpp
+               python/services/connectionInformation.cpp
                #python/messaging/publisherSubscriber/publisher.cpp
                #python/messaging/publisherSubscriber/subscriberOptions.cpp
                #python/messaging/publisherSubscriber/subscriber.cpp

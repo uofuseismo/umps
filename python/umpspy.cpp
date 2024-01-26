@@ -3,6 +3,7 @@
 #include "python/logging.hpp"
 #include "python/messaging.hpp"
 #include "python/messageFormats.hpp"
+#include "python/services.hpp"
 #include <pybind11/pybind11.h>
 
 PYBIND11_MODULE(umpspy, m)
@@ -15,6 +16,7 @@ PYBIND11_MODULE(umpspy, m)
     UMPS::Python::Authentication::initialize(m);
     UMPS::Python::Messaging::initialize(m);
     UMPS::Python::MessageFormats::initialize(m);
+    UMPS::Python::Services::initialize(m);
  
     // Message formats
 //    pybind11::module messageFormatsModule = m.def_submodule("MessageFormats");
