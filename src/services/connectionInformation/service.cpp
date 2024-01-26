@@ -94,7 +94,8 @@ public:
             {
                 mLogger->error("Request serialization failed with: "
                              + std::string(e.what()));
-                response.setReturnCode(ReturnCode::ALGORITHM_FAILURE);
+                response.setReturnCode(
+                    AvailableConnectionsResponse::ReturnCode::AlgorithmFailure);
                 return response.clone();
             }
         }
@@ -103,7 +104,8 @@ public:
             mLogger->error("Received message type: " + messageType
                          + " but received can only process "
                          + request.getMessageType());
-            response.setReturnCode(ReturnCode::INVALID_MESSAGE);
+            response.setReturnCode(
+                AvailableConnectionsResponse::ReturnCode::InvalidMessage);
             return response.clone();
         }
         // Response to the message
@@ -116,14 +118,16 @@ public:
                 details.push_back(connection.second);
             }
             response.setDetails(details);
-            response.setReturnCode(ReturnCode::SUCCESS);
+            response.setReturnCode(
+                AvailableConnectionsResponse::ReturnCode::Success);
         }
         catch (const std::exception &e)
         {
             mLogger->error("Failed to create message: "
                          + response.getMessageType() + " because " 
                          + e.what());
-            response.setReturnCode(ReturnCode::ALGORITHM_FAILURE);
+            response.setReturnCode(
+                AvailableConnectionsResponse::ReturnCode::AlgorithmFailure);
         }
         return response.clone();
     }

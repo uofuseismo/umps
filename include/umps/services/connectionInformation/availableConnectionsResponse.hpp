@@ -2,7 +2,6 @@
 #define UMPS_SERVICES_CONNECTION_INFORMATION_AVAILABLE_CONNECTIONS_RESPONSE_HPP
 #include <memory>
 #include <vector>
-#include "umps/services/connectionInformation/enums.hpp"
 #include "umps/messageFormats/message.hpp"
 namespace UMPS::Services::ConnectionInformation
 {
@@ -17,6 +16,15 @@ namespace UMPS::Services::ConnectionInformation
 /// @ingroup Applications_uOperator
 class AvailableConnectionsResponse : public UMPS::MessageFormats::IMessage
 {
+public:
+    enum class ReturnCode
+    {
+        Success = 0,          /*!< No errors were detected; the request was succesful. */
+        NoItem = 1,           /*!< The desired item could not be found. */
+        InvalidMessage = 2,   /*!< The message could not be parsed. */
+        AlgorithmFailure = 3  /*!< An internal counting error was detected.
+                                   The returned value should not be trusted to be unique. */
+    };
 public:
     /// @name Constructors
     /// @{

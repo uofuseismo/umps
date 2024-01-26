@@ -204,7 +204,10 @@ TEST(ConnectionInformation, AvailableConnectionsRequest)
 
 TEST(ConnectionInformation, AvailableConnectionsResponse)
 {
-    const ReturnCode returnCode = ReturnCode::ALGORITHM_FAILURE;
+    const AvailableConnectionsResponse::ReturnCode returnCode
+    {
+        AvailableConnectionsResponse::ReturnCode::AlgorithmFailure
+    };
     AvailableConnectionsResponse response;
     EXPECT_EQ(response.getMessageType(), 
            "UMPS::Services::ConnectionInformation::AvailableConnectionsResponse");
@@ -241,7 +244,8 @@ TEST(ConnectionInformation, AvailableConnectionsResponse)
     }
     EXPECT_NO_THROW(response.setDetails(details));
 
-    response.setReturnCode(ReturnCode::SUCCESS);
+    response.setReturnCode(
+        AvailableConnectionsResponse::ReturnCode::Success);
  
     auto message = response.toMessage();
  

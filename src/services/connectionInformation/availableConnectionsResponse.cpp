@@ -518,7 +518,9 @@ AvailableConnectionsResponse
     {   
         throw std::invalid_argument("Message has invalid message type");
     }
-    auto returnCode = static_cast<ReturnCode> (obj["ReturnCode"].get<int> ());
+    auto returnCode
+        = static_cast<AvailableConnectionsResponse::ReturnCode>
+          (obj["ReturnCode"].get<int> ());
     response.setReturnCode(returnCode);
     auto detailsObj = obj["Details"];
     std::vector<Details> details;
@@ -554,7 +556,7 @@ class AvailableConnectionsResponse::ResponseImpl
 {
 public:
     std::vector<Details> mDetails;
-    ReturnCode mReturnCode = ReturnCode::SUCCESS; 
+    AvailableConnectionsResponse::ReturnCode mReturnCode{ReturnCode::Success}; 
 };
 
 /// C'tor
@@ -666,7 +668,8 @@ void AvailableConnectionsResponse::setReturnCode(
     pImpl->mReturnCode = returnCode;
 }
 
-ReturnCode AvailableConnectionsResponse::getReturnCode() const noexcept
+AvailableConnectionsResponse::ReturnCode
+AvailableConnectionsResponse::getReturnCode() const noexcept
 {
     return pImpl->mReturnCode;
 }

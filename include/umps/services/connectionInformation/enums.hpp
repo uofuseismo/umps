@@ -61,15 +61,5 @@ enum class SocketType
                       user will have to get the frontend and backend
                       connection details. */
 };
-/// @brief Defines the return codes for the service.
-/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
-enum class ReturnCode
-{
-    SUCCESS = 0,           /*!< No errors were detected; the request was succesful. */
-    NO_ITEM = 1,           /*!< The desired item could not be found. */
-    INVALID_MESSAGE = 2,   /*!< The message could not be parsed. */
-    ALGORITHM_FAILURE = 3  /*!< An internal counting error was detected.
-                                The returned value should not be trusted to be unique. */
-};
 }
 #endif
