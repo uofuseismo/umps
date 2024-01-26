@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['returncode_995',['ReturnCode',['../class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2df4afd9bfeb48387452bfaa24511a89',1,'UMPS::Services::Command::CommandResponse::ReturnCode()'],['../class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html#a15b414ea400a72b33aab9f5148a38709',1,'UMPS::Services::Command::TerminateResponse::ReturnCode()']]]
+  ['returncode_998',['ReturnCode',['../class_u_m_p_s_1_1_services_1_1_command_1_1_command_response.html#a2df4afd9bfeb48387452bfaa24511a89',1,'UMPS::Services::Command::CommandResponse::ReturnCode()'],['../class_u_m_p_s_1_1_services_1_1_command_1_1_terminate_response.html#a15b414ea400a72b33aab9f5148a38709',1,'UMPS::Services::Command::TerminateResponse::ReturnCode()'],['../class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a0af94db7a7874ab2145afc03dfb377a6',1,'UMPS::Services::ConnectionInformation::AvailableConnectionsResponse::ReturnCode()']]]
 ];

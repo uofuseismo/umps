@@ -21,6 +21,12 @@ var group___applications__u_operator =
       [ "toMessage", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_request.html#ae99cb1b5b327b02d62bbc26aade96c6e", null ]
     ] ],
     [ "AvailableConnectionsResponse", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html", [
+      [ "ReturnCode", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a0af94db7a7874ab2145afc03dfb377a6", [
+        [ "Success", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a0af94db7a7874ab2145afc03dfb377a6a505a83f220c02df2f85c3810cd9ceb38", null ],
+        [ "NoItem", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a0af94db7a7874ab2145afc03dfb377a6a6a7defc36d5fafa94ad6694a10afee01", null ],
+        [ "InvalidMessage", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a0af94db7a7874ab2145afc03dfb377a6ad5e88abe375e264803a6f6b436e769e6", null ],
+        [ "AlgorithmFailure", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a0af94db7a7874ab2145afc03dfb377a6a921445eb1cb0f8f5752d9beb44974cb5", null ]
+      ] ],
       [ "AvailableConnectionsResponse", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#aac63b5f3f8c90c77806eb061fa178a9f", null ],
       [ "AvailableConnectionsResponse", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a6f2495d39ccfcc49c669fae59106fadb", null ],
       [ "AvailableConnectionsResponse", "class_u_m_p_s_1_1_services_1_1_connection_information_1_1_available_connections_response.html#a5a8307fa11a280c2979ea6c717117c88", null ],
