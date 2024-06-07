@@ -24,8 +24,7 @@ public:
     ///       human readable.
     [[nodiscard]] virtual std::string toMessage() const = 0;
     /// @brief Converts this message from a string representation to a class.
-    /// @note By default this simply calls from fromMessage(message.data(), message.size()).
-    virtual void fromMessage(const std::string &message);
+    virtual void fromMessage(const std::string &message) = 0;
     /// @brief Converts this message from a string representation to a class.
     virtual void fromMessage(const char *data, size_t length) = 0;
     /// @result The message type.
