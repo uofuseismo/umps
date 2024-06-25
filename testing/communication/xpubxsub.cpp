@@ -5,7 +5,6 @@
 #include <thread>
 #include <zmq.hpp>
 #include "umps/logging/standardOut.hpp"
-//#include "umps/messaging/publisherSubscriber/publisher.hpp"
 #include "umps/messaging/xPublisherXSubscriber/subscriber.hpp"
 #include "umps/messaging/xPublisherXSubscriber/subscriberOptions.hpp"
 #include "umps/messaging/xPublisherXSubscriber/proxy.hpp"
@@ -44,7 +43,7 @@ void proxy()
     options.setZAPOptions(zapOptions);
     // Make a logger
     UMPS::Logging::StandardOut logger;
-    logger.setLevel(UMPS::Logging::Level::INFO);
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StandardOut> (logger);
     // Initialize the server
@@ -53,7 +52,7 @@ void proxy()
     // A thread runs the proxy
     std::thread t1(&XPubXSub::Proxy::start,
                    &proxy);
-    // Main thread waits...
+    // Calling thread waits...
     std::this_thread::sleep_for(std::chrono::seconds(3));
     /// Main thread tells proxy to stop
     proxy.stop();
@@ -64,7 +63,7 @@ void proxy()
 void publisher(int id)
 {
     UMPS::Logging::StandardOut logger;
-    logger.setLevel(UMPS::Logging::Level::INFO);
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StandardOut> (logger);
     UMPS::Messaging::PublisherSubscriber::Publisher publisher(loggerPtr);
@@ -93,7 +92,7 @@ void publisher(int id)
 void publisher(int id)
 {
     UMPS::Logging::StandardOut logger;
-    logger.setLevel(UMPS::Logging::Level::INFO);
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StandardOut> (logger);
     XPubXSub::PublisherOptions options;
@@ -111,12 +110,13 @@ void publisher(int id)
         publisher.send(text);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
+    publisher.disconnect();
 }
 
 void subscriber()
 {
     UMPS::Logging::StandardOut logger;
-    logger.setLevel(UMPS::Logging::Level::INFO);
+    logger.setLevel(UMPS::Logging::Level::Info);
     std::shared_ptr<UMPS::Logging::ILog> loggerPtr
         = std::make_shared<UMPS::Logging::StandardOut> (logger);
     std::unique_ptr<UMPS::MessageFormats::IMessage> textMessageType
@@ -141,18 +141,19 @@ void subscriber()
         EXPECT_EQ(pickMessage->getContents(),
                   std::to_string(idBase + i));
     }
+    subscriber.disconnect();
 }
 
 TEST(Messaging, xPubxSubWithProxy)
 {
     // Create the proxy then wait before connecting subscribers/publishers
-    auto proxyThread  = std::thread(proxy);
+    auto proxyThread = std::thread(proxy);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     // Create the consumers so messages aren't created before the recipients
     // are created
     auto subscriberThread1 = std::thread(subscriber);
     auto subscriberThread2 = std::thread(subscriber);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    //std::this_thread::sleep_for(std::chrono::milliseconds(500));
     // Now create a publishers
     auto publisherThread = std::thread(publisher, 1);
     //std::this_thread::sleep_for(std::chrono::milliseconds(10));

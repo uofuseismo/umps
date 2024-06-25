@@ -1,4 +1,5 @@
 #include <string>
+#include <thread>
 #include <array>
 #include <mutex>
 #include <chrono>
@@ -45,9 +46,9 @@ public:
               const std::shared_ptr<UMPS::Logging::ILog> &logger) :
         mControlContext(std::make_unique<zmq::context_t> (0)),
         mControl( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::sub)),
+                                                   zmq::socket_type::rep)), // sub
         mCommand( std::make_unique<zmq::socket_t> (*mControlContext,
-                                                   zmq::socket_type::pub))
+                                                   zmq::socket_type::req)) // pub
     {
         // Ensure the context gets made
         if (frontendContext == nullptr &&
@@ -121,9 +122,11 @@ public:
         if (mHaveFrontend)
         {
             ::removeIPCFile(mFrontendAddress, &*mLogger);
-            mLogger->debug("Disconnecting from current frontend: "
-                         + mFrontendAddress);
+            mLogger->debug(
+                "xPubxSub proxy disconnecting from current frontend: "
+               + mFrontendAddress);
             mFrontend->disconnect(mFrontendAddress);
+            mLogger->debug("xPubxSub disconnected frontend");
             mHaveFrontend = false;
         }
     }
@@ -132,9 +135,11 @@ public:
         if (mHaveBackend)
         {
             ::removeIPCFile(mBackendAddress, &*mLogger);
-            mLogger->debug("Disconnecting from current backend: "
-                         + mBackendAddress);
+            mLogger->debug(
+                "xPubxSub disconnecting from current backend: "
+               + mBackendAddress);
             mBackend->disconnect(mBackendAddress);
+            mLogger->debug("xPubxSub disconnected from backend");
             mHaveBackend = false;
         }
     }
@@ -142,9 +147,11 @@ public:
     {
         if (mHaveControl)
         {
-            mLogger->debug("Disconnecting from current control: "
-                         + mControlAddress);
+            mLogger->debug(
+                "xPubxSub disconnecting from current control: "
+               + mControlAddress);
             mControl->disconnect(mControlAddress);
+            mLogger->debug("xPubxSub disconnected control");
             mHaveControl = false;
         }
     }
@@ -226,26 +233,27 @@ public:
                   (std::chrono::system_clock::now().time_since_epoch()).count();
         mControlAddress = "inproc://"
                         + std::to_string(nowMuSec)
-                        + " _" + address.str()
+                        + "_" + address.str()
                         + "_xpubxsub_control";
         // Connect the control
         try
         {
             mLogger->debug("Attempting to bind to control: "
                          + mControlAddress);
-            mControl->connect(mControlAddress);
+            mControl->bind(mControlAddress);
             // The command will issue simple commands without topics so listen
             // to everything.
-            mControl->set(zmq::sockopt::subscribe, std::string(""));
-            mControl->set(zmq::sockopt::linger, 1);
-            mCommand->bind(mControlAddress);
+            //mControl->set(zmq::sockopt::subscribe, std::string(""));
+            //mControl->set(zmq::sockopt::linger, 1);
+            mCommand->set(zmq::sockopt::linger, 0);
+            mCommand->connect(mControlAddress); // Connects instead of binds?
             mHaveControl = true;
         }
         catch (const std::exception &e)
         {
             auto errorMsg = "Proxy failed to bind to control: "
                            + mControlAddress
-                          + ".\nZeroMQ failed with:\n" + std::string(e.what());
+                          + ".  ZeroMQ failed with: " + std::string(e.what());
             mLogger->error(errorMsg);
             throw std::runtime_error(errorMsg);
         }
@@ -393,8 +401,9 @@ void Proxy::start()
                                      *pImpl->mBackend,
                                      zmq::socket_ref(),
                                      *pImpl->mControl);
-                pImpl->mLogger->debug("Exiting steerable proxy");
+                pImpl->mLogger->debug("Exited steerable proxy");
                 pImpl->disconnectControl();
+                pImpl->mLogger->debug("Control disconnected");
                 pImpl->setStarted(false);
             }
             catch (const std::exception &e)
@@ -432,10 +441,36 @@ void Proxy::stop()
     if (pImpl->isStarted())
     {
         pImpl->mLogger->debug("Terminating proxy...");
-        pImpl->mCommand->send(zmq::str_buffer("TERMINATE"),
-                              zmq::send_flags::none);
-        pImpl->disconnectFrontend();
-        pImpl->disconnectBackend();
+        try
+        {
+            pImpl->mCommand->send(zmq::str_buffer("TERMINATE"),
+                                  zmq::send_flags::none);
+        }
+        catch (const std::exception &e)
+        {
+            pImpl->mLogger->error("Failed to TERMINATE proxy.  Failed with: "
+                                + std::string {e.what()});
+        }
+        try
+        {
+            pImpl->disconnectFrontend();
+        }
+        catch (const std::exception &e)
+        {
+            pImpl->mLogger->error(
+                "Failed to disconnect frontend.  Failed with: "
+               + std::string {e.what()});
+        }
+        try
+        {
+            pImpl->disconnectBackend();
+        }
+        catch (const std::exception &e)
+        {
+            pImpl->mLogger->error(
+                "Failed to disconnect backend.  Failed with: "
+               + std::string {e.what()});
+        }
     }
     pImpl->mInitialized = false;
     pImpl->mStarted = false;
