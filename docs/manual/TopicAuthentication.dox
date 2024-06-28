@@ -109,6 +109,8 @@ and obtain the uOperator's public key for this machine using
 
     scp UOPERATOR_USER@UOPERATOR_SERVER:${HOME}/.local/share/UMPS/keys/UOPERATOR_PUBLIC_KEY.txt ${HOME}/.local/share/UMPS/keys/
 
+Lastly, you may still experience a connection issue even after the keys are exchanged and the user is created in the user table.  I've found ssh'ing from the remote machine to the machine running UMPS can magically fix things.
+
 */
 
 /*!

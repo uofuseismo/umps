@@ -20,7 +20,7 @@ This section provides strategies for obtaining and compiling UMPS.  The most rec
 
 \subsection TopicInstall_Building_OS Supported Operating Systems
 
-Currently, the software has been compiled and tested on Ubuntu20 and Ubuntu22.  While I anticipate that other flavors of <a href="https://ubuntu.com/">Ubuntu</a> will work just fine, I do, however, anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and utilizing the latest <a href="https://llvm.org/">LLVM</a> compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and create a merge request when you get things working.
+Currently, the software has been compiled and tested on Ubuntu20, Ubuntu22, and Ubuntu24.  While I anticipate that other flavors of <a href="https://ubuntu.com/">Ubuntu</a> will work just fine, I do, however, anticipate great difficulty in switching to Fedora/Centos/Rocky since the compilers are quite antiquated.  For these circumstances, I recommend installing and utilizing the latest <a href="https://llvm.org/">LLVM</a> compiler suite.  As for OSX/Windows users... well, basically make a branch, update the CMakeLists.txt, reconfigure the default pathing, and create a merge request when you get things working.
 
 \subsection TopicInstall_Building_Prerequisites Prerequisites
 
