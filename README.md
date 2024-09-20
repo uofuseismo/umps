@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/uofuseismo/umps.svg?style=svg&circle-token=build_status)](https://circleci.com/gh/uofuseismo/umps)
+[![CircleCI](https://circleci.com/gh/uofuseismo/umps/tree/main.svg?style=svg)](https://circleci.com/gh/uofuseismo/umps)
 
 # About 
 
