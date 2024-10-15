@@ -1304,6 +1304,11 @@ ProgramOptions parseIniFile(const std::string &iniFile)
           (propertyTree.get<int> ("uOperator.verbosity",
                                   static_cast<int> (options.mVerbosity)));
     // Need an IP address
+    std::string defaultOperatorAddress;
+    if (std::getenv("UOPERATOR_ADDRESS"))
+    {
+        defaultOperatorAddress = std::getenv("UOPERATOR_ADDRESS");
+    }
     options.mAddress = propertyTree.get<std::string> ("uOperator.address");
     if (options.mAddress.empty())
     {
