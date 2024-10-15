@@ -8,5 +8,6 @@ var dir_2d5634c4e0b19568b587304bdd6b4cff =
     [ "requestor.hpp", "services_2connection_information_2requestor_8hpp_source.html", null ],
     [ "requestorOptions.hpp", "services_2connection_information_2requestor_options_8hpp_source.html", null ],
     [ "service.hpp", "services_2connection_information_2service_8hpp_source.html", null ],
-    [ "serviceOptions.hpp", "connection_information_2service_options_8hpp_source.html", null ]
+    [ "serviceOptions.hpp", "connection_information_2service_options_8hpp_source.html", null ],
+    [ "socketDetails.hpp", "socket_details_8hpp_source.html", null ]
 ];
