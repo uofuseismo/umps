@@ -71,7 +71,7 @@ RUN apt-get update &&\
     cd zeromq-4.3.5 &&\
     mkdir build &&\
     cd build &&\
-    cmake ../ -DWITH_LIBSODIUM=ON -DENABLE_CURVE=ON -DCMAKE_BUILD_TYPE=Release &&\
+    cmake ../ -DENABLE_DRAFTS=ON -DWITH_LIBSODIUM=ON -DENABLE_CURVE=ON -DCMAKE_BUILD_TYPE=Release &&\
     make &&\
     make install &&\
     cd ../../ &&\
@@ -82,7 +82,7 @@ RUN apt-get update &&\
     cd cppzmq-4.10.0 &&\
     mkdir build &&\
     cd build &&\
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-DCATCH_CONFIG_NO_POSIX_SIGNALS" &&\
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-DCATCH_CONFIG_NO_POSIX_SIGNALS" -DCPPZMQ_BUILD_TESTS=OFF &&\
     make &&\
     make install &&\
     cd ../../ &&\

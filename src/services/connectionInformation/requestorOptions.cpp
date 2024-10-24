@@ -110,8 +110,13 @@ void RequestorOptions::parseInitializationFile(const std::string &iniFile,
     boost::property_tree::ptree propertyTree;
     boost::property_tree::ini_parser::read_ini(iniFile, propertyTree);
     // Load the operator's front-end address
+    std::string defaultAddress;
+    if (std::getenv("UOPERATOR_ADDRESS"))
+    {
+        defaultAddress = std::getenv("UOPERATOR_ADDRESS");
+    }
     auto operatorAddress = propertyTree.get<std::string>
-         (section + ".address", "");
+         (section + ".address", defaultAddress);
     if (isEmpty(operatorAddress))
     {
         operatorAddress = propertyTree.get<std::string>

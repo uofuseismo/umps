@@ -16,12 +16,12 @@ For example, the below figure we consider a custom application in the below figu
 
 <br><br>
 
-The natural question is how does your application know which IP addresses to which to connect?  The first option is fairly straightforward; hardcode the requisite addresses for the EventBroadcast and EventLocator in a configuration file.  It does not require much imagination to see how this will become unwieldy.  Another option is to simply blast through every open port on a network and play 20 questions in an effort to figure out what communication occurs through this port.  This is not the most efficient strategy.  The solution we adopt is to simply make a central service that knows the IP addresses for various communication types.  Consequently, to use UMPS you must
+The natural question is how does your application know what IP addresses to which to connect?  The first option is fairly straightforward; hardcode the requisite addresses for the EventBroadcast and EventLocator in a configuration file.  It does not require much imagination to see how this will become brittle.  Another option is to simply blast through every open port on a network and play Twenty Questions in an effort to figure out what communication occurs through this port.  This is not the most efficient strategy.  The solution we adopt is to simply make a central service that knows the IP addresses for various communication types.  Consequently, to use UMPS you must
 
    1. Draw your communication architecture and provide names to message patterns.
    2. Let your external applications know one IP address (the address of the uOperator) and the names of the broadcasts and services it needs to communicate with.
 
-Basically, that's it.  Some more details will come through when looking at a generic uOperator initialization file.
+By and large, that's it.  Though, some more details will come through when looking at a generic uOperator initialization file.
 
 \code
 [uOperator]
@@ -29,7 +29,8 @@ Basically, that's it.  Some more details will come through when looking at a gen
 logFileDirectory = logs
 
 # The server's (IP) address.  For TCP connections we will append port numbers to this
-# base address.  For example: 127.0.0.1:8080 (see openPortBlockStart)
+# base address.  For example: 127.0.0.1:8080 (see openPortBlockStart).
+# Note, the address can be set with the UOPERATOR_ADDRESS environment variable.
 address = 127.0.0.1
 
 #
@@ -83,9 +84,8 @@ name=EventBroadcast
 
 Some things to note:
 
-    - a
-    - b
-    - c
+   - The uOperator address is very important.
+   - Currently, only tcp connetions are handled.  That results in a slight performance penalty if you manage to get all your modules on one processor.  Though ZeroMQ has no problem with inproc communication so interprocess communication is technically feasible to implement in UMPS.
 
 asdf
 

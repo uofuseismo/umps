@@ -1309,7 +1309,9 @@ ProgramOptions parseIniFile(const std::string &iniFile)
     {
         defaultOperatorAddress = std::getenv("UOPERATOR_ADDRESS");
     }
-    options.mAddress = propertyTree.get<std::string> ("uOperator.address");
+    options.mAddress
+        = propertyTree.get<std::string> 
+          ("uOperator.address", defaultOperatorAddress);
     if (options.mAddress.empty())
     {
         options.mAddress = propertyTree.get<std::string> ("uOperator.ipAddress");
