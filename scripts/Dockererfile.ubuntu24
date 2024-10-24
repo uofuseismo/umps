@@ -46,17 +46,17 @@ RUN apt-get update &&\
     cd ../../ &&\
     rm release-1.14.0.tar.gz &&\
     rm -rf googletest-release-1.14.0 &&\
-    wget https://github.com/catchorg/Catch2/archive/refs/tags/v3.6.0.tar.gz &&\
-    tar -xvf v3.6.0.tar.gz &&\
-    cd Catch2-3.6.0/ &&\
+    wget https://github.com/catchorg/Catch2/archive/refs/tags/v3.7.1.tar.gz &&\
+    tar -xvf v3.7.1.tar.gz &&\
+    cd Catch2-3.7.1/ &&\
     mkdir build &&\
     cd build &&\
     cmake .. &&\
     make &&\
     make install &&\
     cd ../../ &&\
-    rm v3.6.0.tar.gz &&\
-    rm -rf Catch2-3.6.0/ &&\
+    rm v3.7.1.tar.gz &&\
+    rm -rf Catch2-3.7.1/ &&\
     wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.20-stable.tar.gz &&\
     tar -xvf libsodium-1.0.20-stable.tar.gz &&\
     cd libsodium-stable &&\
