@@ -172,16 +172,17 @@ For example, the below figure we consider a custom application in the below figu
 An example location application.</div></div>
 <br  />
 <br  />
-The natural question is how does your application know which IP addresses to which to connect? The first option is fairly straightforward; hardcode the requisite addresses for the EventBroadcast and EventLocator in a configuration file. It does not require much imagination to see how this will become unwieldy. Another option is to simply blast through every open port on a network and play 20 questions in an effort to figure out what communication occurs through this port. This is not the most efficient strategy. The solution we adopt is to simply make a central service that knows the IP addresses for various communication types. Consequently, to use UMPS you must<ol type="1">
+The natural question is how does your application know what IP addresses to which to connect? The first option is fairly straightforward; hardcode the requisite addresses for the EventBroadcast and EventLocator in a configuration file. It does not require much imagination to see how this will become brittle. Another option is to simply blast through every open port on a network and play Twenty Questions in an effort to figure out what communication occurs through this port. This is not the most efficient strategy. The solution we adopt is to simply make a central service that knows the IP addresses for various communication types. Consequently, to use UMPS you must<ol type="1">
 <li>Draw your communication architecture and provide names to message patterns.</li>
 <li>Let your external applications know one IP address (the address of the uOperator) and the names of the broadcasts and services it needs to communicate with.</li>
 </ol>
-Basically, that's it. Some more details will come through when looking at a generic uOperator initialization file.<div class="fragment"><div class="line">[uOperator]</div>
+By and large, that's it. Though, some more details will come through when looking at a generic uOperator initialization file.<div class="fragment"><div class="line">[uOperator]</div>
 <div class="line"><span class="preprocessor"># The directory to which module log files will be written.</span></div>
 <div class="line">logFileDirectory = logs</div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor"># The server&#39;s (IP) address.  For TCP connections we will append port numbers to this</span></div>
-<div class="line"><span class="preprocessor"># base address.  For example: 127.0.0.1:8080 (see openPortBlockStart)</span></div>
+<div class="line"><span class="preprocessor"># base address.  For example: 127.0.0.1:8080 (see openPortBlockStart).</span></div>
+<div class="line"><span class="preprocessor"># Note, the address can be set with the UOPERATOR_ADDRESS environment variable.</span></div>
 <div class="line">address = 127.0.0.1</div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#</span></div>
@@ -230,10 +231,11 @@ Basically, that's it. Some more details will come through when looking at a gene
 <div class="line"><span class="preprocessor">################################################################################</span></div>
 <div class="line">[ProxyServices:EventBroadcast]</div>
 <div class="line">name=EventBroadcast</div>
-</div><!-- fragment -->Some things to note: </p><pre class="fragment">- a
-- b
-- c
-</pre><p> asdf </div><h2 class="groupheader">Enumeration Type Documentation</h2>
+</div><!-- fragment -->Some things to note:<ul>
+<li>The uOperator address is very important.</li>
+<li>Currently, only tcp connetions are handled. That results in a slight performance penalty if you manage to get all your modules on one processor. Though ZeroMQ has no problem with inproc communication so interprocess communication is technically feasible to implement in UMPS.</li>
+</ul>
+asdf </div><h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="gad45ef6550bebe768224ea36e6bba31fe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gad45ef6550bebe768224ea36e6bba31fe">&#9670;&nbsp;</a></span>ConnectionType</h2>
 
@@ -320,7 +322,7 @@ Basically, that's it. Some more details will come through when looking at a gene
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Oct 15 2024 21:09:18 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Fri Oct 25 2024 18:20:55 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
