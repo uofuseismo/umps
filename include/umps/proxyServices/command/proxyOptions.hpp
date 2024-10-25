@@ -1,6 +1,9 @@
 #ifndef UMPS_PROXY_SERVICES_COMMAND_PROXY_OPTIONS_HPP
 #define UMPS_PROXY_SERVICES_COMMAND_PROXY_OPTIONS_HPP
 #include <memory>
+#include <vector>
+#include <chrono>
+#include <string>
 namespace UMPS
 {
  namespace Authentication
