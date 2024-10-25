@@ -15,4 +15,5 @@ void PUMPS::Messaging::PublisherSubscriber::initializePublisher(pybind11::module
 {
     pybind11::class_<PUMPS::Messaging::PublisherSubscriber::Publisher>
         o(m, "Publisher");
+
 }

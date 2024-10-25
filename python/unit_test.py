@@ -5,6 +5,7 @@ import glob
 sys.path.append(os.getcwd())
 import umpspy
 import numpy as np
+import datetime
 
 ################################################################################
 #                                  Logging                                     #
@@ -78,6 +79,63 @@ def test_authentication_keys():
 def test_authentication_zap_options():
     zap = umpspy.Authentication.ZAPOptions()
 
+################################################################################
+#                                   Messaging                                  #
+################################################################################
+def test_messaging_pubsub_publisher_options():
+    send_address = "tcp://127.0.0.1:5555"
+    send_time_out = datetime.timedelta(milliseconds = 20)
+    send_high_water_mark = 150
+    options = umpspy.Messaging.PublisherSubscriber.PublisherOptions()
+    options.address = send_address
+    options.high_water_mark = send_high_water_mark
+    options.time_out = send_time_out
+
+    assert options.address == send_address, 'send address failed'
+    assert options.high_water_mark == send_high_water_mark, 'send hwm failed'
+    assert options.time_out == send_time_out, 'send timeout failed'
+
+def test_messaging_pubsub_subscriber_options():
+    receive_address = "tcp://127.0.0.1:5555"
+    receive_time_out = datetime.timedelta(milliseconds = 10)
+    receive_high_water_mark = 120
+    options = umpspy.Messaging.PublisherSubscriber.SubscriberOptions() 
+    text_message = umpspy.MessageFormats.Text()
+    failure_message = umpspy.MessageFormats.Failure()
+    message_types = umpspy.MessageFormats.Messages()
+    message_types.add(text_message)
+    message_types.add(failure_message)
+    options.message_types = message_types 
+    options.address = receive_address 
+    options.high_water_mark = receive_high_water_mark
+    options.time_out = receive_time_out
+    
+    assert options.address == receive_address, 'receive address failed'
+    assert options.high_water_mark == receive_high_water_mark, 'receive hwm failed'
+    assert options.time_out == receive_time_out, 'receive timeout failed'
+    assert options.message_types.size == 2, 'size is wrong'
+    assert options.message_types.contains(text_message.message_type), 'text message missing'
+    assert options.message_types.contains(failure_message.message_type), 'failure message missing'
+    """
+    EXPECT_NO_THROW(messageTypes.add(textMessage));
+    EXPECT_NO_THROW(messageTypes.add(failureMessage));
+    const std::string address = "tcp://127.0.0.1:5555";
+    const int highWaterMark = 120;
+    const std::chrono::milliseconds timeOut{10};
+    const int zero = 0;
+    PublisherSubscriber::SubscriberOptions options;
+    EXPECT_NO_THROW(options.setAddress(address));
+    EXPECT_NO_THROW(options.setMessageTypes(messageTypes));
+    EXPECT_NO_THROW(options.setReceiveHighWaterMark(highWaterMark));
+    EXPECT_NO_THROW(options.setReceiveTimeOut(timeOut));
+
+    options.clear();
+    EXPECT_EQ(options.getReceiveHighWaterMark(), zero);
+    EXPECT_EQ(options.getReceiveTimeOut(), std::chrono::milliseconds{-1});
+    EXPECT_FALSE(options.haveMessageTypes());
+    """
+
+
 """
 def test_messages_data_packet():
     packet = umpspy.MessageFormats.DataPacket()
@@ -128,3 +186,5 @@ if __name__ == "__main__":
     test_authentication_username_password()
     test_authentication_keys()
     test_authentication_zap_options()
+    test_messaging_pubsub_publisher_options()
+    test_messaging_pubsub_subscriber_options()

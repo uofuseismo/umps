@@ -3,7 +3,9 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <map>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl_bind.h>
 namespace UMPS::MessageFormats
 {
  class IMessage;
@@ -92,7 +94,7 @@ private:
 class Messages
 {
 public:
-    /// @brief C'tor
+    /// @brief Constructor
     Messages();
     /// @brief Copy constructor.
     Messages(const Messages &messages);
@@ -110,7 +112,7 @@ public:
     Messages& operator=(const Messages &messages);
     /// @result Copy assignment operator from the UMPS base class.
     Messages& operator=(const UMPS::MessageFormats::Messages &messages);
-    /// @result MOve assignment operator.
+    /// @result Move assignment operator.
     Messages& operator=(Messages &&messages) noexcept;
 
     /// @brief Adds a message type to the class.
@@ -119,6 +121,10 @@ public:
     [[nodiscard]] int size() const noexcept;
     /// @result True indicates there are no message formats.
     [[nodiscard]] bool empty() const noexcept;
+    /// @result True indicates the container contains the desired message.
+    [[nodiscard]] bool contains(const std::string &messageName) const noexcept;
+    /// @result All the messages in the container.
+    [[nodiscard]] std::map<std::string, IMessage> getAll() const noexcept;
 
     //[[nodiscard]] std::unique_ptr<IMessage> get(const std::string &messageType) const;
     //[[nodiscard]] std::vector<std::unique_ptr<IMessage>> getPythonMessageTypes() const;

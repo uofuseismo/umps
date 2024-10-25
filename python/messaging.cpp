@@ -394,10 +394,10 @@ Optional Properties :
     pubSubSubscriberOptions.def_property("zap_options",
                                          &PublisherSubscriber::SubscriberOptions::getZAPOptions,
                                          &PublisherSubscriber::SubscriberOptions::setZAPOptions);
-    pubSubSubscriberOptions.def_property("send_time_out",
+    pubSubSubscriberOptions.def_property("time_out",
                                          &PublisherSubscriber::SubscriberOptions::getReceiveTimeOut,
                                          &PublisherSubscriber::SubscriberOptions::setReceiveTimeOut);
-    pubSubSubscriberOptions.def_property("send_high_water_mark",
+    pubSubSubscriberOptions.def_property("high_water_mark",
                                          &PublisherSubscriber::SubscriberOptions::getReceiveHighWaterMark,
                                          &PublisherSubscriber::SubscriberOptions::setReceiveHighWaterMark);
     pubSubSubscriberOptions.def("clear",
@@ -435,10 +435,10 @@ Optional Properties :
     pubSubPublisherOptions.def_property("zap_options",
                                         &PublisherSubscriber::PublisherOptions::getZAPOptions,
                                         &PublisherSubscriber::PublisherOptions::setZAPOptions);
-    pubSubPublisherOptions.def_property("send_time_out",
+    pubSubPublisherOptions.def_property("time_out",
                                         &PublisherSubscriber::PublisherOptions::getSendTimeOut,
                                         &PublisherSubscriber::PublisherOptions::setSendTimeOut);
-    pubSubPublisherOptions.def_property("send_high_water_mark",
+    pubSubPublisherOptions.def_property("high_water_mark",
                                         &PublisherSubscriber::PublisherOptions::getSendHighWaterMark,
                                         &PublisherSubscriber::PublisherOptions::setSendHighWaterMark);
     pubSubPublisherOptions.def("clear",

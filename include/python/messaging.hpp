@@ -3,6 +3,7 @@
 #include <memory>
 #include <chrono>
 #include <pybind11/pybind11.h>
+#include <pybind11/chrono.h>
 namespace UMPS
 {
  namespace Messaging

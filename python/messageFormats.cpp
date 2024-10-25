@@ -1,3 +1,4 @@
+#include <map>
 #include <umps/messageFormats/message.hpp>
 #include <umps/messageFormats/messages.hpp>
 #include <umps/messageFormats/text.hpp>
@@ -42,25 +43,25 @@ std::string IMessage::getMessageType() const noexcept
 ///--------------------------------------------------------------------------///
 ///                                   Messages                               ///
 ///--------------------------------------------------------------------------///
-/// C'tor
+/// Constructor
 Messages::Messages() :
     pImpl(std::make_unique<UMPS::MessageFormats::Messages> ())
 {
 }
 
-/// Copy c'tor
+/// Copy constructor
 Messages::Messages(const Messages &messages)
 {
     *this = messages;
 }
 
-/// Copy c'tor
+/// Copy constructor
 Messages::Messages(const UMPS::MessageFormats::Messages &messages)
 {
     *this = messages; 
 }
 
-/// Move c'tor
+/// Move constructor
 Messages::Messages(Messages &&messages) noexcept
 {
     *this = std::move(messages);
@@ -118,17 +119,38 @@ bool Messages::empty() const noexcept
 /// Add
 void Messages::add(const IMessage &message)
 {
-     auto instance = message.createInstance();
-     if (instance == nullptr){throw std::invalid_argument("Instance is NULL");}
-     auto nativeClass = message.getInstanceOfBaseClass();
-     pImpl->add(nativeClass); 
-     //mPythonMessageTypes.push_back(std::move(instance));
+    auto instance = message.createInstance();
+    if (instance == nullptr){throw std::invalid_argument("Instance is NULL");}
+    auto nativeClass = message.getInstanceOfBaseClass();
+    pImpl->add(nativeClass); 
+    //mPythonMessageTypes.push_back(std::move(instance));
+}
+
+/// Contains?
+bool Messages::contains(const std::string &message) const noexcept
+{
+    return pImpl->contains(message);
+}
+
+/// Get the message types
+std::map<std::string, IMessage> Messages::getAll() const noexcept
+{
+    std::map<std::string, IMessage> result;
+    auto messages = pImpl->get();
+    for (const auto &message : messages)
+    {
+        IMessage pyMessage;
+        result.insert(
+            std::pair{message.first,
+                      *pyMessage.clone(message.second->clone())});
+    }
+    return result;
 }
 
 ///--------------------------------------------------------------------------///
 ///                                 Failure Message                          ///
 ///--------------------------------------------------------------------------///
-/// C'tor
+/// Constructor
 Failure::Failure() :
     pImpl(std::make_unique<UMPS::MessageFormats::Failure> ())
 {
@@ -248,9 +270,9 @@ Failure::~Failure() = default;
 ///--------------------------------------------------------------------------///
 ///                                 Failure Message                          ///
 ///--------------------------------------------------------------------------///
-/// C'tor
+/// Constructor
 Text::Text() :
-        pImpl(std::make_unique<UMPS::MessageFormats::Text> ())
+    pImpl(std::make_unique<UMPS::MessageFormats::Text> ())
 {
 }
 
@@ -393,6 +415,8 @@ Read-Only Properties:
       The number of different message types.
    empty : bool
       True indicates there are no message types.
+   get: map
+      A map containing all the message types.
 )"""";
     messages.def("__copy__", [](const Messages &self)
     {
@@ -405,8 +429,14 @@ Read-Only Properties:
                                    &Messages::size);
     messages.def_property_readonly("empty",
                                    &Messages::empty);
+    messages.def("contains",
+                 &Messages::contains,
+                 "True indicates the provided message type exists in the container"); 
+    messages.def_property_readonly("get",
+                                   &Messages::getAll);
     ///----------------------------Failure-----------------------------------///
-    pybind11::class_<UMPS::Python::MessageFormats::Failure> failure(mm, "Failure");
+    pybind11::class_<UMPS::Python::MessageFormats::Failure,
+                     UMPS::Python::MessageFormats::IMessage> failure(mm, "Failure");
     failure.def(pybind11::init<> ());
     failure.doc() = R""""(
 This is a generic failure message.  This may be returned from a service as a 
@@ -429,8 +459,9 @@ Read-Only Properties:
                          &Failure::setDetails);
     failure.def_property_readonly("message_type",
                                   &Failure::getMessageType);
-    ///-------------------------------0Text----------------------------------///
-    pybind11::class_<UMPS::Python::MessageFormats::Text> text(mm, "Text");
+    ///--------------------------------Text----------------------------------///
+    pybind11::class_<UMPS::Python::MessageFormats::Text,
+                     UMPS::Python::MessageFormats::IMessage> text(mm, "Text");
     text.def(pybind11::init<> ());
     text.doc() = R""""(
 This is a container for a text message.  The contents can be arbitrary.
