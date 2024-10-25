@@ -218,6 +218,7 @@ target_link_libraries(uRemoteCommand PRIVATE Boost::program_options umps)
 ##########################################################################################
 if (${WRAP_PYTHON})
    message("Will build Python bindings")
+   find_package(Python COMPONENTS Interpreter Development)
    find_package(pybind11 REQUIRED)
    add_library(umps_python
                python/authentication.cpp
