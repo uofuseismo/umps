@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>UMPS: Provided Loggers</title>
+<title>UMPS: include/umps/proxyBroadcasts/heartbeat.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -73,7 +73,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search','.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('group___logging___loggers.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('heartbeat_8hpp_source.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -92,41 +92,26 @@ $(document).ready(function(){initNavTree('group___logging___loggers.html',''); i
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
-<div class="title">Provided Loggers<div class="ingroups"><a class="el" href="group___logging__chapter.html">Logging</a></div></div>  </div>
+<div class="title">heartbeat.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Useful loggers that ship with UMPS.  
-<a href="#details">More...</a></p>
-<div class="dynheader">
-Collaboration diagram for Provided Loggers:</div>
-<div class="dyncontent">
-<div class="center"><img src="group___logging___loggers.png" border="0" usemap="#agroup______logging______loggers" alt=""/></div>
-<map name="agroup______logging______loggers" id="agroup______logging______loggers">
-<area shape="rect" title="Useful loggers that ship with UMPS." alt="" coords="127,5,261,31"/>
-<area shape="rect" href="group___logging__chapter.html" title=" " alt="" coords="5,5,79,31"/>
-</map>
-</div>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_logging_1_1_daily_file.html">UMPS::Logging::DailyFile</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A daily logger as implemented by the SpdLog library.  <a href="class_u_m_p_s_1_1_logging_1_1_daily_file.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_u_m_p_s_1_1_logging_1_1_standard_out.html">UMPS::Logging::StandardOut</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A naive logger that prints all messages to standard out and, in the case of errors, standard error.  <a href="class_u_m_p_s_1_1_logging_1_1_standard_out.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Useful loggers that ship with UMPS. </p>
-</div><!-- contents -->
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef UMPS_PROXY_BROADCASTS_HEARTBEAT_HPP</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define UMPS_PROXY_BROADCASTS_HEARTBEAT_HPP</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;umps/proxyBroadcasts/heartbeat/publisher.hpp&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;umps/proxyBroadcasts/heartbeat/publisherOptions.hpp&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;umps/proxyBroadcasts/heartbeat/publisherProcess.hpp&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;umps/proxyBroadcasts/heartbeat/publisherProcessOptions.hpp&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;umps/proxyBroadcasts/heartbeat/status.hpp&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;umps/proxyBroadcasts/heartbeat/subscriber.hpp&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;umps/proxyBroadcasts/heartbeat/subscriberOptions.hpp&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#endif</span></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_c591884bd638e2293e54b546c0aa3073.html">umps</a></li><li class="navelem"><a class="el" href="dir_1fdbbd33063d3567e08a2b11f35ec03d.html">proxyBroadcasts</a></li><li class="navelem"><b>heartbeat.hpp</b></li>
     <li class="footer">Generated on Tue Oct 29 2024 19:11:24 for UMPS by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
